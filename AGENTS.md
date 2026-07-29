@@ -33,4 +33,4 @@ Pick an existing `data-category`: `action`, `puzzle`, `arcade`, `strategy`, `boa
 
 - **LLM timeouts**: The Qwen3.6-35B-A3B endpoint has timed out repeatedly. If a code generation task fails with an API timeout, retry or switch endpoints.
 - **Merge conflicts in `index.html`**: The root `index.html` games grid is edited by multiple agents. Coordinate before modifying it, or resolve conflicts early.
-- **No GitHub Pages deploy step yet**: CI/CD is planned but not configured.
+- **GitHub Pages**: CI/CD is configured via `.github/workflows/deploy.yml` — deploys the entire repo to GitHub Pages on push to `main`.
