@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 # test-whats-new.sh — Verifies the What's New section implementation
-set -euo pipefail
-
 PASS=0
 FAIL=0
 TOTAL=0
@@ -28,61 +26,90 @@ echo ""
 echo "--- Structural Checks (index.html) ---"
 
 # 1a. Section element exists
-grep -q '<section class="what-new-section">' index.html
-check "index.html contains <section class=\"what-new-section\">" $?
+if grep -q '<section class="what-new-section">' index.html; then
+    check "index.html contains <section class=\"what-new-section\">" 0
+else
+    check "index.html contains <section class=\"what-new-section\">" 1
+fi
 
 # 1b. Section is between featured and games sections (featured < section what-new < section games)
-FEATURED_LINE=$(grep -n '<section class="featured-section">' index.html | head -1 | cut -d: -f1)
-WHATSNEW_LINE=$(grep -n '<section class="what-new-section">' index.html | head -1 | cut -d: -f1)
-GAMES_LINE=$(grep -n '<section class="games-section">' index.html | head -1 | cut -d: -f1)
+FEATURED_LINE=$(grep -n '<section class="featured-section">' index.html | head -1 | cut -d: -f1 || echo "")
+WHATSNEW_LINE=$(grep -n '<section class="what-new-section">' index.html | head -1 | cut -d: -f1 || echo "")
+GAMES_LINE=$(grep -n '<section class="games-section">' index.html | head -1 | cut -d: -f1 || echo "")
 
 if [ -n "$FEATURED_LINE" ] && [ -n "$WHATSNEW_LINE" ] && [ -n "$GAMES_LINE" ]; then
-    [ "$FEATURED_LINE" -lt "$WHATSNEW_LINE" ] && [ "$WHATSNEW_LINE" -lt "$GAMES_LINE" ]
-    check "What's New section is between featured and games sections (line order: $FEATURED_LINE < $WHATSNEW_LINE < $GAMES_LINE)" $?
+    if [ "$FEATURED_LINE" -lt "$WHATSNEW_LINE" ] && [ "$WHATSNEW_LINE" -lt "$GAMES_LINE" ]; then
+        check "What's New section is between featured and games sections (lines: $FEATURED_LINE < $WHATSNEW_LINE < $GAMES_LINE)" 0
+    else
+        check "What's New section is between featured and games sections" 1
+    fi
 else
     check "What's New section is between featured and games sections" 1
 fi
 
 # 1c. h2 heading text is 'What's New'
-grep -q '<h2>What'\''s New</h2>' index.html
-check "Section heading is <h2>What's New</h2>" $?
+if grep -q '<h2>What'\''s New</h2>' index.html; then
+    check "Section heading is <h2>What's New</h2>" 0
+else
+    check "Section heading is <h2>What's New</h2>" 1
+fi
 
 # 1d. Exactly 5 entries
-ENTRY_COUNT=$(grep -c 'class="what-new-item"' index.html)
-[ "$ENTRY_COUNT" -eq 5 ]
-check "Exactly 5 what-new-item entries (found $ENTRY_COUNT)" $?
+ENTRY_COUNT=$(grep -c 'class="what-new-item"' index.html || echo "0")
+if [ "$ENTRY_COUNT" -eq 5 ]; then
+    check "Exactly 5 what-new-item entries (found $ENTRY_COUNT)" 0
+else
+    check "Exactly 5 what-new-item entries (found $ENTRY_COUNT)" 1
+fi
 
 # 1e. Each entry has a date span
-DATES_COUNT=$(grep -c 'class="what-new-date"' index.html)
-[ "$DATES_COUNT" -eq 5 ]
-check "Each entry has a date (5 what-new-date spans)" $?
+DATES_COUNT=$(grep -c 'class="what-new-date"' index.html || echo "0")
+if [ "$DATES_COUNT" -eq 5 ]; then
+    check "Each entry has a date (5 what-new-date spans)" 0
+else
+    check "Each entry has a date (5 what-new-date spans)" 1
+fi
 
 # 1f. Each entry has a tag span
-TAGS_COUNT=$(grep -c 'class="what-new-tag"' index.html)
-[ "$TAGS_COUNT" -eq 5 ]
-check "Each entry has a tag (5 what-new-tag spans)" $?
+TAGS_COUNT=$(grep -c 'class="what-new-tag"' index.html || echo "0")
+if [ "$TAGS_COUNT" -eq 5 ]; then
+    check "Each entry has a tag (5 what-new-tag spans)" 0
+else
+    check "Each entry has a tag (5 what-new-tag spans)" 1
+fi
 
 # 1g. Each entry has a description span
-DESC_COUNT=$(grep -c 'class="what-new-desc"' index.html)
-[ "$DESC_COUNT" -eq 5 ]
-check "Each entry has a description (5 what-new-desc spans)" $?
+DESC_COUNT=$(grep -c 'class="what-new-desc"' index.html || echo "0")
+if [ "$DESC_COUNT" -eq 5 ]; then
+    check "Each entry has a description (5 what-new-desc spans)" 0
+else
+    check "Each entry has a description (5 what-new-desc spans)" 1
+fi
 
 # 1h. New and Fix badges both present
-grep -q 'class="what-new-tag new"' index.html
-check "New badge class present" $?
-grep -q 'class="what-new-tag fix"' index.html
-check "Fix badge class present" $?
+if grep -q 'class="what-new-tag new"' index.html; then
+    check "New badge class present" 0
+else
+    check "New badge class present" 1
+fi
+
+if grep -q 'class="what-new-tag fix"' index.html; then
+    check "Fix badge class present" 0
+else
+    check "Fix badge class present" 1
+fi
 
 # 1i. Dates are in chronological order (newest first)
-DATES=$(grep -oP 'class="what-new-date">\K[^<]+' index.html)
-# Extract years
-YEARS=$(echo "$DATES" | grep -oP '\b\d{4}\b')
-# Check descending order
-SORTED=$(echo "$YEARS" | sort -rn)
-CURRENT=$(echo "$YEARS" | tr '\n' ' ')
-SORTED_TR=$(echo "$SORTED" | tr '\n' ' ')
-[ "$CURRENT" = "$SORTED_TR" ]
-check "Dates are in chronological order (newest first)" $?
+DATES=$(grep -oP 'class="what-new-date">\K[^<]+' index.html || echo "")
+YEARS=$(echo "$DATES" | grep -oP '\b\d{4}\b' || echo "")
+SORTED=$(echo "$YEARS" | sort -rn || echo "")
+CURRENT=$(echo "$YEARS" | tr '\n' ' ' || echo "")
+SORTED_TR=$(echo "$SORTED" | tr '\n' ' ' || echo "")
+if [ "$CURRENT" = "$SORTED_TR" ] && [ -n "$CURRENT" ]; then
+    check "Dates are in chronological order (newest first)" 0
+else
+    check "Dates are in chronological order (newest first)" 1
+fi
 
 # -----------------------------------------------------------
 # 2. styles.css contains CSS rules for What's New section
@@ -90,74 +117,143 @@ check "Dates are in chronological order (newest first)" $?
 echo ""
 echo "--- CSS Rule Checks (styles.css) ---"
 
-grep -q '\.what-new-section' styles.css
-check "CSS rule .what-new-section exists" $?
+if grep -q '\.what-new-section' styles.css; then
+    check "CSS rule .what-new-section exists" 0
+else
+    check "CSS rule .what-new-section exists" 1
+fi
 
-grep -q '\.what-new-list' styles.css
-check "CSS rule .what-new-list exists" $?
+if grep -q '\.what-new-list' styles.css; then
+    check "CSS rule .what-new-list exists" 0
+else
+    check "CSS rule .what-new-list exists" 1
+fi
 
-grep -q '\.what-new-item' styles.css
-check "CSS rule .what-new-item exists" $?
+if grep -q '\.what-new-item' styles.css; then
+    check "CSS rule .what-new-item exists" 0
+else
+    check "CSS rule .what-new-item exists" 1
+fi
 
-grep -q '\.what-new-date' styles.css
-check "CSS rule .what-new-date exists" $?
+if grep -q '\.what-new-date' styles.css; then
+    check "CSS rule .what-new-date exists" 0
+else
+    check "CSS rule .what-new-date exists" 1
+fi
 
-grep -q '\.what-new-tag' styles.css
-check "CSS rule .what-new-tag exists" $?
+if grep -q '\.what-new-tag' styles.css; then
+    check "CSS rule .what-new-tag exists" 0
+else
+    check "CSS rule .what-new-tag exists" 1
+fi
 
-grep -q '\.what-new-desc' styles.css
-check "CSS rule .what-new-desc exists" $?
+if grep -q '\.what-new-desc' styles.css; then
+    check "CSS rule .what-new-desc exists" 0
+else
+    check "CSS rule .what-new-desc exists" 1
+fi
 
-grep -q '\.what-new-tag\.new' styles.css
-check "CSS rule .what-new-tag.new exists" $?
+if grep -q '\.what-new-tag\.new' styles.css; then
+    check "CSS rule .what-new-tag.new exists" 0
+else
+    check "CSS rule .what-new-tag.new exists" 1
+fi
 
-grep -q '\.what-new-tag\.fix' styles.css
-check "CSS rule .what-new-tag.fix exists" $?
+if grep -q '\.what-new-tag\.fix' styles.css; then
+    check "CSS rule .what-new-tag.fix exists" 0
+else
+    check "CSS rule .what-new-tag.fix exists" 1
+fi
 
 # 2a. h2 styling matches "All Games" heading (1.5rem, font-weight 600, bottom border)
-# Check the what-new-section h2 has font-size: 1.5rem
-grep -A5 '\.what-new-section h2' styles.css | grep -q 'font-size: 1\.5rem'
-check "h2 font-size is 1.5rem" $?
+WHATNEW_H2=$(sed -n '/\.what-new-section h2/,/^}/p' styles.css || echo "")
+if echo "$WHATNEW_H2" | grep -q 'font-size: 1\.5rem'; then
+    check "h2 font-size is 1.5rem" 0
+else
+    check "h2 font-size is 1.5rem" 1
+fi
 
-grep -A5 '\.what-new-section h2' styles.css | grep -q 'font-weight: 600'
-check "h2 font-weight is 600" $?
+if echo "$WHATNEW_H2" | grep -q 'font-weight: 600'; then
+    check "h2 font-weight is 600" 0
+else
+    check "h2 font-weight is 600" 1
+fi
 
-grep -A5 '\.what-new-section h2' styles.css | grep -q 'border-bottom: 2px solid'
-check "h2 has bottom border" $?
+if echo "$WHATNEW_H2" | grep -q 'border-bottom: 2px solid'; then
+    check "h2 has bottom border" 0
+else
+    check "h2 has bottom border" 1
+fi
 
 # 2b. Dark theme styling
-grep -A5 '\.what-new-item' styles.css | grep -q 'background: var(--bg-card)'
-check "Items use dark card background (var(--bg-card))" $?
+WHATNEW_ITEM=$(sed -n '/\.what-new-item {/,/^}/p' styles.css || echo "")
+if echo "$WHATNEW_ITEM" | grep -q 'background: var(--bg-card)'; then
+    check "Items use dark card background (var(--bg-card))" 0
+else
+    check "Items use dark card background (var(--bg-card))" 1
+fi
 
-grep -A5 '\.what-new-item' styles.css | grep -q 'border: 1px solid var(--border-color)'
-check "Items have subtle border" $?
+if echo "$WHATNEW_ITEM" | grep -q 'border: 1px solid var(--border-color)'; then
+    check "Items have subtle border" 0
+else
+    check "Items have subtle border" 1
+fi
 
-grep -A5 '\.what-new-date' styles.css | grep -q 'color: var(--text-muted)'
-check "Date text uses muted color" $?
+WHATNEW_DATE=$(sed -n '/\.what-new-date {/,/^}/p' styles.css || echo "")
+if echo "$WHATNEW_DATE" | grep -q 'color: var(--text-muted)'; then
+    check "Date text uses muted color" 0
+else
+    check "Date text uses muted color" 1
+fi
 
-grep -A5 '\.what-new-desc' styles.css | grep -q 'color: var(--text-secondary)'
-check "Description text uses secondary text color" $?
+WHATNEW_DESC=$(sed -n '/\.what-new-desc {/,/^}/p' styles.css || echo "")
+if echo "$WHATNEW_DESC" | grep -q 'color: var(--text-secondary)'; then
+    check "Description text uses secondary text color" 0
+else
+    check "Description text uses secondary text color" 1
+fi
 
 # 2c. Responsive rules for 480px
-grep -A5 'max-width: 480px' styles.css | grep -q '\.what-new-item'
-check "Responsive rule for ≤480px includes .what-new-item" $?
+if sed -n '/@media (max-width: 480px)/,/}/p' styles.css | grep -q '\.what-new-item'; then
+    check "Responsive rule for ≤480px includes .what-new-item" 0
+else
+    check "Responsive rule for ≤480px includes .what-new-item" 1
+fi
 
-grep -A8 'max-width: 480px' styles.css | grep -q 'flex-direction: column'
-check "Responsive rule stacks items with flex-direction: column" $?
+if sed -n '/@media (max-width: 480px)/,/}/p' styles.css | grep -q 'flex-direction: column'; then
+    check "Responsive rule stacks items with flex-direction: column" 0
+else
+    check "Responsive rule stacks items with flex-direction: column" 1
+fi
 
 # 2d. Hover states
-grep -A3 '\.what-new-item:hover' styles.css | grep -q 'border-color: var(--accent)'
-check "Hover state changes border color to accent" $?
+WHATNEW_HOVER=$(sed -n '/\.what-new-item:hover/,/^}/p' styles.css || echo "")
+if echo "$WHATNEW_HOVER" | grep -q 'border-color: var(--accent)'; then
+    check "Hover state changes border color to accent" 0
+else
+    check "Hover state changes border color to accent" 1
+fi
 
-grep -A3 '\.what-new-item:hover' styles.css | grep -q 'background: var(--bg-card-hover)'
-check "Hover state changes background to card-hover" $?
+if echo "$WHATNEW_HOVER" | grep -q 'background: var(--bg-card-hover)'; then
+    check "Hover state changes background to card-hover" 0
+else
+    check "Hover state changes background to card-hover" 1
+fi
 
 # 2e. Badge colors
-grep -A2 '\.what-new-tag\.new' styles.css | grep -q '#4ade80'
-check "New badge uses green color (#4ade80)" $?
+NEW_TAG=$(sed -n '/\.what-new-tag\.new {/,/^}/p' styles.css || echo "")
+if echo "$NEW_TAG" | grep -q '#4ade80'; then
+    check "New badge uses green color (#4ade80)" 0
+else
+    check "New badge uses green color (#4ade80)" 1
+fi
 
-grep -A2 '\.what-new-tag\.fix' styles.css | grep -q '#fb923c'
-check "Fix badge uses orange color (#fb923c)" $?
+FIX_TAG=$(sed -n '/\.what-new-tag\.fix {/,/^}/p' styles.css || echo "")
+if echo "$FIX_TAG" | grep -q '#fb923c'; then
+    check "Fix badge uses orange color (#fb923c)" 0
+else
+    check "Fix badge uses orange color (#fb923c)" 1
+fi
 
 # -----------------------------------------------------------
 # 3. AGENTS.md contains What's New section
@@ -165,29 +261,43 @@ check "Fix badge uses orange color (#fb923c)" $?
 echo ""
 echo "--- AGENTS.md Checks ---"
 
-grep -q "## What's New" AGENTS.md
-check "AGENTS.md has '## What's New' section" $?
+if grep -q "## What's New" AGENTS.md; then
+    check "AGENTS.md has '## What's New' section" 0
+else
+    check "AGENTS.md has '## What's New' section" 1
+fi
 
 # Check it's after Known Issues
-KNOW_ISSUES=$(grep -n "## Known Issues" AGENTS.md | head -1 | cut -d: -f1)
-WHATS_NEW=$(grep -n "## What's New" AGENTS.md | head -1 | cut -d: -f1)
+KNOW_ISSUES=$(grep -n "## Known Issues" AGENTS.md | head -1 | cut -d: -f1 || echo "")
+WHATS_NEW=$(grep -n "## What's New" AGENTS.md | head -1 | cut -d: -f1 || echo "")
 if [ -n "$KNOW_ISSUES" ] && [ -n "$WHATS_NEW" ]; then
-    [ "$WHATS_NEW" -gt "$KNOW_ISSUES" ]
-    check "What's New section is after Known Issues (line $WHATS_NEW > $KNOW_ISSUES)" $?
+    if [ "$WHATS_NEW" -gt "$KNOW_ISSUES" ]; then
+        check "What's New section is after Known Issues (line $WHATS_NEW > $KNOW_ISSUES)" 0
+    else
+        check "What's New section is after Known Issues" 1
+    fi
 else
     check "What's New section is after Known Issues" 1
 fi
 
 # Check it mentions 5 entries
-grep -q "5" AGENTS.md | grep -q "What" || true
-grep -q "5 entries" AGENTS.md
-check "Section mentions maintaining 5 entries" $?
+if grep -q "5 entries" AGENTS.md; then
+    check "Section mentions maintaining 5 entries" 0
+else
+    check "Section mentions maintaining 5 entries" 1
+fi
 
-grep -q "newest first" AGENTS.md
-check "Section specifies newest-first ordering" $?
+if grep -q "newest first" AGENTS.md; then
+    check "Section specifies newest-first ordering" 0
+else
+    check "Section specifies newest-first ordering" 1
+fi
 
-grep -q "npx prettier --write AGENTS.md" AGENTS.md
-check "Section instructs to run npx prettier --write AGENTS.md" $?
+if grep -q "npx prettier --write AGENTS.md" AGENTS.md; then
+    check "Section instructs to run npx prettier --write AGENTS.md" 0
+else
+    check "Section instructs to run npx prettier --write AGENTS.md" 1
+fi
 
 # -----------------------------------------------------------
 # 4. No new JS files or dependencies
@@ -195,13 +305,11 @@ check "Section instructs to run npx prettier --write AGENTS.md" $?
 echo ""
 echo "--- No New Dependencies Check ---"
 
-# Count .js files added (we should not have added new ones for this feature)
-# Check if any new JS was introduced for What's New
-grep -r 'what-new' --include='*.js' . 2>/dev/null | grep -v node_modules | grep -v '.git'
-if [ $? -eq 0 ]; then
-    check "No new JS files reference What's New (found JS refs)" 1
+JS_REFS=$(grep -r 'what-new' --include='*.js' . 2>/dev/null | grep -v node_modules | grep -v '.git' | wc -l || echo "0")
+if [ "$JS_REFS" -eq 0 ]; then
+    check "No new JS files reference What's New" 0
 else
-    check "No new JS files reference What's New" $?
+    check "No new JS files reference What's New" 1
 fi
 
 # -----------------------------------------------------------
@@ -210,19 +318,18 @@ fi
 echo ""
 echo "--- Merge Conflict Check ---"
 
-grep -q '<<<<<<<' index.html 2>/dev/null
-if [ $? -eq 0 ]; then
+if grep -q '<<<<<<<' index.html 2>/dev/null; then
     check "No merge conflict markers in index.html" 1
 else
     check "No merge conflict markers in index.html" 0
 fi
 
 # Check valid HTML structure (section opened and closed properly)
-OPEN_COUNT=$(grep -o '<section class="what-new-section">' index.html | wc -l)
-CLOSE_COUNT=$(grep -o '</section>' index.html | wc -l)
-# There should be a balanced section
-grep -q '<section class="what-new-section">' index.html && grep -A30 '<section class="what-new-section">' index.html | grep -q '</section>'
-check "What's New section is properly opened and closed" $?
+if grep -q '<section class="what-new-section">' index.html && echo "$(sed -n '/<section class="what-new-section">/,/<\/section>/p' index.html)" | grep -q '</section>'; then
+    check "What's New section is properly opened and closed" 0
+else
+    check "What's New section is properly opened and closed" 1
+fi
 
 # -----------------------------------------------------------
 # Summary
