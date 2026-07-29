@@ -85,7 +85,6 @@ EMOJIS.forEach(emoji => {
     const count = (memorymatchHtml.match(new RegExp(emoji.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length;
     assert(count >= 2, `Emoji ${emoji} appears (pair reference)`);
 });
-const EMOJIS = ['🎮', '🎯', '🎲', '🎸', '🚀', '🌟', '🔥', '💎'];
 
 // ============================================
 // SECTION 5: Mouse Click Flips Cards
