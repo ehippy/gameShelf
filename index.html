@@ -223,8 +223,8 @@
     <script src="script.js"></script>
 
     <script>
-    // Alias for backward compatibility — data is in window.gamesCatalog (script.js)
-    var games = window.gamesCatalog;
+    // Alias for backward compatibility — data lives in window.gamesCatalog (script.js)
+    var games = [...window.gamesCatalog];
     </script>
 
 </body>
