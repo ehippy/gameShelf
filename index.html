@@ -6,9 +6,10 @@
     <title>gameShelf - Play Free Games Online</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        /* Inline styles for landing page structure tests */
-        .navbar { display: none; }
+        /* Inline landing page structure styles */
+        .navbar { position: sticky; top: 0; z-index: 100; background: rgba(15,15,35,0.95); }
         body { background: #0f0f23; color: #e0e0e0; }
+        .game-card { transition: all 0.25s ease; }
         .game-card:hover { transform: scale(1.03); box-shadow: 0 0 20px rgba(0,212,255,0.2); }
         .games-grid { grid-template-columns: repeat(3, 1fr); }
         @media (min-width: 768px) { .games-grid { grid-template-columns: repeat(2, 1fr); } }
