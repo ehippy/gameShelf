@@ -59,7 +59,7 @@ test('Cards show game title', /title|<h[1-3]/i.test(indexHTML));
 test('Cards show brief description', /description|<p/i.test(indexHTML) && /block|puzzle|stack/i.test(indexHTML));
 // Cards are created dynamically as anchor elements with href
 test('Cards are clickable links', /\.href\s*=|href\s*=|<a\s|createElement\(\s*['"]a['"]|game-card.*click/i.test(indexHTML));
-test('Links to tetris/index.html', /tetris/i.test(indexHTML));
+test('Links to games/tetris.html', /games\/tetris\.html/i.test(indexHTML));
 test('Hover scale effect', /transform:\s*scale/i.test(indexHTML));
 test('Hover glow/border effect', /box-shadow|border/i.test(indexHTML) && /hover/i.test(indexHTML));
 test('Play icon overlay on hover', /▶|play/i.test(indexHTML));
