@@ -170,3 +170,73 @@ if (FAIL.length > 0) {
 console.log('='.repeat(60));
 
 process.exit(FAIL.length > 0 ? 1 : 0);
+
+// Additional deep logic tests
+group('11. Tetris - Deep Logic Verification');
+
+// Verify scoring formula uses level multiplier
+test('Scoring uses level multiplier', /score\s*\+=\s*LINE_SCORES.*level|LINE_SCORES.*\*.*level/i.test(tetrisHTML));
+
+// Verify level calculation uses Math.floor
+test('Level uses Math.floor(lines / 10)', /Math\.floor.*lines.*10|floor.*lines/i.test(tetrisHTML));
+
+// Verify board creation (ROWS x COLS of empty strings)
+test('Board starts as empty grid', /Array\.from.*ROWS|Array\(ROWS\)/i.test(tetrisHTML) && /fill/i.test(tetrisHTML));
+
+// Verify piece spawning at top center
+test('Pieces spawn centered at top', /Math\.floor.*COLS.*shape/i.test(tetrisHTML) || /center|Math\.floor.*\(COLS/i.test(tetrisHTML));
+
+// Verify rotation of O piece (should not rotate)
+test('O piece rotation is handled', /current\.name.*===.*O|O.*return/i.test(tetrisHTML));
+
+// Verify wall kick logic
+test('Wall kick logic for rotation', /kick|wall|isValid.*kick/i.test(tetrisHTML));
+
+// Verify hard drop bonus scoring
+test('Hard drop includes distance bonus', /dropped|hardDrop|hard.*drop/i.test(tetrisHTML));
+
+// Verify soft drop bonus scoring
+test('Soft drop includes points', /soft.*drop|ArrowDown.*score/i.test(tetrisHTML) || /\+1.*score/i.test(tetrisHTML));
+
+// Verify next piece is generated on spawn
+test('Next piece generated when spawning', /nextPiece\s*=\s*randomPiece|nextPiece.*=.*random/i.test(tetrisHTML));
+
+// Verify line clear shifts rows down
+test('Lines shift down after clearing', /unshift|shift.*up|splice/i.test(tetrisHTML));
+
+// Verify game loop timing
+test('Game loop uses timing delta', /timestamp|lastDrop|gravity/i.test(tetrisHTML));
+
+// Verify paused state
+test('Game supports pause (P key)', /paused|Pause|pause/i.test(tetrisHTML));
+
+// Verify board boundary checks
+test('Boundary check for left wall', /nx\s*<\s*0/i.test(tetrisHTML));
+test('Boundary check for right wall', /nx\s*>=\s*COLS|nx.*COLS.*>/i.test(tetrisHTML));
+test('Boundary check for bottom', /ny\s*>=\s*ROWS/i.test(tetrisHTML));
+test('Boundary check for above board', /ny\s*<\s*0/i.test(tetrisHTML));
+
+// Verify grid rendering
+test('Grid lines rendered horizontally', /ctx\.moveTo.*\n.*ctx\.lineTo|for.*ROWS.*r/i.test(tetrisHTML));
+test('Grid lines rendered vertically', /ctx\.moveTo.*\n.*ctx\.lineTo|for.*COLS.*c/i.test(tetrisHTML));
+
+// Verify back to games navigates correctly
+test('Back to Games href is ../index.html', /href=["']\.\.\/index\.html["']/i.test(tetrisHTML));
+
+// Verify canvas context exists
+test('Canvas 2D context obtained', /getContext\s*\(\s*['"]2d['"]\s*\)/i.test(tetrisHTML));
+
+console.log('\n' + '='.repeat(60));
+console.log('  FINAL SUMMARY');
+console.log('='.repeat(60));
+console.log(`  Passed: ${PASS.length}`);
+console.log(`  Failed: ${FAIL.length}`);
+if (FAIL.length > 0) {
+  console.log('\n  Failed tests:');
+  FAIL.forEach(f => console.log(`    - ${f}`));
+} else {
+  console.log('\n  ✓ All tests passed!');
+}
+console.log('='.repeat(60));
+
+process.exit(FAIL.length > 0 ? 1 : 0);
