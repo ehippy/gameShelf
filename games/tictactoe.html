@@ -521,6 +521,7 @@
                         winLine = result.line;
                         gameState = 'gameover';
                         showGameOver(winner);
+                        updateTurnIndicator();
                     }
                 }
 
@@ -707,6 +708,17 @@
                     turnIndicator.textContent = 'Your Turn: X';
                     turnIndicator.className = 'turn-indicator turn-x';
                 }
+            } else if (gameState === 'gameover') {
+                if (winner === 'X') {
+                    turnIndicator.textContent = 'You Win!';
+                    turnIndicator.className = 'turn-indicator turn-x';
+                } else if (winner === 'O') {
+                    turnIndicator.textContent = 'AI Wins!';
+                    turnIndicator.className = 'turn-indicator turn-o';
+                } else {
+                    turnIndicator.textContent = 'Game Over — Draw';
+                    turnIndicator.className = 'turn-indicator';
+                }
             }
         }
 
@@ -725,6 +737,7 @@
                 winLine = result.line;
                 gameState = 'gameover';
                 showGameOver(winner);
+                updateTurnIndicator();
                 render();
                 return;
             }
