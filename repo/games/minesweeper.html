@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>gameShelf — Minesweeper</title>
+    <style>
+        /* CSS Custom Properties — match site theme */
+        :root {
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a3e;
+            --bg-card: #1e1e45;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0b8;
+            --text-muted: #6b6b80;
+            --accent: #00d4ff;
+            --accent-hover: #00b8d9;
+            --accent-glow: rgba(0, 212, 255, 0.3);
+            --border-color: #2a2a5a;
+            --header-bg: rgba(15, 15, 35, 0.95);
+            --footer-bg: #0a0a1a;
+        }
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .game-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--header-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem 1.5rem;
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--accent-glow);
+            white-space: nowrap;
+            transition: text-shadow 0.2s ease;
+        }
+
+        .logo:hover {
+            text-shadow: 0 0 20px var(--accent-glow), 0 0 40px rgba(0, 212, 255, 0.1);
+        }
+
+        .logo::before {
+            content: '🎮';
+            margin-right: 0.35rem;
+        }
+
+        .game-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .back-link {
+            color: var(--accent);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .back-link:hover {
+            color: var(--accent-hover);
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* Game Area */
+        .game-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Score / HUD Bar */
+        .score-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            width: 400px;
+            padding: 0.5rem 1rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+        }
+
+        .score-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            min-width: 60px;
+        }
+
+        .score-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+
+        .score-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            font-family: 'Courier New', Courier, monospace;
+            color: #f87171;
+            text-shadow: 0 0 10px rgba(248, 113, 113, 0.4);
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .score-value.timer-value {
+            color: #fbbf24;
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+        }
+
+        .smiley-btn {
+            font-size: 1.8rem;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 0.375rem;
+            cursor: pointer;
+            padding: 0.15rem 0.4rem;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            line-height: 1;
+        }
+
+        .smiley-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .smiley-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Canvas */
+        .canvas-wrapper {
+            position: relative;
+            border: 2px solid var(--border-color);
+            border-radius: 0.75rem;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.1), 0 8px 24px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            background-color: #1a1a3e;
+        }
+
+        /* Overlay (Start / Game Over / Win) */
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 15, 35, 0.92);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            z-index: 10;
+            border-radius: 0.75rem;
+            transition: opacity 0.3s ease;
+        }
+
+        .overlay.hidden {
+            display: none;
+        }
+
+        .overlay-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .overlay-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            text-align: center;
+            max-width: 280px;
+            line-height: 1.5;
+        }
+
+        .overlay-score {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #fbbf24;
+            margin: 0.25rem 0;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background: var(--accent);
+            color: var(--bg-primary);
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 0.5rem 2rem;
+            border-radius: 0.75rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.15);
+            margin-top: 0.5rem;
+        }
+
+        .btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        .site-footer {
+            margin-top: auto;
+            background: var(--footer-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 2rem 1.5rem;
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        .site-footer p {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .header-inner {
+                justify-content: center;
+                text-align: center;
+            }
+            .score-bar {
+                width: 320px;
+                gap: 0.5rem;
+            }
+            .overlay-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="game-header">
+        <div class="header-inner">
+            <div class="header-left">
+                <a href="../index.html" class="logo">gameShelf</a>
+                <span class="game-title">Minesweeper</span>
+            </div>
+            <a href="../games/index.html" class="back-link">← Back to All Games</a>
+        </div>
+    </header>
+
+    <!-- Game Area -->
+    <div class="game-area">
+        <!-- HUD Bar -->
+        <div class="score-bar">
+            <div class="score-item">
+                <span class="score-label">Mines</span>
+                <span class="score-value" id="mineCounter">010</span>
+            </div>
+            <button class="smiley-btn" id="smileyBtn" title="Restart game">😀</button>
+            <div class="score-item">
+                <span class="score-label">Time</span>
+                <span class="score-value timer-value" id="timer">000</span>
+            </div>
+        </div>
+
+        <!-- Canvas -->
+        <div class="canvas-wrapper">
+            <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+            <!-- Start Overlay -->
+            <div class="overlay" id="startOverlay">
+                <div class="overlay-title">💣 Minesweeper</div>
+                <div class="overlay-subtitle">Use arrow keys to navigate, Space to reveal, R to flag mines</div>
+                <button class="btn" id="startBtn">▶ Start Game</button>
+            </div>
+
+            <!-- Game Over Overlay -->
+            <div class="overlay hidden" id="gameOverOverlay">
+                <div class="overlay-title">💥 Game Over</div>
+                <div class="overlay-subtitle">You hit a mine! All mines are revealed.</div>
+                <button class="btn" id="restartBtnGameOver">↻ Restart</button>
+            </div>
+
+            <!-- Win Overlay -->
+            <div class="overlay hidden" id="winOverlay">
+                <div class="overlay-title">🎉 You Win!</div>
+                <div class="overlay-score" id="winTime">Time: 0s</div>
+                <div class="overlay-subtitle">All mines cleared successfully!</div>
+                <button class="btn" id="restartBtnWin">↻ Play Again</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-links">
+                <a href="../index.html">Home</a>
+                <a href="../games/index.html">All Games</a>
+            </div>
+            <p>© 2025 gameShelf — All games built in browser — no downloads required</p>
+        </div>
+    </footer>
+
+    <script>
+    (function() {
+        'use strict';
+
+        // ── Constants ──
+        const CANVAS_SIZE = 400;
+        const COLS = 16;
+        const ROWS = 16;
+        const CELL = CANVAS_SIZE / COLS; // 25px
+        const MINES = 10;
+
+        // Number colors (classic Minesweeper)
+        const NUM_COLORS = {
+            1: '#0000ff',  // blue
+            2: '#008000',  // green
+            3: '#ff0000',  // red
+            4: '#000080',  // dark blue
+            5: '#800000',  // maroon
+            6: '#008080',  // teal
+            7: '#000000',  // black
+            8: '#808080'   // gray
+        };
+
+        // ── DOM refs ──
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const mineCounterEl = document.getElementById('mineCounter');
+        const timerEl = document.getElementById('timer');
+        const smileyBtn = document.getElementById('smileyBtn');
+        const startOverlay = document.getElementById('startOverlay');
+        const gameOverOverlay = document.getElementById('gameOverOverlay');
+        const winOverlay = document.getElementById('winOverlay');
+        const winTimeEl = document.getElementById('winTime');
+        const startBtn = document.getElementById('startBtn');
+        const restartBtnGameOver = document.getElementById('restartBtnGameOver');
+        const restartBtnWin = document.getElementById('restartBtnWin');
+
+        // ── Game State ──
+        let board = [];        // 2D array: { mine, revealed, flagged, adjacentMines }
+        let gameState = 'start'; // 'start', 'playing', 'gameover', 'win'
+        let cursorX = 0;       // cursor column
+        let cursorY = 0;       // cursor row
+        let minesPlaced = false;
+        let flagCount = 0;
+        let revealedCount = 0;
+        let timerSeconds = 0;
+        let timerInterval = null;
+        let gameOverMines = []; // array of {x, y} for mines shown on game over
+
+        // ── Initialize board data ──
+        function initBoard() {
+            board = [];
+            for (var y = 0; y < ROWS; y++) {
+                board[y] = [];
+                for (var x = 0; x < COLS; x++) {
+                    board[y][x] = {
+                        mine: false,
+                        revealed: false,
+                        flagged: false,
+                        adjacentMines: 0
+                    };
+                }
+            }
+            cursorX = 0;
+            cursorY = 0;
+            flagCount = 0;
+            revealedCount = 0;
+            timerSeconds = 0;
+            minesPlaced = false;
+            gameOverMines = [];
+            updateMineCounter();
+            timerEl.textContent = '000';
+            smileyBtn.textContent = '😀';
+        }
+
+        // ── Place mines (not on firstRevealX, firstRevealY) ──
+        function placeMines(firstRevealX, firstRevealY) {
+            var attempts = 0;
+            var maxAttempts = 1000;
+
+            while (attempts < maxAttempts) {
+                var x = Math.floor(Math.random() * COLS);
+                var y = Math.floor(Math.random() * ROWS);
+
+                if (!board[y][x].mine && !(x === firstRevealX && y === firstRevealY)) {
+                    board[y][x].mine = true;
+                    attempts++;
+                    if (attempts >= MINES) break;
+                }
+            }
+
+            // If we couldn't place all mines (shouldn't happen with 10 mines on 16x16)
+            // recalculate adjacent mines for all cells
+            calculateAdjacentMines();
+        }
+
+        function calculateAdjacentMines() {
+            for (var y = 0; y < ROWS; y++) {
+                for (var x = 0; x < COLS; x++) {
+                    if (board[y][x].mine) {
+                        board[y][x].adjacentMines = -1;
+                        continue;
+                    }
+                    var count = 0;
+                    getNeighbors(x, y, function(nx, ny) {
+                        if (board[ny][nx].mine) count++;
+                    });
+                    board[y][x].adjacentMines = count;
+                }
+            }
+        }
+
+        function getNeighbors(cx, cy, callback) {
+            for (var dy = -1; dy <= 1; dy++) {
+                for (var dx = -1; dx <= 1; dx++) {
+                    if (dx === 0 && dy === 0) continue;
+                    var nx = cx + dx;
+                    var ny = cy + dy;
+                    if (nx >= 0 && nx < COLS && ny >= 0 && ny < ROWS) {
+                        callback(nx, ny);
+                    }
+                }
+            }
+        }
+
+        // ── Reveal logic with flood fill ──
+        function revealCell(x, y) {
+            if (x < 0 || x >= COLS || y < 0 || y >= ROWS) return;
+            var cell = board[y][x];
+            if (cell.revealed || cell.flagged) return;
+
+            cell.revealed = true;
+            revealedCount++;
+
+            if (cell.mine) {
+                // Game over
+                endGame(false);
+                return;
+            }
+
+            if (cell.adjacentMines === 0) {
+                // Flood fill
+                getNeighbors(x, y, function(nx, ny) {
+                    revealCell(nx, ny);
+                });
+            }
+
+            // Check win
+            if (revealedCount === (COLS * ROWS - MINES)) {
+                endGame(true);
+            }
+        }
+
+        // ── Toggle flag ──
+        function toggleFlag(x, y) {
+            if (x < 0 || x >= COLS || y < 0 || y >= ROWS) return;
+            var cell = board[y][x];
+            if (cell.revealed) return;
+
+            if (cell.flagged) {
+                cell.flagged = false;
+                flagCount--;
+            } else {
+                if (flagCount < MINES) {
+                    cell.flagged = true;
+                    flagCount++;
+                }
+            }
+            updateMineCounter();
+        }
+
+        // ── Update mine counter display ──
+        function updateMineCounter() {
+            var remaining = MINES - flagCount;
+            // Allow negative
+            var display = remaining.toString();
+            if (display.length < 3) {
+                display = display.padStart(3, '0');
+            }
+            // Handle negative sign
+            if (remaining < 0) {
+                display = '-' + Math.abs(remaining).toString().padStart(2, '0');
+            }
+            mineCounterEl.textContent = display;
+        }
+
+        // ── Timer ──
+        function startTimer() {
+            stopTimer();
+            timerInterval = setInterval(function() {
+                timerSeconds++;
+                if (timerSeconds > 999) timerSeconds = 999;
+                timerEl.textContent = timerSeconds.toString().padStart(3, '0');
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+
+        // ── Rendering ──
+        function render() {
+            ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+            // Draw cells
+            for (var y = 0; y < ROWS; y++) {
+                for (var x = 0; x < COLS; x++) {
+                    drawCell(x, y);
+                }
+            }
+
+            // Draw cursor highlight
+            if (gameState === 'playing') {
+                ctx.fillStyle = 'rgba(0, 212, 255, 0.35)';
+                ctx.fillRect(cursorX * CELL + 1, cursorY * CELL + 1, CELL - 2, CELL - 2);
+            }
+        }
+
+        function drawCell(x, y) {
+            var cell = board[y][x];
+            var px = x * CELL;
+            var py = y * CELL;
+
+            if (cell.revealed) {
+                // Revealed cell: darker gray flat fill
+                ctx.fillStyle = '#d0d0d0';
+                ctx.fillRect(px + 1, py + 1, CELL - 2, CELL - 2);
+
+                if (cell.mine) {
+                    // Mine (shown on game over)
+                    ctx.font = (CELL - 6) + 'px serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('💣', px + CELL / 2, py + CELL / 2 + 1);
+                } else if (cell.adjacentMines > 0) {
+                    // Number
+                    ctx.fillStyle = NUM_COLORS[cell.adjacentMines] || '#000';
+                    ctx.font = 'bold ' + (CELL - 6) + 'px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(cell.adjacentMines.toString(), px + CELL / 2, py + CELL / 2 + 1);
+                }
+            } else if (cell.flagged) {
+                // Flagged cell: hidden appearance with flag
+                drawBeveledCell(px, py, CELL);
+                ctx.font = (CELL - 6) + 'px serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('🚩', px + CELL / 2, py + CELL / 2 + 1);
+            } else {
+                // Hidden cell: beveled 3D effect
+                drawBeveledCell(px, py, CELL);
+            }
+        }
+
+        function drawBeveledCell(px, py, size) {
+            var lightTop = '#d0d0d0';
+            var lightLeft = '#e0e0e0';
+            var darkBottom = '#808080';
+            var darkRight = '#a0a0a0';
+            var base = '#c0c0c0';
+            var gap = 1;
+
+            // Base fill
+            ctx.fillStyle = base;
+            ctx.fillRect(px + gap, py + gap, size - gap * 2, size - gap * 2);
+
+            // Top edge (lighter)
+            ctx.fillStyle = lightTop;
+            ctx.fillRect(px + gap, py + gap, size - gap * 2, 1);
+
+            // Left edge (lighter)
+            ctx.fillStyle = lightLeft;
+            ctx.fillRect(px + gap, py + gap, 1, size - gap * 2);
+
+            // Bottom edge (darker)
+            ctx.fillStyle = darkBottom;
+            ctx.fillRect(px + gap, py + size - gap - 1, size - gap * 2, 1);
+
+            // Right edge (darker)
+            ctx.fillStyle = darkRight;
+            ctx.fillRect(px + size - gap - 1, py + gap, 1, size - gap * 2);
+        }
+
+        // ── Game Flow ──
+        function startGame() {
+            initBoard();
+            gameState = 'start';
+            // Show start overlay, hide game end overlays
+            startOverlay.classList.remove('hidden');
+            gameOverOverlay.classList.add('hidden');
+            winOverlay.classList.add('hidden');
+            smileyBtn.textContent = '😀';
+            render();
+        }
+
+        function beginPlaying() {
+            gameState = 'playing';
+            stopTimer();
+            startTimer();
+            startOverlay.classList.add('hidden');
+        }
+
+        function endGame(won) {
+            stopTimer();
+            smileyBtn.textContent = won ? '😎' : '😵';
+
+            if (!won) {
+                gameState = 'gameover';
+                // Reveal all mines
+                for (var y = 0; y < ROWS; y++) {
+                    for (var x = 0; x < COLS; x++) {
+                        if (board[y][x].mine) {
+                            board[y][x].revealed = true;
+                        }
+                    }
+                }
+                gameOverOverlay.classList.remove('hidden');
+            } else {
+                gameState = 'win';
+                winTimeEl.textContent = 'Time: ' + timerSeconds + 's';
+                winOverlay.classList.remove('hidden');
+            }
+            render();
+        }
+
+        function restart() {
+            startGame();
+        }
+
+        // ── First reveal (on Space/Enter from start) ──
+        function handleFirstReveal() {
+            // Place mines after first reveal, excluding the revealed cell
+            placeMines(cursorX, cursorY);
+            calculateAdjacentMines();
+            revealCell(cursorX, cursorY);
+            beginPlaying();
+        }
+
+        // ── Input Handling ──
+        var KEY_MAP = {
+            'ArrowUp':    { x: 0, y: -1 },
+            'ArrowDown':  { x: 0, y: 1 },
+            'ArrowLeft':  { x: -1, y: 0 },
+            'ArrowRight': { x: 1, y: 0 }
+        };
+
+        document.addEventListener('keydown', function(e) {
+            // Prevent default for game keys
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' ', 'Enter', 'KeyR', 'Escape'].includes(e.code)) {
+                e.preventDefault();
+            }
+
+            if (gameState === 'start') {
+                if (e.code === 'Enter' || e.code === 'Space') {
+                    beginPlaying();
+                    startOverlay.classList.add('hidden');
+                }
+                return;
+            }
+
+            if (gameState === 'gameover' || gameState === 'win') {
+                if (e.code === 'Enter' || e.code === 'Space') {
+                    restart();
+                }
+                return;
+            }
+
+            if (gameState !== 'playing') return;
+
+            var move = KEY_MAP[e.code];
+            if (move) {
+                // Move cursor
+                cursorX += move.x;
+                cursorY += move.y;
+                // Clamp to grid
+                if (cursorX < 0) cursorX = 0;
+                if (cursorX >= COLS) cursorX = COLS - 1;
+                if (cursorY < 0) cursorY = 0;
+                if (cursorY >= ROWS) cursorY = ROWS - 1;
+                render();
+                return;
+            }
+
+            if (e.code === 'Space' || e.code === 'Enter') {
+                // If first reveal (mines not yet placed), place them now
+                if (!minesPlaced) {
+                    placeMines(cursorX, cursorY);
+                    calculateAdjacentMines();
+                    beginPlaying();
+                    minesPlaced = true;
+                }
+                revealCell(cursorX, cursorY);
+            }
+
+            if (e.code === 'KeyR') {
+                // Toggle flag
+                if (board[cursorY][cursorX].revealed) return;
+                toggleFlag(cursorX, cursorY);
+                render();
+            }
+
+            if (e.code === 'Escape') {
+                restart();
+            }
+        });
+
+        // ── Mouse support (click to reveal/flag for convenience) ──
+        canvas.addEventListener('click', function(e) {
+            if (gameState !== 'playing') return;
+            var rect = canvas.getBoundingClientRect();
+            var scaleX = CANVAS_SIZE / rect.width;
+            var scaleY = CANVAS_SIZE / rect.height;
+            var mx = Math.floor((e.clientX - rect.left) * scaleX / CELL);
+            var my = Math.floor((e.clientY - rect.top) * scaleY / CELL);
+            if (mx >= 0 && mx < COLS && my >= 0 && my < ROWS) {
+                // Update cursor to clicked cell
+                cursorX = mx;
+                cursorY = my;
+                // Handle first reveal if mines not yet placed
+                if (!minesPlaced) {
+                    placeMines(cursorX, cursorY);
+                    calculateAdjacentMines();
+                    minesPlaced = true;
+                }
+                revealCell(mx, my);
+            }
+        });
+
+        canvas.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            if (gameState !== 'playing') return;
+            var rect = canvas.getBoundingClientRect();
+            var scaleX = CANVAS_SIZE / rect.width;
+            var scaleY = CANVAS_SIZE / rect.height;
+            var mx = Math.floor((e.clientX - rect.left) * scaleX / CELL);
+            var my = Math.floor((e.clientY - rect.top) * scaleY / CELL);
+            if (mx >= 0 && mx < COLS && my >= 0 && my < ROWS) {
+                cursorX = mx;
+                cursorY = my;
+                toggleFlag(mx, my);
+                render();
+            }
+        });
+
+        // ── Button Handlers ──
+        startBtn.addEventListener('click', function() {
+            beginPlaying();
+        });
+
+        restartBtnGameOver.addEventListener('click', function() {
+            restart();
+        });
+
+        restartBtnWin.addEventListener('click', function() {
+            restart();
+        });
+
+        smileyBtn.addEventListener('click', function() {
+            restart();
+        });
+
+        // ── Initial setup ──
+        initBoard();
+        render();
+
+    })();
+    </script>
+</body>
+</html>
