@@ -22,7 +22,7 @@ function group(title) {
 
 // Read files
 const indexPath = path.join(__dirname, '..', 'index.html');
-const tetrisPath = path.join(__dirname, '..', 'tetris', 'index.html');
+const tetrisPath = path.join(__dirname, '..', 'games', 'tetris.html');
 
 const indexHTML = fs.readFileSync(indexPath, 'utf-8');
 const tetrisHTML = fs.readFileSync(tetrisPath, 'utf-8');
