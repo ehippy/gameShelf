@@ -269,8 +269,6 @@ a {
    ======================================== */
 .random-btn {
     display: inline-block;
-    align-items: center;
-    gap: var(--spacing-sm);
     background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff);
     color: #ffffff;
     font-size: 1.1rem;
