@@ -294,7 +294,120 @@ section('28. Score Bar Layout');
 assert(/Mine|Mines|mine/.test(minesweeperHtml), 'Score bar has mine label');
 assert(/Time|time|Timer|timer/.test(minesweeperHtml), 'Score bar has time label');
 
-console.log('\n========================================');
+// ============================================
+// SECTION 29: Random Game Button — index.html
+// ============================================
+section('29. Random Game Button — Landing Page (index.html)');
+// Button exists and has correct ID and class
+assert(/id="randomGameBtn"/.test(rootIndexHtml), 'Random Game button has id="randomGameBtn"');
+assert(/class="random-btn"/.test(rootIndexHtml), 'Random Game button has class="random-btn"');
+// Button text: 🎲 emoji followed by "Play Random Game"
+assert(/🎲\s*Play Random Game/.test(rootIndexHtml), 'Button displays 🎲 emoji and "Play Random Game" text');
+// Button positioned after featured-section and before what-new-section
+const featuredEnd = rootIndexHtml.indexOf('</section>');
+const randomBtnIdx = rootIndexHtml.indexOf('randomGameBtn');
+const whatNewIdx = rootIndexHtml.indexOf('what-new-section');
+assert(featuredEnd < randomBtnIdx, 'Button appears after Featured Games section (</section>)');
+assert(randomBtnIdx < whatNewIdx, 'Button appears before What\'s New section');
+
+// ============================================
+// SECTION 30: Random Game Button — games/index.html
+// ============================================
+section('30. Random Game Button — All Games Page (games/index.html)');
+assert(/id="randomGameBtn"/.test(gamesIndexHtml), 'Random Game button has id="randomGameBtn" on games page');
+assert(/class="random-btn"/.test(gamesIndexHtml), 'Random Game button has class="random-btn" on games page');
+assert(/🎲\s*Play Random Game/.test(gamesIndexHtml), 'Button displays 🎲 emoji and "Play Random Game" text on games page');
+// Button positioned before All Games heading
+const allGamesHeadingIdx = gamesIndexHtml.indexOf('All Games');
+const gamesPageRandomBtnIdx = gamesIndexHtml.indexOf('randomGameBtn');
+assert(gamesPageRandomBtnIdx < allGamesHeadingIdx, 'Button appears above "All Games" heading on games page');
+
+// ============================================
+// SECTION 31: Games Catalog — all 9 games
+// ============================================
+section('31. Shared Games Catalog (script.js)');
+const scriptJs = fs.readFileSync(path.join(__dirname, 'script.js'), 'utf-8');
+assert(/window\.gamesCatalog\s*=\s*\[/ .test(scriptJs), 'window.gamesCatalog is defined in script.js');
+assert(/Math\.floor\s*\(\s*Math\.random\s*\(\s*\)\s*\s*\*\s*window\.gamesCatalog\.length\s*\)/.test(scriptJs),
+    'Random selection uses Math.floor(Math.random() * gamesCatalog.length)');
+// All 9 games present
+assert(scriptJs.includes("'Snake'") || scriptJs.includes('"Snake"'), 'Catalog includes Snake');
+assert(scriptJs.includes("'Tetris'") || scriptJs.includes('"Tetris"'), 'Catalog includes Tetris');
+assert(scriptJs.includes("'2048'") || scriptJs.includes('"2048"'), 'Catalog includes 2048');
+assert(scriptJs.includes("'Breakout'") || scriptJs.includes('"Breakout"'), 'Catalog includes Breakout');
+assert(scriptJs.includes("'Pac-Man'") || scriptJs.includes('"Pac-Man"'), 'Catalog includes Pac-Man');
+assert(scriptJs.includes("'Minesweeper'") || scriptJs.includes('"Minesweeper"'), 'Catalog includes Minesweeper');
+assert(scriptJs.includes("'Tic Tac Toe'") || scriptJs.includes('"Tic Tac Toe"'), 'Catalog includes Tic Tac Toe');
+assert(scriptJs.includes("'Memory Match'") || scriptJs.includes('"Memory Match"'), 'Catalog includes Memory Match');
+assert(scriptJs.includes("'Simon Says'") || scriptJs.includes('"Simon Says"'), 'Catalog includes Simon Says');
+// Catalog has 9 entries
+const catalogMatch = scriptJs.match(/window\.gamesCatalog\s*=\s*\[([\s\S]*?)\];/);
+assert(catalogMatch, 'gamesCatalog array syntax valid');
+const catalogItems = catalogMatch[1].split('},').filter(s => s.trim().length > 0).length;
+assert(catalogItems >= 9, `Catalog has 9 games (found ${catalogItems})`);
+// Each entry has name, href, and category fields
+assert(/name:\s*['"]Snake['"]/.test(scriptJs) || /'name'\s*:\s*['"]Snake['"]/.test(scriptJs), 'Entries have name field');
+assert(/href:\s*['"]snake\.html['"]/.test(scriptJs) || /'href'\s*:\s*['"]snake\.html['"]/.test(scriptJs), 'Entries have href field');
+assert(/category:\s*['"]arcade['"]/.test(scriptJs), 'Entries have category field');
+
+// ============================================
+// SECTION 32: Navigation logic
+// ============================================
+section('32. Navigation Logic');
+// Uses window.location.assign (or window.location.href)
+assert(/window\.location\.assign/.test(scriptJs) || /window\.location\.href\s*=/.test(scriptJs),
+    'Uses window.location.assign or window.location.href to navigate');
+// Context-aware path resolution for games page vs root
+assert(/isGamesPage/.test(scriptJs), 'Detects games page context');
+assert(/\/games\//.test(scriptJs), 'Context detection checks for /games/ in path');
+
+// ============================================
+// SECTION 33: No deduplication — same game can be picked repeatedly
+// ============================================
+section('33. No Deduplication');
+// The random selection is a single Math.floor call — no deduplication logic
+assert(scriptJs.indexOf('Math.floor') === scriptJs.lastIndexOf('Math.floor'), 'No deduplication: single random selection');
+
+// ============================================
+// SECTION 34: .random-btn styling
+// ============================================
+section('34. Random Button Styling (styles.css)');
+const stylesCss = fs.readFileSync(path.join(__dirname, 'styles.css'), 'utf-8');
+assert(/\.random-btn\s*\{/.test(stylesCss), '.random-btn class defined in styles.css');
+// Bright multi-stop gradient
+assert(/linear-gradient/.test(stylesCss) && /#ff006e/.test(stylesCss) && /#8338ec/.test(stylesCss) && /#3a86ff/.test(stylesCss),
+    'Gradient uses vibrant multi-stop palette (#ff006e → #8338ec → #3a86ff)');
+// White text
+assert(/color:\s*#ffffff/.test(stylesCss), 'Button text is white (#ffffff)');
+// Bold text
+assert(/font-weight:\s*700/.test(stylesCss), 'Font weight is bold (700)');
+// Padding
+assert(/padding:\s*0\.65rem\s+1\.75rem/.test(stylesCss), 'Generous padding (0.65rem 1.75rem)');
+// Rounded corners (pill shape)
+assert(/border-radius:\s*var\(--radius-full\)/.test(stylesCss), 'Pill shape with --radius-full');
+// No border
+assert(/border:\s*none/.test(stylesCss), 'No border on button');
+// Pointer cursor
+assert(/cursor:\s*pointer/.test(stylesCss), 'Pointer cursor');
+// Text shadow
+assert(/text-shadow/.test(stylesCss) && /rgba\(0,\s*0,\s*0,\s*0\.3\)/.test(stylesCss), 'Subtle dark text shadow for contrast');
+// Box shadow
+assert(/box-shadow/.test(stylesCss) && /rgba\(131,\s*56,\s*236,\s*0\.3\)/.test(stylesCss), 'Soft purple box shadow');
+// Hover: brightness increase
+assert(/\.random-btn:hover/.test(stylesCss) && /filter:\s*brightness\(\s*1\.1\s*\)/.test(stylesCss), 'Hover increases brightness');
+// Hover: upward transform
+assert(/transform:\s*translateY\(\s*-2px\s*\)/.test(stylesCss), 'Hover lifts button (translateY(-2px))');
+// Transition
+assert(/transition:\s*all\s+0\.25s\s+ease/.test(stylesCss), 'Smooth 0.25s transition on all properties');
+
+// ============================================
+// SECTION 35: Footer text unchanged on all pages
+// ============================================
+section('35. Footer Text Consistency');
+assert(/©\s*2025\s+gameShelf\s*—\s*All games built in browser\s*—\s*no downloads required/.test(rootIndexHtml),
+    'Root index.html footer text unchanged');
+assert(/©\s*2025\s+gameShelf\s*—\s*All games built in browser\s*—\s*no downloads required/.test(gamesIndexHtml),
+    'games/index.html footer text unchanged');
 console.log('  Minesweeper Test Results');
 console.log('========================================');
 results.forEach(r => console.log(r));
