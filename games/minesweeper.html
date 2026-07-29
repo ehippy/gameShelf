@@ -738,9 +738,21 @@
             }
 
             if (gameState === 'start') {
+                var move = KEY_MAP[e.code];
+                if (move) {
+                    // Move cursor during start state so player can aim
+                    cursorX += move.x;
+                    cursorY += move.y;
+                    if (cursorX < 0) cursorX = 0;
+                    if (cursorX >= COLS) cursorX = COLS - 1;
+                    if (cursorY < 0) cursorY = 0;
+                    if (cursorY >= ROWS) cursorY = ROWS - 1;
+                    render();
+                    return;
+                }
                 if (e.code === 'Enter' || e.code === 'Space') {
-                    beginPlaying();
-                    startOverlay.classList.add('hidden');
+                    handleFirstReveal();
+                    return;
                 }
                 return;
             }
