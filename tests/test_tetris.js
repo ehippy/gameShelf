@@ -31,7 +31,8 @@ const tetrisHTML = fs.readFileSync(tetrisPath, 'utf-8');
 group('1. File Structure');
 
 test('Landing page exists at index.html', fs.existsSync(indexPath));
-test('Tetris game exists at tetris/index.html', fs.existsSync(tetrisPath));
+test('Tetris game exists at games/tetris.html', fs.existsSync(tetrisPath));
+test('Old tetris/ directory is removed', !fs.existsSync(path.join(__dirname, '..', 'tetris')));
 
 // 2. Landing Page - HTML Structure
 group('2. Landing Page - HTML Structure');
