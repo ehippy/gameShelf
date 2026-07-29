@@ -847,7 +847,12 @@
 
         // ── Button Handlers ──
         startBtn.addEventListener('click', function() {
-            beginPlaying();
+            gameState = 'start';
+            stopTimer();
+            timerSeconds = 0;
+            timerEl.textContent = '000';
+            startOverlay.classList.add('hidden');
+            render();
         });
 
         restartBtnGameOver.addEventListener('click', function() {
