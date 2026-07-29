@@ -114,6 +114,41 @@
     font-family: monospace;
     font-size: 12px;
   }
+  /* Footer */
+  .site-footer {
+    width: 100%;
+    background: #16213e;
+    border-top: 2px solid #0f3460;
+    padding: 24px 20px;
+    text-align: center;
+    margin-top: auto;
+  }
+  .footer-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .footer-links {
+    display: flex;
+    gap: 20px;
+  }
+  .footer-links a {
+    color: #a0a0b8;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.2s, background 0.2s;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  .footer-links a:hover {
+    color: #e94560;
+  }
+  .site-footer p {
+    color: #6b6b80;
+    font-size: 0.8rem;
+    margin: 0;
+  }
   /* Overlay (Start / Game Over) */
   .overlay {
     position: absolute;
@@ -222,6 +257,16 @@
       </div>
     </div>
   </div>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a href="../index.html">Home</a>
+        <a href="../games/index.html">All Games</a>
+      </div>
+      <p>© 2025 gameShelf — All games built in browser — no downloads required</p>
+    </div>
+  </footer>
 
 <script>
 // ─── Constants ───────────────────────────────────────────────
