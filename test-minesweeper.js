@@ -317,10 +317,10 @@ section('30. Random Game Button — All Games Page (games/index.html)');
 assert(/id="randomGameBtn"/.test(gamesIndexHtml), 'Random Game button has id="randomGameBtn" on games page');
 assert(/class="random-btn"/.test(gamesIndexHtml), 'Random Game button has class="random-btn" on games page');
 assert(/🎲\s*Play Random Game/.test(gamesIndexHtml), 'Button displays 🎲 emoji and "Play Random Game" text on games page');
-// Button positioned before All Games heading
-const allGamesHeadingIdx = gamesIndexHtml.indexOf('All Games');
+// Button positioned before All Games heading (h2)
+const h2AllGamesIdx = gamesIndexHtml.indexOf('<h2>All Games</h2>');
 const gamesPageRandomBtnIdx = gamesIndexHtml.indexOf('randomGameBtn');
-assert(gamesPageRandomBtnIdx < allGamesHeadingIdx, 'Button appears above "All Games" heading on games page');
+assert(gamesPageRandomBtnIdx < h2AllGamesIdx, 'Button appears above "All Games" heading on games page');
 
 // ============================================
 // SECTION 31: Games Catalog — all 9 games
