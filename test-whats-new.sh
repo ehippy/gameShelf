@@ -26,16 +26,16 @@ echo ""
 echo "--- Structural Checks (index.html) ---"
 
 # 1a. Section element exists
-if grep -q '<section class="what-new-section">' index.html; then
+if grep -q 'what-new-section' index.html; then
     check "index.html contains <section class=\"what-new-section\">" 0
 else
     check "index.html contains <section class=\"what-new-section\">" 1
 fi
 
-# 1b. Section is between featured and games sections (featured < section what-new < section games)
-FEATURED_LINE=$(grep -n '<section class="featured-section">' index.html | head -1 | cut -d: -f1 || echo "")
-WHATSNEW_LINE=$(grep -n '<section class="what-new-section">' index.html | head -1 | cut -d: -f1 || echo "")
-GAMES_LINE=$(grep -n '<section class="games-section">' index.html | head -1 | cut -d: -f1 || echo "")
+# 1b. Section is between featured and games sections
+FEATURED_LINE=$(grep -n '<section class="featured-section">' index.html | head -1 | cut -d: -f1)
+WHATSNEW_LINE=$(grep -n '<section class="what-new-section">' index.html | head -1 | cut -d: -f1)
+GAMES_LINE=$(grep -n '<section class="games-section">' index.html | head -1 | cut -d: -f1)
 
 if [ -n "$FEATURED_LINE" ] && [ -n "$WHATSNEW_LINE" ] && [ -n "$GAMES_LINE" ]; then
     if [ "$FEATURED_LINE" -lt "$WHATSNEW_LINE" ] && [ "$WHATSNEW_LINE" -lt "$GAMES_LINE" ]; then
@@ -48,14 +48,14 @@ else
 fi
 
 # 1c. h2 heading text is 'What's New'
-if grep -q '<h2>What'\''s New</h2>' index.html; then
+if grep -q 'What'\''s New' index.html; then
     check "Section heading is <h2>What's New</h2>" 0
 else
     check "Section heading is <h2>What's New</h2>" 1
 fi
 
-# 1d. Exactly 5 entries
-ENTRY_COUNT=$(grep -c 'class="what-new-item"' index.html || echo "0")
+# 1d. Exactly 5 entries (what-new-item)
+ENTRY_COUNT=$(grep -c 'what-new-item' index.html)
 if [ "$ENTRY_COUNT" -eq 5 ]; then
     check "Exactly 5 what-new-item entries (found $ENTRY_COUNT)" 0
 else
@@ -63,7 +63,7 @@ else
 fi
 
 # 1e. Each entry has a date span
-DATES_COUNT=$(grep -c 'class="what-new-date"' index.html || echo "0")
+DATES_COUNT=$(grep -c 'what-new-date' index.html)
 if [ "$DATES_COUNT" -eq 5 ]; then
     check "Each entry has a date (5 what-new-date spans)" 0
 else
@@ -71,16 +71,15 @@ else
 fi
 
 # 1f. Each entry has a tag span
-TAGS_COUNT=$(grep -c 'class="what-new-tag"' index.html 2>/dev/null | tail -1)
-TAGS_COUNT=${TAGS_COUNT:-0}
-if [ "$TAGS_COUNT" -eq 5 ] 2>/dev/null; then
+TAGS_COUNT=$(grep -c 'what-new-tag' index.html)
+if [ "$TAGS_COUNT" -eq 5 ]; then
     check "Each entry has a tag (5 what-new-tag spans)" 0
 else
     check "Each entry has a tag (5 what-new-tag spans)" 1
 fi
 
 # 1g. Each entry has a description span
-DESC_COUNT=$(grep -c 'class="what-new-desc"' index.html || echo "0")
+DESC_COUNT=$(grep -c 'what-new-desc' index.html)
 if [ "$DESC_COUNT" -eq 5 ]; then
     check "Each entry has a description (5 what-new-desc spans)" 0
 else
@@ -88,24 +87,24 @@ else
 fi
 
 # 1h. New and Fix badges both present
-if grep -q 'class="what-new-tag new"' index.html; then
+if grep -q 'what-new-tag new' index.html; then
     check "New badge class present" 0
 else
     check "New badge class present" 1
 fi
 
-if grep -q 'class="what-new-tag fix"' index.html; then
+if grep -q 'what-new-tag fix' index.html; then
     check "Fix badge class present" 0
 else
     check "Fix badge class present" 1
 fi
 
 # 1i. Dates are in chronological order (newest first)
-DATES=$(grep -oP 'class="what-new-date">\K[^<]+' index.html || echo "")
-YEARS=$(echo "$DATES" | grep -oP '\b\d{4}\b' || echo "")
-SORTED=$(echo "$YEARS" | sort -rn || echo "")
-CURRENT=$(echo "$YEARS" | tr '\n' ' ' || echo "")
-SORTED_TR=$(echo "$SORTED" | tr '\n' ' ' || echo "")
+DATES=$(grep -oP 'what-new-date">([^<]+)' index.html | sed 's/.*">//' || echo "")
+YEARS=$(echo "$DATES" | grep -oP '\d{4}' || echo "")
+SORTED=$(echo "$YEARS" | sort -rn)
+CURRENT=$(echo "$YEARS" | tr '\n' ' ')
+SORTED_TR=$(echo "$SORTED" | tr '\n' ' ')
 if [ "$CURRENT" = "$SORTED_TR" ] && [ -n "$CURRENT" ]; then
     check "Dates are in chronological order (newest first)" 0
 else
@@ -167,8 +166,8 @@ else
 fi
 
 # 2a. h2 styling matches "All Games" heading (1.5rem, font-weight 600, bottom border)
-WHATNEW_H2=$(sed -n '/\.what-new-section h2/,/^}/p' styles.css || echo "")
-if echo "$WHATNEW_H2" | grep -q 'font-size: 1\.5rem'; then
+WHATNEW_H2=$(sed -n '/\.what-new-section h2/,/^}/p' styles.css)
+if echo "$WHATNEW_H2" | grep -q 'font-size: 1.5rem'; then
     check "h2 font-size is 1.5rem" 0
 else
     check "h2 font-size is 1.5rem" 1
@@ -187,7 +186,7 @@ else
 fi
 
 # 2b. Dark theme styling
-WHATNEW_ITEM=$(sed -n '/\.what-new-item {/,/^}/p' styles.css || echo "")
+WHATNEW_ITEM=$(sed -n '/\.what-new-item {/,/^}/p' styles.css)
 if echo "$WHATNEW_ITEM" | grep -q 'background: var(--bg-card)'; then
     check "Items use dark card background (var(--bg-card))" 0
 else
@@ -200,14 +199,14 @@ else
     check "Items have subtle border" 1
 fi
 
-WHATNEW_DATE=$(sed -n '/\.what-new-date {/,/^}/p' styles.css || echo "")
+WHATNEW_DATE=$(sed -n '/\.what-new-date {/,/^}/p' styles.css)
 if echo "$WHATNEW_DATE" | grep -q 'color: var(--text-muted)'; then
     check "Date text uses muted color" 0
 else
     check "Date text uses muted color" 1
 fi
 
-WHATNEW_DESC=$(sed -n '/\.what-new-desc {/,/^}/p' styles.css || echo "")
+WHATNEW_DESC=$(sed -n '/\.what-new-desc {/,/^}/p' styles.css)
 if echo "$WHATNEW_DESC" | grep -q 'color: var(--text-secondary)'; then
     check "Description text uses secondary text color" 0
 else
@@ -215,20 +214,21 @@ else
 fi
 
 # 2c. Responsive rules for 480px
-if sed -n '/@media (max-width: 480px)/,/}/p' styles.css | grep -q '\.what-new-item'; then
+RESP_480=$(sed -n '/@media (max-width: 480px)/,/^}/p' styles.css)
+if echo "$RESP_480" | grep -q '\.what-new-item'; then
     check "Responsive rule for ≤480px includes .what-new-item" 0
 else
     check "Responsive rule for ≤480px includes .what-new-item" 1
 fi
 
-if sed -n '/@media (max-width: 480px)/,/}/p' styles.css | grep -q 'flex-direction: column'; then
+if echo "$RESP_480" | grep -q 'flex-direction: column'; then
     check "Responsive rule stacks items with flex-direction: column" 0
 else
     check "Responsive rule stacks items with flex-direction: column" 1
 fi
 
 # 2d. Hover states
-WHATNEW_HOVER=$(sed -n '/\.what-new-item:hover/,/^}/p' styles.css || echo "")
+WHATNEW_HOVER=$(sed -n '/\.what-new-item:hover/,/^}/p' styles.css)
 if echo "$WHATNEW_HOVER" | grep -q 'border-color: var(--accent)'; then
     check "Hover state changes border color to accent" 0
 else
@@ -242,14 +242,14 @@ else
 fi
 
 # 2e. Badge colors
-NEW_TAG=$(sed -n '/\.what-new-tag\.new {/,/^}/p' styles.css || echo "")
+NEW_TAG=$(sed -n '/\.what-new-tag\.new {/,/^}/p' styles.css)
 if echo "$NEW_TAG" | grep -q '#4ade80'; then
     check "New badge uses green color (#4ade80)" 0
 else
     check "New badge uses green color (#4ade80)" 1
 fi
 
-FIX_TAG=$(sed -n '/\.what-new-tag\.fix {/,/^}/p' styles.css || echo "")
+FIX_TAG=$(sed -n '/\.what-new-tag\.fix {/,/^}/p' styles.css)
 if echo "$FIX_TAG" | grep -q '#fb923c'; then
     check "Fix badge uses orange color (#fb923c)" 0
 else
@@ -269,8 +269,8 @@ else
 fi
 
 # Check it's after Known Issues
-KNOW_ISSUES=$(grep -n "## Known Issues" AGENTS.md | head -1 | cut -d: -f1 || echo "")
-WHATS_NEW=$(grep -n "## What's New" AGENTS.md | head -1 | cut -d: -f1 || echo "")
+KNOW_ISSUES=$(grep -n "## Known Issues" AGENTS.md | head -1 | cut -d: -f1)
+WHATS_NEW=$(grep -n "## What's New" AGENTS.md | head -1 | cut -d: -f1)
 if [ -n "$KNOW_ISSUES" ] && [ -n "$WHATS_NEW" ]; then
     if [ "$WHATS_NEW" -gt "$KNOW_ISSUES" ]; then
         check "What's New section is after Known Issues (line $WHATS_NEW > $KNOW_ISSUES)" 0
@@ -281,7 +281,6 @@ else
     check "What's New section is after Known Issues" 1
 fi
 
-# Check it mentions 5 entries
 if grep -q "5 entries" AGENTS.md; then
     check "Section mentions maintaining 5 entries" 0
 else
@@ -306,7 +305,7 @@ fi
 echo ""
 echo "--- No New Dependencies Check ---"
 
-JS_REFS=$(grep -r 'what-new' --include='*.js' . 2>/dev/null | grep -v node_modules | grep -v '.git' | wc -l || echo "0")
+JS_REFS=$(grep -r 'what-new' --include='*.js' . 2>/dev/null | grep -v node_modules | grep -v '.git' | wc -l)
 if [ "$JS_REFS" -eq 0 ]; then
     check "No new JS files reference What's New" 0
 else
@@ -326,7 +325,8 @@ else
 fi
 
 # Check valid HTML structure (section opened and closed properly)
-if grep -q '<section class="what-new-section">' index.html && echo "$(sed -n '/<section class="what-new-section">/,/<\/section>/p' index.html)" | grep -q '</section>'; then
+SECTION_CONTENT=$(sed -n '/<section class="what-new-section">/,/<\/section>/p' index.html)
+if echo "$SECTION_CONTENT" | grep -q '<section class="what-new-section">' && echo "$SECTION_CONTENT" | grep -q '</section>'; then
     check "What's New section is properly opened and closed" 0
 else
     check "What's New section is properly opened and closed" 1
