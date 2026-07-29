@@ -15,6 +15,8 @@ Adding a game file is not enough — you must also add a card entry to `games/in
 
 ⚠️ **Merge conflict risk**: `games/index.html` is edited whenever a new game is registered. Coordinate with other agents or resolve conflicts early.
 
+Valid categories: `action`, `puzzle`, `arcade`, `strategy`, `board`, `casual`.
+
 ### Page Styling
 
 - **Footer**: All pages must include the consistent footer text: `© 2025 gameShelf — All games built in browser — no downloads required`. Do not use variant phrasing.
