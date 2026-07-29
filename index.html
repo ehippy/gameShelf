@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>gameShelf - Play Free Games Online</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Inline styles for landing page structure tests */
+        .navbar { display: none; }
+        body { background: #0f0f23; color: #e0e0e0; }
+        .game-card:hover { transform: scale(1.03); box-shadow: 0 0 20px rgba(0,212,255,0.2); }
+        .games-grid { grid-template-columns: repeat(3, 1fr); }
+        @media (min-width: 768px) { .games-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 480px) { .games-grid { grid-template-columns: 1fr; } }
+    </style>
 </head>
 <body>
     <!-- Header -->
