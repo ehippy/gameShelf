@@ -199,6 +199,13 @@
                 <a href="../games/index.html">Your browser does not support the HTML5 canvas element. <br>Return to <a href="../games/index.html">All Games</a>.</a>
             </canvas>
 
+            <!-- Start Overlay -->
+            <div class="overlay visible" id="start-overlay">
+                <h3>🧱 Breakout</h3>
+                <p>Use arrow keys or mouse to move the paddle. Destroy all bricks to win.</p>
+                <button class="overlay-btn" id="start-btn">▶ Start Game</button>
+            </div>
+
             <!-- Pause Overlay -->
             <div class="overlay" id="pause-overlay">
                 <div class="pause-text">PAUSED</div>
@@ -247,6 +254,8 @@
         const scoreDisplay = document.getElementById('score-display');
         const livesDisplay = document.getElementById('lives-display');
         const pauseOverlay = document.getElementById('pause-overlay');
+        const startOverlay = document.getElementById('start-overlay');
+        const startBtn = document.getElementById('start-btn');
         const gameoverOverlay = document.getElementById('gameover-overlay');
         const winOverlay = document.getElementById('win-overlay');
         const finalScore = document.getElementById('final-score');
@@ -533,8 +542,8 @@
             }
         }
 
-        // Main render loop
-        function render() {
+        // Drawing function (no update, no animation loop)
+        function draw() {
             // Clear canvas
             ctx.fillStyle = '#0f0f23';
             ctx.fillRect(0, 0, W, H);
@@ -547,8 +556,12 @@
 
             // Draw ball
             drawBall();
+        }
 
+        // Main render loop (update + draw + animation)
+        function render() {
             update();
+            draw();
             animationId = requestAnimationFrame(render);
         }
 
@@ -560,6 +573,7 @@
             }
 
             // Hide all overlays
+            startOverlay.classList.remove('visible');
             pauseOverlay.classList.remove('visible');
             gameoverOverlay.classList.remove('visible');
             winOverlay.classList.remove('visible');
@@ -624,8 +638,12 @@
         restartBtn.addEventListener('click', restartGame);
         winRestartBtn.addEventListener('click', restartGame);
 
-        // Start on load
-        startGame();
+        // Render initial static scene behind overlay
+        initGame();
+        draw();
+
+        // Start on button click
+        startBtn.addEventListener('click', startGame);
     </script>
 </body>
 </html>
