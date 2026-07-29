@@ -156,6 +156,42 @@ test('COLS = 10', /COLS\s*=\s*10/i.test(tetrisHTML));
 test('ROWS = 20', /ROWS\s*=\s*20/i.test(tetrisHTML));
 test('Cell size = 30', /CELL\s*=\s*30/i.test(tetrisHTML));
 
+// 11. Shared Resources
+group('11. Shared Resources');
+
+test('Uses shared CSS from ../styles.css', /<link\s+rel=["']stylesheet["']\s+href=["']\.\.\/styles\.css["']/i.test(tetrisHTML));
+test('Uses shared JS from ../script.js', /<script\s+src=["']\.\.\/script\.js["']/i.test(tetrisHTML));
+test('No duplicate site-wide CSS (no <link> to styles.css in game)', !/<link[^>]+styles\.css[^>]+>/.test(tetrisHTML) || /<link\s+rel=["']stylesheet["']\s+href=["']\.\.\/styles\.css["']/.test(tetrisHTML));
+test('No duplicate filter/search code in game script', !/filterBtn|searchInput/.test(tetrisHTML));
+
+// 12. Header Convention
+group('12. Header Convention');
+
+test('Uses game-header class', /class=["']game-header["']/.test(tetrisHTML));
+test('Has header-inner div', /<div\s+class=["']header-inner["']/.test(tetrisHTML));
+test('Has logo linking to ../index.html', /<a[^>]+href=["']\.\.\/index\.html["'][^>]+class=["']logo["']/i.test(tetrisHTML));
+test('Logo text is gameShelf', /class=["']logo["'][^>]*>gameShelf<|<a[^>]*class=["']logo["'][^>]*>gameShelf</i.test(tetrisHTML));
+test('Has game-title span with Tetris text', /<span\s+class=["']game-title["'][^>]*>Tetris<|class=["']game-title["'][^>]*>Tetris<\s*\/span/i.test(tetrisHTML));
+test('Has back-link to ../games/index.html', /<a[^>]+href=["']\.\.\/games\/index\.html["'][^>]+class=["']back-link["']/i.test(tetrisHTML));
+test('Back link text includes arrow', /← Back to All Games|← Back|<span.*back/i.test(tetrisHTML));
+test('Header has header-left div', /<div\s+class=["']header-left["']/.test(tetrisHTML));
+
+// 13. Footer Alignment
+group('13. Footer Alignment');
+
+test('Footer uses site-footer class', /class=["']site-footer["']/.test(tetrisHTML));
+test('Footer has consistent © text', /©\s*2025\s+gameShelf\s*—\s*All games built in browser\s*—\s*no downloads required/.test(tetrisHTML));
+test('Footer has Home link', /<a[^>]+href=["']\.\.\/index\.html["']/i.test(tetrisHTML));
+test('Footer has All Games link', /<a[^>]+href=["']\.\.\/games\/index\.html["']/i.test(tetrisHTML));
+
+// 14. Game Loop Timing Fix
+group('14. Game Loop Timing Fix');
+
+test('lastDrop only set inside gravity if block', /lastDrop = timestamp/.test(tetrisHTML));
+test('Gravity condition checks timestamp - lastDrop', /timestamp - lastDrop >= gravity/.test(tetrisHTML));
+test('Lock delay accumulates when piece resting', /lockDelay \+= timestamp - lastDrop/.test(tetrisHTML));
+test('Lock delay resets on successful drop', /lockDelay = 0/.test(tetrisHTML));
+
 // Summary
 console.log('\n' + '='.repeat(60));
 console.log('  SUMMARY');
@@ -171,9 +207,6 @@ if (FAIL.length > 0) {
 console.log('='.repeat(60));
 
 process.exit(FAIL.length > 0 ? 1 : 0);
-
-// Additional deep logic tests
-group('11. Tetris - Deep Logic Verification');
 
 // Verify scoring formula uses level multiplier
 test('Scoring uses level multiplier', /score\s*\+=\s*LINE_SCORES.*level|LINE_SCORES.*\*.*level/i.test(tetrisHTML));
