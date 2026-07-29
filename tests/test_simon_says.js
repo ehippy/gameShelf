@@ -332,10 +332,10 @@ assert(rootIndex.includes('Simon Says'), 'Game title "Simon Says" in root index.
 console.log('\n📋 WHAT\'S NEW SECTION');
 console.log('─'.repeat(50));
 
-assert(rootIndex.includes("What's New") || rootIndex.includes('What\\'s New'),
-    '"What\'s New" section exists in index.html');
-assert(rootIndex.includes('simon-says') || rootIndex.includes('Simon Says'),
-    'Simon Says entry in "What\'s New" section');
+assert(rootIndex.includes("What's New"),
+    "What's New section exists in index.html");
+assert(rootIndex.includes("simon-says") || rootIndex.includes("Simon Says"),
+    "Simon Says entry in What's New section");
 
 // Check New badge
 assert(/New/.test(rootIndex) && rootIndex.includes('Simon Says'),
