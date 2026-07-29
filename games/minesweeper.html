@@ -768,14 +768,14 @@
             }
 
             if (e.code === 'Space' || e.code === 'Enter') {
-                // Reveal cell under cursor
-                revealCell(cursorX, cursorY);
-                if (gameState === 'playing') {
-                    // If first reveal hasn't happened yet (mine placement),
-                    // it means mines were already placed but cell wasn't revealed
-                    // This case shouldn't occur normally since reveal calls beginPlaying
-                    // But for safety:
+                // If first reveal (mines not yet placed), place them now
+                if (!minesPlaced) {
+                    placeMines(cursorX, cursorY);
+                    calculateAdjacentMines();
+                    beginPlaying();
+                    minesPlaced = true;
                 }
+                revealCell(cursorX, cursorY);
             }
 
             if (e.code === 'KeyR') {
