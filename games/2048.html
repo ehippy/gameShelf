@@ -193,6 +193,9 @@
             border-radius: 0.5rem;
             transition: transform 0.1s ease-in-out;
             z-index: 1;
+            /* Prevent text selection */
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         .tile.new-tile {
@@ -383,7 +386,6 @@
         const GAP = 8;
         const PADDING = 8;
 
-        const boardEl = document.getElementById('board');
         const boardBgEl = document.getElementById('board-bg');
         const tileLayerEl = document.getElementById('tile-layer');
         const scoreEl = document.getElementById('score');
@@ -397,14 +399,16 @@
         const overlayScoreGameover = document.getElementById('overlay-score-gameover');
         const boardWrapper = document.getElementById('board-wrapper');
 
+        // grid[r][c] = tile object or null
         let grid = [];
         let score = 0;
         let bestScore = parseInt(localStorage.getItem('2048-best')) || 0;
         let gameOver = false;
         let won = false;
         let keepPlaying = false;
-        let tiles = {};
+        let tileMap = {};  // id -> tile object
         let tileIdCounter = 0;
+        let animating = false;
 
         function getCellSize() {
             const rect = boardWrapper.getBoundingClientRect();
@@ -436,15 +440,15 @@
         }
 
         function createTileDOM(id, isNew) {
-            const tile = tiles[id];
+            const t = tileMap[id];
             const el = document.createElement('div');
             el.id = 'tile-' + id;
             el.classList.add('tile');
-            el.classList.add(getTileClass(tile.value));
+            el.classList.add(getTileClass(t.value));
             if (isNew) el.classList.add('new-tile');
-            setTextSize(el, tile.value);
-            el.textContent = tile.value;
-            const pos = getTilePos(tile.r, tile.c);
+            setTextSize(el, t.value);
+            el.textContent = t.value;
+            const pos = getTilePos(t.r, t.c);
             el.style.width = pos.size + 'px';
             el.style.height = pos.size + 'px';
             el.style.left = pos.x + 'px';
@@ -452,11 +456,11 @@
             tileLayerEl.appendChild(el);
         }
 
-        function moveTileDOM(id) {
-            const tile = tiles[id];
+        function updateTileDOM(id) {
+            const t = tileMap[id];
             const el = document.getElementById('tile-' + id);
             if (!el) return;
-            const pos = getTilePos(tile.r, tile.c);
+            const pos = getTilePos(t.r, t.c);
             el.style.width = pos.size + 'px';
             el.style.height = pos.size + 'px';
             el.style.left = pos.x + 'px';
@@ -483,7 +487,7 @@
             const value = Math.random() < 0.9 ? 2 : 4;
             const id = tileIdCounter++;
             grid[pos.r][pos.c] = { id, value };
-            tiles[id] = { id, r: pos.r, c: pos.c, value, isNew: true };
+            tileMap[id] = { id, r: pos.r, c: pos.c, value, isNew: true };
             createTileDOM(id, true);
         }
 
@@ -504,17 +508,6 @@
             bestScoreEl.textContent = bestScore;
         }
 
-        function isGameOver() {
-            for (let r = 0; r < SIZE; r++)
-                for (let c = 0; c < SIZE; c++) {
-                    if (grid[r][c] === null) return false;
-                    const v = grid[r][c].value;
-                    if (c < SIZE - 1 && grid[r][c + 1] && grid[r][c + 1].value === v) return false;
-                    if (r < SIZE - 1 && grid[r + 1][c] && grid[r + 1][c].value === v) return false;
-                }
-            return true;
-        }
-
         function hasAnyMove() {
             for (let r = 0; r < SIZE; r++) {
                 for (let c = 0; c < SIZE; c++) {
@@ -528,162 +521,288 @@
         }
 
         /*
-         * Core movement algorithm:
-         * We process each row/column independently. For each line, we extract the
-         * non-null tile objects, merge adjacent equal values, then place them back.
+         * Move algorithm:
+         * For each line (row or column), extract the tile objects,
+         * then slide them toward the target direction, merging equals.
+         * Process from the target edge outward so tiles slide correctly.
          *
-         * The trick is: we need to animate tile movements by tracking old DOM elements
-         * to their new positions.
+         * Returns the new grid state and merge info for animations.
          */
-        function move(dir) {
-            if (gameOver) return;
+        function slideLine(line) {
+            // line is an array of tile objects or nulls
+            // We want to slide everything left (index 0 = target)
+            // 1. Extract non-null values
+            const tiles = line.filter(t => t !== null);
+            const result = [];
+            const merges = [];
 
-            // Extract lines based on direction
-            const lines = [];
-            for (let i = 0; i < SIZE; i++) {
-                const line = [];
-                for (let j = 0; j < SIZE; j++) {
-                    let r, c;
-                    if (dir === 'left' || dir === 'right') { r = i; c = j; }
-                    else { r = j; c = i; }
-                    line.push(grid[r][c]);
+            let i = 0;
+            while (i < tiles.length) {
+                if (i + 1 < tiles.length && tiles[i].value === tiles[i + 1].value) {
+                    // Merge these two
+                    const newVal = tiles[i].value * 2;
+                    score += newVal;
+                    if (score > bestScore) {
+                        bestScore = score;
+                        localStorage.setItem('2048-best', bestScore);
+                    }
+                    const newId = tileIdCounter++;
+                    result.push({ id: newId, value: newVal });
+                    merges.push({
+                        consumedIds: [tiles[i].id, tiles[i + 1].id],
+                        newId: newId,
+                        mergedValue: newVal
+                    });
+                    i += 2;
+                } else {
+                    result.push(tiles[i]);
+                    i++;
                 }
-                // If right or down, reverse the line
-                if (dir === 'right' || dir === 'down') line.reverse();
-                lines.push(line);
             }
 
-            // Process each line
-            let moved = false;
-            const newGrid = grid.map(row => row.slice());
-            const merges = []; // track merge operations
+            // Pad with nulls
+            while (result.length < SIZE) result.push(null);
 
+            return { result, merges };
+        }
+
+        function move(dir) {
+            if (gameOver || animating) return;
+
+            // Build old grid state for comparison
+            const oldGrid = grid.map(row => row.map(t => t ? { id: t.id, value: t.value } : null));
+
+            // Track which tiles need animation
+            const tileMoves = [];   // { id, fromR, fromC, toR, toC }
+            const removedIds = new Set();
+            const newMergedIds = [];
+
+            // Process rows for left/right, columns for up/down
             for (let i = 0; i < SIZE; i++) {
-                let line = lines[i];
-                const target = [];
-                let skipNext = false;
+                let line;
+                let lineWrite;
 
-                for (let j = 0; j < SIZE; j++) {
-                    if (skipNext) { skipNext = false; continue; }
+                if (dir === 'left' || dir === 'right') {
+                    // Row i
+                    line = [];
+                    for (let c = 0; c < SIZE; c++) line.push(grid[i][c]);
 
-                    if (line[j] === null) continue;
+                    if (dir === 'right') {
+                        // Process right-to-left: reverse, slide, reverse result
+                        line.reverse();
+                    }
 
-                    if (j + 1 < SIZE && line[j] && line[j + 1] && line[j].value === line[j + 1].value) {
-                        // Merge
-                        const mergedValue = line[j].value * 2;
-                        score += mergedValue;
-                        if (score > bestScore) {
-                            bestScore = score;
-                            localStorage.setItem('2048-best', bestScore);
+                    const { result, merges } = slideLine(line);
+
+                    if (dir === 'right') {
+                        result.reverse();
+                    }
+
+                    // Determine write indices
+                    lineWrite = (dir === 'right') ? (SIZE - 1 - j) : j;
+
+                    // Record moves for tiles that shifted position
+                    let writeIdx = 0;
+                    for (let c = 0; c < SIZE; c++) {
+                        let readIdx;
+                        if (dir === 'right') readIdx = SIZE - 1 - c;
+                        else readIdx = c;
+
+                        const oldTile = grid[i][readIdx];
+                        const newTile = result[c];
+
+                        if (newTile === null) continue;
+
+                        if (oldTile && newTile.id === oldTile.id) {
+                            // Same tile moved (or stayed)
+                            if (readIdx !== c) {
+                                tileMoves.push({
+                                    id: oldTile.id,
+                                    fromR: i, fromC: readIdx,
+                                    toR: i, toC: c
+                                });
+                            }
+                        } else if (oldTile) {
+                            // Tile was consumed
+                            removedIds.add(oldTile.id);
                         }
 
-                        const oldId1 = line[j].id;
-                        const oldId2 = line[j + 1].id;
-                        const newId = tileIdCounter++;
-
-                        const targetIdx = target.length;
-                        target.push({ id: newId, value: mergedValue });
-
-                        // Record merge info
-                        merges.push({
-                            id1: oldId1, id2: oldId2,
-                            newId: newId,
-                            r: dir === 'up' ? targetIdx : (dir === 'down' ? (SIZE - 1 - targetIdx) : lines[i].length - 1 - targetIdx),
-                            c: dir === 'left' ? targetIdx : (dir === 'right' ? (SIZE - 1 - targetIdx) : i)
-                        });
-
-                        // Update grid position in newGrid
-                        const gr = dir === 'up' || dir === 'down' ? i : targetIdx;
-                        const gc = dir === 'left' || dir === 'right' ? targetIdx : i;
-                        // For rows/cols, we need proper mapping
-                        skipNext = true;
-                    } else {
-                        target.push(line[j]);
+                        // Track merge info
+                        for (const m of merges) {
+                            if (m.consumedIds.includes(oldTile && oldTile.id)) {
+                                // handled by removedIds
+                            }
+                        }
                     }
-                }
 
-                // Fill remaining with nulls
-                while (target.length < SIZE) target.push(null);
+                    // Write the result line back with proper direction
+                    for (let c = 0; c < SIZE; c++) {
+                        let writeC;
+                        if (dir === 'right') writeC = SIZE - 1 - c;
+                        else writeC = c;
 
-                // Write back to newGrid with direction mapping
-                for (let j = 0; j < SIZE; j++) {
-                    let r, c;
-                    if (dir === 'left' || dir === 'right') {
-                        r = i; c = j;
-                    } else {
-                        r = j; c = i;
+                        const nt = result[c];
+                        if (nt) {
+                            grid[i][writeC] = { id: nt.id, value: nt.value };
+                        } else {
+                            grid[i][writeC] = null;
+                        }
                     }
-                    // If direction is right/down, reverse
-                    if (dir === 'right') c = SIZE - 1 - j;
-                    if (dir === 'down') r = SIZE - 1 - j;
-                    newGrid[r][c] = target[j];
+
+                    // Record merges with correct positions
+                    for (const m of merges) {
+                        // Find where the new merged tile ended up
+                        let mergedWriteC;
+                        let count = 0;
+                        for (let c = 0; c < SIZE; c++) {
+                            if (result[c] && result[c].id === m.newId) {
+                                if (dir === 'right') mergedWriteC = SIZE - 1 - c;
+                                else mergedWriteC = c;
+                                break;
+                            }
+                        }
+                        if (mergedWriteC !== undefined) {
+                            grid[i][mergedWriteC] = { id: m.newId, value: m.mergedValue };
+                            newMergedIds.push({
+                                id: m.newId,
+                                r: i,
+                                c: mergedWriteC
+                            });
+                            // Mark consumed tiles for removal
+                            for (const cid of m.consumedIds) removedIds.add(cid);
+                        }
+                    }
+                } else {
+                    // Column i (up or down)
+                    line = [];
+                    for (let r = 0; r < SIZE; r++) line.push(grid[r][i]);
+
+                    if (dir === 'down') {
+                        line.reverse();
+                    }
+
+                    const { result, merges } = slideLine(line);
+
+                    if (dir === 'down') {
+                        result.reverse();
+                    }
+
+                    // Write back
+                    for (let r = 0; r < SIZE; r++) {
+                        let readIdx = (dir === 'down') ? SIZE - 1 - r : r;
+                        const writeR = (dir === 'down') ? SIZE - 1 - r : r;
+
+                        const oldTile = grid[readIdx][i];
+                        const newTile = result[r];
+
+                        if (newTile === null) continue;
+
+                        if (oldTile && newTile.id === oldTile.id) {
+                            if (readIdx !== r) {
+                                tileMoves.push({
+                                    id: oldTile.id,
+                                    fromR: readIdx, fromC: i,
+                                    toR: writeR, toC: i
+                                });
+                            }
+                        } else if (oldTile) {
+                            removedIds.add(oldTile.id);
+                        }
+
+                        const nt = result[r];
+                        if (nt) {
+                            grid[writeR][i] = { id: nt.id, value: nt.value };
+                        } else {
+                            grid[writeR][i] = null;
+                        }
+                    }
+
+                    // Record merges
+                    for (const m of merges) {
+                        let mergedWriteR;
+                        let count = 0;
+                        for (let r = 0; r < SIZE; r++) {
+                            if (result[r] && result[r].id === m.newId) {
+                                if (dir === 'down') mergedWriteR = SIZE - 1 - r;
+                                else mergedWriteR = r;
+                                break;
+                            }
+                        }
+                        if (mergedWriteR !== undefined) {
+                            grid[mergedWriteR][i] = { id: m.newId, value: m.mergedValue };
+                            newMergedIds.push({
+                                id: m.newId,
+                                r: mergedWriteR,
+                                c: i
+                            });
+                            for (const cid of m.consumedIds) removedIds.add(cid);
+                        }
+                    }
                 }
             }
 
-            // Check if grid changed
+            // Check if anything moved
+            let moved = false;
             for (let r = 0; r < SIZE; r++) {
                 for (let c = 0; c < SIZE; c++) {
-                    const oldVal = grid[r][c];
-                    const newVal = newGrid[r][c];
+                    const oldVal = oldGrid[r][c];
+                    const newVal = grid[r][c];
                     if (!oldVal && !newVal) continue;
                     if ((oldVal && !newVal) || (!oldVal && newVal)) { moved = true; continue; }
-                    if (oldVal.id !== newVal.id) { moved = true; }
-                    if (oldVal.value !== newVal.value) { moved = true; }
+                    if (oldVal.id !== newVal.id || oldVal.value !== newVal.value) { moved = true; }
                 }
             }
 
             if (!moved) return;
 
-            grid = newGrid;
+            // === Animate ===
+            animating = true;
 
-            // Perform animations
-            // 1. Remove tiles that were merged (the consumed ones)
-            const removedIds = new Set();
-            for (const m of merges) {
-                removedIds.add(m.id1);
-                removedIds.add(m.id2);
+            // Step 1: Animate slide positions
+            for (const tm of tileMoves) {
+                const el = document.getElementById('tile-' + tm.id);
+                if (!el) continue;
+                const pos = getTilePos(tm.toR, tm.toC);
+                el.style.width = pos.size + 'px';
+                el.style.height = pos.size + 'px';
+                el.style.left = pos.x + 'px';
+                el.style.top = pos.y + 'px';
+                // Update tileMap
+                const t = tileMap[tm.id];
+                if (t) { t.r = tm.toR; t.c = tm.toC; }
             }
 
-            // 2. Update positions of non-merged, non-removed tiles
-            for (const id in tiles) {
-                if (removedIds.has(parseInt(id))) continue;
-                const tile = tiles[id];
-                if (tile.r !== undefined && tile.c !== undefined) {
-                    moveTileDOM(parseInt(id));
-                }
-            }
-
-            // 3. Create merged tiles after animation delay
+            // Step 2: After slide animation, remove consumed tiles and create merged ones
             setTimeout(() => {
-                // Remove old tiles
+                // Remove consumed tiles
                 for (const id of removedIds) {
                     removeTileDOM(id);
-                    delete tiles[id];
+                    delete tileMap[id];
                 }
-                // Create new merged tiles
-                for (const m of merges) {
-                    tiles[m.newId] = { id: m.newId, r: m.r, c: m.c, value: grid[m.r][m.c].value, merged: true };
-                    createTileDOM(m.newId, false);
-                    // Add merge animation after the DOM element is created
+
+                // Create merged tiles
+                for (const nm of newMergedIds) {
+                    tileMap[nm.id] = { id: nm.id, r: nm.r, c: nm.c, value: nm.value, merged: true };
+                    createTileDOM(nm.id, false);
                     setTimeout(() => {
-                        const el = document.getElementById('tile-' + m.newId);
-                        if (el) {
-                            el.classList.add('merged-tile');
-                        }
+                        const el = document.getElementById('tile-' + nm.id);
+                        if (el) el.classList.add('merged-tile');
                     }, 10);
                 }
+
                 updateScoreDisplay();
 
                 // Check win
                 if (!won && !keepPlaying) {
-                    let found2048 = false;
-                    for (let r = 0; r < SIZE; r++)
-                        for (let c = 0; c < SIZE; c++)
-                            if (grid[r][c] && grid[r][c].value === 2048) found2048 = true;
-                    if (found2048) {
-                        won = true;
-                        overlayWin.classList.add('active');
-                        return;
+                    for (let r = 0; r < SIZE; r++) {
+                        for (let c = 0; c < SIZE; c++) {
+                            if (grid[r][c] && grid[r][c].value === 2048) {
+                                won = true;
+                                overlayWin.classList.add('active');
+                                animating = false;
+                                return;
+                            }
+                        }
                     }
                 }
 
@@ -693,6 +812,8 @@
                     overlayScoreGameover.textContent = score;
                     overlayGameOver.classList.add('active');
                 }
+
+                animating = false;
             }, 110);
         }
 
@@ -705,8 +826,9 @@
             gameOver = false;
             won = false;
             keepPlaying = false;
-            tiles = {};
+            tileMap = {};
             tileIdCounter = 0;
+            animating = false;
             overlayGameOver.classList.remove('active');
             overlayWin.classList.remove('active');
             updateScoreDisplay();
@@ -766,7 +888,7 @@
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(function() {
                 setupBoard();
-                for (const id in tiles) moveTileDOM(parseInt(id));
+                for (const id in tileMap) updateTileDOM(id);
             }, 100);
         });
 
