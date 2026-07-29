@@ -363,7 +363,7 @@ function updatePac(dt) {
         score += 10;
         dotCount++;
       } else if (cell === PEL) {
-        maze[pac.gy][pel] = EMPTY;
+        maze[pac.gy][pac.gx] = EMPTY;
         score += 50;
         dotCount++;
         activateFrightened();
