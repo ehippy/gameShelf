@@ -736,6 +736,7 @@
                 winLine = result.line;
                 gameState = 'gameover';
                 showGameOver(winner);
+                updateTurnIndicator();
                 render();
                 return;
             }
