@@ -597,7 +597,7 @@
             }
 
             // Draw cursor highlight
-            if (gameState === 'playing') {
+            if (gameState === 'playing' || gameState === 'start') {
                 ctx.fillStyle = 'rgba(0, 212, 255, 0.35)';
                 ctx.fillRect(cursorX * CELL + 1, cursorY * CELL + 1, CELL - 2, CELL - 2);
             }
