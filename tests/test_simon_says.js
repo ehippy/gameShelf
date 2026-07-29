@@ -226,8 +226,7 @@ console.log('─'.repeat(50));
 assert(htmlContent.includes('id="startOverlay"'), 'Start overlay element exists with id="startOverlay"');
 assert(htmlContent.includes('▶ Start Game') || htmlContent.includes('Start Game'), 'Start Game button text present');
 assert(htmlContent.includes('startBtn'), 'Start button referenced in JS');
-assert(htmlContent.includes("startOverlay.classList.remove('active')") ||
-       htmlContent.includes('startOverlay.classList.remove(\\'active\\')'), 'Start overlay hidden on game start');
+assert(htmlContent.includes("startOverlay.classList.remove('active')") || htmlContent.includes("startOverlay.classList.remove( 'active' )"), 'Start overlay hidden on game start');
 
 // ============================================================
 // 14. Keyboard controls — arrow keys + Enter/space
