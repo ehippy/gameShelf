@@ -634,8 +634,12 @@
         restartBtn.addEventListener('click', restartGame);
         winRestartBtn.addEventListener('click', restartGame);
 
-        // Start on load
-        startGame();
+        // Render initial static scene behind overlay
+        initGame();
+        render();
+
+        // Start on button click
+        startBtn.addEventListener('click', startGame);
     </script>
 </body>
 </html>
