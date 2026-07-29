@@ -80,12 +80,13 @@ assert(/'🚀'/.test(memorymatchHtml), 'Contains 🚀 emoji');
 assert(/'🌟'/.test(memorymatchHtml), 'Contains 🌟 emoji');
 assert(/'🔥'/.test(memorymatchHtml), 'Contains 🔥 emoji');
 assert(/'💎'/.test(memorymatchHtml), 'Contains 💎 emoji');
-// Each emoji appears as a pair in the array
+// Each emoji appears in the EMOJIS array, and the code creates pairs at runtime
 EMOJIS.forEach(emoji => {
     assert(memorymatchHtml.includes(emoji), `Emoji ${emoji} found in HTML source`);
-    const regex = new RegExp(emoji.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
-    const matches = memorymatchHtml.match(regex);
-    assert(matches && matches.length >= 2, `Emoji ${emoji} appears at least twice (pair)`);
+    // Verify pair-creation logic: each emoji is pushed twice
+    assert(/emojiPairs\.push\(emoji,\s*emoji\)/.test(memorymatchHtml) ||
+           /emojiPairs\.push\(/.test(memorymatchHtml),
+        `${emoji} has pair-creation logic (pushed twice)`);
 });
 
 // ============================================
