@@ -28,6 +28,8 @@ const gamesIndexHtml = fs.readFileSync(path.join(__dirname, 'games', 'index.html
 const rootIndexHtml = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf-8');
 const stylesCss = fs.readFileSync(path.join(__dirname, 'styles.css'), 'utf-8');
 
+const EMOJIS = ['🎮', '🎯', '🎲', '🎸', '🚀', '🌟', '🔥', '💎'];
+
 // ============================================
 // SECTION 1: File Existence & Self-Contained
 // ============================================
