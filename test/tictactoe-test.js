@@ -311,6 +311,88 @@ test('Grid lines at 133.33 and 266.67', () => {
     }
 });
 
+// ── Criterion 23: Turn indicator clears on gameover ──
+test("updateTurnIndicator has else if for gameState === 'gameover'", () => {
+    if (!tictactoe.includes("else if (gameState === 'gameover')")) throw new Error("updateTurnIndicator missing else if for gameover state");
+});
+
+test("updateTurnIndicator sets 'You Win!' text for X winner in gameover", () => {
+    // Check the gameover branch sets correct text for player win
+    if (!tictactoe.includes("winner === 'X'")) throw new Error("winner check for 'X' not found");
+    if (!tictactoe.includes("turnIndicator.textContent = 'You Win!'")) throw new Error("Turn indicator 'You Win!' text not found");
+});
+
+test("updateTurnIndicator sets 'AI Wins!' text for O winner in gameover", () => {
+    if (!tictactoe.includes("winner === 'O'")) throw new Error("winner check for 'O' not found");
+    if (!tictactoe.includes("turnIndicator.textContent = 'AI Wins!'")) throw new Error("Turn indicator 'AI Wins!' text not found");
+});
+
+test("updateTurnIndicator sets 'Game Over — Draw' text for draw in gameover", () => {
+    if (!tictactoe.includes("turnIndicator.textContent = 'Game Over — Draw'")) throw new Error("Turn indicator 'Game Over — Draw' text not found");
+});
+
+test("updateTurnIndicator sets turn-x class for player win in gameover", () => {
+    if (!tictactoe.includes("turnIndicator.className = 'turn-indicator turn-x'")) throw new Error("turn-x className for gameover not found");
+});
+
+test("updateTurnIndicator sets turn-o class for AI win in gameover", () => {
+    if (!tictactoe.includes("turnIndicator.className = 'turn-indicator turn-o'")) throw new Error("turn-o className for gameover not found");
+});
+
+test("updateTurnIndicator sets no color class for draw in gameover", () => {
+    // For draw, className should be just 'turn-indicator' (no color class)
+    const drawMatch = tictactoe.match(/turnIndicator\.className = 'turn-indicator';/);
+    if (!drawMatch) throw new Error("Turn indicator no-color-class for draw not found");
+});
+
+test("turn-indicator DOM element exists in HTML", () => {
+    if (!tictactoe.includes('id="turnIndicator"')) throw new Error("turnIndicator element not found in HTML");
+});
+
+test("turn-indicator CSS class .turn-indicator defined", () => {
+    if (!tictactoe.includes('.turn-indicator {')) throw new Error(".turn-indicator CSS class not defined");
+});
+
+test("turn-indicator CSS class .turn-x defined", () => {
+    if (!tictactoe.includes('.turn-x {')) throw new Error(".turn-x CSS class not defined");
+});
+
+test("turn-indicator CSS class .turn-o defined", () => {
+    if (!tictactoe.includes('.turn-o {')) throw new Error(".turn-o CSS class not defined");
+});
+
+test("playerPlace calls updateTurnIndicator after setting gameState='gameover'", () => {
+    // Extract playerPlace function and check it calls updateTurnIndicator after gameState='gameover'
+    const playerPlaceMatch = tictactoe.match(/function playerPlace\(\)[\s\S]*?\n\s*\}/);
+    if (!playerPlaceMatch) throw new Error("playerPlace function not found");
+    const playerPlace = playerPlaceMatch[0];
+    if (!playerPlace.includes("gameState = 'gameover'")) throw new Error("playerPlace doesn't set gameState='gameover'");
+    if (!playerPlace.includes('updateTurnIndicator()')) throw new Error("playerPlace doesn't call updateTurnIndicator");
+});
+
+test("aiMove calls updateTurnIndicator after setting gameState='gameover'", () => {
+    // Extract aiMove function and check it calls updateTurnIndicator
+    const aiMoveMatch = tictactoe.match(/function aiMove\(\)[\s\S]*?setTimeout[\s\S]*?render\(\)[\s\S]*?[\n\s]*\};/);
+    if (!aiMoveMatch) throw new Error("aiMove function not found");
+    const aiMove = aiMoveMatch[0];
+    if (!aiMove.includes("gameState = 'gameover'")) throw new Error("aiMove doesn't set gameState='gameover'");
+    if (!aiMove.includes('updateTurnIndicator()')) throw new Error("aiMove doesn't call updateTurnIndicator");
+});
+
+test("restart calls updateTurnIndicator to reset the turn indicator", () => {
+    const restartMatch = tictactoe.match(/function restart\(\)[\s\S]*?\n\s*\}/);
+    if (!restartMatch) throw new Error("restart function not found");
+    const restart = restartMatch[0];
+    if (!restart.includes('updateTurnIndicator()')) throw new Error("restart doesn't call updateTurnIndicator");
+});
+
+// ── Criterion 24: Footer consistent text ──
+test("Footer has consistent © 2025 gameShelf text", () => {
+    if (!tictactoe.includes('© 2025 gameShelf — All games built in browser — no downloads required')) {
+        throw new Error("Footer doesn't have consistent © 2025 gameShelf footer text");
+    }
+});
+
 // ── Summary ──
 console.log('\n=== Test Results ===\n');
 results.forEach(r => console.log(r));
