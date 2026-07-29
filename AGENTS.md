@@ -13,21 +13,11 @@ Games live in `games/` as single self-contained HTML files. Convention:
 
 Adding a game file is not enough — you must also add a card entry to `games/index.html` inside the `<div class="games-grid">`:
 
-```html
-<a href="<game>.html" class="game-card" data-category="<category>">
-    <div class="card-thumb" style="background: linear-gradient(135deg, <color1>, <color2>);">
-        <span class="thumb-icon">🎮</span>
-    </div>
-    <div class="card-info">
-        <h3>Game Name</h3>
-        <p class="card-desc">Short description.</p>
-        <span class="card-tag <category>">Category</span>
-    </div>
-    <div class="card-play">▶ Play</div>
-</a>
-```
+⚠️ **Merge conflict risk**: `games/index.html` is edited whenever a new game is registered. Coordinate with other agents or resolve conflicts early.
 
-Pick an existing `data-category`: `action`, `puzzle`, `arcade`, `strategy`, `board`, or `casual`.
+### Page Styling
+
+- **Footer**: All pages must include the consistent footer text: `© 2025 gameShelf — All games built in browser — no downloads required`. Do not use variant phrasing.
 
 ## Known Issues
 
