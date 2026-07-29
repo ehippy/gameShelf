@@ -719,6 +719,7 @@
             // Place mines after first reveal, excluding the revealed cell
             placeMines(cursorX, cursorY);
             calculateAdjacentMines();
+            minesPlaced = true;
             revealCell(cursorX, cursorY);
             beginPlaying();
             startTimer();
