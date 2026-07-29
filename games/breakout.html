@@ -542,8 +542,8 @@
             }
         }
 
-        // Main render loop
-        function render() {
+        // Drawing function (no update, no animation loop)
+        function draw() {
             // Clear canvas
             ctx.fillStyle = '#0f0f23';
             ctx.fillRect(0, 0, W, H);
@@ -556,8 +556,12 @@
 
             // Draw ball
             drawBall();
+        }
 
+        // Main render loop (update + draw + animation)
+        function render() {
             update();
+            draw();
             animationId = requestAnimationFrame(render);
         }
 
