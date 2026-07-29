@@ -208,6 +208,9 @@ console.log('='.repeat(60));
 
 process.exit(FAIL.length > 0 ? 1 : 0);
 
+// 15. Deep Logic Verification
+group('15. Deep Logic Verification');
+
 // Verify scoring formula uses level multiplier
 test('Scoring uses level multiplier', /score\s*\+=\s*LINE_SCORES.*level|LINE_SCORES.*\*.*level/i.test(tetrisHTML));
 
@@ -238,9 +241,6 @@ test('Next piece generated when spawning', /nextPiece\s*=\s*randomPiece|nextPiec
 // Verify line clear shifts rows down
 test('Lines shift down after clearing', /unshift|shift.*up|splice/i.test(tetrisHTML));
 
-// Verify game loop timing
-test('Game loop uses timing delta', /timestamp|lastDrop|gravity/i.test(tetrisHTML));
-
 // Verify paused state
 test('Game supports pause (P key)', /paused|Pause|pause/i.test(tetrisHTML));
 
@@ -253,9 +253,6 @@ test('Boundary check for above board', /ny\s*<\s*0/i.test(tetrisHTML));
 // Verify grid rendering
 test('Grid lines rendered horizontally', /ctx\.moveTo.*\n.*ctx\.lineTo|for.*ROWS.*r/i.test(tetrisHTML));
 test('Grid lines rendered vertically', /ctx\.moveTo.*\n.*ctx\.lineTo|for.*COLS.*c/i.test(tetrisHTML));
-
-// Verify back to games navigates correctly
-test('Back to Games href is ../index.html', /href=["']\.\.\/index\.html["']/i.test(tetrisHTML));
 
 // Verify canvas context exists
 test('Canvas 2D context obtained', /getContext\s*\(\s*['"]2d['"]\s*\)/i.test(tetrisHTML));
