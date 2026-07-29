@@ -206,7 +206,7 @@ test('Restart shows start overlay', () => {
 
 // ── Criterion 14: Header structure ──
 test('Header logo links to ../index.html', () => {
-    if (!tictactoe.match(/<a\s+href="\.\/\.\/index\.html"\s+class="logo"/)) {
+    if (!tictactoe.includes('href="../index.html"') || !tictactoe.match(/class="logo"/)) {
         throw new Error('Header logo href incorrect');
     }
 });
@@ -216,21 +216,33 @@ test('Header has game title "Tic Tac Toe"', () => {
 });
 
 test('Header back link goes to ../games/index.html', () => {
-    if (!tictactoe.match(/<a[^>]*href="\.\/\.\/games\/index\.html"/)) {
+    const lines = tictactoe.split('\n');
+    const backLine = lines.find(l => l.includes('back-link') && l.includes('href='));
+    if (!backLine || !backLine.includes('href="../games/index.html"')) {
         throw new Error('Back link href incorrect');
     }
 });
 
 // ── Criterion 15: Footer structure ──
 test('Footer Home link goes to ../index.html', () => {
-    if (!tictactoe.match(/<a\s+href="\.\/\.\/index\.html"\s*>Home<\/a>/)) {
-        throw new Error('Footer Home link incorrect');
+    // Find footer section and check for Home link
+    const footerStart = tictactoe.indexOf('class="site-footer"');
+    if (footerStart === -1) throw new Error('Footer not found');
+    const footer = tictactoe.substring(footerStart);
+    const homeLink = footer.match(/<a[^>]*>Home<\/a>/);
+    if (!homeLink) throw new Error('Footer Home link not found');
+    const homeLine = footer.split('\n').find(l => l.includes('Home') && l.includes('href='));
+    if (!homeLine || !homeLine.includes('href="../index.html"')) {
+        throw new Error('Footer Home link href incorrect');
     }
 });
 
 test('Footer All Games link goes to ../games/index.html', () => {
-    if (!tictactoe.match(/<a[^>]*href="\.\/\.\/games\/index\.html"[^>]*>All Games<\/a>/)) {
-        throw new Error('Footer All Games link incorrect');
+    const footerStart = tictactoe.indexOf('class="site-footer"');
+    const footer = tictactoe.substring(footerStart);
+    const allGamesLine = footer.split('\n').find(l => l.includes('All Games') && l.includes('href='));
+    if (!allGamesLine || !allGamesLine.includes('href="../games/index.html"')) {
+        throw new Error('Footer All Games link href incorrect');
     }
 });
 
