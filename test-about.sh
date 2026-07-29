@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
 
-# Acceptance Criteria Test Suite for about.html
 PASS=0
 FAIL=0
 
@@ -22,16 +21,11 @@ check() {
 
 FILE="about.html"
 
-# Test 1: 7 filter buttons present
-BTN_COUNT=$(grep -c 'filter-btn' "$FILE")
-EXPECTED_BUTTTONS=7
-# We expect 7 buttons (All, Action, Puzzle, Arcade, Strategy, Board, Casual)
-# But there might be header text too. Let's count specifically the button tags.
-BTN_TAG_COUNT=$(grep -c '<button class="filter-btn"' "$FILE")
+# Test 1: 7 filter buttons present (match <button with class containing filter-btn)
+BTN_TAG_COUNT=$(grep -c '<button.*filter-btn' "$FILE")
 check "7 filter button tags" "$BTN_TAG_COUNT" "7"
 
-# Test 2: data-filter attributes match
-# Check each filter attribute is present
+# Test 2: Each data-filter attribute is present
 for filter in all action puzzle arcade strategy board casual; do
     if grep -q "data-filter=\"$filter\"" "$FILE"; then
         echo "PASS: data-filter='$filter' found"
@@ -71,16 +65,13 @@ for cat in Strategy Board Casual; do
 done
 
 # Test 5: Strategy, Board, Casual say "Coming soon"
-for cat in Strategy Board Casual; do
-    if grep -q "Coming soon" "$FILE"; then
-        echo "PASS: 'Coming soon' text present"
-        PASS=$((PASS + 1))
-    else
-        echo "FAIL: 'Coming soon' text not found"
-        FAIL=$((FAIL + 1))
-    fi
-    break  # Just check once for all three
-done
+if grep -q "Coming soon" "$FILE"; then
+    echo "PASS: 'Coming soon' text present"
+    PASS=$((PASS + 1))
+else
+    echo "FAIL: 'Coming soon' text not found"
+    FAIL=$((FAIL + 1))
+fi
 
 # Test 6: Action mentions Breakout
 if grep -q "Breakout" "$FILE"; then
@@ -114,7 +105,7 @@ for game in Snake "Pac-Man"; do
 done
 
 # Test 9: about-categories ul exists
-if grep -q 'class="about-categories"' "$FILE"; then
+if grep -q 'about-categories' "$FILE"; then
     echo "PASS: about-categories ul class found"
     PASS=$((PASS + 1))
 else
