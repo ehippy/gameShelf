@@ -294,6 +294,65 @@ section('28. Score Bar Layout');
 assert(/Mine|Mines|mine/.test(minesweeperHtml), 'Score bar has mine label');
 assert(/Time|time|Timer|timer/.test(minesweeperHtml), 'Score bar has time label');
 
+// ============================================
+// SECTION 29: Pac-Man Game Exists and Linked (Acceptance Criteria)
+// ============================================
+const pacmanHtml = fs.readFileSync(path.join(__dirname, 'games', 'pacman.html'), 'utf-8');
+
+section('29. Pac-Man File Existence & Links');
+assert(fs.existsSync(path.join(__dirname, 'games', 'pacman.html')),
+    'File games/pacman.html exists');
+assert(/href="games\/pacman\.html"/.test(rootIndexHtml),
+    'Root index.html has card with href="games/pacman.html"');
+assert(/href="pacman\.html"/.test(gamesIndexHtml),
+    'Games index.html has card with href="pacman.html"');
+
+section('30. Pac-Man Self-Contained');
+assert(/<style>[\s\S]*<\/style>/.test(pacmanHtml),
+    'Pac-Man has inline <style> tag');
+assert(/<script>[\s\S]*<\/script>/.test(pacmanHtml),
+    'Pac-Man has inline <script> tag');
+assert(!/<link[^>]*href="https?:\/\//.test(pacmanHtml),
+    'Pac-Man does NOT link external stylesheets');
+assert(!/<script[^>]*src="https?:\/\//.test(pacmanHtml),
+    'Pac-Man does NOT link external scripts');
+
+section('31. Pac-Man Canvas & Maze');
+assert(/<canvas[^>]+id=/.test(pacmanHtml),
+    'Pac-Man has canvas element');
+assert(/width=/.test(pacmanHtml) && /height=/.test(pacmanHtml),
+    'Pac-Man canvas has width and height');
+assert(/COLS\s*=\s*28/.test(pacmanHtml) && /ROWS\s*=\s*31/.test(pacmanHtml),
+    'Pac-Man maze is 28x31');
+
+section('32. Pac-Man Ghosts');
+assert(/Blinky/.test(pacmanHtml) && /Pinky/.test(pacmanHtml) &&
+       /Inky/.test(pacmanHtml) && /Clyde/.test(pacmanHtml),
+    'All 4 ghosts defined (Blinky, Pinky, Inky, Clyde)');
+assert(/frightened/.test(pacmanHtml),
+    'Frightened mode exists');
+assert(/ghost house|GHOUSE/.test(pacmanHtml),
+    'Ghost house area defined');
+
+section('33. Pac-Man Mechanics');
+assert(/score/.test(pacmanHtml),
+    'Score tracking exists');
+assert(/lives/.test(pacmanHtml),
+    'Lives system exists');
+assert(/localStorage/.test(pacmanHtml),
+    'High score persistence via localStorage');
+assert(/gameover/.test(pacmanHtml),
+    'Game over state exists');
+assert(/win/.test(pacmanHtml),
+    'Win state exists');
+
+section('34. Pac-Man Keyboard Controls');
+assert(/ArrowUp/.test(pacmanHtml) && /ArrowDown/.test(pacmanHtml) &&
+       /ArrowLeft/.test(pacmanHtml) && /ArrowRight/.test(pacmanHtml),
+    'Arrow key controls handled');
+assert(/Escape|ESC/.test(pacmanHtml),
+    'ESC key for pause');
+
 console.log('\n========================================');
 console.log('  Minesweeper Test Results');
 console.log('========================================');
