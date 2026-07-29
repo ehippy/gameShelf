@@ -161,7 +161,6 @@ group('11. Shared Resources');
 
 test('Uses shared CSS from ../styles.css', /<link\s+rel=["']stylesheet["']\s+href=["']\.\.\/styles\.css["']/i.test(tetrisHTML));
 test('Uses shared JS from ../script.js', /<script\s+src=["']\.\.\/script\.js["']/i.test(tetrisHTML));
-test('No duplicate site-wide CSS (no <link> to styles.css in game)', !/<link[^>]+styles\.css[^>]+>/.test(tetrisHTML) || /<link\s+rel=["']stylesheet["']\s+href=["']\.\.\/styles\.css["']/.test(tetrisHTML));
 test('No duplicate filter/search code in game script', !/filterBtn|searchInput/.test(tetrisHTML));
 
 // 12. Header Convention
@@ -191,22 +190,6 @@ test('lastDrop only set inside gravity if block', /lastDrop = timestamp/.test(te
 test('Gravity condition checks timestamp - lastDrop', /timestamp - lastDrop >= gravity/.test(tetrisHTML));
 test('Lock delay accumulates when piece resting', /lockDelay \+= timestamp - lastDrop/.test(tetrisHTML));
 test('Lock delay resets on successful drop', /lockDelay = 0/.test(tetrisHTML));
-
-// Summary
-console.log('\n' + '='.repeat(60));
-console.log('  SUMMARY');
-console.log('='.repeat(60));
-console.log(`  Passed: ${PASS.length}`);
-console.log(`  Failed: ${FAIL.length}`);
-if (FAIL.length > 0) {
-  console.log('\n  Failed tests:');
-  FAIL.forEach(f => console.log(`    - ${f}`));
-} else {
-  console.log('\n  ✓ All tests passed!');
-}
-console.log('='.repeat(60));
-
-process.exit(FAIL.length > 0 ? 1 : 0);
 
 // 15. Deep Logic Verification
 group('15. Deep Logic Verification');
@@ -257,6 +240,7 @@ test('Grid lines rendered vertically', /ctx\.moveTo.*\n.*ctx\.lineTo|for.*COLS.*
 // Verify canvas context exists
 test('Canvas 2D context obtained', /getContext\s*\(\s*['"]2d['"]\s*\)/i.test(tetrisHTML));
 
+// Summary
 console.log('\n' + '='.repeat(60));
 console.log('  FINAL SUMMARY');
 console.log('='.repeat(60));
