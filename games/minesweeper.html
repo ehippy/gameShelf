@@ -673,8 +673,8 @@
         function startGame() {
             initBoard();
             gameState = 'start';
-            // Reset overlays
-            startOverlay.classList.add('hidden');
+            // Show start overlay, hide game end overlays
+            startOverlay.classList.remove('hidden');
             gameOverOverlay.classList.add('hidden');
             winOverlay.classList.add('hidden');
             smileyBtn.textContent = '😀';
