@@ -741,6 +741,7 @@
             if (gameState === 'start') {
                 if (e.code === 'Enter' || e.code === 'Space') {
                     beginPlaying();
+                    startOverlay.classList.add('hidden');
                 }
                 return;
             }
