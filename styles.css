@@ -372,6 +372,21 @@ a {
     color: #4ade80;
 }
 
+.card-tag.strategy {
+    background: rgba(251, 146, 60, 0.15);
+    color: #fb923c;
+}
+
+.card-tag.board {
+    background: rgba(45, 212, 191, 0.15);
+    color: #2dd4bf;
+}
+
+.card-tag.casual {
+    background: rgba(251, 113, 133, 0.15);
+    color: #fb7185;
+}
+
 /* Play Button */
 .card-play {
     margin: 0 var(--spacing-lg) var(--spacing-md);
