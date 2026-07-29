@@ -533,6 +533,97 @@ a {
 }
 
 /* ========================================
+   What's New Section
+   ======================================== */
+.what-new-section {
+    max-width: 1200px;
+    margin: 0 auto var(--spacing-2xl);
+    padding: 0 var(--spacing-lg);
+}
+
+.what-new-section h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-lg);
+    color: var(--text-primary);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.what-new-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.what-new-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    transition: border-color var(--transition-normal), background var(--transition-normal);
+}
+
+.what-new-item:hover {
+    border-color: var(--accent);
+    background: var(--bg-card-hover);
+}
+
+.what-new-date {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    min-width: 110px;
+    flex-shrink: 0;
+    padding-top: 2px;
+}
+
+.what-new-tag {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px var(--spacing-sm);
+    border-radius: var(--radius-full);
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.what-new-tag.new {
+    background: rgba(74, 222, 128, 0.15);
+    color: #4ade80;
+}
+
+.what-new-tag.fix {
+    background: rgba(251, 146, 60, 0.15);
+    color: #fb923c;
+}
+
+.what-new-desc {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* Responsive — small screens */
+@media (max-width: 480px) {
+    .what-new-item {
+        flex-direction: column;
+        gap: var(--spacing-xs);
+    }
+
+    .what-new-date {
+        min-width: auto;
+    }
+}
+
+/* ========================================
    Scrollbar Styling
    ======================================== */
 ::-webkit-scrollbar {
