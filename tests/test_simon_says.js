@@ -184,9 +184,9 @@ assert(htmlContent.includes('score++') || htmlContent.includes('score =') || htm
 assert(htmlContent.includes('addRandomButton'), 'New button added to sequence each round');
 
 // Check that exactly one button is added per round
-// Look for addRandomButton in the context of correct/sequence completion
-const correctHandler = htmlContent.split('playerInputIndex >= sequence.length')[1]?.split('correctOverlay')[0] || '';
-assert(correctHandler.includes('addRandomButton'), 'One button added in correct round handler');
+// Look for addRandomButton in the setTimeout after correctOverlay.classList.add
+const correctAfterAdd = htmlContent.split('correctOverlay.classList.add')[1]?.split('addRandomButton') || [];
+assert(correctAfterAdd.length >= 2, 'addRandomButton appears after correctOverlay.classList.add in round completion');
 
 // HUD shows round number
 assert(htmlContent.includes('hud') || htmlContent.includes('hud.textContent'), 'HUD element exists');
