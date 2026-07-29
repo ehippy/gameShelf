@@ -184,8 +184,9 @@ assert(htmlContent.includes('score++') || htmlContent.includes('score =') || htm
 assert(htmlContent.includes('addRandomButton'), 'New button added to sequence each round');
 
 // Check that exactly one button is added per round
-const addRandomInCorrectHandler = htmlContent.split('correctOverlay')[1]?.split('correctOverlay')[0] || '';
-assert(addRandomInCorrectHandler.includes('addRandomButton'), 'One button added in correct round handler');
+// Look for addRandomButton in the context of correct/sequence completion
+const correctHandler = htmlContent.split('playerInputIndex >= sequence.length')[1]?.split('correctOverlay')[0] || '';
+assert(correctHandler.includes('addRandomButton'), 'One button added in correct round handler');
 
 // HUD shows round number
 assert(htmlContent.includes('hud') || htmlContent.includes('hud.textContent'), 'HUD element exists');
