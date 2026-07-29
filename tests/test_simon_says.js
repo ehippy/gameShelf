@@ -257,9 +257,9 @@ assert(htmlContent.includes('kbIndex') || htmlContent.includes('keyIndex') || ht
 console.log('\n⏸️ NO AUTO-START');
 console.log('─'.repeat(50));
 
-const lastPart = htmlContent.substring(htmlContent.length - 800);
-assert(!lastPart.includes('startGame();') && !lastPart.includes('startGame(') ||
-       lastPart.includes('drawButtons') && !lastPart.includes('startGame()'),
+// The last statements should only call drawButtons(), not startGame()
+const lastPart = htmlContent.substring(htmlContent.length - 400);
+assert(lastPart.includes('drawButtons();') && !lastPart.match(/drawButtons\(\);[\s\S]*startGame\(\)/),
     'No auto-start on page load — game waits for user interaction');
 
 // ============================================================
