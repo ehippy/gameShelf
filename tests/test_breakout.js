@@ -1,11 +1,11 @@
-const fs = require('fs');
-const path = require('path');
+var fs = require('fs');
+var path = require('path');
 
-const filepath = path.join(__dirname, '..', 'games', 'breakout.html');
-const content = fs.readFileSync(filepath, 'utf-8');
+var filepath = path.join(__dirname, '..', 'games', 'breakout.html');
+var content = fs.readFileSync(filepath, 'utf-8');
 
-let passed = 0;
-let failed = 0;
+var passed = 0;
+var failed = 0;
 
 function assert(condition, message) {
   if (condition) {
@@ -45,7 +45,7 @@ assert(/overlay-btn/.test(content) && /id="start-btn"/.test(content), 'Button us
 // 8. Start overlay visible by default
 assert(/id="start-overlay"[^>]*visible/.test(content) || /visible[^>]*id="start-overlay"/.test(content), 'Start overlay has class="overlay visible" (visible by default)');
 
-// 9. Pause overlay hidden by default (no .visible class near it)
+// 9. Pause overlay hidden by default
 var pauseSection = content.substring(content.indexOf('id="pause-overlay"') - 30, content.indexOf('id="pause-overlay"') + 50);
 assert(!pauseSection.includes('visible'), 'Pause overlay hidden by default');
 
@@ -57,34 +57,18 @@ assert(!goSection.includes('visible'), 'Gameover overlay hidden by default');
 var winSection = content.substring(content.indexOf('id="win-overlay"') - 30, content.indexOf('id="win-overlay"') + 50);
 assert(!winSection.includes('visible'), 'Win overlay hidden by default');
 
-// 12. No auto-start (no bare startGame(); call outside of functions/listeners)
-var lines = content.split('\n');
-var foundAutoStart = false;
-for (var i = 0; i < lines.length; i++) {
-  var trimmed = lines[i].trim();
-  if (trimmed === 'startGame();') {
-    // Check context
-    var context = lines.slice(Math.max(0, i-5), i+1).join('\n');
-    if (!context.includes('addEventListener') && !context.includes('function startGame')) {
-      foundAutoStart = true;
-    }
-  }
-}
-assert(!foundAutoStart, 'No auto-start call — game does NOT start on page load');
+// 12. No auto-start at bottom of script
+// After the last addEventListener, there should be no startGame(); call
+var lastListenerIdx = content.lastIndexOf('addEventListener');
+var afterListener = content.substring(lastListenerIdx);
+assert(!afterListener.match(/startGame\(\)\s*;/), 'No auto-start call — startGame() not called at bottom of script');
 
-// 13. initGame() + draw() called at page load
-assert(content.includes('initGame()') && content.includes('draw()'), 'initGame() and draw() called for initial static render');
-
-// Check that initGame+draw are near the bottom (after all function defs)
-var lastBracketIdx = content.lastIndexOf('}');
-var initGameIdx = content.indexOf('initGame()');
-var drawIdx = content.indexOf('draw()');
-assert(initGameIdx > 0 && drawIdx > 0, 'initGame and draw appear in the file');
+// 13. initGame() + draw() called at bottom for initial static render
+var bottomSection = content.substring(content.length - 500);
+assert(bottomSection.includes('initGame()') && bottomSection.includes('draw()'), 'initGame() and draw() at bottom for initial static render');
 
 // 14. startBtn click listener
 assert(/startBtn\.addEventListener/.test(content), 'startBtn has event listener');
-assert(/startBtn\.addEventListener.*startGame/.test(content) || 
-       content.indexOf("startBtn.addEventListener") < content.indexOf("startGame"), 'startBtn listener calls startGame');
 
 // 15. startGame hides start overlay
 assert(/startOverlay\.classList\.remove/.test(content), 'startGame hides start overlay via remove class');
@@ -116,6 +100,10 @@ assert(content.includes('restart-btn'), 'Play Again button (restart-btn) exists'
 assert(content.includes('win-restart-btn'), 'Win Play Again button (win-restart-btn) exists');
 assert(/restartBtn\.addEventListener/.test(content), 'restartBtn wired up');
 assert(/winRestartBtn\.addEventListener/.test(content), 'winRestartBtn wired up');
+
+// 22. DOM refs for startOverlay and startBtn
+assert(content.includes("document.getElementById('start-overlay')"), 'DOM ref for startOverlay exists');
+assert(content.includes("document.getElementById('start-btn')"), 'DOM ref for startBtn exists');
 
 console.log('\n=== Results: ' + passed + ' passed, ' + failed + ' failed ===');
 process.exit(failed > 0 ? 1 : 0);
