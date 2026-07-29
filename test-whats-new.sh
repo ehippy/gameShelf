@@ -71,8 +71,9 @@ else
 fi
 
 # 1f. Each entry has a tag span
-TAGS_COUNT=$(grep -c 'class="what-new-tag"' index.html || echo "0")
-if [ "$TAGS_COUNT" -eq 5 ]; then
+TAGS_COUNT=$(grep -c 'class="what-new-tag"' index.html 2>/dev/null | tail -1)
+TAGS_COUNT=${TAGS_COUNT:-0}
+if [ "$TAGS_COUNT" -eq 5 ] 2>/dev/null; then
     check "Each entry has a tag (5 what-new-tag spans)" 0
 else
     check "Each entry has a tag (5 what-new-tag spans)" 1
