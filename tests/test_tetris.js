@@ -22,7 +22,7 @@ function group(title) {
 
 // Read files
 const indexPath = path.join(__dirname, '..', 'index.html');
-const tetrisPath = path.join(__dirname, '..', 'tetris', 'index.html');
+const tetrisPath = path.join(__dirname, '..', 'games', 'tetris.html');
 
 const indexHTML = fs.readFileSync(indexPath, 'utf-8');
 const tetrisHTML = fs.readFileSync(tetrisPath, 'utf-8');
@@ -31,7 +31,8 @@ const tetrisHTML = fs.readFileSync(tetrisPath, 'utf-8');
 group('1. File Structure');
 
 test('Landing page exists at index.html', fs.existsSync(indexPath));
-test('Tetris game exists at tetris/index.html', fs.existsSync(tetrisPath));
+test('Tetris game exists at games/tetris.html', fs.existsSync(tetrisPath));
+test('Old tetris/ directory is removed', !fs.existsSync(path.join(__dirname, '..', 'tetris')));
 
 // 2. Landing Page - HTML Structure
 group('2. Landing Page - HTML Structure');
@@ -58,7 +59,7 @@ test('Cards show game title', /title|<h[1-3]/i.test(indexHTML));
 test('Cards show brief description', /description|<p/i.test(indexHTML) && /block|puzzle|stack/i.test(indexHTML));
 // Cards are created dynamically as anchor elements with href
 test('Cards are clickable links', /\.href\s*=|href\s*=|<a\s|createElement\(\s*['"]a['"]|game-card.*click/i.test(indexHTML));
-test('Links to tetris/index.html', /tetris/i.test(indexHTML));
+test('Links to games/tetris.html', /games\/tetris\.html/i.test(indexHTML));
 test('Hover scale effect', /transform:\s*scale/i.test(indexHTML));
 test('Hover glow/border effect', /box-shadow|border/i.test(indexHTML) && /hover/i.test(indexHTML));
 test('Play icon overlay on hover', /▶|play/i.test(indexHTML));
@@ -155,24 +156,43 @@ test('COLS = 10', /COLS\s*=\s*10/i.test(tetrisHTML));
 test('ROWS = 20', /ROWS\s*=\s*20/i.test(tetrisHTML));
 test('Cell size = 30', /CELL\s*=\s*30/i.test(tetrisHTML));
 
-// Summary
-console.log('\n' + '='.repeat(60));
-console.log('  SUMMARY');
-console.log('='.repeat(60));
-console.log(`  Passed: ${PASS.length}`);
-console.log(`  Failed: ${FAIL.length}`);
-if (FAIL.length > 0) {
-  console.log('\n  Failed tests:');
-  FAIL.forEach(f => console.log(`    - ${f}`));
-} else {
-  console.log('\n  ✓ All tests passed!');
-}
-console.log('='.repeat(60));
+// 11. Shared Resources
+group('11. Shared Resources');
 
-process.exit(FAIL.length > 0 ? 1 : 0);
+test('Uses shared CSS from ../styles.css', /<link\s+rel=["']stylesheet["']\s+href=["']\.\.\/styles\.css["']/i.test(tetrisHTML));
+test('Uses shared JS from ../script.js', /<script\s+src=["']\.\.\/script\.js["']/i.test(tetrisHTML));
+test('No duplicate filter/search code in game script', !/filterBtn|searchInput/.test(tetrisHTML));
 
-// Additional deep logic tests
-group('11. Tetris - Deep Logic Verification');
+// 12. Header Convention
+group('12. Header Convention');
+
+test('Uses game-header class', /class=["']game-header["']/.test(tetrisHTML));
+test('Has header-inner div', /<div\s+class=["']header-inner["']/.test(tetrisHTML));
+test('Has logo linking to ../index.html', /<a[^>]+href=["']\.\.\/index\.html["'][^>]+class=["']logo["']/i.test(tetrisHTML));
+test('Logo text is gameShelf', /class=["']logo["'][^>]*>gameShelf<|<a[^>]*class=["']logo["'][^>]*>gameShelf</i.test(tetrisHTML));
+test('Has game-title span with Tetris text', /<span\s+class=["']game-title["'][^>]*>Tetris<|class=["']game-title["'][^>]*>Tetris<\s*\/span/i.test(tetrisHTML));
+test('Has back-link to ../games/index.html', /<a[^>]+href=["']\.\.\/games\/index\.html["'][^>]+class=["']back-link["']/i.test(tetrisHTML));
+test('Back link text includes arrow', /← Back to All Games|← Back|<span.*back/i.test(tetrisHTML));
+test('Header has header-left div', /<div\s+class=["']header-left["']/.test(tetrisHTML));
+
+// 13. Footer Alignment
+group('13. Footer Alignment');
+
+test('Footer uses site-footer class', /class=["']site-footer["']/.test(tetrisHTML));
+test('Footer has consistent © text', /©\s*2025\s+gameShelf\s*—\s*All games built in browser\s*—\s*no downloads required/.test(tetrisHTML));
+test('Footer has Home link', /<a[^>]+href=["']\.\.\/index\.html["']/i.test(tetrisHTML));
+test('Footer has All Games link', /<a[^>]+href=["']\.\.\/games\/index\.html["']/i.test(tetrisHTML));
+
+// 14. Game Loop Timing Fix
+group('14. Game Loop Timing Fix');
+
+test('lastDrop only set inside gravity if block', /lastDrop = timestamp/.test(tetrisHTML));
+test('Gravity condition checks timestamp - lastDrop', /timestamp - lastDrop >= gravity/.test(tetrisHTML));
+test('Lock delay accumulates when piece resting', /lockDelay \+= timestamp - lastDrop/.test(tetrisHTML));
+test('Lock delay resets on successful drop', /lockDelay = 0/.test(tetrisHTML));
+
+// 15. Deep Logic Verification
+group('15. Deep Logic Verification');
 
 // Verify scoring formula uses level multiplier
 test('Scoring uses level multiplier', /score\s*\+=\s*LINE_SCORES.*level|LINE_SCORES.*\*.*level/i.test(tetrisHTML));
@@ -204,9 +224,6 @@ test('Next piece generated when spawning', /nextPiece\s*=\s*randomPiece|nextPiec
 // Verify line clear shifts rows down
 test('Lines shift down after clearing', /unshift|shift.*up|splice/i.test(tetrisHTML));
 
-// Verify game loop timing
-test('Game loop uses timing delta', /timestamp|lastDrop|gravity/i.test(tetrisHTML));
-
 // Verify paused state
 test('Game supports pause (P key)', /paused|Pause|pause/i.test(tetrisHTML));
 
@@ -220,12 +237,10 @@ test('Boundary check for above board', /ny\s*<\s*0/i.test(tetrisHTML));
 test('Grid lines rendered horizontally', /ctx\.moveTo.*\n.*ctx\.lineTo|for.*ROWS.*r/i.test(tetrisHTML));
 test('Grid lines rendered vertically', /ctx\.moveTo.*\n.*ctx\.lineTo|for.*COLS.*c/i.test(tetrisHTML));
 
-// Verify back to games navigates correctly
-test('Back to Games href is ../index.html', /href=["']\.\.\/index\.html["']/i.test(tetrisHTML));
-
 // Verify canvas context exists
 test('Canvas 2D context obtained', /getContext\s*\(\s*['"]2d['"]\s*\)/i.test(tetrisHTML));
 
+// Summary
 console.log('\n' + '='.repeat(60));
 console.log('  FINAL SUMMARY');
 console.log('='.repeat(60));

@@ -1,272 +1,302 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tetris — gameShelf</title>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #0a0a1a;
-    color: #e0e0e0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow-x: hidden;
-  }
-  /* Navbar */
-  .navbar {
-    width: 100%;
-    background: #16213e;
-    padding: 12px 24px;
-    display: flex;
-    align-items: center;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.5);
-    border-bottom: 2px solid #0f3460;
-  }
-  .navbar .logo {
-    font-size: 22px;
-    font-weight: 800;
-    background: linear-gradient(135deg, #e94560, #f5a623);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: 1px;
-  }
-  .navbar .back-link {
-    margin-left: auto;
-    color: #a0a0b8;
-    text-decoration: none;
-    font-size: 15px;
-    padding: 6px 14px;
-    border-radius: 8px;
-    transition: color 0.2s, background 0.2s;
-  }
-  .navbar .back-link:hover {
-    color: #fff;
-    background: rgba(233, 69, 96, 0.2);
-  }
-  /* Game Layout */
-  .game-wrapper {
-    display: flex;
-    gap: 24px;
-    padding: 30px 20px;
-    max-width: 800px;
-    width: 100%;
-    justify-content: center;
-    align-items: flex-start;
-  }
-  .board-container {
-    position: relative;
-    border: 3px solid #0f3460;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 0 30px rgba(15, 52, 96, 0.6);
-  }
-  #gameCanvas {
-    display: block;
-    background: #0d0d20;
-  }
-  /* Side Panel */
-  .side-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    min-width: 160px;
-  }
-  .panel-box {
-    background: #16213e;
-    border-radius: 12px;
-    padding: 16px;
-    border: 1px solid #0f3460;
-  }
-  .panel-box h4 {
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #a0a0b8;
-    margin-bottom: 8px;
-  }
-  .panel-box .value {
-    font-size: 26px;
-    font-weight: 700;
-    color: #fff;
-  }
-  #nextCanvas {
-    display: block;
-    margin: 0 auto;
-    background: #0d0d20;
-    border-radius: 6px;
-  }
-  /* Controls */
-  .controls-box {
-    font-size: 13px;
-    line-height: 2;
-    color: #a0a0b8;
-  }
-  .controls-box kbd {
-    background: #0f3460;
-    color: #e94560;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-family: monospace;
-    font-size: 12px;
-  }
-  /* Footer */
-  .site-footer {
-    width: 100%;
-    background: #16213e;
-    border-top: 2px solid #0f3460;
-    padding: 24px 20px;
-    text-align: center;
-    margin-top: auto;
-  }
-  .footer-inner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-  }
-  .footer-links {
-    display: flex;
-    gap: 20px;
-  }
-  .footer-links a {
-    color: #a0a0b8;
-    text-decoration: none;
-    font-size: 0.85rem;
-    transition: color 0.2s, background 0.2s;
-    padding: 4px 8px;
-    border-radius: 4px;
-  }
-  .footer-links a:hover {
-    color: #e94560;
-  }
-  .site-footer p {
-    color: #6b6b80;
-    font-size: 0.8rem;
-    margin: 0;
-  }
-  /* Overlay (Start / Game Over) */
-  .overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(10, 10, 26, 0.92);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
-    text-align: center;
-    padding: 20px;
-  }
-  .overlay.hidden { display: none; }
-  .overlay h1 {
-    font-size: 42px;
-    margin-bottom: 8px;
-    background: linear-gradient(135deg, #e94560, #f5a623);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .overlay .subtitle {
-    font-size: 15px;
-    color: #a0a0b8;
-    margin-bottom: 24px;
-    max-width: 280px;
-    line-height: 1.5;
-  }
-  .overlay .final-score {
-    font-size: 18px;
-    color: #fff;
-    margin-bottom: 6px;
-  }
-  .overlay .final-score span {
-    font-size: 32px;
-    font-weight: 700;
-    color: #e94560;
-  }
-  .btn {
-    background: linear-gradient(135deg, #e94560, #c73650);
-    color: #fff;
-    border: none;
-    padding: 14px 40px;
-    font-size: 18px;
-    font-weight: 700;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s;
-    letter-spacing: 0.5px;
-  }
-  .btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tetris — gameShelf</title>
+    <link rel="stylesheet" href="../styles.css">
+    <script src="../script.js"></script>
+    <style>
+        :root {
+            --tetris-bg: #0d0d20;
+            --tetris-board-border: #0f3460;
+            --tetris-panel-bg: #16213e;
+            --tetris-accent: #e94560;
+            --tetris-text: #a0a0b8;
+            --tetris-text-light: #fff;
+        }
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+        }
+
+        /* Game Header */
+        .game-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--header-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: var(--spacing-md) var(--spacing-lg);
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+        }
+
+        .game-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--tetris-text-light);
+        }
+
+        .back-link {
+            color: var(--accent);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .back-link:hover {
+            color: var(--accent-hover);
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* Game Layout */
+        .game-wrapper {
+            display: flex;
+            gap: 24px;
+            padding: 30px 20px;
+            max-width: 800px;
+            width: 100%;
+            justify-content: center;
+            align-items: flex-start;
+            margin: 0 auto;
+        }
+
+        .board-container {
+            position: relative;
+            border: 3px solid var(--tetris-board-border);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(15, 52, 96, 0.6);
+        }
+
+        #gameCanvas {
+            display: block;
+            background: var(--tetris-bg);
+        }
+
+        /* Side Panel */
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            min-width: 160px;
+        }
+
+        .panel-box {
+            background: var(--tetris-panel-bg);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid var(--tetris-board-border);
+        }
+
+        .panel-box h4 {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--tetris-text);
+            margin-bottom: 8px;
+        }
+
+        .panel-box .value {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--tetris-text-light);
+        }
+
+        #nextCanvas {
+            display: block;
+            margin: 0 auto;
+            background: var(--tetris-bg);
+            border-radius: 6px;
+        }
+
+        /* Controls */
+        .controls-box {
+            font-size: 13px;
+            line-height: 2;
+            color: var(--tetris-text);
+        }
+
+        .controls-box kbd {
+            background: var(--tetris-board-border);
+            color: var(--tetris-accent);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        /* Overlay (Start / Game Over) */
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(10, 10, 26, 0.92);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .overlay.hidden { display: none; }
+
+        .overlay h1 {
+            font-size: 42px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--tetris-accent), #f5a623);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .overlay .subtitle {
+            font-size: 15px;
+            color: var(--tetris-text);
+            margin-bottom: 24px;
+            max-width: 280px;
+            line-height: 1.5;
+        }
+
+        .overlay .final-score {
+            font-size: 18px;
+            color: var(--tetris-text-light);
+            margin-bottom: 6px;
+        }
+
+        .overlay .final-score span {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--tetris-accent);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--tetris-accent), #c73650);
+            color: #fff;
+            border: none;
+            padding: 14px 40px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            letter-spacing: 0.5px;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
+        }
+
+        /* Responsive */
+        @media (max-width: 700px) {
+            .game-wrapper {
+                flex-direction: column;
+                align-items: center;
+            }
+            .side-panel {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                min-width: auto;
+            }
+            .panel-box {
+                min-width: 120px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <nav class="navbar">
-    <div class="logo">gameShelf</div>
-    <a href="../index.html" class="back-link">← Back to Games</a>
-  </nav>
+    <header class="game-header">
+        <div class="header-inner">
+            <div class="header-left">
+                <a href="../index.html" class="logo">gameShelf</a>
+                <span class="game-title">Tetris</span>
+            </div>
+            <a href="../games/index.html" class="back-link">← Back to All Games</a>
+        </div>
+    </header>
 
-  <div class="game-wrapper">
-    <div class="board-container">
-      <canvas id="gameCanvas" width="300" height="600"></canvas>
-      <!-- Start Screen -->
-      <div class="overlay" id="startOverlay">
-        <h1>TETRIS</h1>
-        <div class="subtitle">Stack blocks, clear lines, beat your score. How long can you survive?</div>
-        <button class="btn" id="startBtn">▶ Play</button>
-      </div>
-      <!-- Game Over Screen -->
-      <div class="overlay hidden" id="gameOverOverlay">
-        <div class="final-score">Score: <span id="finalScore">0</span></div>
-        <div class="final-score" style="font-size:14px;margin-top:4px;">Lines: <span id="finalLines">0</span></div>
-        <div class="final-score" style="font-size:14px;">Level: <span id="finalLevel">1</span></div>
-        <br>
-        <button class="btn" id="restartBtn">↻ Restart</button>
-      </div>
+    <div class="game-wrapper">
+        <div class="board-container">
+            <canvas id="gameCanvas" width="300" height="600"></canvas>
+            <!-- Start Screen -->
+            <div class="overlay" id="startOverlay">
+                <h1>TETRIS</h1>
+                <div class="subtitle">Stack blocks, clear lines, beat your score. How long can you survive?</div>
+                <button class="btn" id="startBtn">▶ Play</button>
+            </div>
+            <!-- Game Over Screen -->
+            <div class="overlay hidden" id="gameOverOverlay">
+                <div class="final-score">Score: <span id="finalScore">0</span></div>
+                <div class="final-score" style="font-size:14px;margin-top:4px;">Lines: <span id="finalLines">0</span></div>
+                <div class="final-score" style="font-size:14px;">Level: <span id="finalLevel">1</span></div>
+                <br>
+                <button class="btn" id="restartBtn">↻ Restart</button>
+            </div>
+        </div>
+        <div class="side-panel">
+            <div class="panel-box">
+                <h4>Score</h4>
+                <div class="value" id="scoreDisplay">0</div>
+            </div>
+            <div class="panel-box">
+                <h4>Level</h4>
+                <div class="value" id="levelDisplay">1</div>
+            </div>
+            <div class="panel-box">
+                <h4>Lines</h4>
+                <div class="value" id="linesDisplay">0</div>
+            </div>
+            <div class="panel-box">
+                <h4>Next</h4>
+                <canvas id="nextCanvas" width="100" height="100"></canvas>
+            </div>
+            <div class="panel-box controls-box">
+                <h4>Controls</h4>
+                <kbd>←</kbd> <kbd>→</kbd> Move<br>
+                <kbd>↓</kbd> Soft drop<br>
+                <kbd>↑</kbd> Rotate<br>
+                <kbd>Space</kbd> Hard drop<br>
+                <kbd>P</kbd> Pause
+            </div>
+        </div>
     </div>
-    <div class="side-panel">
-      <div class="panel-box">
-        <h4>Score</h4>
-        <div class="value" id="scoreDisplay">0</div>
-      </div>
-      <div class="panel-box">
-        <h4>Level</h4>
-        <div class="value" id="levelDisplay">1</div>
-      </div>
-      <div class="panel-box">
-        <h4>Lines</h4>
-        <div class="value" id="linesDisplay">0</div>
-      </div>
-      <div class="panel-box">
-        <h4>Next</h4>
-        <canvas id="nextCanvas" width="100" height="100"></canvas>
-      </div>
-      <div class="panel-box controls-box">
-        <h4>Controls</h4>
-        <kbd>←</kbd> <kbd>→</kbd> Move<br>
-        <kbd>↓</kbd> Soft drop<br>
-        <kbd>↑</kbd> Rotate<br>
-        <kbd>Space</kbd> Hard drop<br>
-        <kbd>P</kbd> Pause
-      </div>
-    </div>
-  </div>
 
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <div class="footer-links">
-        <a href="../index.html">Home</a>
-        <a href="../games/index.html">All Games</a>
-      </div>
-      <p>© 2025 gameShelf — All games built in browser — no downloads required</p>
-    </div>
-  </footer>
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-links">
+                <a href="../index.html">Home</a>
+                <a href="../games/index.html">All Games</a>
+            </div>
+            <p>© 2025 gameShelf — All games built in browser — no downloads required</p>
+        </div>
+    </footer>
 
 <script>
 // ─── Constants ───────────────────────────────────────────────
@@ -589,7 +619,7 @@ function gameLoop(timestamp) {
         spawnPiece();
       }
     }
-    lastDrop = timestamp;
+    lastDrop = timestamp;  // Only set here, when the timer fires
   } else if (!isValid(current.shape, current.x, current.y + 1)) {
     // Piece is resting — accumulate lock delay
     lockDelay += timestamp - lastDrop;
@@ -600,7 +630,7 @@ function gameLoop(timestamp) {
     }
   }
 
-  lastDrop = timestamp;
+  // Do NOT set lastDrop here unconditionally
 
   // Render
   drawBoard();
