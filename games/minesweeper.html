@@ -804,6 +804,12 @@
                 // Update cursor to clicked cell
                 cursorX = mx;
                 cursorY = my;
+                // Handle first reveal if mines not yet placed
+                if (!minesPlaced) {
+                    placeMines(cursorX, cursorY);
+                    calculateAdjacentMines();
+                    minesPlaced = true;
+                }
                 revealCell(mx, my);
             }
         });
