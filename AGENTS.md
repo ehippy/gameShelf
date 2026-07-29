@@ -26,3 +26,12 @@ Valid categories: `action`, `puzzle`, `arcade`, `strategy`, `board`, `casual`.
 - **`node_modules/` committed to repo**: No `.gitignore` exists — `node_modules/` and `package-lock.json` are version-controlled. This has caused repeated merge conflicts (4 failures for the 2048 deploy alone). Add `.gitignore` with `node_modules/` immediately before any deploy work.
 - **Merge conflicts in `index.html`**: The root `index.html` games grid is edited by multiple agents. Coordinate before modifying it, or resolve conflicts early.
 - **GitHub Pages**: CI/CD is configured via `.github/workflows/deploy.yml` — deploys the entire repo to GitHub Pages on push to `main`.
+
+## What's New
+
+Maintain the last 5 releases/fixes on the landing page. When you add a game or make a fix:
+
+1. Update the list in `index.html` inside `<section class="what-new-section">` — replace one of the 5 entries with your new one.
+2. Use the format: **date** | **New** or **Fix** badge | **description** (one sentence, no period at the end).
+3. Keep entries in chronological order (newest first). Never exceed 5 entries.
+4. Run `npx prettier --write AGENTS.md` after editing this file to keep formatting consistent.
