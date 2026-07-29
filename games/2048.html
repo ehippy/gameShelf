@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>2048 — gameShelf</title>
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #0f0f23;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .game-header {
+            width: 100%;
+            background: rgba(15, 15, 35, 0.95);
+            border-bottom: 1px solid #2a2a5a;
+            padding: 0.75rem 1.25rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .game-header-inner {
+            max-width: 700px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: #a0a0b8;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #fbbf24;
+        }
+
+        .back-link::before {
+            content: '←';
+            font-size: 1.1rem;
+        }
+
+        .game-title-header {
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .game-container {
+            max-width: 420px;
+            width: 95%;
+            margin: 1.5rem auto 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .score-board {
+            display: flex;
+            gap: 0.75rem;
+            width: 100%;
+        }
+
+        .score-box {
+            flex: 1;
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+            color: #1a1a3e;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.25);
+        }
+
+        .score-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+        }
+
+        .score-value {
+            font-size: 1.4rem;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .controls-bar {
+            display: flex;
+            gap: 0.5rem;
+            width: 100%;
+        }
+
+        .btn-new-game {
+            flex: 1;
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+            color: #1a1a3e;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.25);
+        }
+
+        .btn-new-game:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.35);
+        }
+
+        .btn-new-game:active {
+            transform: translateY(0);
+        }
+
+        .board-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            background: #1e1e45;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            touch-action: none;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 8px;
+            padding: 8px;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .board-bg {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 8px;
+            padding: 8px;
+            pointer-events: none;
+        }
+
+        .board-cell {
+            border-radius: 0.5rem;
+            background: rgba(30, 30, 69, 0.6);
+        }
+
+        .tile-layer {
+            position: absolute;
+            inset: 8px;
+            pointer-events: none;
+        }
+
+        .tile {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            border-radius: 0.5rem;
+            transition: transform 0.1s ease-in-out;
+            z-index: 1;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .tile.new-tile {
+            animation: tile-pop 0.15s ease-in-out;
+        }
+
+        .tile.merged-tile {
+            animation: tile-merge 0.2s ease-in-out;
+            z-index: 2;
+        }
+
+        @keyframes tile-pop {
+            0% { transform: scale(0); }
+            60% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes tile-merge {
+            0% { transform: scale(1); }
+            40% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .tile-2 { background: #eee4da; color: #776e65; }
+        .tile-4 { background: #ede0c8; color: #776e65; }
+        .tile-8 { background: #f2b179; color: #f9f6f2; }
+        .tile-16 { background: #f59563; color: #f9f6f2; }
+        .tile-32 { background: #f67c5f; color: #f9f6f2; }
+        .tile-64 { background: #f65e3b; color: #f9f6f2; }
+        .tile-128 { background: #edcf72; color: #f9f6f2; }
+        .tile-256 { background: #edcc61; color: #f9f6f2; }
+        .tile-512 { background: #edc850; color: #f9f6f2; }
+        .tile-1024 { background: #edc53f; color: #f9f6f2; }
+        .tile-2048 { background: linear-gradient(135deg, #fbbf24, #d97706); color: #f9f6f2; box-shadow: 0 0 20px rgba(251, 191, 36, 0.5); }
+        .tile-super { background: #3c3a32; color: #f9f6f2; }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 15, 35, 0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.75rem;
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .overlay-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .overlay-subtitle {
+            font-size: 1rem;
+            color: #a0a0b8;
+            margin-bottom: 1.5rem;
+        }
+
+        .overlay-score {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #fbbf24;
+            margin-bottom: 1.5rem;
+        }
+
+        .overlay-btn {
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+            color: #1a1a3e;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.7rem 2rem;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.25);
+            margin: 0.25rem;
+        }
+
+        .overlay-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(251, 191, 36, 0.35);
+        }
+
+        .game-footer {
+            text-align: center;
+            color: #6b6b80;
+            font-size: 0.75rem;
+            padding: 1rem;
+        }
+
+        @media (max-width: 500px) {
+            .game-container {
+                width: 100%;
+                margin: 1rem 0 1.5rem;
+                padding: 0 0.5rem;
+            }
+            .board { gap: 6px; padding: 6px; }
+            .board-bg { gap: 6px; padding: 6px; }
+            .tile-layer { inset: 6px; }
+            .tile { border-radius: 0.4rem; }
+        }
+
+        @media (max-width: 360px) {
+            .board { gap: 5px; padding: 5px; }
+            .board-bg { gap: 5px; padding: 5px; }
+            .tile-layer { inset: 5px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="game-header">
+        <div class="game-header-inner">
+            <a href="../index.html" class="back-link">Home</a>
+            <span class="game-title-header">2048</span>
+            <div style="width: 60px;"></div>
+        </div>
+    </header>
+
+    <div class="game-container">
+        <div class="score-board">
+            <div class="score-box">
+                <div class="score-label">Score</div>
+                <div class="score-value" id="score">0</div>
+            </div>
+            <div class="score-box">
+                <div class="score-label">Best</div>
+                <div class="score-value" id="best-score">0</div>
+            </div>
+        </div>
+
+        <div class="controls-bar">
+            <button class="btn-new-game" id="btn-new-game">⟳ New Game</button>
+        </div>
+
+        <div class="board-wrapper" id="board-wrapper">
+            <div class="board" id="board"></div>
+            <div class="board-bg" id="board-bg"></div>
+            <div class="tile-layer" id="tile-layer"></div>
+
+            <div class="overlay" id="overlay-gameover">
+                <div class="overlay-title">Game Over!</div>
+                <div class="overlay-subtitle">No more moves available</div>
+                <div class="overlay-score" id="overlay-score-gameover">0</div>
+                <button class="overlay-btn" id="btn-play-again">Play Again</button>
+            </div>
+
+            <div class="overlay" id="overlay-win">
+                <div class="overlay-title">🎉 You Win!</div>
+                <div class="overlay-subtitle">You reached 2048!</div>
+                <button class="overlay-btn" id="btn-keep-playing">Keep Playing</button>
+                <button class="overlay-btn" id="btn-new-win">New Game</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="game-footer">
+        Use arrow keys or swipe to play · Merge tiles to reach 2048!
+    </div>
+
+    <script>
+    (function() {
+        'use strict';
+
+        const SIZE = 4;
+        const GAP = 8;
+        const PADDING = 8;
+
+        const boardBgEl = document.getElementById('board-bg');
+        const tileLayerEl = document.getElementById('tile-layer');
+        const scoreEl = document.getElementById('score');
+        const bestScoreEl = document.getElementById('best-score');
+        const btnNewGame = document.getElementById('btn-new-game');
+        const btnPlayAgain = document.getElementById('btn-play-again');
+        const btnKeepPlaying = document.getElementById('btn-keep-playing');
+        const btnNewWin = document.getElementById('btn-new-win');
+        const overlayGameOver = document.getElementById('overlay-gameover');
+        const overlayWin = document.getElementById('overlay-win');
+        const overlayScoreGameover = document.getElementById('overlay-score-gameover');
+        const boardWrapper = document.getElementById('board-wrapper');
+
+        // grid[r][c] = tile object or null
+        let grid = [];
+        let score = 0;
+        let bestScore = parseInt(localStorage.getItem('2048-best')) || 0;
+        let gameOver = false;
+        let won = false;
+        let keepPlaying = false;
+        let tileMap = {};  // id -> tile object
+        let tileIdCounter = 0;
+        let animating = false;
+
+        function getCellSize() {
+            const rect = boardWrapper.getBoundingClientRect();
+            const boardInner = rect.width - (PADDING * 2) - (GAP * (SIZE - 1));
+            return Math.max(55, Math.floor(boardInner / SIZE));
+        }
+
+        function getTilePos(row, col) {
+            const cellSize = getCellSize();
+            return {
+                x: col * (cellSize + GAP),
+                y: row * (cellSize + GAP),
+                size: cellSize
+            };
+        }
+
+        function getTileClass(value) {
+            if (value <= 2048) return 'tile-' + value;
+            return 'tile-super';
+        }
+
+        function setTextSize(el, value) {
+            const text = String(value);
+            const len = text.length;
+            if (len <= 2) el.style.fontSize = '1.8rem';
+            else if (len <= 3) el.style.fontSize = '1.5rem';
+            else if (len <= 4) el.style.fontSize = '1.2rem';
+            else el.style.fontSize = '1rem';
+        }
+
+        function createTileDOM(id, isNew) {
+            const t = tileMap[id];
+            const el = document.createElement('div');
+            el.id = 'tile-' + id;
+            el.classList.add('tile');
+            el.classList.add(getTileClass(t.value));
+            if (isNew) el.classList.add('new-tile');
+            setTextSize(el, t.value);
+            el.textContent = t.value;
+            const pos = getTilePos(t.r, t.c);
+            el.style.width = pos.size + 'px';
+            el.style.height = pos.size + 'px';
+            el.style.left = pos.x + 'px';
+            el.style.top = pos.y + 'px';
+            tileLayerEl.appendChild(el);
+        }
+
+        function updateTileDOM(id) {
+            const t = tileMap[id];
+            const el = document.getElementById('tile-' + id);
+            if (!el || !t) return;
+            const pos = getTilePos(t.r, t.c);
+            el.style.width = pos.size + 'px';
+            el.style.height = pos.size + 'px';
+            el.style.left = pos.x + 'px';
+            el.style.top = pos.y + 'px';
+        }
+
+        function removeTileDOM(id) {
+            const el = document.getElementById('tile-' + id);
+            if (el) el.remove();
+        }
+
+        function randomEmptyCell() {
+            const empty = [];
+            for (let r = 0; r < SIZE; r++)
+                for (let c = 0; c < SIZE; c++)
+                    if (grid[r][c] === null) empty.push({ r, c });
+            if (empty.length === 0) return null;
+            return empty[Math.floor(Math.random() * empty.length)];
+        }
+
+        function spawnTile() {
+            const pos = randomEmptyCell();
+            if (!pos) return;
+            const value = Math.random() < 0.9 ? 2 : 4;
+            const id = tileIdCounter++;
+            grid[pos.r][pos.c] = { id, value };
+            tileMap[id] = { id, r: pos.r, c: pos.c, value, isNew: true };
+            createTileDOM(id, true);
+        }
+
+        function setupBoard() {
+            boardBgEl.innerHTML = '';
+            for (let i = 0; i < SIZE * SIZE; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('board-cell');
+                boardBgEl.appendChild(cell);
+            }
+            const cellSize = getCellSize();
+            boardBgEl.style.gridTemplateColumns = 'repeat(' + SIZE + ', ' + cellSize + 'px)';
+            boardBgEl.style.gridTemplateRows = 'repeat(' + SIZE + ', ' + cellSize + 'px)';
+        }
+
+        function updateScoreDisplay() {
+            scoreEl.textContent = score;
+            bestScoreEl.textContent = bestScore;
+        }
+
+        function hasAnyMove() {
+            for (let r = 0; r < SIZE; r++) {
+                for (let c = 0; c < SIZE; c++) {
+                    if (grid[r][c] === null) return true;
+                    const v = grid[r][c].value;
+                    if (c < SIZE - 1 && grid[r][c + 1] && grid[r][c + 1].value === v) return true;
+                    if (r < SIZE - 1 && grid[r + 1][c] && grid[r + 1][c].value === v) return true;
+                }
+            }
+            return false;
+        }
+
+        /*
+         * Slide a single line toward the left (index 0).
+         * line: array of SIZE, each element is a tile object or null.
+         * Returns: { result: new line array, merges: [{ oldIds: [a,b], newId, value }] }
+         */
+        function slideLine(line) {
+            // Remove nulls
+            const tiles = line.filter(function(t) { return t !== null; });
+            const result = [];
+            const merges = [];
+            var i = 0;
+            while (i < tiles.length) {
+                if (i + 1 < tiles.length && tiles[i].value === tiles[i + 1].value) {
+                    var newVal = tiles[i].value * 2;
+                    var newId = tileIdCounter++;
+                    score += newVal;
+                    if (score > bestScore) {
+                        bestScore = score;
+                        localStorage.setItem('2048-best', bestScore);
+                    }
+                    merges.push({
+                        oldIds: [tiles[i].id, tiles[i + 1].id],
+                        newId: newId,
+                        value: newVal
+                    });
+                    result.push({ id: newId, value: newVal });
+                    i += 2;
+                } else {
+                    result.push(tiles[i]);
+                    i++;
+                }
+            }
+            while (result.length < SIZE) result.push(null);
+            return { result: result, merges: merges };
+        }
+
+        function move(dir) {
+            if (gameOver || animating) return;
+
+            // Deep-copy old grid state for comparison
+            var oldGrid = [];
+            for (var r = 0; r < SIZE; r++) {
+                oldGrid[r] = [];
+                for (var c = 0; c < SIZE; c++) {
+                    if (grid[r][c]) {
+                        oldGrid[r][c] = { id: grid[r][c].id, value: grid[r][c].value };
+                    } else {
+                        oldGrid[r][c] = null;
+                    }
+                }
+            }
+
+            var allTileMoves = [];   // { id, fromR, fromC, toR, toC }
+            var allRemovedIds = [];
+            var allNewMergedIds = [];
+
+            // Process each row/column based on direction
+            for (var idx = 0; idx < SIZE; idx++) {
+                var isRow = (dir === 'left' || dir === 'right');
+                var line = [];
+                for (var j = 0; j < SIZE; j++) {
+                    if (isRow) {
+                        line.push(grid[idx][j]);
+                    } else {
+                        line.push(grid[j][idx]);
+                    }
+                }
+
+                // If moving right/down, reverse the line so we always slide toward index 0
+                if (dir === 'right' || dir === 'down') {
+                    line.reverse();
+                }
+
+                var resultLine = slideLine(line);
+
+                if (dir === 'right' || dir === 'down') {
+                    resultLine.result.reverse();
+                }
+
+                // Now resultLine.result goes from left/top to right/bottom
+                // Map old tile positions to new tile positions for animation
+                // We need to figure out which old tile (by id) ended up where
+
+                // Track which old IDs were consumed in merges
+                for (var m = 0; m < resultLine.merges.length; m++) {
+                    var merge = resultLine.merges[m];
+                    for (var k = 0; k < merge.oldIds.length; k++) {
+                        allRemovedIds.push(merge.oldIds[k]);
+                    }
+                    // Find the position of the new merged tile in resultLine.result
+                    for (var n = 0; n < resultLine.result.length; n++) {
+                        if (resultLine.result[n] && resultLine.result[n].id === merge.newId) {
+                            var newR, newC;
+                            if (isRow) {
+                                newR = idx;
+                                newC = n;
+                            } else {
+                                newR = n;
+                                newC = idx;
+                            }
+                            allNewMergedIds.push({ id: merge.newId, r: newR, c: newC });
+                            break;
+                        }
+                    }
+                }
+
+                // For non-merged tiles, track their movement from old grid to result
+                // We need to match up old tile ids to new positions
+                // Build a map: for each non-merged tile in result, find the old tile with the same id
+                // and track its position change
+
+                // For row: old column idx maps to result position
+                // For col: old row idx maps to result position
+                var writeIdx = 0;
+                for (var ri = 0; ri < SIZE; ri++) {
+                    var resultTile = resultLine.result[ri];
+                    if (!resultTile) {
+                        writeIdx++;
+                        continue;
+                    }
+
+                    // Find which old tile (by id) ended up here
+                    var matched = false;
+                    for (var oldIdx = 0; oldIdx < SIZE; oldIdx++) {
+                        var oldTile;
+                        if (isRow) {
+                            oldTile = grid[idx][oldIdx];
+                        } else {
+                            oldTile = grid[oldIdx][idx];
+                        }
+                        if (!oldTile) continue;
+                        // Skip tiles that were consumed in merges
+                        var wasConsumed = false;
+                        for (var mi = 0; mi < resultLine.merges.length; mi++) {
+                            for (var ki = 0; ki < resultLine.merges[mi].oldIds.length; ki++) {
+                                if (resultLine.merges[mi].oldIds[ki] === oldTile.id) {
+                                    wasConsumed = true;
+                                    break;
+                                }
+                            }
+                            if (wasConsumed) break;
+                        }
+                        if (wasConsumed) continue;
+                        if (oldTile.id === resultTile.id) {
+                            var fromR = isRow ? idx : oldIdx;
+                            var fromC = isRow ? oldIdx : idx;
+                            var toR = isRow ? idx : writeIdx;
+                            var toC = isRow ? writeIdx : idx;
+                            if (fromR !== toR || fromC !== toC) {
+                                allTileMoves.push({ id: oldTile.id, fromR: fromR, fromC: fromC, toR: toR, toC: toC });
+                            }
+                            matched = true;
+                            break;
+                        }
+                    }
+                    writeIdx++;
+                }
+
+                // Write result back to grid
+                if (isRow) {
+                    for (var wc = 0; wc < SIZE; wc++) {
+                        var rt = resultLine.result[wc];
+                        if (rt) {
+                            grid[idx][wc] = { id: rt.id, value: rt.value };
+                        } else {
+                            grid[idx][wc] = null;
+                        }
+                    }
+                } else {
+                    for (var wr = 0; wr < SIZE; wr++) {
+                        var rt2 = resultLine.result[wr];
+                        if (rt2) {
+                            grid[wr][idx] = { id: rt2.id, value: rt2.value };
+                        } else {
+                            grid[wr][idx] = null;
+                        }
+                    }
+                }
+            }
+
+            // Check if anything actually moved
+            var moved = false;
+            for (var rr = 0; rr < SIZE; rr++) {
+                for (var cc = 0; cc < SIZE; cc++) {
+                    var oldV = oldGrid[rr][cc];
+                    var newV = grid[rr][cc];
+                    if (!oldV && !newV) continue;
+                    if ((oldV && !newV) || (!oldV && newV)) { moved = true; break; }
+                    if (oldV.id !== newV.id || oldV.value !== newV.value) { moved = true; break; }
+                }
+                if (moved) break;
+            }
+
+            if (!moved) return;
+
+            // === Animate ===
+            animating = true;
+
+            // Step 1: Animate slide positions for moving tiles
+            for (var ti = 0; ti < allTileMoves.length; ti++) {
+                var tm = allTileMoves[ti];
+                var el = document.getElementById('tile-' + tm.id);
+                if (!el) continue;
+                var pos = getTilePos(tm.toR, tm.toC);
+                el.style.width = pos.size + 'px';
+                el.style.height = pos.size + 'px';
+                el.style.left = pos.x + 'px';
+                el.style.top = pos.y + 'px';
+                // Update tileMap position
+                if (tileMap[tm.id]) {
+                    tileMap[tm.id].r = tm.toR;
+                    tileMap[tm.id].c = tm.toC;
+                }
+            }
+
+            // Step 2: After slide animation, remove consumed tiles and create merged ones
+            setTimeout(function() {
+                // Remove consumed tiles (merged tiles)
+                for (var ri = 0; ri < allRemovedIds.length; ri++) {
+                    removeTileDOM(allRemovedIds[ri]);
+                    delete tileMap[allRemovedIds[ri]];
+                }
+
+                // Create merged tiles at their final positions
+                for (var ni = 0; ni < allNewMergedIds.length; ni++) {
+                    var nm = allNewMergedIds[ni];
+                    tileMap[nm.id] = { id: nm.id, r: nm.r, c: nm.c, value: nm.value, merged: true };
+                    createTileDOM(nm.id, false);
+                    setTimeout(function(id) {
+                        var el = document.getElementById('tile-' + id);
+                        if (el) el.classList.add('merged-tile');
+                    }, 10, nm.id);
+                }
+
+                updateScoreDisplay();
+
+                // Check win condition
+                if (!won && !keepPlaying) {
+                    for (var wr = 0; wr < SIZE; wr++) {
+                        for (var wc = 0; wc < SIZE; wc++) {
+                            if (grid[wr][wc] && grid[wr][wc].value === 2048) {
+                                won = true;
+                                overlayWin.classList.add('active');
+                                animating = false;
+                                return;
+                            }
+                        }
+                    }
+                }
+
+                // Check game over
+                if (!hasAnyMove()) {
+                    gameOver = true;
+                    overlayScoreGameover.textContent = score;
+                    overlayGameOver.classList.add('active');
+                }
+
+                animating = false;
+            }, 110);
+        }
+
+        function init() {
+            grid = [];
+            for (var r = 0; r < SIZE; r++)
+                grid[r] = new Array(SIZE).fill(null);
+
+            score = 0;
+            gameOver = false;
+            won = false;
+            keepPlaying = false;
+            tileMap = {};
+            tileIdCounter = 0;
+            animating = false;
+            overlayGameOver.classList.remove('active');
+            overlayWin.classList.remove('active');
+            updateScoreDisplay();
+            setupBoard();
+            spawnTile();
+            spawnTile();
+        }
+
+        // Keyboard
+        document.addEventListener('keydown', function(e) {
+            switch (e.key) {
+                case 'ArrowUp': e.preventDefault(); move('up'); break;
+                case 'ArrowDown': e.preventDefault(); move('down'); break;
+                case 'ArrowLeft': e.preventDefault(); move('left'); break;
+                case 'ArrowRight': e.preventDefault(); move('right'); break;
+            }
+        });
+
+        // Touch/Swipe
+        var touchStartX = 0, touchStartY = 0, touchStartTime = 0;
+        var SWIPE_THRESHOLD = 30;
+
+        boardWrapper.addEventListener('touchstart', function(e) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            touchStartTime = Date.now();
+        }, { passive: true });
+
+        boardWrapper.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+
+        boardWrapper.addEventListener('touchend', function(e) {
+            var dx = e.changedTouches[0].clientX - touchStartX;
+            var dy = e.changedTouches[0].clientY - touchStartY;
+            if (Date.now() - touchStartTime > 500) return;
+            if (Math.max(Math.abs(dx), Math.abs(dy)) < SWIPE_THRESHOLD) return;
+            if (Math.abs(dx) > Math.abs(dy)) {
+                move(dx > 0 ? 'right' : 'left');
+            } else {
+                move(dy > 0 ? 'down' : 'up');
+            }
+        });
+
+        // Buttons
+        btnNewGame.addEventListener('click', init);
+        btnPlayAgain.addEventListener('click', init);
+        btnNewWin.addEventListener('click', init);
+        btnKeepPlaying.addEventListener('click', function() {
+            keepPlaying = true;
+            overlayWin.classList.remove('active');
+        });
+
+        // Resize
+        var resizeTimeout;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(function() {
+                setupBoard();
+                for (var id in tileMap) updateTileDOM(id);
+            }, 100);
+        });
+
+        init();
+    })();
+    </script>
+</body>
+</html>
