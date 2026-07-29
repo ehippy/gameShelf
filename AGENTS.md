@@ -31,6 +31,6 @@ Pick an existing `data-category`: `action`, `puzzle`, `arcade`, `strategy`, `boa
 
 ## Known Issues
 
-- **LLM timeouts**: The Qwen3.6-35B-A3B endpoint has timed out repeatedly. If a code generation task fails with an API timeout, retry or switch endpoints.
+- **`node_modules/` committed to repo**: No `.gitignore` exists — `node_modules/` and `package-lock.json` are version-controlled. This has caused repeated merge conflicts (4 failures for the 2048 deploy alone). Add `.gitignore` with `node_modules/` immediately before any deploy work.
 - **Merge conflicts in `index.html`**: The root `index.html` games grid is edited by multiple agents. Coordinate before modifying it, or resolve conflicts early.
 - **GitHub Pages**: CI/CD is configured via `.github/workflows/deploy.yml` — deploys the entire repo to GitHub Pages on push to `main`.
