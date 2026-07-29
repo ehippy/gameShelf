@@ -444,11 +444,8 @@ const mouseClickHandler = minesweeperHtml.match(/canvas\.addEventListener\('clic
 assert(mouseClickHandler, 'Mouse click handler exists');
 assert(mouseClickHandler[0] && /gameState === ['"]start['"]/.test(mouseClickHandler[0]), 'Mouse handler checks for start state for first reveal');
 
-// Check arrow keys work during 'start' state
-assert(startStateBlock && /ArrowUp/.test(startStateBlock[0]), 'ArrowUp handled during start state');
-assert(startStateBlock && /ArrowDown/.test(startStateBlock[0]), 'ArrowDown handled during start state');
-assert(startStateBlock && /ArrowLeft/.test(startStateBlock[0]), 'ArrowLeft handled during start state');
-assert(startStateBlock && /ArrowRight/.test(startStateBlock[0]), 'ArrowRight handled during start state');
+// Check arrow keys work during 'start' state (via KEY_MAP reference)
+assert(startStateBlock && /KEY_MAP/.test(startStateBlock[0]), 'Arrow keys via KEY_MAP handled during start state');
 assert(startStateBlock && /cursorX/.test(startStateBlock[0]) && /cursorY/.test(startStateBlock[0]), 'Cursor moves during start state');
 
 // ============================================
