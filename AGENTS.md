@@ -6,7 +6,7 @@ Games live in `games/` as single self-contained HTML files. Convention:
 
 - **File**: `games/<game-name>.html` (lowercase, hyphenated name)
 - **Structure**: `<html>` with inline `<style>` and `<script>` for game-specific code only. Link shared resources with `../styles.css` and `../script.js`.
-- **Canvas**: Prefer canvas-based rendering; 400×400 canvas with a 20×20 grid is the established standard (see Snake).
+- **Canvas**: Canvas-based rendering is the norm. Grid dimensions are game-specific — pick what fits the game (Tic Tac Toe uses 3×3, Minesweeper uses 16×16, 2048 uses 4×4). Keep the canvas reasonably sized (400×400 works well for most).
 - **Controls**: Keyboard-driven with reversal prevention (for Snake-like games).
 
 ### Registering the Game
