@@ -348,7 +348,7 @@ if (pmMatch) {
 // Timer stops on win
 var cwMatch = content.match(/function checkWin[\s\S]*?(?=\n        \/\/\s|$)/);
 // checkWin itself just checks the board; timer stopping is in the move handler after checkWin returns true
-assert(content.includes('gameState === \'won\'') || content.includes('gameState === "won"'), 'Win state set on puzzle completion');
+assert(content.includes("gameState = 'won'") || content.includes('gameState = "won"'), 'Win state set on puzzle completion');
 
 // ============================================================
 // Run JSDOM to verify DOM structure
