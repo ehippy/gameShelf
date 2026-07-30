@@ -172,7 +172,7 @@ assert(/class="logo"/.test(minesweeperHtml) && /gameShelf/.test(minesweeperHtml)
 assert(/game-title/.test(minesweeperHtml), 'Title element has game-title class');
 assert(/Minesweeper/.test(minesweeperHtml), 'Title "Minesweeper" present in header');
 // Check back link
-assert(/\.\.\/games\/index\.html/.test(minesweeperHtml), 'Back link to ../games/index.html exists');
+assert(/\.\.\/index\.html/.test(minesweeperHtml), 'Back link to ../index.html exists');
 
 // ============================================
 // SECTION 16: Footer structure
