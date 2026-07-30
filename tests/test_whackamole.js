@@ -91,8 +91,9 @@ assert(content.includes('MOLE_SPAWN_INTERVAL'), 'Spawn interval constant');
 assert(content.includes('clearTimeout'), 'Mole timer can be cleared');
 
 // 13. Start overlay blocks clicks during start
-assert(content.includes("if (gameState !== 'playing') return") && 
-       content.indexOf("canvas.addEventListener('click'") < content.indexOf("if (gameState !== 'playing') return"),
+// The click handler has a guard: if (gameState !== 'playing') return
+var clickHandlerMatch = content.match(/canvas\.addEventListener\('click',\s*function\(e\)\s*\{[\s\S]*?\n\s*\}\);/);
+assert(clickHandlerMatch && clickHandlerMatch[0].includes("gameState !== 'playing'"),
        'Click handler ignores non-playing state');
 
 // 14. Game over overlay blocks clicks during gameover
