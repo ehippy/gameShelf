@@ -25,7 +25,7 @@ function test(name, fn) {
 
 // ── Read files ──
 const tictactoe = fs.readFileSync(tictactoePath, 'utf8');
-const gamesIndex = fs.readFileSync(gamesIndexPath, 'utf8');
+const gamesIndex = fs.readFileSync(rootIndex, 'utf8');
 const rootIndex = fs.readFileSync(rootIndexPath, 'utf8');
 
 // ── Criterion 1: File exists at path matching href in games/index.html ──
