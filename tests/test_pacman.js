@@ -29,7 +29,6 @@ function test(name, fn) {
 
 // ── Read files ──
 const pacman = fs.readFileSync(pacmanPath, 'utf8');
-const gamesIndex = fs.readFileSync(gamesIndexPath, 'utf8');
 const rootIndex = fs.readFileSync(rootIndexPath, 'utf8');
 
 console.log('\n📋 FILE EXISTENCE & REGISTRATION');
