@@ -91,7 +91,7 @@ console.log('\n📝 REGISTRATION');
 console.log('─'.repeat(50));
 
 const gamesIndex = fs.readFileSync(GAMES_INDEX_PATH, 'utf-8');
-assert(gamesIndex.includes('2048.html'), '2048.html referenced in games/index.html');
+assert(gamesIndex.includes('2048.html'), '2048.html referenced in index.html');
 assert(gamesIndex.includes('2048') && gamesIndex.includes('puzzle'), '2048 game card present with puzzle category');
 
 // ============================================================
