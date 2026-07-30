@@ -222,12 +222,12 @@ assert(handleFirstRevealMatch[0].includes('startTimer()'),
 // ── AC10: Structural checks ──
 console.log('\n--- Structural & Integration Checks ---');
 
-// Grid dimensions: 16×16
-assert(content.includes('COLS = 16'), 'Grid has 16 columns');
-assert(content.includes('ROWS = 16'), 'Grid has 16 rows');
+// Grid dimensions: 16×16 (default Medium difficulty)
+assert(content.includes('COLS = 16') || content.includes('cols: 16'), 'Grid has 16 columns');
+assert(content.includes('ROWS = 16') || content.includes('rows: 16'), 'Grid has 16 rows');
 
-// Mine count
-assert(content.includes('MINES = 10'), 'Mine count is 10');
+// Mine count: 40 for default Medium difficulty
+assert(content.includes('MINES = 40') || content.includes('mines: 40'), 'Mine count is 40');
 
 // Canvas dimensions
 assert(content.includes('CANVAS_SIZE = 400'), 'Canvas size is 400px');
