@@ -85,7 +85,7 @@ console.log('─'.repeat(50));
 assert(htmlContent.includes('href="../index.html"'), 'Back/home link to ../index.html present');
 
 // ============================================================
-// 5. Registration in games/index.html
+// 5. Registration in index.html (games/index.html was removed)
 // ============================================================
 console.log('\n📝 REGISTRATION');
 console.log('─'.repeat(50));
