@@ -4,7 +4,7 @@
   "description": "",
   "main": "script.js",
   "scripts": {
-    "test": "node tests/test_2048.js && node tests/test_breakout.js && node tests/test_whackamole.js && node tests/test_tetris.js && node tests/test_tictactoe.js && node tests/test_pacman.js && node tests/test_simon_says.js"
+    "test": "node tests/test_2048.js && node tests/test_breakout.js && node tests/test_whackamole.js && node tests/test_tetris.js && node tests/test_tictactoe.js && node tests/test_pacman.js && node tests/test_simon_says.js && node tests/test_carousel.js",
   },
   "keywords": [],
   "author": "",
