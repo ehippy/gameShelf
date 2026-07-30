@@ -213,10 +213,10 @@ test('Header has game title "Tic Tac Toe"', () => {
     if (!tictactoe.includes('Tic Tac Toe')) throw new Error('Game title not found');
 });
 
-test('Header back link goes to ../games/index.html', () => {
+test('Header back link goes to ../index.html', () => {
     const lines = tictactoe.split('\n');
     const backLine = lines.find(l => l.includes('back-link') && l.includes('href='));
-    if (!backLine || !backLine.includes('href="../games/index.html"')) {
+    if (!backLine || !backLine.includes('href="../index.html"')) {
         throw new Error('Back link href incorrect');
     }
 });
