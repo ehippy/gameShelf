@@ -566,6 +566,11 @@
 
         // Start game
         function startGame() {
+            // Guard: if game is already playing, safely ignore
+            if (gameState === 'playing') {
+                return;
+            }
+
             // Cancel any existing loop
             if (animationId) {
                 cancelAnimationFrame(animationId);
@@ -577,6 +582,7 @@
             gameoverOverlay.classList.remove('visible');
             winOverlay.classList.remove('visible');
 
+            gameState = 'playing';
             initGame();
             render();
         }
