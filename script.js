@@ -82,4 +82,75 @@
         });
     }
 
+    // ── Most Played Carousel ───────────────────────────────────
+    var carouselTrack = document.querySelector('.carousel-track');
+    var carouselSlides = document.querySelectorAll('.carousel-slide');
+    var carouselDots = document.querySelectorAll('.carousel-dot');
+    var shuffleIndicator = document.querySelector('.shuffle-indicator');
+
+    if (carouselTrack && carouselSlides.length > 0) {
+        var currentIndex = 0;
+        var totalSlides = carouselSlides.length;
+        var carouselInterval;
+
+        function showSlide(index) {
+            carouselTrack.style.transform = 'translateX(' + (index * -100) + '%)';
+
+            carouselDots.forEach(function (dot) {
+                dot.classList.remove('active');
+            });
+
+            if (carouselDots[index]) {
+                carouselDots[index].classList.add('active');
+            }
+        }
+
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % totalSlides;
+            showSlide(currentIndex);
+        }
+
+        function startAutoAdvance() {
+            carouselInterval = setInterval(nextSlide, 6000);
+        }
+
+        function stopAutoAdvance() {
+            clearInterval(carouselInterval);
+        }
+
+        // Dot navigation
+        carouselDots.forEach(function (dot, dotIndex) {
+            dot.addEventListener('click', function () {
+                currentIndex = dotIndex;
+                showSlide(currentIndex);
+                stopAutoAdvance();
+                startAutoAdvance();
+            });
+        });
+
+        // Respect prefers-reduced-motion
+        var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+        if (!prefersReducedMotion.matches) {
+            startAutoAdvance();
+        }
+
+        // Listen for changes to the reduced motion preference
+        if (prefersReducedMotion.addEventListener) {
+            prefersReducedMotion.addEventListener('change', function (e) {
+                if (e.matches) {
+                    stopAutoAdvance();
+                } else {
+                    startAutoAdvance();
+                }
+            });
+        }
+
+        // Pause on hover
+        var carouselWrapper = document.querySelector('.carousel-wrapper');
+        if (carouselWrapper) {
+            carouselWrapper.addEventListener('mouseenter', stopAutoAdvance);
+            carouselWrapper.addEventListener('mouseleave', startAutoAdvance);
+        }
+    }
+
 })();

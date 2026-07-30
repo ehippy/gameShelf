@@ -733,3 +733,153 @@ a {
     justify-content: center;
     margin-top: var(--spacing-lg);
 }
+
+/* ========================================
+   Most Played Carousel
+   ======================================== */
+.most-played-section {
+    background: var(--bg-secondary);
+    padding: var(--spacing-2xl) 0;
+    margin: 0;
+}
+
+.most-played-section .section-header {
+    max-width: 1200px;
+    margin: 0 auto var(--spacing-lg);
+    padding: 0 var(--spacing-lg);
+}
+
+.most-played-section .section-header h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.shuffle-indicator {
+    display: inline-block;
+    font-size: 1.1rem;
+    animation: pulse-shuffle 3s ease-in-out infinite;
+    margin-left: var(--spacing-sm);
+    vertical-align: middle;
+}
+
+@keyframes pulse-shuffle {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.6;
+    }
+    50% {
+        transform: scale(1.3);
+        opacity: 1;
+    }
+}
+
+.carousel-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    overflow: hidden;
+    position: relative;
+}
+
+.carousel-track {
+    display: flex;
+    transition: transform 0.5s ease;
+}
+
+.carousel-slide {
+    min-width: 100%;
+    display: flex;
+    gap: var(--spacing-lg);
+    padding: 0 var(--spacing-lg);
+}
+
+.carousel-slide .game-card {
+    flex: 0 0 calc(20% - var(--spacing-lg));
+    min-width: 0;
+}
+
+.carousel-slide .game-card .card-thumb {
+    height: 100px;
+}
+
+.carousel-slide .game-card .thumb-icon {
+    font-size: 2rem;
+}
+
+.carousel-slide .game-card .card-info {
+    padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.carousel-slide .game-card .card-info h3 {
+    font-size: 0.95rem;
+}
+
+.carousel-slide .game-card .card-desc {
+    font-size: 0.8rem;
+}
+
+.carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-xl);
+}
+
+.carousel-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: none;
+    background: var(--text-muted);
+    opacity: 0.5;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    padding: 0;
+}
+
+.carousel-dot.active {
+    background: var(--accent);
+    opacity: 1;
+    transform: scale(1.3);
+}
+
+.carousel-dot:hover {
+    opacity: 0.8;
+}
+
+/* Responsive — Mobile */
+@media (max-width: 768px) {
+    .most-played-section {
+        padding: var(--spacing-xl) 0;
+    }
+
+    .most-played-section .section-header {
+        padding: 0 var(--spacing-md);
+    }
+
+    .most-played-section .section-header h2 {
+        font-size: 1.25rem;
+    }
+
+    .carousel-slide {
+        padding: 0 var(--spacing-md);
+    }
+
+    .carousel-slide .game-card {
+        flex: 0 0 calc(50% - var(--spacing-lg) / 2);
+    }
+
+    .carousel-slide .game-card .card-thumb {
+        height: 90px;
+    }
+
+    .carousel-slide .game-card .card-info h3 {
+        font-size: 0.9rem;
+    }
+
+    .carousel-slide .game-card .card-desc {
+        font-size: 0.75rem;
+    }
+}
