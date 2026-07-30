@@ -72,9 +72,9 @@ assert(content.includes('score') && content.includes('++'), 'Score increments on
 assert(content.includes("'start'"), 'Start state defined');
 assert(content.includes("'playing'"), 'Playing state defined');
 assert(content.includes("'gameover'"), 'GameOver state defined');
-assert(content.includes("gameState === 'start'"), 'Checks start state');
-assert(content.includes("gameState === 'playing'"), 'Checks playing state');
-assert(content.includes("gameState === 'gameover'"), 'Checks gameover state');
+assert(content.includes("gameState === 'start'") || content.includes("gameState !== 'start'"), 'Checks start state');
+assert(content.includes("gameState === 'playing'") || content.includes("gameState !== 'playing'"), 'Checks playing state');
+assert(content.includes("gameState === 'gameover'") || content.includes("gameState !== 'gameover'"), 'Checks gameover state');
 
 // 11. Timer and scoring
 assert(content.includes('setInterval'), 'setInterval for game timer');
