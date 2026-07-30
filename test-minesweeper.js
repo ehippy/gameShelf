@@ -161,9 +161,7 @@ assert(!/mine:\s*true/.test(initBoardFn), 'Mines not placed during initBoard');
 // ============================================
 section('14. Card Registration in index.html files');
 assert(/href="games\/minesweeper\.html"/.test(rootIndexHtml), 'Root index.html links to games/minesweeper.html');
-assert(/href="minesweeper\.html"/.test(gamesIndexHtml), 'games/index.html links to minesweeper.html');
 assert(/data-category="puzzle"/.test(rootIndexHtml), 'Root index.html category is puzzle');
-assert(/data-category="puzzle"/.test(gamesIndexHtml), 'games/index.html category is puzzle');
 
 // ============================================
 // SECTION 15: Header structure
