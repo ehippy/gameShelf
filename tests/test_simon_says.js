@@ -9,7 +9,6 @@ const path = require('path');
 const { JSDOM } = require('jsdom');
 
 const SIMON_PATH = path.resolve(__dirname, '..', 'games', 'simon-says.html');
-const GAMES_INDEX_PATH = path.resolve(__dirname, '..', 'games', 'index.html');
 const ROOT_INDEX_PATH = path.resolve(__dirname, '..', 'index.html');
 
 let passed = 0;
