@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../pages/Home.vue'
 
+// Vue Router configuration for gameShelf SPA
 const routes = [
   {
     path: '/',
