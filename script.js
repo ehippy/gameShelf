@@ -15,7 +15,8 @@
         { name: 'Minesweeper', href: 'minesweeper.html', category: 'puzzle' },
         { name: 'Tic Tac Toe', href: 'tictactoe.html', category: 'puzzle' },
         { name: 'Memory Match', href: 'memorymatch.html', category: 'puzzle' },
-        { name: 'Simon Says', href: 'games/simon-says.html', category: 'casual' }
+        { name: 'Simon Says', href: 'games/simon-says.html', category: 'casual' },
+        { name: 'Sliding Tile Puzzle', href: 'slidingpuzzle.html', category: 'puzzle' }
     ];
 
     // ── Random Game Button ────────────────────────────────────
