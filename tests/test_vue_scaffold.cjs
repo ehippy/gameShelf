@@ -110,15 +110,16 @@ scriptPaths.forEach((src, i) => {
   );
 });
 
-const linkTags = distContent.match(/<link[^>]+href="([^"]+)"/g) || [];
-const linkPaths = linkTags.map(t => {
+// Check CSS link tags (exclude icon/favicon links — those are template artifacts)
+const linkTags = distContent.match(/<link[^>]+rel=["']stylesheet["'][^>]+href="([^"]+)"/g) || [];
+linkPaths = linkTags.map(t => {
   const match = t.match(/href="([^"]+)"/);
   return match ? match[1] : '';
 });
 linkPaths.forEach((href, i) => {
   assert(
     href.startsWith('/gameShelf/'),
-    `Link tag ${i + 1} has /gameShelf/ prefix: "${href}"`
+    `CSS link tag ${i + 1} has /gameShelf/ prefix: "${href}"`
   );
 });
 
