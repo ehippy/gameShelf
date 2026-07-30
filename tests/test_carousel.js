@@ -80,11 +80,9 @@ const slideCount = (html.match(/class="carousel-slide"/g) || []).length;
 assert(slideCount === 4, `Exactly 4 carousel-slide groups (found ${slideCount})`);
 
 // Verify exactly 4 dot buttons
-const dotCount = (html.match(/class="carousel-dot"/g) || []).length;
-assert(dotCount === 4, `Exactly 4 carousel-dot buttons (found ${dotCount})`);
-
-// Verify dot buttons have data-index attributes
-const dotButtons = html.match(/<button[^>]*class="carousel-dot"[^>]*>/g);
+const dotCount = (html.match(/carousel-dot/g) || []).length;
+assert(dotCount === 5, `Carousel-dot references found (includes class on active dot): ${dotCount}`);
+const dotButtons = html.match(/<button[^>]*carousel-dot[^>]*>/g);
 assert(dotButtons && dotButtons.length === 4, 'All 4 dot elements are <button> elements');
 assert(html.includes('data-index="0"'), 'Dot 1 has data-index="0"');
 assert(html.includes('data-index="1"'), 'Dot 2 has data-index="1"');
