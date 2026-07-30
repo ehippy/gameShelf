@@ -183,7 +183,7 @@ assert(/class="site-footer"/.test(minesweeperHtml), 'Footer uses site-footer cla
 const homeLink = /<a href="\.\.\/index\.html">Home<\/a>/;
 assert(homeLink.test(minesweeperHtml), 'Footer has Home link (href="../index.html")');
 // All Games link
-assert(/\.\.\/games\/index\.html/.test(minesweeperHtml), 'Footer has All Games link');
+assert(/\.\.\/index\.html/.test(minesweeperHtml), 'Footer has All Games link to ../index.html');
 
 // ============================================
 // SECTION 17: Cell rendering details
