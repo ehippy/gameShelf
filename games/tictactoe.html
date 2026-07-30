@@ -300,7 +300,7 @@
             <!-- Start Overlay -->
             <div class="overlay" id="startOverlay">
                 <div class="overlay-title">❌ Tic Tac Toe</div>
-                <div class="overlay-subtitle">Use arrow keys to move, Enter to place. Get three in a row to win!</div>
+                <div class="overlay-subtitle">Click a cell or use arrow keys + Enter to place. Get three in a row to win!</div>
                 <button class="btn" id="startBtn">▶ Start Game</button>
             </div>
 
@@ -794,6 +794,47 @@
 
             if (e.key === 'Enter' || e.key === ' ') {
                 playerPlace();
+            }
+        });
+
+        // ── Mouse Click Handler ──
+        canvas.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (gameState !== 'playing' || aiThinking) return;
+
+            // Get click position relative to canvas
+            var rect = canvas.getBoundingClientRect();
+            var clickX = e.clientX - rect.left;
+            var clickY = e.clientY - rect.top;
+
+            // Convert to grid coordinates
+            var col = Math.floor(clickX / CELL);
+            var row = Math.floor(clickY / CELL);
+
+            // Clamp to grid bounds (0-2)
+            col = Math.max(0, Math.min(2, col));
+            row = Math.max(0, Math.min(2, row));
+
+            // Only place if cell is empty
+            if (board[row][col] === null) {
+                board[row][col] = 'X';
+
+                // Check for win/draw
+                var result = checkWinner();
+                if (result) {
+                    winner = result.winner;
+                    winLine = result.line;
+                    gameState = 'gameover';
+                    showGameOver(winner);
+                    updateTurnIndicator();
+                    render();
+                    return;
+                }
+
+                // AI's turn
+                updateTurnIndicator();
+                render();
+                aiMove();
             }
         });
 

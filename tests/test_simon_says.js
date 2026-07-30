@@ -10,6 +10,7 @@ const { JSDOM } = require('jsdom');
 
 const SIMON_PATH = path.resolve(__dirname, '..', 'games', 'simon-says.html');
 const ROOT_INDEX_PATH = path.resolve(__dirname, '..', 'index.html');
+const SCRIPT_JS_PATH = path.resolve(__dirname, '..', 'script.js');
 
 let passed = 0;
 let failed = 0;
@@ -25,6 +26,9 @@ function assert(condition, message) {
         console.log(`  ❌ ${message}`);
     }
 }
+
+const rootIndex = fs.readFileSync(ROOT_INDEX_PATH, 'utf-8');
+const scriptJs = fs.readFileSync(SCRIPT_JS_PATH, 'utf-8');
 
 // ============================================================
 // 1. File existence & self-contained checks
@@ -303,8 +307,6 @@ assert(htmlContent.includes('setTimeout') && htmlContent.includes('litButton = -
 // ============================================================
 console.log('\n📝 REGISTRATION IN index.html');
 console.log('─'.repeat(50));
-
-const rootIndex = fs.readFileSync(ROOT_INDEX_PATH, 'utf-8');
 assert(rootIndex.includes('games/simon-says.html'), 'games/simon-says.html referenced in index.html');
 assert(rootIndex.includes('data-category="casual"') || rootIndex.includes("data-category='casual'"),
     'Simon Says registered as casual category in index.html');
@@ -349,8 +351,9 @@ if (whatNewList) {
 console.log('\n📋 GAMES JAVASCRIPT ARRAY');
 console.log('─'.repeat(50));
 
-const gamesMatch = rootIndex.match(/var games\s*=\s*\[[\s\S]*?\];/);
-assert(gamesMatch, 'Games array defined in index.html');
+// The gamesCatalog lives in script.js, not index.html
+const gamesMatch = scriptJs.match(/gamesCatalog\s*=\s*\[[\s\S]*?\];/);
+assert(gamesMatch, 'Games array defined in script.js');
 if (gamesMatch) {
     assert(gamesMatch[0].includes('Simon Says'), 'Simon Says in games array');
     assert(gamesMatch[0].includes('simon-says.html'), 'games/simon-says.html in games array');
