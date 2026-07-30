@@ -6,8 +6,7 @@ import { dirname, join } from 'node:path'
 import { readFileSync, existsSync, readdirSync } from 'node:fs'
 
 const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-const root = join(__dirname, '..')
+const root = dirname(__filename)
 
 let passed = 0
 let failed = 0
