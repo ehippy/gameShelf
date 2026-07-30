@@ -287,21 +287,23 @@ assert(rootIndex.includes('Added Space Invaders — the classic arcade shooter w
        'What\'s new includes Space Invaders entry with correct description');
 
 // ════════════════════════════════════════════════════════════
-// 21. Simon Says href fixed in script.js
+// 22. All gamesCatalog entries use bare filenames (no games/ prefix)
 // ════════════════════════════════════════════════════════════
-console.log('\n--- Registration: Simon Says href Fix ---');
+console.log('\n--- Registration: All Catalog Hrefs Are Bare Filenames ---');
 
-var simonCatalog = scriptContent.match(/{\s*name:\s*['"]Simon Says['"][\s\S]*?category:\s*['"]/);
-if (simonCatalog) {
-    var simonEntryText = simonCatalog[0];
-    // The href should be 'simon-says.html' NOT 'games/simon-says.html'
-    var hasCorrectHref = simonEntryText.match(/href:\s*['"]simon-says\.html['"]/);
-    var hasWrongHref = simonEntryText.match(/href:\s*['"]games\/simon-says\.html['"]/);
-    assert(hasCorrectHref && !hasWrongHref,
-           'Simon Says catalog href is "simon-says.html" (not "games/simon-says.html")');
-} else {
-    assert(false, 'Could not find Simon Says catalog entry to verify href fix');
-}
+var catalogHrefs = scriptContent.match(/href:\s*['"]([^'"]+)['"]/g) || [];
+var allBareFilenames = true;
+var badHrefs = [];
+catalogHrefs.forEach(function (match) {
+    var href = match.match(/href:\s*['"]([^'"]+)['"]/);
+    if (href && href[1] && href[1].indexOf('/') !== -1) {
+        allBareFilenames = false;
+        badHrefs.push(href[1]);
+    }
+});
+assert(allBareFilenames,
+       'All catalog hrefs are bare filenames (no "games/" prefix); found: ' +
+       (badHrefs.length ? badHrefs.join(', ') : 'none'));
 
 // ════════════════════════════════════════════════════════════
 // Summary
