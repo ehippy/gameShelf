@@ -24,7 +24,6 @@ function section(name) {
 // READ FILES
 // ============================================
 const memorymatchHtml = fs.readFileSync(path.join(__dirname, 'games', 'memorymatch.html'), 'utf-8');
-const gamesIndexHtml = fs.readFileSync(path.join(__dirname, 'games', 'index.html'), 'utf-8');
 const rootIndexHtml = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf-8');
 const stylesCss = fs.readFileSync(path.join(__dirname, 'styles.css'), 'utf-8');
 
