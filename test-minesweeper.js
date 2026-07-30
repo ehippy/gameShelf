@@ -308,16 +308,9 @@ assert(featuredEnd < randomBtnIdx, 'Button appears after Featured Games section 
 assert(randomBtnIdx < whatNewIdx, 'Button appears before What\'s New section');
 
 // ============================================
-// SECTION 30: Random Game Button — games/index.html
+// SECTION 30: Random Game Button — removed (games/index.html deleted, root index.html has it)
 // ============================================
-section('30. Random Game Button — All Games Page (games/index.html)');
-assert(/id="randomGameBtn"/.test(gamesIndexHtml), 'Random Game button has id="randomGameBtn" on games page');
-assert(/class="random-btn"/.test(gamesIndexHtml), 'Random Game button has class="random-btn" on games page');
-assert(/🎲\s*Play Random Game/.test(gamesIndexHtml), 'Button displays 🎲 emoji and "Play Random Game" text on games page');
-// Button positioned before All Games heading (h2)
-const h2AllGamesIdx = gamesIndexHtml.indexOf('<h2>All Games</h2>');
-const gamesPageRandomBtnIdx = gamesIndexHtml.indexOf('randomGameBtn');
-assert(gamesPageRandomBtnIdx < h2AllGamesIdx, 'Button appears above "All Games" heading on games page');
+section('30. Random Game Button — Root index.html only');
 
 // ============================================
 // SECTION 31: Games Catalog — all 9 games
