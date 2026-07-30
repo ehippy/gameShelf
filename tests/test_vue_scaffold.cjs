@@ -21,11 +21,12 @@ function assert(condition, message) {
   }
 }
 
-// ========== AC1: index.html has <div id="app"> and <script src="/src/main.js"> ==========
+// ========== AC1: index.html no longer has Vue SPA entry points (static landing page) ==========
 console.log('\n--- AC1: index.html entry point ---');
 const indexHtml = fs.readFileSync(path.join(REPO_ROOT, 'index.html'), 'utf-8');
-assert(indexHtml.includes('<div id="app"'), 'index.html contains <div id="app">');
-assert(indexHtml.includes('/src/main.js'), 'index.html contains <script src="/src/main.js">');
+assert(!indexHtml.includes('<div id="app"'), 'index.html no longer contains <div id="app">');
+assert(!indexHtml.includes('/src/main.js'), 'index.html no longer contains <script src="/src/main.js">');
+assert(!indexHtml.includes('type="module"'), 'index.html no longer has <script type="module">');
 
 // ========== AC2: npm run build produces dist/index.html and bundled files ==========
 console.log('--- AC2: Build output ---');
