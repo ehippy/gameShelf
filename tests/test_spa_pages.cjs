@@ -66,8 +66,8 @@ assert(appSrc.includes('<Header />'), 'App.vue renders <Header />');
 assert(appSrc.includes('<Footer />'), 'App.vue renders <Footer />');
 assert(appSrc.includes('<router-view') || appSrc.includes('<router-view/>'), 'App.vue renders <router-view>');
 assert(appSrc.includes('<main>') && appSrc.includes('</main>'), 'App.vue wraps router-view in <main>');
-assert(appSrc.includes('Header') && appSrc.indexOf('Header') < appSrc.indexOf('main'), 'Header comes before <main>');
-assert(appSrc.indexOf('main') < appSrc.indexOf('Footer'), '<Footer> comes after <main>');
+assert(appSrc.indexOf('<Header />') < appSrc.indexOf('<main>'), 'Header comes before <main>');
+assert(appSrc.indexOf('<main>') < appSrc.indexOf('<Footer />'), '<Footer> comes after <main>');
 
 // ============================================================
 // AC: Header component
