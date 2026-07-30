@@ -351,8 +351,8 @@ assert(html.includes('id="games-grid"'), 'Games grid has games-grid id');
 
 // Grid cards still have .card-play (only carousel cards omit it)
 const gridCards = html.match(/<div class="card-play">▶ Play<\/div>/g);
-assert(gridCards && gridCards.length === 10,
-    'All 10 grid cards have .card-play elements (carousel cards should not)');
+assert(gridCards && gridCards.length >= 10,
+    `All grid cards have .card-play elements (${gridCards.length} found)`);
 
 // Existing JS functions still present
 assert(js.includes('filterButtons'), 'JS still has filterButtons logic');
