@@ -27,7 +27,7 @@ function test(name, fn) {
 const tictactoe = fs.readFileSync(tictactoePath, 'utf8');
 const rootIndex = fs.readFileSync(rootIndexPath, 'utf8');
 
-// ── Criterion 1: File exists at path matching href in games/index.html ──
+// ── Criterion 1: File exists at path matching href in index.html (games/index.html was removed) ──
 test('File games/tictactoe.html exists', () => {
     if (!fs.existsSync(tictactoePath)) throw new Error('File does not exist');
 });
