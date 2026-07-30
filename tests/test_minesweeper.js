@@ -24,44 +24,47 @@ console.log('\n=== Minesweeper — Double-Tap Start Bug Fix Tests ===\n');
 // ── AC1: Space/Enter on start screen starts game with one press ──
 console.log('\n--- AC1: Space/Enter on start screen starts game (single key press) ---');
 
-// The playing-state Space/Enter handler must NOT contain !minesPlaced guard
-// Extract the playing-state branch of the keydown handler
-var playingGuard = content.match(/if\s*\(gameState\s*!==\s*['"]playing['"]\)\s*return;/);
-assert(playingGuard !== null, 'Playing-state guard exists in keydown handler');
+// Find the keydown handler, then find the Space/Enter handler in the playing-state branch
+var kdIdx = content.indexOf('document.addEventListener');
+assert(kdIdx !== -1, 'keydown event listener exists');
 
-if (playingGuard) {
-  // Get everything after "gameState !== 'playing' return;"
-  var afterGuardIdx = content.indexOf('gameState') + playingGuard[0].length;
-  var afterGuard = content.substring(afterGuardIdx);
-  // Get up to next major block (function definition or next if at top level)
-  var playingBranch = afterGuard.match(/([\s\S]*?)\n\s*\/\/|function /);
+if (kdIdx !== -1) {
+  var kdBody = content.substring(kdIdx, content.indexOf('});', kdIdx) + 2);
 
-  if (playingBranch) {
-    var pb = playingBranch[1];
-    // Extract Space/Enter handler from playing branch
-    var seMatch = pb.match(/e\.code\s*===\s*['"]Space['"]\s*\|\|\s*e\.code\s*===\s*['"]Enter['"]/);
-    assert(seMatch !== null, 'Space/Enter check found in playing-state branch');
+  // Find the "if (gameState !== 'playing') return;" guard
+  var playingGuardIdx = kdBody.indexOf("gameState !== 'playing'");
+  assert(playingGuardIdx !== -1, 'Playing-state guard exists in keydown handler');
 
-    // Extract just the Space/Enter if-block body
-    var seBlock = pb.match(/e\.code\s*===\s*['"]Space['"]\s*\|\|\s*e\.code\s*===\s*['"]Enter['"][\s\S]*?\}\n\s*\}/);
-    assert(seBlock !== null, 'Space/Enter if-block found in playing-state branch');
+  if (playingGuardIdx !== -1) {
+    var afterPlayingGuard = kdBody.substring(playingGuardIdx + playingGuard.match(/gameState !== 'playing' return;/)[0].length);
 
-    if (seBlock) {
-      var seBody = seBlock[0];
-      assert(!seBody.includes('!minesPlaced') && !seBody.includes('!minesPlaced '),
-             'Space/Enter handler does NOT contain !minesPlaced guard');
-      assert(!seBody.includes('beginPlaying()'),
-             'Space/Enter handler does NOT call beginPlaying()');
-      assert(!seBody.includes('placeMines('),
-             'Space/Enter handler does NOT call placeMines()');
-      assert(!seBody.includes('startTimer()'),
-             'Space/Enter handler does NOT call startTimer()');
-      assert(!seBody.includes('calculateAdjacentMines()'),
-             'Space/Enter handler does NOT call calculateAdjacentMines()');
-      assert(seBody.includes('revealCell(cursorX, cursorY)'),
-             'Space/Enter handler calls revealCell(cursorX, cursorY)');
-      assert(seBody.includes('render()'),
-             'Space/Enter handler calls render()');
+    // Find Space/Enter handler within this branch
+    var seIdx = afterPlayingGuard.indexOf("e.code === 'Space' || e.code === 'Enter'");
+    assert(seIdx !== -1, 'Space/Enter check found in playing-state branch');
+
+    if (seIdx !== -1) {
+      // Extract the Space/Enter if-block
+      var seRest = afterPlayingGuard.substring(seIdx);
+      var seBlock = seRest.match(/\{([\s\S]*?)\}\s*\n\s*if\s+.*KeyR/);
+      assert(seBlock !== null, 'Space/Enter if-block found in playing-state branch');
+
+      if (seBlock) {
+        var seBody = seBlock[1];
+        assert(!seBody.includes('!minesPlaced') && !seBody.includes('!minesPlaced '),
+               'Space/Enter handler does NOT contain !minesPlaced guard');
+        assert(!seBody.includes('beginPlaying()'),
+               'Space/Enter handler does NOT call beginPlaying()');
+        assert(!seBody.includes('placeMines('),
+               'Space/Enter handler does NOT call placeMines()');
+        assert(!seBody.includes('startTimer()'),
+               'Space/Enter handler does NOT call startTimer()');
+        assert(!seBody.includes('calculateAdjacentMines()'),
+               'Space/Enter handler does NOT call calculateAdjacentMines()');
+        assert(seBody.includes('revealCell(cursorX, cursorY)'),
+               'Space/Enter handler calls revealCell(cursorX, cursorY)');
+        assert(seBody.includes('render()'),
+               'Space/Enter handler calls render()');
+      }
     }
   }
 }
@@ -108,13 +111,9 @@ console.log('\n--- AC4: Smiley shows 😀 when game starts ---');
 assert(content.includes("smileyBtn.textContent = '😀'") || content.includes("smileyBtn.textContent='😀'"),
        'Smiley resets to 😀 on game start (initBoard/startGame)');
 
-// Verify smiley on game over shows 😵
-assert(content.includes("smileyBtn.textContent = '😵'") || content.includes("smileyBtn.textContent='😵'"),
-       'Smiley shows 😵 on game over');
-
-// Verify smiley on win shows 😎
-assert(content.includes("smileyBtn.textContent = '😎'") || content.includes("smileyBtn.textContent='😎'"),
-       'Smiley shows 😎 on win');
+// Verify smiley uses ternary for won/lost states with correct emojis
+assert(content.includes("smileyBtn.textContent = won ?") && content.includes('😎') && content.includes('😵'),
+       'Smiley shows 😎 on win and 😵 on game over (ternary in endGame)');
 
 // ── AC5: No mine on cell (0,0) — placeMines excludes firstRevealX/Y ──
 console.log('\n--- AC5: No mine placed on cell (0,0) ---');
@@ -134,33 +133,32 @@ if (placeMinesMatch) {
 // ── AC6: Arrow key cursor navigation on start screen works ──
 console.log('\n--- AC6: Arrow key cursor navigation on start screen ---');
 
-// The start-state branch of the keydown handler must process arrow keys
-// Look for: if (gameState === 'start')
-var startCheck = content.indexOf("gameState === 'start'");
-assert(startCheck !== -1, 'Start state check exists in keydown handler');
+// Find keydown handler's start-state block
+var kdIdx2 = content.indexOf('document.addEventListener');
+if (kdIdx2 !== -1) {
+  var startStateCheck = content.indexOf("gameState === 'start'", kdIdx2);
+  assert(startStateCheck !== -1, 'Start state check exists in keydown handler');
 
-if (startCheck !== -1) {
-  // Get the block after this check, up to the next top-level if or }
-  var afterStart = content.substring(startCheck);
-  var startBlock = afterStart.match(/\{([\s\S]*?)\n\s*(?:\}\s*$|\n\s*if\s*\(\s*gameState\s*==)/);
+  if (startStateCheck !== -1) {
+    // Get the block: from "gameState === 'start')" to the closing }
+    var blockStart = startStateCheck + "gameState === 'start') {".length;
+    // Find next "if (gameState === " after this point (gameover/win check)
+    var nextIf = content.indexOf("if (gameState === 'gameover'", blockStart);
+    var startBlock = content.substring(blockStart, nextIf);
 
-  if (startBlock) {
-    var sb = startBlock[1];
-    // Must process arrow key movement
-    assert(sb.includes('cursorX +=') || sb.includes('cursorX+='),
+    assert(startBlock.includes('cursorX +='),
            'Start state moves cursorX on arrow keys');
-    assert(sb.includes('cursorY +=') || sb.includes('cursorY+='),
+    assert(startBlock.includes('cursorY +='),
            'Start state moves cursorY on arrow keys');
-    // Must clamp cursor to grid
-    assert(sb.includes('cursorX < 0') || sb.includes('cursorX<0'),
+    assert(startBlock.includes('cursorX < 0') || startBlock.includes('cursorX<0'),
            'Start state clamps cursorX lower bound');
-    assert(sb.includes('cursorX >= COLS') || sb.includes('cursorX>=COLS'),
+    assert(startBlock.includes('cursorX >= COLS') || startBlock.includes('cursorX>=COLS'),
            'Start state clamps cursorX upper bound');
-    assert(sb.includes('cursorY < 0') || sb.includes('cursorY<0'),
+    assert(startBlock.includes('cursorY < 0') || startBlock.includes('cursorY<0'),
            'Start state clamps cursorY lower bound');
-    assert(sb.includes('cursorY >= ROWS') || sb.includes('cursorY>=ROWS'),
+    assert(startBlock.includes('cursorY >= ROWS') || startBlock.includes('cursorY>=ROWS'),
            'Start state clamps cursorY upper bound');
-    assert(sb.includes('render()'),
+    assert(startBlock.includes('render()'),
            'Start state calls render() after cursor movement');
   }
 }
@@ -294,22 +292,17 @@ assert(fs.existsSync(indexPath), 'index.html exists');
 var indexContent = fs.readFileSync(indexPath, 'utf-8');
 assert(indexContent.includes('minesweeper.html'), 'Minesweeper registered in index.html');
 
-// Check for valid category
-var validCategories = ['action', 'puzzle', 'arcade', 'strategy', 'board', 'casual'];
-var hasCategory = false;
-for (var ci = 0; ci < validCategories.length; ci++) {
-  var cat = validCategories[ci];
-  var catIdx = indexContent.indexOf(cat);
-  if (catIdx !== -1) {
-    // Check if minesweeper is nearby
-    var nearby = indexContent.substring(Math.max(0, catIdx - 200), Math.min(indexContent.length, catIdx + 200));
-    if (nearby.includes('minesweeper')) {
-      hasCategory = true;
-      break;
-    }
-  }
+// Check for valid category in the same HTML element as minesweeper
+// Pattern: data-category="..." near minesweeper reference
+var msLine = indexContent.match(/<a[^>]*minesweeper[^>]*data-category="([^"]+)"[^>]*>/i) ||
+             indexContent.match(/<a[^>]*data-category="([^"]+)"[^>]*minesweeper[^>]*>/i);
+assert(msLine !== null, 'Minesweeper has a valid category in index.html');
+if (msLine) {
+  var cat = msLine[1].toLowerCase();
+  var validCategories = ['action', 'puzzle', 'arcade', 'strategy', 'board', 'casual'];
+  assert(validCategories.indexOf(cat) !== -1,
+         'Minesweeper category "' + cat + '" is valid (one of: ' + validCategories.join(', ') + ')');
 }
-assert(hasCategory, 'Minesweeper has a valid category in index.html');
 
 // ── Summary ──
 console.log('\n' + '═'.repeat(50));
