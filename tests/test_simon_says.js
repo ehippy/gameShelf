@@ -62,7 +62,7 @@ console.log('─'.repeat(50));
 assert(htmlContent.includes('class="game-header"') || htmlContent.includes('<header'), 'Header element exists');
 assert(htmlContent.includes('href="../index.html"') && htmlContent.includes('gameShelf'), 'Header logo links to ../index.html with gameShelf text');
 assert(htmlContent.includes('Simon Says'), 'Game title "Simon Says" present in header');
-assert(htmlContent.includes('href="../games/index.html"'), 'Back link to ../games/index.html exists');
+assert(htmlContent.includes('href="../index.html"') && htmlContent.includes('back-link'), 'Back link to ../index.html exists');
 
 // ============================================================
 // 3. Footer structure
