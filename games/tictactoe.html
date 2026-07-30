@@ -385,6 +385,43 @@
         let winLine = [];    // array of [row, col] for winning cells
         let aiThinking = false;
 
+        // ── Score Record (localStorage) ──
+        let record = { wins: 0, losses: 0, draws: 0 };
+
+        function loadRecord() {
+            try {
+                var saved = localStorage.getItem('tictactoe-record');
+                if (saved) {
+                    var parsed = JSON.parse(saved);
+                    record.wins = parseInt(parsed.wins, 10) || 0;
+                    record.losses = parseInt(parsed.losses, 10) || 0;
+                    record.draws = parseInt(parsed.draws, 10) || 0;
+                }
+            } catch (e) {
+                record = { wins: 0, losses: 0, draws: 0 };
+            }
+        }
+
+        function saveRecord() {
+            localStorage.setItem('tictactoe-record', JSON.stringify(record));
+        }
+
+        function updateRecordDisplay() {
+            recordDisplay.textContent = 'Wins: ' + record.wins + ' | Losses: ' + record.losses + ' | Draws: ' + record.draws;
+        }
+
+        function incrementRecord(result) {
+            if (result === 'X') record.wins++;
+            else if (result === 'O') record.losses++;
+            else record.draws++;
+            saveRecord();
+            updateRecordDisplay();
+        }
+
+        function buildRecordSummary() {
+            return 'Record — Wins: <span style="color:var(--x-color);font-weight:700;">' + record.wins + '</span> | Losses: <span style="color:var(--o-color);font-weight:700;">' + record.losses + '</span> | Draws: <span style="color:var(--text-secondary);font-weight:700;">' + record.draws + '</span>';
+        }
+
         // ── Board Initialization ──
         function initBoard() {
             board = [
