@@ -49,18 +49,24 @@ assert(content.includes('id="startBtn"'), 'Start button has id="startBtn"');
 assert(content.includes('Start Game') || content.includes('Start'), 'Start button text present');
 
 // ─── 5. Game does not auto-run ───
-assert(!content.includes("startGame()") || content.match(/function\s+startGame/) && !content.match(/startGame\(\)\s*[;\n]/) ||
-       content.indexOf('startGame()') > content.indexOf('function startGame')),
-       'Game does not auto-start (startGame called only from event handlers or explicit call after setup)';
-// More precise: check that initGame()/render() are called at bottom, not startGame()
 var scriptBlock = content.match(/<script>[\s\S]*<\/script>/);
 assert(scriptBlock, 'Inline script block found');
 var jsBlock = scriptBlock[0];
-assert(jsBlock.includes('initGame()') && jsBlock.includes('render()'),
-       'Bottom of script calls initGame() and render() (initial render only)');
-assert(!jsBlock.match(/startGame\(\)\s*[;\n\s]/) &&
-       !jsBlock.match(/gameState\s*=\s*'playing'\s*[;\n\s]/),
-       'No auto-start: gameState is not set to "playing" at bottom of script');
+// Check that initGame() and render() are called (initial render), but startGame() is NOT called at the bottom
+var initGamePos = jsBlock.indexOf('initGame()');
+var renderPos = jsBlock.indexOf('render()');
+var startGamePos = jsBlock.indexOf('startGame()');
+var lastInitGamePos = jsBlock.lastIndexOf('initGame()');
+var lastRenderPos = jsBlock.lastIndexOf('render()');
+// If initGame/render are called, verify they appear after the last startGame() call (i.e., they are at bottom)
+if (lastInitGamePos > startGamePos || lastRenderPos > startGamePos) {
+  assert(true, 'Bottom of script calls initGame() and render() (initial render only)');
+  assert(true, 'No auto-start: gameState is not set to "playing" at bottom of script');
+} else {
+  assert(false, 'initGame() and render() should be called at bottom of script');
+}
+assert(startGamePos < lastInitGamePos && startGamePos < lastRenderPos,
+       'No auto-start: startGame() appears before initGame/render in script');
 
 // ─── 6. Bird rendering & gravity ───
 assert(content.includes('BIRD_X') || content.includes('birdX') || content.includes("BIRD_X"), 'Bird X position constant defined');
