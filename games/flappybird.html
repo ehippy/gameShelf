@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>gameShelf — Flappy Bird</title>
+    <style>
+        /* CSS Custom Properties — match site theme */
+        :root {
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a3e;
+            --bg-card: #1e1e45;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0b8;
+            --text-muted: #6b6b80;
+            --accent: #00d4ff;
+            --accent-hover: #00b8d9;
+            --accent-glow: rgba(0, 212, 255, 0.3);
+            --border-color: #2a2a5a;
+            --header-bg: rgba(15, 15, 35, 0.95);
+            --bird-color: #fbbf24;
+            --pipe-color: #22c55e;
+            --pipe-border: #15803d;
+        }
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .game-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--header-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: var(--spacing-md) var(--spacing-lg);
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--accent-glow);
+            white-space: nowrap;
+            transition: text-shadow var(--transition-normal);
+        }
+
+        .logo:hover {
+            text-shadow: 0 0 20px var(--accent-glow), 0 0 40px rgba(0, 212, 255, 0.1);
+        }
+
+        .logo::before {
+            content: '🎮';
+            margin-right: 0.35rem;
+        }
+
+        .game-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .back-link {
+            color: var(--accent);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .back-link:hover {
+            color: var(--accent-hover);
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* Game Area */
+        .game-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-xl) var(--spacing-lg);
+        }
+
+        /* Score Display */
+        .score-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-2xl);
+            margin-bottom: var(--spacing-lg);
+            font-size: 1.1rem;
+        }
+
+        .score-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .score-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+
+        .score-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--bird-color);
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+        }
+
+        .high-score-value {
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* Canvas */
+        .canvas-wrapper {
+            position: relative;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.1), var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            background-color: var(--bg-secondary);
+        }
+
+        /* Overlay (Start / Game Over) */
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 15, 35, 0.92);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-md);
+            z-index: 10;
+            border-radius: var(--radius-md);
+            transition: opacity 0.3s ease;
+        }
+
+        .overlay.hidden {
+            display: none;
+        }
+
+        .overlay-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .overlay-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            text-align: center;
+            max-width: 260px;
+            line-height: 1.5;
+        }
+
+        .overlay-score {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--bird-color);
+            margin: var(--spacing-sm) 0;
+        }
+
+        .overlay-high-score {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .overlay-high-score span {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            background: var(--accent);
+            color: var(--bg-primary);
+            font-size: 1rem;
+            font-weight: 700;
+            padding: var(--spacing-sm) var(--spacing-xl);
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-accent);
+            margin-top: var(--spacing-sm);
+        }
+
+        .btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        .site-footer {
+            margin-top: auto;
+            background: var(--footer-bg);
+            border-top: 1px solid var(--border-color);
+            padding: var(--spacing-xl) var(--spacing-lg);
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-xl);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        .site-footer p {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .header-inner {
+                justify-content: center;
+                text-align: center;
+            }
+            .score-bar {
+                gap: var(--spacing-lg);
+            }
+            .overlay-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="game-header">
+        <div class="header-inner">
+            <div class="header-left">
+                <a href="../index.html" class="logo">gameShelf</a>
+                <span class="game-title">Flappy Bird</span>
+            </div>
+            <a href="../index.html" class="back-link">← Back to All Games</a>
+        </div>
+    </header>
+
+    <!-- Game Area -->
+    <div class="game-area">
+        <!-- Score Display -->
+        <div class="score-bar">
+            <div class="score-item">
+                <span class="score-label">Score</span>
+                <span class="score-value" id="score">0</span>
+            </div>
+            <div class="score-item">
+                <span class="score-label">High Score</span>
+                <span class="score-value high-score-value" id="highScore">0</span>
+            </div>
+        </div>
+
+        <!-- Canvas -->
+        <div class="canvas-wrapper">
+            <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+            <!-- Start Overlay -->
+            <div class="overlay" id="startOverlay">
+                <div class="overlay-title">🐦 Flappy Bird</div>
+                <div class="overlay-subtitle">Click or press Space to flap. Navigate through the pipes!</div>
+                <button class="btn" id="startBtn">▶ Start Game</button>
+            </div>
+
+            <!-- Game Over Overlay -->
+            <div class="overlay hidden" id="gameOverOverlay">
+                <div class="overlay-title">Game Over</div>
+                <div class="overlay-score" id="finalScore">Score: 0</div>
+                <div class="overlay-high-score">High Score: <span id="finalHighScore">0</span></div>
+                <button class="btn" id="restartBtn">↻ Restart</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-links">
+                <a href="../index.html">Home</a>
+                <a href="../index.html">All Games</a>
+            </div>
+            <p>© 2025 gameShelf — All games built in browser — no downloads required</p>
+        </div>
+    </footer>
+
+    <script>
+    (function() {
+        'use strict';
+
+        // ── Constants ──
+        var CANVAS_SIZE = 400;
+        var BIRD_X = 80;
+        var BIRD_RADIUS = 12;
+        var GRAVITY = 0.45;
+        var FLAP_STRENGTH = -7.5;
+        var INITIAL_SPEED = 2;
+        var MAX_SPEED = 6;
+        var SPEED_INCREMENT = 0.3;
+        var SPEED_STEP = 5;
+        var PIPE_WIDTH = 50;
+        var GAP_HEIGHT = 100;
+        var GAP_MIN = 80;
+        var GAP_MAX = 320;
+        var SPAWN_INTERVAL = 180; // frames
+
+        // ── DOM refs ──
+        var canvas = document.getElementById('gameCanvas');
+        var ctx = canvas.getContext('2d');
+        var scoreEl = document.getElementById('score');
+        var highScoreEl = document.getElementById('highScore');
+        var startOverlay = document.getElementById('startOverlay');
+        var gameOverOverlay = document.getElementById('gameOverOverlay');
+        var finalScoreEl = document.getElementById('finalScore');
+        var finalHighScoreEl = document.getElementById('finalHighScore');
+        var startBtn = document.getElementById('startBtn');
+        var restartBtn = document.getElementById('restartBtn');
+
+        // ── Game State ──
+        var birdY = CANVAS_SIZE / 2;
+        var birdVelocity = 0;
+        var pipes = [];
+        var score = 0;
+        var highScore = parseInt(localStorage.getItem('flappybirdHighScore'), 10) || 0;
+        var gameState = 'start'; // 'start', 'playing', 'gameover'
+        var frameCount = 0;
+        var animFrameId = null;
+        var paused = false;
+
+        // ── High Score Display ──
+        highScoreEl.textContent = highScore;
+
+        // ── Pipe Creation ──
+        function createPipe() {
+            var gapTop = GAP_MIN + Math.random() * (GAP_MAX - GAP_MIN);
+            return {
+                x: CANVAS_SIZE,
+                gapTop: gapTop,
+                gapBottom: gapTop + GAP_HEIGHT,
+                scored: false
+            };
+        }
+
+        // ── Init Game ──
+        function initGame() {
+            birdY = CANVAS_SIZE / 2;
+            birdVelocity = 0;
+            pipes = [];
+            score = 0;
+            frameCount = 0;
+            scoreEl.textContent = '0';
+        }
+
+        // ── Flap ──
+        function flap() {
+            if (gameState === 'start') {
+                startGame();
+            } else if (gameState === 'playing') {
+                birdVelocity = FLAP_STRENGTH;
+            } else if (gameState === 'gameover') {
+                startGame();
+            }
+        }
+
+        // ── Rendering ──
+        function drawBackground() {
+            // Dark gradient background
+            var grad = ctx.createLinearGradient(0, 0, 0, CANVAS_SIZE);
+            grad.addColorStop(0, '#0a0a2e');
+            grad.addColorStop(1, '#1a1a3e');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+        }
+
+        function drawBird() {
+            // Glow shadow
+            ctx.shadowColor = 'rgba(251, 191, 36, 0.6)';
+            ctx.shadowBlur = 14;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+            ctx.fillStyle = '#fbbf24';
+            ctx.beginPath();
+            ctx.arc(BIRD_X, birdY, BIRD_RADIUS, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Inner highlight
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+            ctx.beginPath();
+            ctx.arc(BIRD_X - 3, birdY - 3, BIRD_RADIUS * 0.45, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Eye (white dot with dark pupil)
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(BIRD_X + 5, birdY - 3, 4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#1a1a3e';
+            ctx.beginPath();
+            ctx.arc(BIRD_X + 6, birdY - 3, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Beak
+            ctx.fillStyle = '#f97316';
+            ctx.beginPath();
+            ctx.moveTo(BIRD_X + BIRD_RADIUS - 1, birdY);
+            ctx.lineTo(BIRD_X + BIRD_RADIUS + 7, birdY + 2);
+            ctx.lineTo(BIRD_X + BIRD_RADIUS - 1, birdY + 5);
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function drawPipe(pipe) {
+            // Top pipe
+            ctx.fillStyle = '#22c55e';
+            ctx.fillRect(pipe.x, 0, PIPE_WIDTH, pipe.gapTop);
+            ctx.strokeStyle = '#15803d';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(pipe.x, 0, PIPE_WIDTH, pipe.gapTop);
+            // Top pipe inner highlight
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.fillRect(pipe.x + 4, 0, 6, pipe.gapTop);
+            // Top pipe cap
+            ctx.fillStyle = '#22c55e';
+            ctx.fillRect(pipe.x - 3, pipe.gapTop - 16, PIPE_WIDTH + 6, 16);
+            ctx.strokeStyle = '#15803d';
+            ctx.strokeRect(pipe.x - 3, pipe.gapTop - 16, PIPE_WIDTH + 6, 16);
+
+            // Bottom pipe
+            ctx.fillStyle = '#22c55e';
+            ctx.fillRect(pipe.x, pipe.gapBottom, PIPE_WIDTH, CANVAS_SIZE - pipe.gapBottom);
+            ctx.strokeStyle = '#15803d';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(pipe.x, pipe.gapBottom, PIPE_WIDTH, CANVAS_SIZE - pipe.gapBottom);
+            // Bottom pipe inner highlight
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.fillRect(pipe.x + 4, pipe.gapBottom, 6, CANVAS_SIZE - pipe.gapBottom);
+            // Bottom pipe cap
+            ctx.fillStyle = '#22c55e';
+            ctx.fillRect(pipe.x - 3, pipe.gapBottom, PIPE_WIDTH + 6, 16);
+            ctx.strokeStyle = '#15803d';
+            ctx.strokeRect(pipe.x - 3, pipe.gapBottom, PIPE_WIDTH + 6, 16);
+        }
+
+        function render() {
+            drawBackground();
+
+            // Draw pipes
+            for (var i = 0; i < pipes.length; i++) {
+                drawPipe(pipes[i]);
+            }
+
+            // Draw bird
+            drawBird();
+        }
+
+        // ── Collision Detection ──
+        function checkCollision() {
+            // Canvas boundary collision (top or bottom)
+            if (birdY - BIRD_RADIUS <= 0 || birdY + BIRD_RADIUS >= CANVAS_SIZE) {
+                return true;
+            }
+
+            // Pipe collision (circle vs rectangle)
+            for (var i = 0; i < pipes.length; i++) {
+                var p = pipes[i];
+                // Check if bird is within the horizontal span of the pipe
+                if (BIRD_X + BIRD_RADIUS > p.x && BIRD_X - BIRD_RADIUS < p.x + PIPE_WIDTH) {
+                    // Bird is within pipe's horizontal area — check if it's in the gap
+                    if (birdY - BIRD_RADIUS < p.gapTop || birdY + BIRD_RADIUS > p.gapBottom) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        // ── Game Logic ──
+        function update() {
+            frameCount++;
+
+            // Bird physics
+            birdVelocity += GRAVITY;
+            birdY += birdVelocity;
+
+            // Clamp bird to canvas
+            if (birdY - BIRD_RADIUS < 0) {
+                birdY = BIRD_RADIUS;
+                birdVelocity = 0;
+            }
+            if (birdY + BIRD_RADIUS > CANVAS_SIZE) {
+                birdY = CANVAS_SIZE - BIRD_RADIUS;
+                birdVelocity = 0;
+            }
+
+            // Pipe spawning
+            if (frameCount % SPAWN_INTERVAL === 0) {
+                pipes.push(createPipe());
+            }
+
+            // Move pipes
+            // Speed increases 0.3 px/frame every 5 points, capped at 6 px/frame
+            var currentSpeed = INITIAL_SPEED + Math.min(Math.floor(score / SPEED_STEP) * SPEED_INCREMENT, MAX_SPEED - INITIAL_SPEED);
+
+            for (var i = 0; i < pipes.length; i++) {
+                var p = pipes[i];
+                p.x -= currentSpeed;
+
+                // Score: bird passes pipe
+                if (!p.scored && (BIRD_X + BIRD_RADIUS) > (p.x + PIPE_WIDTH)) {
+                    p.scored = true;
+                    score++;
+                    scoreEl.textContent = score;
+                }
+
+                // Remove pipes that went off screen
+                if (p.x + PIPE_WIDTH < 0) {
+                    pipes.splice(i, 1);
+                    i--;
+                }
+            }
+
+            // Check collision
+            if (checkCollision()) {
+                endGame();
+                return;
+            }
+        }
+
+        // ── Game Flow ──
+        function startGame() {
+            initGame();
+            gameState = 'playing';
+            startOverlay.classList.add('hidden');
+            gameOverOverlay.classList.add('hidden');
+            if (animFrameId) cancelAnimationFrame(animFrameId);
+            gameLoop();
+        }
+
+        function endGame() {
+            gameState = 'gameover';
+            if (animFrameId) {
+                cancelAnimationFrame(animFrameId);
+                animFrameId = null;
+            }
+
+            // Update high score
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('flappybirdHighScore', highScore.toString());
+                highScoreEl.textContent = highScore;
+            }
+
+            // Show game over overlay
+            finalScoreEl.textContent = 'Score: ' + score;
+            finalHighScoreEl.textContent = highScore;
+            gameOverOverlay.classList.remove('hidden');
+        }
+
+        function gameLoop() {
+            if (gameState !== 'playing' || paused) return;
+
+            update();
+            if (gameState === 'playing') {
+                render();
+                animFrameId = requestAnimationFrame(gameLoop);
+            }
+        }
+
+        // ── Input Handling ──
+        document.addEventListener('keydown', function(e) {
+            // Prevent default scrolling for game keys
+            if (e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                e.preventDefault();
+            }
+
+            // Flap or start or restart
+            if (e.key === ' ' || e.key === 'Enter') {
+                flap();
+                return;
+            }
+        });
+
+        // Mouse/touch on canvas
+        canvas.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            flap();
+        });
+
+        canvas.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            flap();
+        });
+
+        // ── Button Handlers ──
+        startBtn.addEventListener('click', function() {
+            startGame();
+        });
+
+        restartBtn.addEventListener('click', function() {
+            startGame();
+        });
+
+        // ── Visibility API: pause on tab hidden ──
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden && gameState === 'playing') {
+                paused = true;
+                if (animFrameId) {
+                    cancelAnimationFrame(animFrameId);
+                    animFrameId = null;
+                }
+            } else if (!document.hidden && gameState === 'playing') {
+                paused = false;
+                animFrameId = requestAnimationFrame(gameLoop);
+            }
+        });
+
+        // ── Initial Render ──
+        initGame();
+        render();
+
+    })();
+    </script>
+</body>
+</html>
