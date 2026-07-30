@@ -42,13 +42,19 @@ assert(/id="gameCanvas"[\s\S]*?width="400"/.test(minesweeperHtml), 'Canvas width
 assert(/id="gameCanvas"[\s\S]*?height="400"/.test(minesweeperHtml), 'Canvas height=400');
 
 // ============================================
-// SECTION 3: Grid dimensions and mine count
+// SECTION 3: Grid dimensions (dynamic via difficulty presets)
 // ============================================
-section('3. Grid Dimensions (16×16) and Mine Count (10)');
-assert(/const\s+COLS\s*=\s*16/.test(minesweeperHtml), 'Grid has 16 columns');
-assert(/const\s+ROWS\s*=\s*16/.test(minesweeperHtml), 'Grid has 16 rows');
-assert(/const\s+MINES\s*=\s*10/.test(minesweeperHtml), 'Mine count is 10');
-assert(/const\s+CELL\s*=\s*CANVAS_SIZE\s*\/\s*COLS/.test(minesweeperHtml), 'Cell size = 25px (400/16)');
+section('3. Dynamic Grid Dimensions via Difficulty Presets');
+assert(/var\s+COLS\s*=\s*DIFFICULTY/.test(minesweeperHtml) || /DIFFICULTY\[diffIdx\]\.cols/.test(minesweeperHtml), 'COLS is set from difficulty preset');
+assert(/var\s+ROWS\s*=\s*DIFFICULTY/.test(minesweeperHtml) || /DIFFICULTY\[diffIdx\]\.rows/.test(minesweeperHtml), 'ROWS is set from difficulty preset');
+assert(/var\s+MINES\s*=\s*DIFFICULTY/.test(minesweeperHtml) || /DIFFICULTY\[diffIdx\]\.mines/.test(minesweeperHtml), 'MINES is set from difficulty preset');
+assert(/var\s+CELL\s*=\s*CANVAS_SIZE\s*\/\s*COLS/.test(minesweeperHtml), 'CELL = CANVAS_SIZE / COLS (dynamic)');
+// Check for difficulty presets
+assert(minesweeperHtml.includes("cols: 9") || /['"]Easy['"]/.test(minesweeperHtml), 'Easy preset exists (9×9)');
+assert(minesweeperHtml.includes("cols: 16") || /['"]Medium['"]/.test(minesweeperHtml), 'Medium preset exists (16×16)');
+assert(minesweeperHtml.includes("cols: 30") || /['"]Hard['"]/.test(minesweeperHtml), 'Hard preset exists (30×16)');
+// Check that default difficulty index is 1 (Medium)
+assert(/var\s+diffIdx\s*=\s*1/.test(minesweeperHtml), 'Default difficulty index is 1 (Medium)');
 
 // ============================================
 // SECTION 4: Overlays (Start overlay with game name and Start button)
@@ -449,6 +455,115 @@ assert(endGameFn.includes("winOverlay"), 'winOverlay shown on win');
 assert(endGameFn.includes("gameState = 'gameover'"), 'gameState set to gameover on loss');
 assert(endGameFn.includes("gameState = 'win'"), 'gameState set to win on victory');
 assert(endGameFn.includes("winTimeEl"), 'win time is displayed on win');
+
+// ============================================
+// SECTION 38: Difficulty Selector UI
+// ============================================
+section('38. Difficulty Selector UI');
+
+// Difficulty selector div exists in start overlay
+assert(minesweeperHtml.includes('difficulty-selector') && minesweeperHtml.includes('id="difficultySelector"'),
+    'Difficulty selector div exists with id="difficultySelector"');
+
+// Three difficulty buttons exist
+assert(minesweeperHtml.includes('class="diff-btn"') || minesweeperHtml.includes("class='diff-btn'"),
+    'Difficulty buttons have class="diff-btn"');
+
+// Buttons are above startBtn in the HTML
+var diffSelectorIdx = minesweeperHtml.indexOf('difficultySelector');
+var startBtnIdx = minesweeperHtml.indexOf('id="startBtn"');
+assert(diffSelectorIdx > 0 && startBtnIdx > 0 && diffSelectorIdx < startBtnIdx,
+    'Difficulty selector appears before startBtn in HTML');
+
+// Button labels
+assert(minesweeperHtml.includes('Easy') || /data-diff="0">Easy/.test(minesweeperHtml), 'Easy button present');
+assert(minesweeperHtml.includes('Medium') || /data-diff="1">Medium/.test(minesweeperHtml), 'Medium button present');
+assert(minesweeperHtml.includes('Hard') || /data-diff="2">Hard/.test(minesweeperHtml), 'Hard button present');
+
+// Default button is active (Medium, data-diff="1")
+assert(/data-diff="1"[^>]*class="diff-btn active"/.test(minesweeperHtml) ||
+       /class="diff-btn active"[^>]*data-diff="1"/.test(minesweeperHtml),
+    'Medium button has active class by default');
+
+// Active button styling exists
+assert(minesweeperHtml.includes('.diff-btn.active') || minesweeperHtml.includes('.diff-btn.active {'),
+    'CSS for .diff-btn.active exists');
+
+// Inactive button border matches --border-color
+assert(minesweeperHtml.includes('.diff-btn') && minesweeperHtml.includes('var(--border-color)'),
+    'Inactive diff-btn border uses --border-color');
+
+// ============================================
+// SECTION 39: Difficulty presets have correct dimensions
+// ============================================
+section('39. Difficulty Preset Dimensions');
+
+// Easy: 9×9, 10 mines
+assert(/name:\s*['"]Easy['"][^}]*cols:\s*9[^}]*rows:\s*9[^}]*mines:\s*10/.test(minesweeperHtml),
+    'Easy: 9×9 grid, 10 mines');
+
+// Medium: 16×16, 40 mines
+assert(/name:\s*['"]Medium['"][^}]*cols:\s*16[^}]*rows:\s*16[^}]*mines:\s*40/.test(minesweeperHtml),
+    'Medium: 16×16 grid, 40 mines');
+
+// Hard: 30×16, 99 mines
+assert(/name:\s*['"]Hard['"][^}]*cols:\s*30[^}]*rows:\s*16[^}]*mines:\s*99/.test(minesweeperHtml),
+    'Hard: 30×16 grid, 99 mines');
+
+// ============================================
+// SECTION 40: Difficulty change resets game
+// ============================================
+section('40. Difficulty Change Resets Game');
+
+// setDifficulty calls initBoard to rebuild board
+var setDiffFn = minesweeperHtml.split('function setDifficulty')[1]?.split('function')[0] || '';
+assert(setDiffFn && setDiffFn.includes('initBoard'),
+    'setDifficulty calls initBoard to rebuild board');
+
+// setDifficulty resets overlays
+assert(setDiffFn && setDiffFn.includes("startOverlay.classList.remove('hidden')"),
+    'setDifficulty shows start overlay');
+assert(setDiffFn && setDiffFn.includes("gameOverOverlay.classList.add('hidden')"),
+    'setDifficulty hides game over overlay');
+assert(setDiffFn && setDiffFn.includes("winOverlay.classList.add('hidden')"),
+    'setDifficulty hides win overlay');
+
+// setDifficulty resets timer
+assert(setDiffFn && setDiffFn.includes('stopTimer'),
+    'setDifficulty stops timer');
+assert(setDiffFn && setDiffFn.includes("timerEl.textContent = '000'"),
+    'setDifficulty resets timer display');
+
+// setDifficulty resets flag count and minesPlaced
+assert(setDiffFn && setDiffFn.includes('minesPlaced = false'),
+    'setDifficulty resets minesPlaced');
+
+// setDifficulty updates COLS, ROWS, MINES, CELL
+assert(setDiffFn && setDiffFn.includes('COLS = DIFFICULTY[idx].cols'),
+    'setDifficulty updates COLS');
+assert(setDiffFn && setDiffFn.includes('ROWS = DIFFICULTY[idx].rows'),
+    'setDifficulty updates ROWS');
+assert(setDiffFn && setDiffFn.includes('MINES = DIFFICULTY[idx].mines'),
+    'setDifficulty updates MINES');
+assert(setDiffFn && setDiffFn.includes('CELL = CANVAS_SIZE / COLS'),
+    'setDifficulty recalculates CELL');
+
+// ============================================
+// SECTION 41: Smiley restarts with current difficulty
+// ============================================
+section('41. Smiley Restart Preserves Difficulty');
+
+// smileyBtn calls restart()
+var smileyHandler = minesweeperHtml.match(/smileyBtn\.addEventListener[\s\S]*?restart\(\)/);
+assert(smileyHandler, 'smileyBtn click handler calls restart()');
+
+// restart calls startGame which calls initBoard using current COLS/ROWS
+var restartFn = minesweeperHtml.split('function restart')[1]?.split('function')[0] || '';
+assert(restartFn && restartFn.includes('startGame'),
+    'restart calls startGame');
+var startGameFn = minesweeperHtml.split('function startGame')[1]?.split('function')[0] || '';
+assert(startGameFn && startGameFn.includes('initBoard'),
+    'startGame calls initBoard with current COLS/ROWS/MINES');
 
 console.log('  Minesweeper Test Results');
 console.log('========================================');

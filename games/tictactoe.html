@@ -143,6 +143,11 @@
             color: var(--o-color);
         }
 
+        .record-display {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
         /* Canvas */
         .canvas-wrapper {
             position: relative;
@@ -291,6 +296,7 @@
         <!-- HUD Bar -->
         <div class="hud-bar">
             <span class="turn-indicator turn-x" id="turnIndicator">Your Turn: X</span>
+            <span class="record-display" id="recordDisplay">Wins: 0 | Losses: 0 | Draws: 0</span>
         </div>
 
         <!-- Canvas -->
@@ -308,6 +314,7 @@
             <div class="overlay hidden" id="gameOverOverlay">
                 <div class="overlay-title" id="gameOverTitle">Game Over</div>
                 <div class="overlay-subtitle" id="gameOverSubtitle">Result message here</div>
+                <div id="recordSummary" style="font-size:0.85rem; color:var(--text-muted); margin-top:0.25rem;"></div>
                 <button class="btn" id="restartBtn">↻ Restart</button>
             </div>
         </div>
@@ -363,9 +370,11 @@
         const gameOverOverlay = document.getElementById('gameOverOverlay');
         const gameOverTitle = document.getElementById('gameOverTitle');
         const gameOverSubtitle = document.getElementById('gameOverSubtitle');
+        const recordSummary = document.getElementById('recordSummary');
         const startBtn = document.getElementById('startBtn');
         const restartBtn = document.getElementById('restartBtn');
         const turnIndicator = document.getElementById('turnIndicator');
+        const recordDisplay = document.getElementById('recordDisplay');
 
         // ── Game State ──
         let board = [];      // 3x3 array: 'X' | 'O' | null
@@ -375,6 +384,43 @@
         let winner = null;   // 'X', 'O', 'draw', or null
         let winLine = [];    // array of [row, col] for winning cells
         let aiThinking = false;
+
+        // ── Score Record (localStorage) ──
+        let record = { wins: 0, losses: 0, draws: 0 };
+
+        function loadRecord() {
+            try {
+                var saved = localStorage.getItem('tictactoe-record');
+                if (saved) {
+                    var parsed = JSON.parse(saved);
+                    record.wins = parseInt(parsed.wins, 10) || 0;
+                    record.losses = parseInt(parsed.losses, 10) || 0;
+                    record.draws = parseInt(parsed.draws, 10) || 0;
+                }
+            } catch (e) {
+                record = { wins: 0, losses: 0, draws: 0 };
+            }
+        }
+
+        function saveRecord() {
+            localStorage.setItem('tictactoe-record', JSON.stringify(record));
+        }
+
+        function updateRecordDisplay() {
+            recordDisplay.textContent = 'Wins: ' + record.wins + ' | Losses: ' + record.losses + ' | Draws: ' + record.draws;
+        }
+
+        function incrementRecord(result) {
+            if (result === 'X') record.wins++;
+            else if (result === 'O') record.losses++;
+            else record.draws++;
+            saveRecord();
+            updateRecordDisplay();
+        }
+
+        function buildRecordSummary() {
+            return 'Record — Wins: <span style="color:var(--x-color);font-weight:700;">' + record.wins + '</span> | Losses: <span style="color:var(--o-color);font-weight:700;">' + record.losses + '</span> | Draws: <span style="color:var(--text-secondary);font-weight:700;">' + record.draws + '</span>';
+        }
 
         // ── Board Initialization ──
         function initBoard() {
@@ -688,12 +734,21 @@
                 gameOverSubtitle.textContent = 'All cells filled — no winner this time.';
             }
 
+            // Update record
+            incrementRecord(result);
+
+            // Show record summary
+            recordSummary.innerHTML = buildRecordSummary();
+            recordSummary.style.display = 'block';
+
             updateTurnIndicator();
         }
 
         function restart() {
             gameOverOverlay.classList.add('hidden');
             gameOverTitle.style.color = '';
+            recordSummary.style.display = 'none';
+            recordSummary.innerHTML = '';
             startOverlay.classList.remove('hidden');
             initBoard();
             gameState = 'start';
@@ -848,6 +903,9 @@
         });
 
         // ── Initial Setup ──
+        loadRecord();
+        updateRecordDisplay();
+        recordSummary.style.display = 'none';
         initBoard();
         render();
 

@@ -190,6 +190,78 @@ assert(content.includes("id='startBtn'") || content.includes('id="startBtn"'),
 assert(content.includes("id='restartBtn'") || content.includes('id="restartBtn"'),
        'Restart button exists');
 
+// ── High Score Tracking ──
+console.log('\n--- High Score Tracking ---');
+
+// recordDisplay element in HUD bar
+assert(content.includes("id='recordDisplay'") || content.includes('id="recordDisplay"'),
+       'recordDisplay element exists in HUD bar');
+assert(content.includes('record-display'),
+       'record-display CSS class exists');
+
+// localStorage persistence key
+assert(content.includes("'tictactoe-record'"),
+       'localStorage key "tictactoe-record" is used');
+
+// loadRecord function
+assert(content.includes('function loadRecord()'),
+       'loadRecord function exists');
+
+// saveRecord function
+assert(content.includes('function saveRecord()'),
+       'saveRecord function exists');
+
+// updateRecordDisplay function
+assert(content.includes('function updateRecordDisplay()'),
+       'updateRecordDisplay function exists');
+
+// incrementRecord function
+assert(content.includes('function incrementRecord(') || content.includes('function incrementRecord ('),
+       'incrementRecord function exists');
+
+// buildRecordSummary function
+assert(content.includes('function buildRecordSummary()') || content.includes('function buildRecordSummary ('),
+       'buildRecordSummary function exists');
+
+// recordSummary div in game over overlay
+assert(content.includes("id='recordSummary'") || content.includes('id="recordSummary"'),
+       'recordSummary div exists in game over overlay');
+
+// Color coding: X_COLOR for wins
+assert(content.includes('var(--x-color)') && content.includes('buildRecordSummary'),
+       'Wins display in X color (var(--x-color))');
+
+// Color coding: O_COLOR for losses
+assert(content.includes('var(--o-color)') && content.includes('buildRecordSummary'),
+       'Losses display in O color (var(--o-color))');
+
+// Color coding: text-secondary for draws
+assert(content.includes('var(--text-secondary)') && content.includes('buildRecordSummary'),
+       'Draws display in muted gray (var(--text-secondary))');
+
+// showGameOver calls incrementRecord
+var showGameOverFn = content.split('function showGameOver')[1]?.split('function')[0] || '';
+assert(showGameOverFn && showGameOverFn.includes('incrementRecord'),
+       'showGameOver calls incrementRecord to update score');
+
+// showGameOver sets recordSummary display
+assert(showGameOverFn && showGameOverFn.includes('recordSummary'),
+       'showGameOver updates recordSummary display');
+
+// restart clears recordSummary
+var restartFn = content.split('function restart()')[1]?.split('function')[0] || '';
+assert(restartFn && restartFn.includes('recordSummary'),
+       'restart clears recordSummary');
+
+// Initial setup loads record
+var initSetup = (content.split('Initial Setup')[1] || '').split('\n    })();')[0] || '';
+assert(initSetup && initSetup.includes('loadRecord()'),
+       'Initial setup calls loadRecord');
+assert(initSetup && initSetup.includes('updateRecordDisplay()'),
+       'Initial setup calls updateRecordDisplay');
+assert(initSetup && initSetup.includes('recordSummary.style.display'),
+       'Initial setup hides recordSummary');
+
 // Verify footer unchanged
 assert(content.includes('© 2025 gameShelf — All games built in browser — no downloads required'),
        'Footer copyright text unchanged');
@@ -202,6 +274,25 @@ assert(!externalScriptMatch, 'No external script src links for game logic');
 assert(content.includes('(function()') || content.includes('(function {'),
        'JS wrapped in IIFE');
 assert(content.includes("'use strict'"), 'Strict mode enabled');
+
+// ── Default record values on first visit ──
+console.log('\n--- Default Record Values (First Visit) ---');
+
+// Verify loadRecord initializes record to {wins:0, losses:0, draws:0}
+var loadRecordFn = content.split('function loadRecord()')[1]?.split('function')[0] || '';
+assert(loadRecordFn && loadRecordFn.includes("record = { wins: 0, losses: 0, draws: 0 }") ||
+       loadRecordFn && loadRecordFn.includes("record.wins = 0") ||
+       content.includes("record = { wins: 0, losses: 0, draws: 0 }"),
+       'Record initialized to {wins:0, losses:0, draws:0}');
+
+// Verify incrementRecord increments the correct counter
+var incrementFn = content.split('function incrementRecord')[1]?.split('function')[0] || '';
+assert(incrementFn && incrementFn.includes("result === 'X'") && incrementFn.includes('record.wins++'),
+       'incrementRecord increments wins on X win');
+assert(incrementFn && incrementFn.includes("result === 'O'") && incrementFn.includes('record.losses++'),
+       'incrementRecord increments losses on O win');
+assert(incrementFn && incrementFn.includes("else") && incrementFn.includes('record.draws++'),
+       'incrementRecord increments draws on draw');
 
 // ── Summary ──
 console.log('\n' + '═'.repeat(50));

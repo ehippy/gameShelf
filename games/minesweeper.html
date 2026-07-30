@@ -264,6 +264,35 @@
             transform: translateY(0);
         }
 
+        .difficulty-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .diff-btn {
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.3rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .diff-btn:hover {
+            color: var(--text-primary);
+            border-color: var(--accent);
+        }
+
+        .diff-btn.active {
+            background: var(--accent);
+            color: var(--bg-primary);
+            border-color: var(--accent);
+        }
+
         /* Footer */
         .site-footer {
             margin-top: auto;
@@ -351,6 +380,11 @@
             <div class="overlay" id="startOverlay">
                 <div class="overlay-title">💣 Minesweeper</div>
                 <div class="overlay-subtitle">Use arrow keys to navigate, Space to reveal, R to flag mines</div>
+                <div class="difficulty-selector" id="difficultySelector">
+                    <button class="diff-btn" data-diff="0">Easy</button>
+                    <button class="diff-btn active" data-diff="1">Medium</button>
+                    <button class="diff-btn" data-diff="2">Hard</button>
+                </div>
                 <button class="btn" id="startBtn">▶ Start Game</button>
             </div>
 
@@ -388,10 +422,19 @@
 
         // ── Constants ──
         const CANVAS_SIZE = 400;
-        const COLS = 16;
-        const ROWS = 16;
-        const CELL = CANVAS_SIZE / COLS; // 25px
-        const MINES = 10;
+
+        // ── Difficulty Presets ──
+        var DIFFICULTY = [
+            { name: 'Easy',  cols: 9,  rows: 9,  mines: 10  },
+            { name: 'Medium', cols: 16, rows: 16, mines: 40 },
+            { name: 'Hard',  cols: 30, rows: 16, mines: 99  }
+        ];
+        var diffIdx = 1; // default: Medium
+
+        var COLS = DIFFICULTY[diffIdx].cols;
+        var ROWS = DIFFICULTY[diffIdx].rows;
+        var CELL = CANVAS_SIZE / COLS;
+        var MINES = DIFFICULTY[diffIdx].mines;
 
         // Number colors (classic Minesweeper)
         const NUM_COLORS = {
@@ -418,6 +461,7 @@
         const startBtn = document.getElementById('startBtn');
         const restartBtnGameOver = document.getElementById('restartBtnGameOver');
         const restartBtnWin = document.getElementById('restartBtnWin');
+        const difficultySelector = document.getElementById('difficultySelector');
 
         // ── Game State ──
         let board = [];        // 2D array: { mine, revealed, flagged, adjacentMines }
@@ -430,6 +474,39 @@
         let timerSeconds = 0;
         let timerInterval = null;
         let gameOverMines = []; // array of {x, y} for mines shown on game over
+
+        // ── Difficulty Change ──
+        function setDifficulty(idx) {
+            if (idx < 0 || idx >= DIFFICULTY.length) return;
+            diffIdx = idx;
+            COLS = DIFFICULTY[idx].cols;
+            ROWS = DIFFICULTY[idx].rows;
+            MINES = DIFFICULTY[idx].mines;
+            CELL = CANVAS_SIZE / COLS;
+
+            // Update active button
+            var btns = difficultySelector.querySelectorAll('.diff-btn');
+            for (var i = 0; i < btns.length; i++) {
+                btns[i].classList.remove('active');
+            }
+            btns[idx].classList.add('active');
+
+            // Reset game to start state
+            stopTimer();
+            gameOverOverlay.classList.add('hidden');
+            winOverlay.classList.add('hidden');
+            startOverlay.classList.remove('hidden');
+            smileyBtn.textContent = '😀';
+            timerEl.textContent = '000';
+            minesPlaced = false;
+            gameOverMines = [];
+            cursorX = 0;
+            cursorY = 0;
+
+            // Rebuild board with new dimensions
+            initBoard();
+            render();
+        }
 
         // ── Initialize board data ──
         function initBoard() {
@@ -876,6 +953,15 @@
 
         smileyBtn.addEventListener('click', function() {
             restart();
+        });
+
+        // ── Difficulty Buttons ──
+        difficultySelector.addEventListener('click', function(e) {
+            var btn = e.target;
+            if (btn.classList.contains('diff-btn')) {
+                var idx = parseInt(btn.getAttribute('data-diff'), 10);
+                setDifficulty(idx);
+            }
         });
 
         // ── Initial setup ──
