@@ -396,8 +396,8 @@ assert(/transition:\s*all\s+0\.25s\s+ease/.test(stylesCss), 'Smooth 0.25s transi
 section('35. Footer Text Consistency');
 assert(/©\s*2025\s+gameShelf\s*—\s*All games built in browser\s*—\s*no downloads required/.test(rootIndexHtml),
     'Root index.html footer text unchanged');
-assert(/©\s*2025\s+gameShelf\s*—\s*All games built in browser\s*—\s*no downloads required/.test(gamesIndexHtml),
-    'games/index.html footer text unchanged');
+assert(/©\s*2025\s+gameShelf\s*—\s*All games built in browser\s*—\s*no downloads required/.test(minesweeperHtml),
+    'Minesweeper footer text unchanged');
 
 // ============================================
 // SECTION 36: Timer only starts on first reveal
