@@ -142,7 +142,7 @@ assert(startCheck !== -1, 'Start state check exists in keydown handler');
 if (startCheck !== -1) {
   // Get the block after this check, up to the next top-level if or }
   var afterStart = content.substring(startCheck);
-  var startBlock = afterStart.match(/\{([\s\S]*?)(?=\n\s*if\s*\(\s*gameState\s*==|function )/);
+  var startBlock = afterStart.match(/\{([\s\S]*?)\n\s*(?:\}\s*$|\n\s*if\s*\(\s*gameState\s*==)/);
 
   if (startBlock) {
     var sb = startBlock[1];
