@@ -32,9 +32,9 @@ test('File games/tictactoe.html exists', () => {
     if (!fs.existsSync(tictactoePath)) throw new Error('File does not exist');
 });
 
-test('games/index.html has href="tictactoe.html"', () => {
-    const href = gamesIndex.match(/href="tictactoe\.html"/);
-    if (!href) throw new Error('No href="tictactoe.html" found in games/index.html');
+test('index.html has href="games/tictactoe.html"', () => {
+    const href = rootIndex.match(/href="games\/tictactoe\.html"/);
+    if (!href) throw new Error('No href="games/tictactoe.html" found in index.html');
 });
 
 // ── Criterion 2: Self-contained HTML (CSS in <style>, JS in <script>) ──
