@@ -72,7 +72,7 @@ assert(content.includes('href="../index.html"'), 'Back/home link to ../index.htm
 assert(/gameShelf/.test(content), 'Logo text is gameShelf');
 assert(content.includes('<span class="game-title"') || content.includes('<span class="game-title">'), 'Game title span exists');
 assert(content.includes('Sliding Tile Puzzle'), 'Game title "Sliding Tile Puzzle" present');
-assert(content.includes('<a class="back-link"') || content.includes('<a class="back-link')), 'Back link exists');
+assert(content.includes('<a class="back-link"') || content.includes('<a class="back-link">'), 'Back link exists');
 assert(content.includes('← Back to All Games'), 'Back link text: "← Back to All Games"');
 
 // ============================================================
