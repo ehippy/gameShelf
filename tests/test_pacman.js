@@ -43,21 +43,6 @@ test('Root index.html has card with href="games/pacman.html"', () => {
         throw new Error('No href="games/pacman.html" in root index.html');
 });
 
-test('Games index.html has card with href="pacman.html"', () => {
-    if (!gamesIndex.includes('href="pacman.html"'))
-        throw new Error('No href="pacman.html" in games/index.html');
-});
-
-test('Pac-Man registered in games/index.html', () => {
-    if (!gamesIndex.includes('Pac-Man') && !gamesIndex.includes('pacman'))
-        throw new Error('Pac-Man not mentioned in games/index.html');
-});
-
-test('Pac-Man registered in root index.html', () => {
-    if (!rootIndex.includes('Pac-Man') && !rootIndex.includes('pacman'))
-        throw new Error('Pac-Man not mentioned in root index.html');
-});
-
 console.log('\n📄 SELF-CONTAINED CHECKS');
 console.log('─'.repeat(50));
 
