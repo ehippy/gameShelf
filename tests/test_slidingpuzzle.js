@@ -70,7 +70,7 @@ assert(content.includes('class="sticky"') || content.includes('position: sticky'
 assert(content.includes('class="logo"'), 'Logo element exists');
 assert(content.includes('href="../index.html"'), 'Back/home link to ../index.html');
 assert(/gameShelf/.test(content), 'Logo text is gameShelf');
-assert(content.includes('<span class="game-title"') || content.includes('<span class="game-title')), 'Game title span exists');
+assert(content.includes('<span class="game-title"') || content.includes('<span class="game-title">'), 'Game title span exists');
 assert(content.includes('Sliding Tile Puzzle'), 'Game title "Sliding Tile Puzzle" present');
 assert(content.includes('<a class="back-link"') || content.includes('<a class="back-link')), 'Back link exists');
 assert(content.includes('← Back to All Games'), 'Back link text: "← Back to All Games"');
