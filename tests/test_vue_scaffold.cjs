@@ -87,7 +87,7 @@ assert(appVue.includes('<router-view') || appVue.includes('<router-view/>'), 'Ap
 const mainJs = fs.readFileSync(path.join(REPO_ROOT, 'src', 'main.js'), 'utf-8');
 assert(mainJs.includes('createApp'), 'main.js creates Vue app');
 assert(mainJs.includes('createPinia') || mainJs.includes('use(pinia)'), 'main.js uses Pinia');
-assert(mainJs.includes('router') && mainJs.includes('use(router)') || mainJs.includes('app.use(router)'), 'main.js uses router');
+assert((mainJs.includes('router') && mainJs.includes('use(router)')) || mainJs.includes('app.use(router)'), 'main.js uses router');
 assert(mainJs.includes('mount(\'#app\')') || mainJs.includes('mount("#app")'), 'main.js mounts to #app');
 
 // ========== Summary ==========
