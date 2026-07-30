@@ -128,19 +128,26 @@ assert(content.includes("gameState === 'playing'") && content.includes('CURSOR_C
 // ── Acceptance Criterion 7: Overlay subtitle mentions both keyboard and mouse ──
 console.log('\n--- AC7: Overlay subtitle updated to mention mouse ---');
 
-var subtitleMatch = content.match(/overlay-subtitle[^>]*>([^<]*)</);
-assert(subtitleMatch !== null, 'overlay-subtitle element found in HTML');
+// Extract the start overlay subtitle (between startOverlay div and startBtn)
+var startOverlaySection = content.match(/id="startOverlay"[^]*?Start Game/);
+assert(startOverlaySection !== null, 'Start overlay section found in HTML');
 
-if (subtitleMatch) {
-  var subtitle = subtitleMatch[1];
-  assert(subtitle.toLowerCase().includes('click'),
-         'Subtitle mentions "click" for mouse interaction');
-  assert(subtitle.toLowerCase().includes('arrow'),
-         'Subtitle mentions arrow keys for keyboard interaction');
-  assert(subtitle.toLowerCase().includes('enter'),
-         'Subtitle mentions Enter key');
-  assert(subtitle.toLowerCase().includes('three in a row'),
-         'Subtitle still mentions winning condition');
+if (startOverlaySection) {
+  var startSection = startOverlaySection[0];
+  var subtitleMatch = startSection.match(/overlay-subtitle[^>]*>([^<]*)</);
+  assert(subtitleMatch !== null, 'overlay-subtitle element found in start overlay');
+
+  if (subtitleMatch) {
+    var subtitle = subtitleMatch[1];
+    assert(subtitle.toLowerCase().includes('click'),
+           'Subtitle mentions "click" for mouse interaction');
+    assert(subtitle.toLowerCase().includes('arrow'),
+           'Subtitle mentions arrow keys for keyboard interaction');
+    assert(subtitle.toLowerCase().includes('enter'),
+           'Subtitle mentions Enter key');
+    assert(subtitle.toLowerCase().includes('three in a row'),
+           'Subtitle still mentions winning condition');
+  }
 }
 
 // Verify the old subtitle text is NOT present
