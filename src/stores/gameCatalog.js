@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 
+// Pinia store for the gameShelf game catalog
 export const useGameCatalogStore = defineStore('gameCatalog', {
   state: () => ({
     games: [
