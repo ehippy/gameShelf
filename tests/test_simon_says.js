@@ -307,8 +307,6 @@ assert(htmlContent.includes('setTimeout') && htmlContent.includes('litButton = -
 // ============================================================
 console.log('\n📝 REGISTRATION IN index.html');
 console.log('─'.repeat(50));
-
-const rootIndex = fs.readFileSync(ROOT_INDEX_PATH, 'utf-8');
 assert(rootIndex.includes('games/simon-says.html'), 'games/simon-says.html referenced in index.html');
 assert(rootIndex.includes('data-category="casual"') || rootIndex.includes("data-category='casual'"),
     'Simon Says registered as casual category in index.html');
