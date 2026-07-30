@@ -379,6 +379,14 @@ test("aiMove calls updateTurnIndicator after setting gameState='gameover'", () =
     if (!aiMove.includes('updateTurnIndicator()')) throw new Error("aiMove doesn't call updateTurnIndicator");
 });
 
+test("showGameOver internally calls updateTurnIndicator", () => {
+    // Extract showGameOver function and check it calls updateTurnIndicator
+    const showGameOverMatch = tictactoe.match(/function showGameOver\([^)]*\)[\s\S]*?\n\s*\}/);
+    if (!showGameOverMatch) throw new Error("showGameOver function not found");
+    const showGameOver = showGameOverMatch[0];
+    if (!showGameOver.includes('updateTurnIndicator()')) throw new Error("showGameOver doesn't call updateTurnIndicator internally — fix is missing");
+});
+
 test("restart calls updateTurnIndicator to reset the turn indicator", () => {
     const restartMatch = tictactoe.match(/function restart\(\)[\s\S]*?\n\s*\}/);
     if (!restartMatch) throw new Error("restart function not found");
