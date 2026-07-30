@@ -6,7 +6,3 @@
 <script setup>
 // Home page - main landing for the gameShelf SPA
 </script>
-
-<script setup>
-// Home page - main landing for the gameShelf SPA
-</script>
