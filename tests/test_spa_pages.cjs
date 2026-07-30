@@ -251,7 +251,7 @@ assert(carouselSrc.includes("simon-says.html"), 'Slides include simon-says.html'
 assert(carouselSrc.includes("breakout.html"), 'Slides include breakout.html');
 
 // Carousel slide count
-const slideData = carouselSrc.match(/'([a-z-]+\.html)'/g) || [];
+const slideData = carouselSrc.match(/'([a-z0-9-]+\.html)'/g) || [];
 const uniqueSlides = new Set(slideData.map(s => s.replace(/'/g, '')));
 assert(slideData.length === 20, `Carousel has exactly 20 game hrefs (5 per slide × 4 slides) (found ${slideData.length})`);
 
