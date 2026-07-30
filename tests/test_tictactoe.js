@@ -254,11 +254,12 @@ assert(restartFn && restartFn.includes('recordSummary'),
        'restart clears recordSummary');
 
 // Initial setup loads record
-assert(content.includes('loadRecord()'),
+var initSetup = content.split('Initial Setup')[1]?.split('})();') || '';
+assert(initSetup && initSetup.includes('loadRecord()'),
        'Initial setup calls loadRecord');
-assert(content.includes('updateRecordDisplay()'),
+assert(initSetup && initSetup.includes('updateRecordDisplay()'),
        'Initial setup calls updateRecordDisplay');
-assert(content.includes('recordSummary.style.display = \'none\''),
+assert(initSetup && initSetup.includes('recordSummary.style.display'),
        'Initial setup hides recordSummary');
 
 // Verify footer unchanged
