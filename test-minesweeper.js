@@ -25,7 +25,6 @@ function section(name) {
 // ============================================
 const minesweeperHtml = fs.readFileSync(path.join(__dirname, 'games', 'minesweeper.html'), 'utf-8');
 const rootIndexHtml = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf-8');
-const gamesIndexHtml = fs.readFileSync(path.join(__dirname, 'games', 'index.html'), 'utf-8');
 
 // ============================================
 // SECTION 1: File existence
@@ -162,9 +161,7 @@ assert(!/mine:\s*true/.test(initBoardFn), 'Mines not placed during initBoard');
 // ============================================
 section('14. Card Registration in index.html files');
 assert(/href="games\/minesweeper\.html"/.test(rootIndexHtml), 'Root index.html links to games/minesweeper.html');
-assert(/href="minesweeper\.html"/.test(gamesIndexHtml), 'games/index.html links to minesweeper.html');
 assert(/data-category="puzzle"/.test(rootIndexHtml), 'Root index.html category is puzzle');
-assert(/data-category="puzzle"/.test(gamesIndexHtml), 'games/index.html category is puzzle');
 
 // ============================================
 // SECTION 15: Header structure
@@ -175,7 +172,7 @@ assert(/class="logo"/.test(minesweeperHtml) && /gameShelf/.test(minesweeperHtml)
 assert(/game-title/.test(minesweeperHtml), 'Title element has game-title class');
 assert(/Minesweeper/.test(minesweeperHtml), 'Title "Minesweeper" present in header');
 // Check back link
-assert(/\.\.\/games\/index\.html/.test(minesweeperHtml), 'Back link to ../games/index.html exists');
+assert(/\.\.\/index\.html/.test(minesweeperHtml), 'Back link to ../index.html exists');
 
 // ============================================
 // SECTION 16: Footer structure
@@ -186,7 +183,7 @@ assert(/class="site-footer"/.test(minesweeperHtml), 'Footer uses site-footer cla
 const homeLink = /<a href="\.\.\/index\.html">Home<\/a>/;
 assert(homeLink.test(minesweeperHtml), 'Footer has Home link (href="../index.html")');
 // All Games link
-assert(/\.\.\/games\/index\.html/.test(minesweeperHtml), 'Footer has All Games link');
+assert(/\.\.\/index\.html/.test(minesweeperHtml), 'Footer has All Games link to ../index.html');
 
 // ============================================
 // SECTION 17: Cell rendering details
@@ -311,16 +308,9 @@ assert(featuredEnd < randomBtnIdx, 'Button appears after Featured Games section 
 assert(randomBtnIdx < whatNewIdx, 'Button appears before What\'s New section');
 
 // ============================================
-// SECTION 30: Random Game Button — games/index.html
+// SECTION 30: Random Game Button — removed (games/index.html deleted, root index.html has it)
 // ============================================
-section('30. Random Game Button — All Games Page (games/index.html)');
-assert(/id="randomGameBtn"/.test(gamesIndexHtml), 'Random Game button has id="randomGameBtn" on games page');
-assert(/class="random-btn"/.test(gamesIndexHtml), 'Random Game button has class="random-btn" on games page');
-assert(/🎲\s*Play Random Game/.test(gamesIndexHtml), 'Button displays 🎲 emoji and "Play Random Game" text on games page');
-// Button positioned before All Games heading (h2)
-const h2AllGamesIdx = gamesIndexHtml.indexOf('<h2>All Games</h2>');
-const gamesPageRandomBtnIdx = gamesIndexHtml.indexOf('randomGameBtn');
-assert(gamesPageRandomBtnIdx < h2AllGamesIdx, 'Button appears above "All Games" heading on games page');
+section('30. Random Game Button — Root index.html only');
 
 // ============================================
 // SECTION 31: Games Catalog — all 9 games
@@ -406,8 +396,8 @@ assert(/transition:\s*all\s+0\.25s\s+ease/.test(stylesCss), 'Smooth 0.25s transi
 section('35. Footer Text Consistency');
 assert(/©\s*2025\s+gameShelf\s*—\s*All games built in browser\s*—\s*no downloads required/.test(rootIndexHtml),
     'Root index.html footer text unchanged');
-assert(/©\s*2025\s+gameShelf\s*—\s*All games built in browser\s*—\s*no downloads required/.test(gamesIndexHtml),
-    'games/index.html footer text unchanged');
+assert(/©\s*2025\s+gameShelf\s*—\s*All games built in browser\s*—\s*no downloads required/.test(minesweeperHtml),
+    'Minesweeper footer text unchanged');
 
 // ============================================
 // SECTION 36: Timer only starts on first reveal

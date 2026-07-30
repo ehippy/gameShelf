@@ -25,7 +25,6 @@ function section(name) {
 // ============================================
 const minesweeperHtml = fs.readFileSync(path.join(__dirname, 'games', 'minesweeper.html'), 'utf-8');
 const rootIndexHtml = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf-8');
-const gamesIndexHtml = fs.readFileSync(path.join(__dirname, 'games', 'index.html'), 'utf-8');
 
 // ============================================
 // SECTION 1: File existence
@@ -162,9 +161,7 @@ assert(!/mine:\s*true/.test(initBoardFn), 'Mines not placed during initBoard');
 // ============================================
 section('14. Card Registration in index.html files');
 assert(/href="games\/minesweeper\.html"/.test(rootIndexHtml), 'Root index.html links to games/minesweeper.html');
-assert(/href="minesweeper\.html"/.test(gamesIndexHtml), 'games/index.html links to minesweeper.html');
 assert(/data-category="puzzle"/.test(rootIndexHtml), 'Root index.html category is puzzle');
-assert(/data-category="puzzle"/.test(gamesIndexHtml), 'games/index.html category is puzzle');
 
 // ============================================
 // SECTION 15: Header structure
@@ -175,7 +172,7 @@ assert(/class="logo"/.test(minesweeperHtml) && /gameShelf/.test(minesweeperHtml)
 assert(/game-title/.test(minesweeperHtml), 'Title element has game-title class');
 assert(/Minesweeper/.test(minesweeperHtml), 'Title "Minesweeper" present in header');
 // Check back link
-assert(/\.\.\/games\/index\.html/.test(minesweeperHtml), 'Back link to ../games/index.html exists');
+assert(/\.\.\/index\.html/.test(minesweeperHtml), 'Back link to ../index.html exists');
 
 // ============================================
 // SECTION 16: Footer structure
@@ -186,7 +183,7 @@ assert(/class="site-footer"/.test(minesweeperHtml), 'Footer uses site-footer cla
 const homeLink = /<a href="\.\.\/index\.html">Home<\/a>/;
 assert(homeLink.test(minesweeperHtml), 'Footer has Home link (href="../index.html")');
 // All Games link
-assert(/\.\.\/games\/index\.html/.test(minesweeperHtml), 'Footer has All Games link');
+assert(/\.\.\/index\.html/.test(minesweeperHtml), 'Footer has All Games link to ../index.html');
 
 // ============================================
 // SECTION 17: Cell rendering details

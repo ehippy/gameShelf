@@ -9,7 +9,6 @@ const path = require('path');
 const { JSDOM } = require('jsdom');
 
 const SIMON_PATH = path.resolve(__dirname, '..', 'games', 'simon-says.html');
-const GAMES_INDEX_PATH = path.resolve(__dirname, '..', 'games', 'index.html');
 const ROOT_INDEX_PATH = path.resolve(__dirname, '..', 'index.html');
 
 let passed = 0;
@@ -63,7 +62,7 @@ console.log('─'.repeat(50));
 assert(htmlContent.includes('class="game-header"') || htmlContent.includes('<header'), 'Header element exists');
 assert(htmlContent.includes('href="../index.html"') && htmlContent.includes('gameShelf'), 'Header logo links to ../index.html with gameShelf text');
 assert(htmlContent.includes('Simon Says'), 'Game title "Simon Says" present in header');
-assert(htmlContent.includes('href="../games/index.html"'), 'Back link to ../games/index.html exists');
+assert(htmlContent.includes('href="../index.html"') && htmlContent.includes('back-link'), 'Back link to ../index.html exists');
 
 // ============================================================
 // 3. Footer structure
@@ -300,32 +299,19 @@ assert(htmlContent.includes('setTimeout') && htmlContent.includes('litButton = -
     'Button flash duration handled with setTimeout reset');
 
 // ============================================================
-// 20. Registration in games/index.html
-// ============================================================
-console.log('\n📝 REGISTRATION IN games/index.html');
-console.log('─'.repeat(50));
-
-const gamesIndex = fs.readFileSync(GAMES_INDEX_PATH, 'utf-8');
-assert(gamesIndex.includes('simon-says.html'), 'simon-says.html referenced in games/index.html');
-assert(gamesIndex.includes('data-category="casual"') || gamesIndex.includes("data-category='casual'"),
-    'Simon Says registered as casual category in games/index.html');
-assert(gamesIndex.includes('🎵'), '🎵 emoji thumb icon used in games/index.html');
-assert(gamesIndex.includes('Simon Says'), 'Game title "Simon Says" in games/index.html');
-assert(gamesIndex.includes('Repeat the sequence') || gamesIndex.includes('Each round'),
-    'Game description present in games/index.html');
-
-// ============================================================
-// 21. Registration in root index.html
+// 20. Registration in root index.html
 // ============================================================
 console.log('\n📝 REGISTRATION IN index.html');
 console.log('─'.repeat(50));
 
 const rootIndex = fs.readFileSync(ROOT_INDEX_PATH, 'utf-8');
-assert(rootIndex.includes('games/simon-says.html'), 'Root index.html links to games/simon-says.html');
-assert(/data-category="casual"/.test(rootIndex) && rootIndex.includes('simon-says.html'),
-    'Simon Says registered as casual category in root index.html');
-assert(rootIndex.includes('🎵'), '🎵 emoji thumb icon used in root index.html');
-assert(rootIndex.includes('Simon Says'), 'Game title "Simon Says" in root index.html');
+assert(rootIndex.includes('games/simon-says.html'), 'games/simon-says.html referenced in index.html');
+assert(rootIndex.includes('data-category="casual"') || rootIndex.includes("data-category='casual'"),
+    'Simon Says registered as casual category in index.html');
+assert(rootIndex.includes('🎵'), '🎵 emoji thumb icon used in index.html');
+assert(rootIndex.includes('Simon Says'), 'Game title "Simon Says" in index.html');
+assert(rootIndex.includes('Repeat the sequence') || rootIndex.includes('Each round'),
+    'Game description present in index.html');
 
 // ============================================================
 // 22. What's New section

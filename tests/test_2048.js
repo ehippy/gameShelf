@@ -9,7 +9,7 @@ const path = require('path');
 const { JSDOM } = require('jsdom');
 
 const HTML_PATH = path.resolve(__dirname, '..', 'games', '2048.html');
-const GAMES_INDEX_PATH = path.resolve(__dirname, '..', 'games', 'index.html');
+const GAMES_INDEX_PATH = path.resolve(__dirname, '..', 'index.html');
 
 let passed = 0;
 let failed = 0;
@@ -85,13 +85,13 @@ console.log('─'.repeat(50));
 assert(htmlContent.includes('href="../index.html"'), 'Back/home link to ../index.html present');
 
 // ============================================================
-// 5. Registration in games/index.html
+// 5. Registration in index.html (games/index.html was removed)
 // ============================================================
 console.log('\n📝 REGISTRATION');
 console.log('─'.repeat(50));
 
 const gamesIndex = fs.readFileSync(GAMES_INDEX_PATH, 'utf-8');
-assert(gamesIndex.includes('2048.html'), '2048.html referenced in games/index.html');
+assert(gamesIndex.includes('2048.html'), '2048.html referenced in index.html');
 assert(gamesIndex.includes('2048') && gamesIndex.includes('puzzle'), '2048 game card present with puzzle category');
 
 // ============================================================

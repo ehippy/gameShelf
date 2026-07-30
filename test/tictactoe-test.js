@@ -6,7 +6,6 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 const tictactoePath = path.join(__dirname, '..', 'games', 'tictactoe.html');
-const gamesIndexPath = path.join(__dirname, '..', 'games', 'index.html');
 const rootIndexPath = path.join(__dirname, '..', 'index.html');
 
 let passed = 0;
@@ -26,17 +25,16 @@ function test(name, fn) {
 
 // ── Read files ──
 const tictactoe = fs.readFileSync(tictactoePath, 'utf8');
-const gamesIndex = fs.readFileSync(gamesIndexPath, 'utf8');
 const rootIndex = fs.readFileSync(rootIndexPath, 'utf8');
 
-// ── Criterion 1: File exists at path matching href in games/index.html ──
+// ── Criterion 1: File exists at path matching href in index.html (games/index.html was removed) ──
 test('File games/tictactoe.html exists', () => {
     if (!fs.existsSync(tictactoePath)) throw new Error('File does not exist');
 });
 
-test('games/index.html has href="tictactoe.html"', () => {
-    const href = gamesIndex.match(/href="tictactoe\.html"/);
-    if (!href) throw new Error('No href="tictactoe.html" found in games/index.html');
+test('index.html has href="games/tictactoe.html"', () => {
+    const href = rootIndex.match(/href="games\/tictactoe\.html"/);
+    if (!href) throw new Error('No href="games/tictactoe.html" found in index.html');
 });
 
 // ── Criterion 2: Self-contained HTML (CSS in <style>, JS in <script>) ──
@@ -215,10 +213,10 @@ test('Header has game title "Tic Tac Toe"', () => {
     if (!tictactoe.includes('Tic Tac Toe')) throw new Error('Game title not found');
 });
 
-test('Header back link goes to ../games/index.html', () => {
+test('Header back link goes to ../index.html', () => {
     const lines = tictactoe.split('\n');
     const backLine = lines.find(l => l.includes('back-link') && l.includes('href='));
-    if (!backLine || !backLine.includes('href="../games/index.html"')) {
+    if (!backLine || !backLine.includes('href="../index.html"')) {
         throw new Error('Back link href incorrect');
     }
 });
@@ -237,11 +235,11 @@ test('Footer Home link goes to ../index.html', () => {
     }
 });
 
-test('Footer All Games link goes to ../games/index.html', () => {
+test('Footer All Games link goes to ../index.html', () => {
     const footerStart = tictactoe.indexOf('class="site-footer"');
     const footer = tictactoe.substring(footerStart);
     const allGamesLine = footer.split('\n').find(l => l.includes('All Games') && l.includes('href='));
-    if (!allGamesLine || !allGamesLine.includes('href="../games/index.html"')) {
+    if (!allGamesLine || !allGamesLine.includes('href="../index.html"')) {
         throw new Error('Footer All Games link href incorrect');
     }
 });
@@ -281,9 +279,9 @@ test('Page title is "gameShelf — Tic Tac Toe"', () => {
 
 // ── Criterion 19: Card-thumb gradient colors ──
 test('Card thumb uses #38bdf8 and #0284c7', () => {
-    // Check games/index.html for the card entry
-    if (!gamesIndex.includes('linear-gradient(135deg, #38bdf8, #0284c7)')) {
-        throw new Error('Card-thumb gradient colors #38bdf8/#0284c7 not found in games/index.html');
+    // Check index.html for the card entry
+    if (!rootIndex.includes('linear-gradient(135deg, #38bdf8, #0284c7)')) {
+        throw new Error('Card-thumb gradient colors #38bdf8/#0284c7 not found in index.html');
     }
 });
 

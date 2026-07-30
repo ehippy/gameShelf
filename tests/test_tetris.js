@@ -171,7 +171,7 @@ test('Has header-inner div', /<div\s+class=["']header-inner["']/.test(tetrisHTML
 test('Has logo linking to ../index.html', /<a[^>]+href=["']\.\.\/index\.html["'][^>]+class=["']logo["']/i.test(tetrisHTML));
 test('Logo text is gameShelf', /class=["']logo["'][^>]*>gameShelf<|<a[^>]*class=["']logo["'][^>]*>gameShelf</i.test(tetrisHTML));
 test('Has game-title span with Tetris text', /<span\s+class=["']game-title["'][^>]*>Tetris<|class=["']game-title["'][^>]*>Tetris<\s*\/span/i.test(tetrisHTML));
-test('Has back-link to ../games/index.html', /<a[^>]+href=["']\.\.\/games\/index\.html["'][^>]+class=["']back-link["']/i.test(tetrisHTML));
+test('Has back-link to ../index.html', /<a[^>]+href=["']\.\.\/index\.html["'][^>]+class=["']back-link["']/i.test(tetrisHTML));
 test('Back link text includes arrow', /← Back to All Games|← Back|<span.*back/i.test(tetrisHTML));
 test('Header has header-left div', /<div\s+class=["']header-left["']/.test(tetrisHTML));
 
@@ -181,7 +181,7 @@ group('13. Footer Alignment');
 test('Footer uses site-footer class', /class=["']site-footer["']/.test(tetrisHTML));
 test('Footer has consistent © text', /©\s*2025\s+gameShelf\s*—\s*All games built in browser\s*—\s*no downloads required/.test(tetrisHTML));
 test('Footer has Home link', /<a[^>]+href=["']\.\.\/index\.html["']/i.test(tetrisHTML));
-test('Footer has All Games link', /<a[^>]+href=["']\.\.\/games\/index\.html["']/i.test(tetrisHTML));
+test('Footer has All Games link', /<a[^>]+href=["']\.\.\/index\.html["']/i.test(tetrisHTML));
 
 // 14. Game Loop Timing Fix
 group('14. Game Loop Timing Fix');

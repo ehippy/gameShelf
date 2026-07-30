@@ -24,7 +24,6 @@ function section(name) {
 // READ FILES
 // ============================================
 const memorymatchHtml = fs.readFileSync(path.join(__dirname, 'games', 'memorymatch.html'), 'utf-8');
-const gamesIndexHtml = fs.readFileSync(path.join(__dirname, 'games', 'index.html'), 'utf-8');
 const rootIndexHtml = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf-8');
 const stylesCss = fs.readFileSync(path.join(__dirname, 'styles.css'), 'utf-8');
 
@@ -159,7 +158,7 @@ assert(/<header/.test(memorymatchHtml), 'Header element exists');
 assert(/class=["']logo["']/.test(memorymatchHtml) || /href=["']\.\.\/index\.html["']/.test(memorymatchHtml), 'Logo links to ../index.html');
 assert(/gameShelf/.test(memorymatchHtml), 'Header has gameShelf logo text');
 assert(/Memory Match/.test(memorymatchHtml), 'Game title "Memory Match" present');
-assert(/\.\.\/games\/index\.html/.test(memorymatchHtml), 'Back link to ../games/index.html exists');
+assert(/\.\.\/index\.html/.test(memorymatchHtml), 'Back link to ../index.html exists');
 assert(/← Back to Games|← Back to All Games/.test(memorymatchHtml), 'Back link text includes arrow');
 // Verify the logo href specifically
 assert(/<a\s+href=["']\.\.\/index\.html["'].*class=["']logo["']/i.test(memorymatchHtml) ||
@@ -174,8 +173,8 @@ assert(/<footer/.test(memorymatchHtml), 'Footer element exists');
 assert(/class=["']site-footer["']/.test(memorymatchHtml), 'Footer uses site-footer class');
 const homeLink = /<a\s+href=["']\.\.\/index\.html["'][^>]*>Home<\/a>/i;
 assert(homeLink.test(memorymatchHtml), 'Footer has Home link (href="../index.html")');
-assert(/<a\s+href=["']index\.html["'][^>]*>All Games<\/a>/i.test(memorymatchHtml),
-    'Footer has All Games link (href="index.html")');
+assert(/<a\s+href=["']\.\.\/index\.html["'][^>]*>All Games<\/a>/i.test(memorymatchHtml),
+    'Footer has All Games link (href="../index.html")');
 
 // ============================================
 // SECTION 13: Shared Resource Links (re-check for emphasis)
@@ -237,13 +236,13 @@ section('18. Touch Support');
 assert(/touchstart|TouchEvent|touch/.test(memorymatchHtml), 'Touch event listener for mobile support');
 
 // ============================================
-// SECTION 19: Card registration in games/index.html
+// SECTION 19: Card registration in index.html
 // ============================================
-section('19. Game Registration in games/index.html');
-assert(/href="memorymatch\.html"/.test(gamesIndexHtml), 'games/index.html links to memorymatch.html');
-assert(/data-category="puzzle"/.test(gamesIndexHtml) && 
-      /memorymatch\.html/.test(gamesIndexHtml), 'Memory Match registered as puzzle category');
-assert(/Memory Match/.test(gamesIndexHtml), 'Game card has title "Memory Match"');
+section('19. Game Registration in index.html');
+assert(/href="games\/memorymatch\.html"/.test(rootIndexHtml), 'index.html links to memorymatch.html');
+assert(/data-category="puzzle"/.test(rootIndexHtml) && 
+      /memorymatch\.html/.test(rootIndexHtml), 'Memory Match registered as puzzle category');
+assert(/Memory Match/.test(rootIndexHtml), 'Game card has title "Memory Match"');
 
 // ============================================
 // SECTION 20: Game-specific CSS uses custom properties

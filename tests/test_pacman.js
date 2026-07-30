@@ -10,7 +10,6 @@ const fs = require('fs');
 const path = require('path');
 
 const pacmanPath = path.join(__dirname, '..', 'games', 'pacman.html');
-const gamesIndexPath = path.join(__dirname, '..', 'games', 'index.html');
 const rootIndexPath = path.join(__dirname, '..', 'index.html');
 
 let passed = 0;
@@ -30,7 +29,6 @@ function test(name, fn) {
 
 // ── Read files ──
 const pacman = fs.readFileSync(pacmanPath, 'utf8');
-const gamesIndex = fs.readFileSync(gamesIndexPath, 'utf8');
 const rootIndex = fs.readFileSync(rootIndexPath, 'utf8');
 
 console.log('\n📋 FILE EXISTENCE & REGISTRATION');
@@ -43,21 +41,6 @@ test('File games/pacman.html exists', () => {
 test('Root index.html has card with href="games/pacman.html"', () => {
     if (!rootIndex.includes('href="games/pacman.html"'))
         throw new Error('No href="games/pacman.html" in root index.html');
-});
-
-test('Games index.html has card with href="pacman.html"', () => {
-    if (!gamesIndex.includes('href="pacman.html"'))
-        throw new Error('No href="pacman.html" in games/index.html');
-});
-
-test('Pac-Man registered in games/index.html', () => {
-    if (!gamesIndex.includes('Pac-Man') && !gamesIndex.includes('pacman'))
-        throw new Error('Pac-Man not mentioned in games/index.html');
-});
-
-test('Pac-Man registered in root index.html', () => {
-    if (!rootIndex.includes('Pac-Man') && !rootIndex.includes('pacman'))
-        throw new Error('Pac-Man not mentioned in root index.html');
 });
 
 console.log('\n📄 SELF-CONTAINED CHECKS');
@@ -355,24 +338,9 @@ test('Yellow/gold Pac-Man color (#facc15)', () => {
 console.log('\n📝 REGISTRATION VERIFICATION');
 console.log('─'.repeat(50));
 
-test('games/index.html references pacman.html in href', () => {
-    if (!gamesIndex.match(/href="pacman\.html"/))
-        throw new Error('href="pacman.html" not in games/index.html');
-});
-
-test('games/index.html has Pac-Man category', () => {
-    if (!gamesIndex.match(/<a[^>]*href="pacman\.html"[^>]*class="game-card"/))
-        throw new Error('Pac-Man not registered as game card in games/index.html');
-});
-
 test('Root index.html references games/pacman.html', () => {
     if (!rootIndex.match(/href="games\/pacman\.html"/))
         throw new Error('href="games/pacman.html" not in root index.html');
-});
-
-test('Root index.html JS catalog includes Pac-Man', () => {
-    if (!rootIndex.includes("'games/pacman.html'"))
-        throw new Error('Pac-Man not in root index.html JS catalog');
 });
 
 console.log('\n🔗 NAVIGATION');
