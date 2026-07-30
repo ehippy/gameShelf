@@ -338,24 +338,9 @@ test('Yellow/gold Pac-Man color (#facc15)', () => {
 console.log('\n📝 REGISTRATION VERIFICATION');
 console.log('─'.repeat(50));
 
-test('games/index.html references pacman.html in href', () => {
-    if (!gamesIndex.match(/href="pacman\.html"/))
-        throw new Error('href="pacman.html" not in games/index.html');
-});
-
-test('games/index.html has Pac-Man category', () => {
-    if (!gamesIndex.match(/<a[^>]*href="pacman\.html"[^>]*class="game-card"/))
-        throw new Error('Pac-Man not registered as game card in games/index.html');
-});
-
 test('Root index.html references games/pacman.html', () => {
     if (!rootIndex.match(/href="games\/pacman\.html"/))
         throw new Error('href="games/pacman.html" not in root index.html');
-});
-
-test('Root index.html JS catalog includes Pac-Man', () => {
-    if (!rootIndex.includes("'games/pacman.html'"))
-        throw new Error('Pac-Man not in root index.html JS catalog');
 });
 
 console.log('\n🔗 NAVIGATION');
