@@ -237,12 +237,23 @@ assert(css.includes('background: var(--accent)'), 'Active dot uses var(--accent)
 assert(css.includes('opacity: 1'), 'Active dot has opacity 1');
 
 // Verify responsive breakpoint at 768px
-const resp768Match = css.match(/@media\s*\(\s*max-width:\s*768px\s*\)[\s\S]*?}/);
-assert(resp768Match !== null, 'CSS has @media max-width: 768px breakpoint');
-
-if (resp768Match) {
-    const resp768 = resp768Match[0];
-    assert(resp768.includes('carousel-slide') || resp768.includes('carousel-dot'),
+// Use a more robust match: capture everything from @media through the responsive rules
+const resp768Start = css.indexOf('@media (max-width: 768px)');
+assert(resp768Start !== -1, 'CSS has @media max-width: 768px breakpoint');
+if (resp768Start !== -1) {
+    // Extract the block by tracking brace depth
+    let braceCount = 0;
+    let resp768End = resp768Start;
+    for (let i = resp768Start; i < css.length; i++) {
+        if (css[i] === '{') braceCount++;
+        if (css[i] === '}') braceCount--;
+        if (braceCount === 0) {
+            resp768End = i + 1;
+            break;
+        }
+    }
+    const resp768 = css.substring(resp768Start, resp768End);
+    assert(resp768.includes('carousel-slide') || resp768.includes('carousel-dot') || resp768.includes('carousel-wrapper'),
         '768px breakpoint targets carousel elements');
     assert(resp768.includes('50%') || resp768.includes('calc(50%'),
         '768px breakpoint shows 2 cards (50% width each)');
