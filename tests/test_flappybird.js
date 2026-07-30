@@ -149,8 +149,8 @@ assert(content.includes("localStorage.getItem('flappybirdHighScore')") ||
        content.includes("localStorage.getItem(\"flappybirdHighScore\")") ||
        content.includes("localStorage.getItem('flappybirdHighScore')"),
        'High score read from localStorage with key "flappybirdHighScore"');
-assert(content.includes("localStorage.setItem('flappybirdHighScore')") ||
-       content.includes("localStorage.setItem(\"flappybirdHighScore\")"),
+assert(content.includes("localStorage.setItem('flappybirdHighScore',") ||
+       content.includes('localStorage.setItem("flappybirdHighScore",'),
        'High score written to localStorage with key "flappybirdHighScore"');
 
 // ─── 15. Scroll prevention for game keys ───
