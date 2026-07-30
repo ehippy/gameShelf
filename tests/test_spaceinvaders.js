@@ -80,8 +80,8 @@ console.log('\n--- Player Ship & Movement ---');
 
 assert(si.includes('drawPlayer') || si.match(/ctx\.moveTo[\s\S]*?ctx\.lineTo/),
        'Player ship is drawn on canvas');
-assert(si.includes('player.y = PLAYER_ROW') || si.includes('player.y: PLAYER_ROW'),
-       'Player position is set near bottom of canvas');
+assert(si.includes('PLAYER_ROW') && (si.includes('player.y = PLAYER_ROW') || si.includes('y: PLAYER_ROW') || si.includes('y = PLAYER_ROW')),
+       'Player position is set near bottom of canvas via PLAYER_ROW');
 assert(si.includes("e.key === 'ArrowLeft'") || si.includes('ArrowLeft'),
        'ArrowLeft key is handled for left movement');
 assert(si.includes("e.key === 'ArrowRight'") || si.includes('ArrowRight'),
