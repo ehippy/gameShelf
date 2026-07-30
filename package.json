@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "npx serve .",
-    "test": "echo No tests configured"
+    "test": "node test-acceptance.js"
   },
   "keywords": [],
   "author": "",
