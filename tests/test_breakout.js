@@ -105,5 +105,24 @@ assert(/winRestartBtn\.addEventListener/.test(content), 'winRestartBtn wired up'
 assert(content.includes("document.getElementById('start-overlay')"), 'DOM ref for startOverlay exists');
 assert(content.includes("document.getElementById('start-btn')"), 'DOM ref for startBtn exists');
 
+// 23. Canvas fallback: no nested <a> tags — the canvas unsupported text must be valid HTML
+var canvasSection = content.substring(content.indexOf('<canvas'));
+var closeCanvas = canvasSection.indexOf('</canvas>');
+var canvasInner = canvasSection.substring(0, closeCanvas);
+var nestedA = /<a[^>]*<a/.test(canvasInner);
+assert(!nestedA, 'Canvas fallback text has no nested <a> tags');
+
+// 24. Canvas fallback: contains plain text "Your browser does not support the HTML5 canvas element."
+assert(canvasInner.includes('Your browser does not support the HTML5 canvas element.'),
+  'Canvas fallback contains the unsupported message text');
+
+// 25. Canvas fallback: single <a href="../index.html"> for "All Games" remains
+assert(/<a href="\.\.\/index\.html"[^>]*>All Games<\/a>/.test(canvasInner),
+  'Canvas fallback contains a single All Games link');
+
+// 26. Canvas fallback: no outer <a> wrapping the fallback text
+var aCount = (canvasInner.match(/<a /g) || []).length;
+assert(aCount === 1, 'Canvas fallback has exactly 1 <a> tag (not 0 or 2+)');
+
 console.log('\n=== Results: ' + passed + ' passed, ' + failed + ' failed ===');
 process.exit(failed > 0 ? 1 : 0);
