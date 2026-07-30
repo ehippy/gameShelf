@@ -102,3 +102,4 @@ if (failures.length > 0) {
   console.log('All Vue scaffold tests passed! 🎉');
   process.exit(0);
 }
+
