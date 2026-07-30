@@ -10,7 +10,7 @@ const fs = require('fs');
 const path = require('path');
 
 const pacmanPath = path.join(__dirname, '..', 'games', 'pacman.html');
-const gamesIndexPath = path.join(__dirname, '..', 'games', 'index.html');
+const gamesIndexPath = path.join(__dirname, '..', 'index.html');
 const rootIndexPath = path.join(__dirname, '..', 'index.html');
 
 let passed = 0;
