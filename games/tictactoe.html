@@ -734,6 +734,13 @@
                 gameOverSubtitle.textContent = 'All cells filled — no winner this time.';
             }
 
+            // Update record
+            incrementRecord(result);
+
+            // Show record summary
+            recordSummary.innerHTML = buildRecordSummary();
+            recordSummary.style.display = 'block';
+
             updateTurnIndicator();
         }
 
