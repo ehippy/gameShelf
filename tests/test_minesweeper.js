@@ -32,11 +32,13 @@ if (kdIdx !== -1) {
   var kdBody = content.substring(kdIdx, content.indexOf('});', kdIdx) + 2);
 
   // Find the "if (gameState !== 'playing') return;" guard
-  var playingGuardIdx = kdBody.indexOf("gameState !== 'playing'");
+  var playingGuardStr = "gameState !== 'playing') return;";
+  var playingGuardIdx = kdBody.indexOf(playingGuardStr);
   assert(playingGuardIdx !== -1, 'Playing-state guard exists in keydown handler');
 
   if (playingGuardIdx !== -1) {
-    var afterPlayingGuard = kdBody.substring(playingGuardIdx + playingGuard.match(/gameState !== 'playing' return;/)[0].length);
+    var guardLen = playingGuardStr.length;
+    var afterPlayingGuard = kdBody.substring(playingGuardIdx + guardLen);
 
     // Find Space/Enter handler within this branch
     var seIdx = afterPlayingGuard.indexOf("e.code === 'Space' || e.code === 'Enter'");
