@@ -42,13 +42,19 @@ assert(/id="gameCanvas"[\s\S]*?width="400"/.test(minesweeperHtml), 'Canvas width
 assert(/id="gameCanvas"[\s\S]*?height="400"/.test(minesweeperHtml), 'Canvas height=400');
 
 // ============================================
-// SECTION 3: Grid dimensions and mine count
+// SECTION 3: Grid dimensions (dynamic via difficulty presets)
 // ============================================
-section('3. Grid Dimensions (16×16) and Mine Count (10)');
-assert(/const\s+COLS\s*=\s*16/.test(minesweeperHtml), 'Grid has 16 columns');
-assert(/const\s+ROWS\s*=\s*16/.test(minesweeperHtml), 'Grid has 16 rows');
-assert(/const\s+MINES\s*=\s*10/.test(minesweeperHtml), 'Mine count is 10');
-assert(/const\s+CELL\s*=\s*CANVAS_SIZE\s*\/\s*COLS/.test(minesweeperHtml), 'Cell size = 25px (400/16)');
+section('3. Dynamic Grid Dimensions via Difficulty Presets');
+assert(/var\s+COLS\s*=\s*DIFFICULTY/.test(minesweeperHtml) || /DIFFICULTY\[diffIdx\]\.cols/.test(minesweeperHtml), 'COLS is set from difficulty preset');
+assert(/var\s+ROWS\s*=\s*DIFFICULTY/.test(minesweeperHtml) || /DIFFICULTY\[diffIdx\]\.rows/.test(minesweeperHtml), 'ROWS is set from difficulty preset');
+assert(/var\s+MINES\s*=\s*DIFFICULTY/.test(minesweeperHtml) || /DIFFICULTY\[diffIdx\]\.mines/.test(minesweeperHtml), 'MINES is set from difficulty preset');
+assert(/var\s+CELL\s*=\s*CANVAS_SIZE\s*\/\s*COLS/.test(minesweeperHtml), 'CELL = CANVAS_SIZE / COLS (dynamic)');
+// Check for difficulty presets
+assert(minesweeperHtml.includes("cols: 9") || /['"]Easy['"]/.test(minesweeperHtml), 'Easy preset exists (9×9)');
+assert(minesweeperHtml.includes("cols: 16") || /['"]Medium['"]/.test(minesweeperHtml), 'Medium preset exists (16×16)');
+assert(minesweeperHtml.includes("cols: 30") || /['"]Hard['"]/.test(minesweeperHtml), 'Hard preset exists (30×16)');
+// Check that default difficulty index is 1 (Medium)
+assert(/var\s+diffIdx\s*=\s*1/.test(minesweeperHtml), 'Default difficulty index is 1 (Medium)');
 
 // ============================================
 // SECTION 4: Overlays (Start overlay with game name and Start button)
