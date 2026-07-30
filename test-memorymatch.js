@@ -239,7 +239,7 @@ assert(/touchstart|TouchEvent|touch/.test(memorymatchHtml), 'Touch event listene
 // SECTION 19: Card registration in index.html
 // ============================================
 section('19. Game Registration in index.html');
-assert(/href="memorymatch\.html"/.test(rootIndexHtml), 'index.html links to memorymatch.html');
+assert(/href="games\/memorymatch\.html"/.test(rootIndexHtml), 'index.html links to memorymatch.html');
 assert(/data-category="puzzle"/.test(rootIndexHtml) && 
       /memorymatch\.html/.test(rootIndexHtml), 'Memory Match registered as puzzle category');
 assert(/Memory Match/.test(rootIndexHtml), 'Game card has title "Memory Match"');
