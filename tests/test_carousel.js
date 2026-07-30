@@ -237,28 +237,39 @@ assert(css.includes('background: var(--accent)'), 'Active dot uses var(--accent)
 assert(css.includes('opacity: 1'), 'Active dot has opacity 1');
 
 // Verify responsive breakpoint at 768px
-// Use a more robust match: capture everything from @media through the responsive rules
+// Use a more robust match: first find the @media line, then find its opening {, then track braces
 const resp768Start = css.indexOf('@media (max-width: 768px)');
 assert(resp768Start !== -1, 'CSS has @media max-width: 768px breakpoint');
 if (resp768Start !== -1) {
-    // Extract the block by tracking brace depth
-    let braceCount = 0;
-    let resp768End = resp768Start;
+    // Find the opening brace of this media query
+    let openBrace = -1;
     for (let i = resp768Start; i < css.length; i++) {
-        if (css[i] === '{') braceCount++;
-        if (css[i] === '}') braceCount--;
-        if (braceCount === 0) {
-            resp768End = i + 1;
-            break;
+        if (css[i] === '{') { openBrace = i; break; }
+    }
+    assert(openBrace !== -1, 'Opening brace found for 768px @media block');
+    if (openBrace !== -1) {
+        // Track brace depth starting from 1 (we're inside one block)
+        let braceCount = 1;
+        let resp768End = -1;
+        for (let i = openBrace + 1; i < css.length; i++) {
+            if (css[i] === '{') braceCount++;
+            if (css[i] === '}') braceCount--;
+            if (braceCount === 0) {
+                resp768End = i + 1;
+                break;
+            }
+        }
+        assert(resp768End !== -1, 'Closing brace found for 768px @media block');
+        if (resp768End !== -1) {
+            const resp768 = css.substring(resp768Start, resp768End);
+            assert(resp768.includes('carousel-slide') || resp768.includes('carousel-dot') || resp768.includes('carousel-wrapper'),
+                '768px breakpoint targets carousel elements');
+            assert(resp768.includes('50%') || resp768.includes('calc(50%'),
+                '768px breakpoint shows 2 cards (50% width each)');
+            assert(resp768.includes('most-played-section'),
+                '768px breakpoint includes most-played-section padding adjustment');
         }
     }
-    const resp768 = css.substring(resp768Start, resp768End);
-    assert(resp768.includes('carousel-slide') || resp768.includes('carousel-dot') || resp768.includes('carousel-wrapper'),
-        '768px breakpoint targets carousel elements');
-    assert(resp768.includes('50%') || resp768.includes('calc(50%'),
-        '768px breakpoint shows 2 cards (50% width each)');
-    assert(resp768.includes('most-played-section'),
-        '768px breakpoint includes most-played-section padding adjustment');
 }
 
 // ============================================================
