@@ -289,7 +289,6 @@
         function initGame() {
             score = 0;
             lives = INITIAL_LIVES;
-            gameState = 'playing';
 
             // Paddle centered at bottom
             paddle = {
@@ -567,6 +566,11 @@
 
         // Start game
         function startGame() {
+            // Guard: if game is already playing, safely ignore
+            if (gameState === 'playing') {
+                return;
+            }
+
             // Cancel any existing loop
             if (animationId) {
                 cancelAnimationFrame(animationId);
@@ -578,6 +582,7 @@
             gameoverOverlay.classList.remove('visible');
             winOverlay.classList.remove('visible');
 
+            gameState = 'playing';
             initGame();
             render();
         }
@@ -617,9 +622,16 @@
 
         // Keyboard controls
         document.addEventListener('keydown', (e) => {
+            // Start game when pressing Enter or Space from start screen
+            if ((e.code === 'Enter' || e.code === 'Space') && startOverlay.classList.contains('visible')) {
+                e.preventDefault();
+                startGame();
+                return;
+            }
+
             keys[e.code] = true;
 
-            if (e.code === 'Space') {
+            if (e.code === 'Space' && gameState === 'playing') {
                 e.preventDefault();
                 togglePause();
             }
