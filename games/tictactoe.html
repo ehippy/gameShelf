@@ -797,6 +797,47 @@
             }
         });
 
+        // ── Mouse Click Handler ──
+        canvas.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (gameState !== 'playing' || aiThinking) return;
+
+            // Get click position relative to canvas
+            var rect = canvas.getBoundingClientRect();
+            var clickX = e.clientX - rect.left;
+            var clickY = e.clientY - rect.top;
+
+            // Convert to grid coordinates
+            var col = Math.floor(clickX / CELL);
+            var row = Math.floor(clickY / CELL);
+
+            // Clamp to grid bounds (0-2)
+            col = Math.max(0, Math.min(2, col));
+            row = Math.max(0, Math.min(2, row));
+
+            // Only place if cell is empty
+            if (board[row][col] === null) {
+                board[row][col] = 'X';
+
+                // Check for win/draw
+                var result = checkWinner();
+                if (result) {
+                    winner = result.winner;
+                    winLine = result.line;
+                    gameState = 'gameover';
+                    showGameOver(winner);
+                    updateTurnIndicator();
+                    render();
+                    return;
+                }
+
+                // AI's turn
+                updateTurnIndicator();
+                render();
+                aiMove();
+            }
+        });
+
         // ── Button Handlers ──
         startBtn.addEventListener('click', function() {
             startGame();
