@@ -6,7 +6,6 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 const tictactoePath = path.join(__dirname, '..', 'games', 'tictactoe.html');
-const gamesIndexPath = path.join(__dirname, '..', 'index.html');
 const rootIndexPath = path.join(__dirname, '..', 'index.html');
 
 let passed = 0;
