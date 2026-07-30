@@ -2,9 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>gameShelf - Play Free Games Online</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
       /* Inline landing page structure styles */
       .navbar { position: sticky; top: 0; z-index: 100; background: rgba(15,15,35,0.95); }
@@ -15,8 +15,8 @@
       @media (min-width: 768px) { .games-grid { grid-template-columns: repeat(2, 1fr); } }
       @media (max-width: 480px) { .games-grid { grid-template-columns: 1fr; } }
     </style>
-    <script type="module">
-      window.games = [
+    <script>
+      var games = [
         { name: 'Snake', href: 'games/snake.html', category: 'arcade', icon: '🐍', gradient: 'linear-gradient(135deg, #4ade80, #16a34a)', description: 'Classic arcade snake game. Eat, grow, survive!' },
         { name: 'Tetris', href: 'games/tetris.html', category: 'puzzle', icon: '🧩', gradient: 'linear-gradient(135deg, #a78bfa, #7c3aed)', description: 'Stack falling blocks and clear lines to score points.' },
         { name: '2048', href: 'games/2048.html', category: 'puzzle', icon: '🔢', gradient: 'linear-gradient(135deg, #fbbf24, #d97706)', description: 'Slide and merge numbered tiles to reach 2048!' },
@@ -33,18 +33,15 @@
     </script>
   </head>
   <body>
-    <!-- Header / Navbar -->
-    <header class="navbar">
-      <div class="navbar-inner">
-        <a href="../index.html" class="logo">🎮 gameShelf</a>
-        <nav>
-          <a href="../about.html" class="nav-link">About</a>
-        </nav>
+    <!-- Header -->
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="index.html" class="logo">gameShelf</a>
+        <div class="search-area">
+          <input type="text" class="search-input" placeholder="Search games...">
+        </div>
       </div>
     </header>
-
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
 
     <!-- Most Played Carousel Section -->
     <section class="most-played-section">
@@ -414,6 +411,7 @@
             <p class="card-desc">Tap to flap through pipes — how far can you go?</p>
             <span class="card-tag arcade">Arcade</span>
           </div>
+          <div class="card-play">▶ Play</div>
         </a>
         <a href="games/spaceinvaders.html" class="game-card" data-category="arcade">
           <div class="card-thumb" style="background: linear-gradient(135deg, #22d3ee, #0891b2);">
@@ -424,6 +422,7 @@
             <p class="card-desc">Defend Earth from waves of descending alien invaders!</p>
             <span class="card-tag arcade">Arcade</span>
           </div>
+          <div class="card-play">▶ Play</div>
         </a>
         <a href="games/slidingpuzzle.html" class="game-card" data-category="puzzle">
           <div class="card-thumb" style="background: linear-gradient(135deg, #38bdf8, #1e40af);">
@@ -434,6 +433,7 @@
             <p class="card-desc">Arrange numbered tiles to solve the puzzle!</p>
             <span class="card-tag puzzle">Puzzle</span>
           </div>
+          <div class="card-play">▶ Play</div>
         </a>
       </div>
     </section>
@@ -476,5 +476,25 @@
         </li>
       </ul>
     </section>
+
+    <script>
+      var games = [
+        { name: 'Minesweeper', href: 'games/minesweeper.html', category: 'puzzle' },
+        { name: 'Snake', href: 'games/snake.html', category: 'arcade' },
+        { name: 'Tetris', href: 'games/tetris.html', category: 'puzzle' },
+        { name: '2048', href: 'games/2048.html', category: 'puzzle' },
+        { name: 'Breakout', href: 'games/breakout.html', category: 'action' },
+        { name: 'Pac-Man', href: 'games/pacman.html', category: 'arcade' },
+        { name: 'Tic Tac Toe', href: 'games/tictactoe.html', category: 'puzzle' },
+        { name: 'Memory Match', href: 'games/memorymatch.html', category: 'puzzle' },
+        { name: 'Simon Says', href: 'games/simon-says.html', category: 'casual' },
+        { name: 'Whack-a-Mole', href: 'games/whackamole.html', category: 'action' },
+        { name: 'Flappy Bird', href: 'games/flappybird.html', category: 'arcade' },
+        { name: 'Space Invaders', href: 'games/spaceinvaders.html', category: 'arcade' },
+        { name: 'Sliding Tile Puzzle', href: 'games/slidingpuzzle.html', category: 'puzzle' }
+      ];
+    </script>
+
+    <script src="script.js"></script>
   </body>
 </html>
