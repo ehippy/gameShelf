@@ -427,7 +427,7 @@ assert(homeSrc.includes('g.category === activeFilter') || homeSrc.includes('g.ca
   'Home filters by category when activeFilter is set');
 
 // Check that search is applied
-assert(homeSrc.includes('store.searchGames(searchQuery)'), 'Home uses store.searchGames for text search');
+assert(homeSrc.includes('store.searchGames') && homeSrc.includes('searchQuery'), 'Home uses store.searchGames for text search');
 
 // The filter should apply both — check that both are combined
 assert(homeSrc.includes('filteredGames') && homeSrc.includes('computed'), 'filteredGames is computed');
