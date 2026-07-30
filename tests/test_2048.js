@@ -9,7 +9,7 @@ const path = require('path');
 const { JSDOM } = require('jsdom');
 
 const HTML_PATH = path.resolve(__dirname, '..', 'games', '2048.html');
-const GAMES_INDEX_PATH = path.resolve(__dirname, '..', 'games', 'index.html');
+const GAMES_INDEX_PATH = path.resolve(__dirname, '..', 'index.html');
 
 let passed = 0;
 let failed = 0;
