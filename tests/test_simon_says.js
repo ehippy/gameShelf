@@ -349,7 +349,8 @@ if (whatNewList) {
 console.log('\n📋 GAMES JAVASCRIPT ARRAY');
 console.log('─'.repeat(50));
 
-const gamesMatch = rootIndex.match(/var games\s*=\s*\[[\s\S]*?\];/);
+const gamesMatch = rootIndex.match(/var games\s*=\s*\[[\s\S]*?\];/) ||
+                   rootIndex.match(/window\.gamesCatalog\s*=\s*\[[\s\S]*?\];/);
 assert(gamesMatch, 'Games array defined in index.html');
 if (gamesMatch) {
     assert(gamesMatch[0].includes('Simon Says'), 'Simon Says in games array');
