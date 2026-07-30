@@ -6,5 +6,8 @@ const id = route.params.id
 </script>
 
 <template>
-  <h1>Game: {{ id }}</h1>
+  <div>
+    <h1>Game: {{ id }}</h1>
+    <p>Loading game...</p>
+  </div>
 </template>
