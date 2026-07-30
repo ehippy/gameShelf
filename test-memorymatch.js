@@ -236,13 +236,13 @@ section('18. Touch Support');
 assert(/touchstart|TouchEvent|touch/.test(memorymatchHtml), 'Touch event listener for mobile support');
 
 // ============================================
-// SECTION 19: Card registration in games/index.html
+// SECTION 19: Card registration in index.html
 // ============================================
-section('19. Game Registration in games/index.html');
-assert(/href="memorymatch\.html"/.test(gamesIndexHtml), 'games/index.html links to memorymatch.html');
-assert(/data-category="puzzle"/.test(gamesIndexHtml) && 
-      /memorymatch\.html/.test(gamesIndexHtml), 'Memory Match registered as puzzle category');
-assert(/Memory Match/.test(gamesIndexHtml), 'Game card has title "Memory Match"');
+section('19. Game Registration in index.html');
+assert(/href="memorymatch\.html"/.test(rootIndexHtml), 'index.html links to memorymatch.html');
+assert(/data-category="puzzle"/.test(rootIndexHtml) && 
+      /memorymatch\.html/.test(rootIndexHtml), 'Memory Match registered as puzzle category');
+assert(/Memory Match/.test(rootIndexHtml), 'Game card has title "Memory Match"');
 
 // ============================================
 // SECTION 20: Game-specific CSS uses custom properties
