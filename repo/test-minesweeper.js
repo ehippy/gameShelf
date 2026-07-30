@@ -25,7 +25,6 @@ function section(name) {
 // ============================================
 const minesweeperHtml = fs.readFileSync(path.join(__dirname, 'games', 'minesweeper.html'), 'utf-8');
 const rootIndexHtml = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf-8');
-const gamesIndexHtml = fs.readFileSync(path.join(__dirname, 'games', 'index.html'), 'utf-8');
 
 // ============================================
 // SECTION 1: File existence
