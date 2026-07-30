@@ -747,6 +747,8 @@
         function restart() {
             gameOverOverlay.classList.add('hidden');
             gameOverTitle.style.color = '';
+            recordSummary.style.display = 'none';
+            recordSummary.innerHTML = '';
             startOverlay.classList.remove('hidden');
             initBoard();
             gameState = 'start';
