@@ -422,10 +422,19 @@
 
         // ── Constants ──
         const CANVAS_SIZE = 400;
-        const COLS = 16;
-        const ROWS = 16;
-        const CELL = CANVAS_SIZE / COLS; // 25px
-        const MINES = 10;
+
+        // ── Difficulty Presets ──
+        var DIFFICULTY = [
+            { name: 'Easy',  cols: 9,  rows: 9,  mines: 10  },
+            { name: 'Medium', cols: 16, rows: 16, mines: 40 },
+            { name: 'Hard',  cols: 30, rows: 16, mines: 99  }
+        ];
+        var diffIdx = 1; // default: Medium
+
+        var COLS = DIFFICULTY[diffIdx].cols;
+        var ROWS = DIFFICULTY[diffIdx].rows;
+        var CELL = CANVAS_SIZE / COLS;
+        var MINES = DIFFICULTY[diffIdx].mines;
 
         // Number colors (classic Minesweeper)
         const NUM_COLORS = {
