@@ -622,9 +622,16 @@
 
         // Keyboard controls
         document.addEventListener('keydown', (e) => {
+            // Start game when pressing Enter or Space from start screen
+            if ((e.code === 'Enter' || e.code === 'Space') && startOverlay.classList.contains('visible')) {
+                e.preventDefault();
+                startGame();
+                return;
+            }
+
             keys[e.code] = true;
 
-            if (e.code === 'Space') {
+            if (e.code === 'Space' && gameState === 'playing') {
                 e.preventDefault();
                 togglePause();
             }
