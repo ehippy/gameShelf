@@ -408,6 +408,58 @@ assert(/©\s*2025\s+gameShelf\s*—\s*All games built in browser\s*—\s*no down
     'Root index.html footer text unchanged');
 assert(/©\s*2025\s+gameShelf\s*—\s*All games built in browser\s*—\s*no downloads required/.test(gamesIndexHtml),
     'games/index.html footer text unchanged');
+
+// ============================================
+// SECTION 36: Timer only starts on first reveal
+// ============================================
+section('36. Timer Only Starts on First Reveal');
+
+// Check that beginPlaying does NOT call startTimer
+const beginPlayingFn = minesweeperHtml.split('function beginPlaying')[1]?.split('function')[0] || '';
+assert(!beginPlayingFn.includes('startTimer'), 'beginPlaying() does NOT call startTimer');
+
+// Check that handleFirstReveal DOES call startTimer
+const handleFirstRevealFn = minesweeperHtml.split('function handleFirstReveal')[1]?.split('function')[0] || '';
+assert(handleFirstRevealFn.includes('startTimer'), 'handleFirstReveal() calls startTimer');
+assert(handleFirstRevealFn.includes('beginPlaying'), 'handleFirstReveal() calls beginPlaying');
+
+// Check that startBtn handler does NOT call startTimer
+const startBtnHandler = minesweeperHtml.match(/startBtn\.addEventListener\('click'[\s\S]*?\n\s*\}\);/);
+assert(startBtnHandler, 'startBtn click handler exists');
+assert(startBtnHandler[0] && !startBtnHandler[0].includes('startTimer'), 'startBtn click handler does NOT start timer');
+assert(startBtnHandler[0] && startBtnHandler[0].includes("gameState = 'start'"), 'startBtn sets gameState to start');
+assert(startBtnHandler[0] && startBtnHandler[0].includes("startOverlay.classList.add('hidden')"), 'startBtn hides overlay');
+
+// Check that handleFirstReveal sets minesPlaced = true
+assert(handleFirstRevealFn.includes('minesPlaced = true'), 'handleFirstReveal sets minesPlaced = true');
+
+// Check that handleFirstReveal is called from start-state keyboard handler
+const startStateBlock = minesweeperHtml.match(/if \(gameState === ['"]start['"]\)[\s\S]*?if \(gameState === ['"]gameover['"]/);
+assert(startStateBlock, 'Start-state keydown block exists');
+assert(startStateBlock[0] && startStateBlock[0].includes('handleFirstReveal'), 'handleFirstReveal called from start-state keydown handler');
+assert(startStateBlock[0] && /Enter|Space/.test(startStateBlock[0]), 'HandleFirstReveal triggered on Enter/Space in start state');
+
+// Check that mouse click handler allows first reveal from 'start' state
+const mouseClickHandler = minesweeperHtml.match(/canvas\.addEventListener\('click'[\s\S]*?\n\s*\}\);/);
+assert(mouseClickHandler, 'Mouse click handler exists');
+assert(mouseClickHandler[0] && /gameState === ['"]start['"]/.test(mouseClickHandler[0]), 'Mouse handler checks for start state for first reveal');
+
+// Check arrow keys work during 'start' state (via KEY_MAP reference)
+assert(startStateBlock && /KEY_MAP/.test(startStateBlock[0]), 'Arrow keys via KEY_MAP handled during start state');
+assert(startStateBlock && /cursorX/.test(startStateBlock[0]) && /cursorY/.test(startStateBlock[0]), 'Cursor moves during start state');
+
+// ============================================
+// SECTION 37: Game-over and win overlays work with accurate timer
+// ============================================
+section('37. Game-Over and Win Overlays with Accurate Timer');
+// endGame stops timer and sets game over/win states
+assert(endGameFn.includes('stopTimer'), 'endGame stops timer on game end');
+assert(endGameFn.includes("gameOverOverlay"), 'gameOverOverlay shown on game over');
+assert(endGameFn.includes("winOverlay"), 'winOverlay shown on win');
+assert(endGameFn.includes("gameState = 'gameover'"), 'gameState set to gameover on loss');
+assert(endGameFn.includes("gameState = 'win'"), 'gameState set to win on victory');
+assert(endGameFn.includes("winTimeEl"), 'win time is displayed on win');
+
 console.log('  Minesweeper Test Results');
 console.log('========================================');
 results.forEach(r => console.log(r));

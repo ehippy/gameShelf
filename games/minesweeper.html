@@ -597,7 +597,7 @@
             }
 
             // Draw cursor highlight
-            if (gameState === 'playing') {
+            if (gameState === 'playing' || gameState === 'start') {
                 ctx.fillStyle = 'rgba(0, 212, 255, 0.35)';
                 ctx.fillRect(cursorX * CELL + 1, cursorY * CELL + 1, CELL - 2, CELL - 2);
             }
@@ -684,7 +684,6 @@
         function beginPlaying() {
             gameState = 'playing';
             stopTimer();
-            startTimer();
             startOverlay.classList.add('hidden');
         }
 
@@ -720,8 +719,11 @@
             // Place mines after first reveal, excluding the revealed cell
             placeMines(cursorX, cursorY);
             calculateAdjacentMines();
+            minesPlaced = true;
             revealCell(cursorX, cursorY);
             beginPlaying();
+            startTimer();
+            render();
         }
 
         // ── Input Handling ──
@@ -739,9 +741,21 @@
             }
 
             if (gameState === 'start') {
+                var move = KEY_MAP[e.code];
+                if (move) {
+                    // Move cursor during start state so player can aim
+                    cursorX += move.x;
+                    cursorY += move.y;
+                    if (cursorX < 0) cursorX = 0;
+                    if (cursorX >= COLS) cursorX = COLS - 1;
+                    if (cursorY < 0) cursorY = 0;
+                    if (cursorY >= ROWS) cursorY = ROWS - 1;
+                    render();
+                    return;
+                }
                 if (e.code === 'Enter' || e.code === 'Space') {
-                    beginPlaying();
-                    startOverlay.classList.add('hidden');
+                    handleFirstReveal();
+                    return;
                 }
                 return;
             }
@@ -775,9 +789,11 @@
                     placeMines(cursorX, cursorY);
                     calculateAdjacentMines();
                     beginPlaying();
+                    startTimer();
                     minesPlaced = true;
                 }
                 revealCell(cursorX, cursorY);
+                render();
             }
 
             if (e.code === 'KeyR') {
@@ -794,6 +810,21 @@
 
         // ── Mouse support (click to reveal/flag for convenience) ──
         canvas.addEventListener('click', function(e) {
+            if (gameState === 'gameover' || gameState === 'win') return;
+            // First reveal: allow clicks during 'start' state for mouse
+            if (gameState === 'start' && !minesPlaced) {
+                var rect = canvas.getBoundingClientRect();
+                var scaleX = CANVAS_SIZE / rect.width;
+                var scaleY = CANVAS_SIZE / rect.height;
+                var mx = Math.floor((e.clientX - rect.left) * scaleX / CELL);
+                var my = Math.floor((e.clientY - rect.top) * scaleY / CELL);
+                if (mx >= 0 && mx < COLS && my >= 0 && my < ROWS) {
+                    cursorX = mx;
+                    cursorY = my;
+                    handleFirstReveal();
+                    return;
+                }
+            }
             if (gameState !== 'playing') return;
             var rect = canvas.getBoundingClientRect();
             var scaleX = CANVAS_SIZE / rect.width;
@@ -808,9 +839,12 @@
                 if (!minesPlaced) {
                     placeMines(cursorX, cursorY);
                     calculateAdjacentMines();
+                    beginPlaying();
+                    startTimer();
                     minesPlaced = true;
                 }
                 revealCell(mx, my);
+                render();
             }
         });
 
@@ -832,7 +866,12 @@
 
         // ── Button Handlers ──
         startBtn.addEventListener('click', function() {
-            beginPlaying();
+            gameState = 'start';
+            stopTimer();
+            timerSeconds = 0;
+            timerEl.textContent = '000';
+            startOverlay.classList.add('hidden');
+            render();
         });
 
         restartBtnGameOver.addEventListener('click', function() {
