@@ -173,8 +173,8 @@ assert(/<footer/.test(memorymatchHtml), 'Footer element exists');
 assert(/class=["']site-footer["']/.test(memorymatchHtml), 'Footer uses site-footer class');
 const homeLink = /<a\s+href=["']\.\.\/index\.html["'][^>]*>Home<\/a>/i;
 assert(homeLink.test(memorymatchHtml), 'Footer has Home link (href="../index.html")');
-assert(/<a\s+href=["']index\.html["'][^>]*>All Games<\/a>/i.test(memorymatchHtml),
-    'Footer has All Games link (href="index.html")');
+assert(/<a\s+href=["']\.\.\/index\.html["'][^>]*>All Games<\/a>/i.test(memorymatchHtml),
+    'Footer has All Games link (href="../index.html")');
 
 // ============================================
 // SECTION 13: Shared Resource Links (re-check for emphasis)
