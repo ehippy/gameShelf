@@ -235,11 +235,11 @@ test('Footer Home link goes to ../index.html', () => {
     }
 });
 
-test('Footer All Games link goes to ../games/index.html', () => {
+test('Footer All Games link goes to ../index.html', () => {
     const footerStart = tictactoe.indexOf('class="site-footer"');
     const footer = tictactoe.substring(footerStart);
     const allGamesLine = footer.split('\n').find(l => l.includes('All Games') && l.includes('href='));
-    if (!allGamesLine || !allGamesLine.includes('href="../games/index.html"')) {
+    if (!allGamesLine || !allGamesLine.includes('href="../index.html"')) {
         throw new Error('Footer All Games link href incorrect');
     }
 });
