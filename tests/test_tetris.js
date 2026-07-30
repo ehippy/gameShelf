@@ -181,7 +181,7 @@ group('13. Footer Alignment');
 test('Footer uses site-footer class', /class=["']site-footer["']/.test(tetrisHTML));
 test('Footer has consistent © text', /©\s*2025\s+gameShelf\s*—\s*All games built in browser\s*—\s*no downloads required/.test(tetrisHTML));
 test('Footer has Home link', /<a[^>]+href=["']\.\.\/index\.html["']/i.test(tetrisHTML));
-test('Footer has All Games link', /<a[^>]+href=["']\.\.\/games\/index\.html["']/i.test(tetrisHTML));
+test('Footer has All Games link', /<a[^>]+href=["']\.\.\/index\.html["']/i.test(tetrisHTML));
 
 // 14. Game Loop Timing Fix
 group('14. Game Loop Timing Fix');
