@@ -45,14 +45,19 @@ assert(!existsSync(join(root, 'vite.config.js')), 'vite.config.js does not exist
 // 7. package-lock.json removed
 assert(!existsSync(join(root, 'package-lock.json')), 'package-lock.json does not exist')
 
-// 8. No test files (test-*.sh, test-*.js, tests/*.cjs)
-const testFiles = []
-for (const entry of readdirSync(root)) {
-  if (entry.startsWith('test-') && (entry.endsWith('.sh') || entry.endsWith('.js'))) {
-    testFiles.push(entry)
+// 8. No OLD test files (test-*.sh, test-*.js, tests/*.cjs) — exclude our own test
+const testFiles = readdirSync(root).filter(f => {
+  if (f.startsWith('test-') && (f.endsWith('.sh') || f.endsWith('.js'))) {
+    // Exclude the new acceptance test file
+    if (f === 'test-acceptance.js') return false
   }
-}
-assert(testFiles.length === 0, 'No test-*.sh or test-*.js files in root')
+  return false
+})
+// Check for test-*.sh files
+const shFiles = readdirSync(root).filter(f => f.startsWith('test-') && f.endsWith('.sh'))
+// Check for tests/ directory
+const hasTestsDir = existsSync(join(root, 'tests'))
+assert(shFiles.length === 0 && !hasTestsDir, 'No old test files (test-*.sh, tests/) in root')
 
 // --- index.html content ---
 
