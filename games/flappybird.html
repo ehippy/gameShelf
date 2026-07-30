@@ -573,9 +573,8 @@
             }
 
             // Move pipes
-            var currentSpeed = INITIAL_SPEED + Math.min(Math.floor(score / SPEED_STEP) * SPEED_STEP / SPEED_STEP * SPEED_INCREMENT, MAX_SPEED - INITIAL_SPEED);
-            // Recalculate properly:
-            currentSpeed = INITIAL_SPEED + Math.min(Math.floor(score / SPEED_STEP) * SPEED_INCREMENT, MAX_SPEED - INITIAL_SPEED);
+            // Speed increases 0.3 px/frame every 5 points, capped at 6 px/frame
+            var currentSpeed = INITIAL_SPEED + Math.min(Math.floor(score / SPEED_STEP) * SPEED_INCREMENT, MAX_SPEED - INITIAL_SPEED);
 
             for (var i = 0; i < pipes.length; i++) {
                 var p = pipes[i];
