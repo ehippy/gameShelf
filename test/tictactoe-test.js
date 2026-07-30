@@ -279,9 +279,9 @@ test('Page title is "gameShelf — Tic Tac Toe"', () => {
 
 // ── Criterion 19: Card-thumb gradient colors ──
 test('Card thumb uses #38bdf8 and #0284c7', () => {
-    // Check games/index.html for the card entry
-    if (!gamesIndex.includes('linear-gradient(135deg, #38bdf8, #0284c7)')) {
-        throw new Error('Card-thumb gradient colors #38bdf8/#0284c7 not found in games/index.html');
+    // Check index.html for the card entry
+    if (!rootIndex.includes('linear-gradient(135deg, #38bdf8, #0284c7)')) {
+        throw new Error('Card-thumb gradient colors #38bdf8/#0284c7 not found in index.html');
     }
 });
 
