@@ -18,6 +18,7 @@
         { name: 'Simon Says', href: 'simon-says.html', category: 'casual' },
         { name: 'Space Invaders', href: 'spaceinvaders.html', category: 'arcade' },
         { name: 'Flappy Bird', href: 'flappybird.html', category: 'arcade' },
+        { name: 'Whack-a-Mole', href: 'whackamole.html', category: 'action' },
         { name: 'Sliding Tile Puzzle', href: 'slidingpuzzle.html', category: 'puzzle' }
     ];
 
