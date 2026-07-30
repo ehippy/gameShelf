@@ -190,6 +190,76 @@ assert(content.includes("id='startBtn'") || content.includes('id="startBtn"'),
 assert(content.includes("id='restartBtn'") || content.includes('id="restartBtn"'),
        'Restart button exists');
 
+// ── High Score Tracking ──
+console.log('\n--- High Score Tracking ---');
+
+// recordDisplay element in HUD bar
+assert(content.includes("id='recordDisplay'") || content.includes('id="recordDisplay"'),
+       'recordDisplay element exists in HUD bar');
+assert(content.includes('record-display'),
+       'record-display CSS class exists');
+
+// localStorage persistence key
+assert(content.includes("'tictactoe-record'"),
+       'localStorage key "tictactoe-record" is used');
+
+// loadRecord function
+assert(content.includes('function loadRecord()'),
+       'loadRecord function exists');
+
+// saveRecord function
+assert(content.includes('function saveRecord()'),
+       'saveRecord function exists');
+
+// updateRecordDisplay function
+assert(content.includes('function updateRecordDisplay()'),
+       'updateRecordDisplay function exists');
+
+// incrementRecord function
+assert(content.includes('function incrementRecord(') || content.includes('function incrementRecord ('),
+       'incrementRecord function exists');
+
+// buildRecordSummary function
+assert(content.includes('function buildRecordSummary()') || content.includes('function buildRecordSummary ('),
+       'buildRecordSummary function exists');
+
+// recordSummary div in game over overlay
+assert(content.includes("id='recordSummary'") || content.includes('id="recordSummary"'),
+       'recordSummary div exists in game over overlay');
+
+// Color coding: X_COLOR for wins
+assert(content.includes('var(--x-color)') && content.includes('buildRecordSummary'),
+       'Wins display in X color (var(--x-color))');
+
+// Color coding: O_COLOR for losses
+assert(content.includes('var(--o-color)') && content.includes('buildRecordSummary'),
+       'Losses display in O color (var(--o-color))');
+
+// Color coding: text-secondary for draws
+assert(content.includes('var(--text-secondary)') && content.includes('buildRecordSummary'),
+       'Draws display in muted gray (var(--text-secondary))');
+
+// showGameOver calls incrementRecord
+var showGameOverFn = content.split('function showGameOver')[1]?.split('function')[0] || '';
+assert(showGameOverFn && showGameOverFn.includes('incrementRecord'),
+       'showGameOver calls incrementRecord to update score');
+
+// showGameOver sets recordSummary display
+assert(showGameOverFn && showGameOverFn.includes('recordSummary'),
+       'showGameOver updates recordSummary display');
+
+// restart clears recordSummary
+var restartFn = content.split('function restart()')[1]?.split('function')[0] || '';
+assert(restartFn && restartFn.includes('recordSummary'),
+       'restart clears recordSummary');
+
+// Initial setup loads record
+var initSetup = content.split('// ── Initial Setup')[1]?.split('})();') || '';
+assert(initSetup && initSetup.includes('loadRecord'),
+       'Initial setup calls loadRecord');
+assert(initSetup && initSetup.includes('updateRecordDisplay'),
+       'Initial setup calls updateRecordDisplay');
+
 // Verify footer unchanged
 assert(content.includes('© 2025 gameShelf — All games built in browser — no downloads required'),
        'Footer copyright text unchanged');
