@@ -254,7 +254,7 @@ assert(restartFn && restartFn.includes('recordSummary'),
        'restart clears recordSummary');
 
 // Initial setup loads record
-var initSetup = content.split('Initial Setup')[1]?.split('})();') || '';
+var initSetup = (content.split('Initial Setup')[1] || '').split('\n    })();')[0] || '';
 assert(initSetup && initSetup.includes('loadRecord()'),
        'Initial setup calls loadRecord');
 assert(initSetup && initSetup.includes('updateRecordDisplay()'),
