@@ -475,6 +475,39 @@
         let timerInterval = null;
         let gameOverMines = []; // array of {x, y} for mines shown on game over
 
+        // ── Difficulty Change ──
+        function setDifficulty(idx) {
+            if (idx < 0 || idx >= DIFFICULTY.length) return;
+            diffIdx = idx;
+            COLS = DIFFICULTY[idx].cols;
+            ROWS = DIFFICULTY[idx].rows;
+            MINES = DIFFICULTY[idx].mines;
+            CELL = CANVAS_SIZE / COLS;
+
+            // Update active button
+            var btns = difficultySelector.querySelectorAll('.diff-btn');
+            for (var i = 0; i < btns.length; i++) {
+                btns[i].classList.remove('active');
+            }
+            btns[idx].classList.add('active');
+
+            // Reset game to start state
+            stopTimer();
+            gameOverOverlay.classList.add('hidden');
+            winOverlay.classList.add('hidden');
+            startOverlay.classList.remove('hidden');
+            smileyBtn.textContent = '😀';
+            timerEl.textContent = '000';
+            minesPlaced = false;
+            gameOverMines = [];
+            cursorX = 0;
+            cursorY = 0;
+
+            // Rebuild board with new dimensions
+            initBoard();
+            render();
+        }
+
         // ── Initialize board data ──
         function initBoard() {
             board = [];
