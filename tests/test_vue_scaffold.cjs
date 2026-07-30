@@ -90,6 +90,50 @@ assert(mainJs.includes('createPinia') || mainJs.includes('use(pinia)'), 'main.js
 assert((mainJs.includes('router') && mainJs.includes('use(router)')) || mainJs.includes('app.use(router)'), 'main.js uses router');
 assert(mainJs.includes('mount(\'#app\')') || mainJs.includes('mount("#app")'), 'main.js mounts to #app');
 
+// ========== AC8: Vite base path for GitHub Pages subpath deployment ==========
+console.log('--- AC8: Vite base path for GitHub Pages ---');
+const viteConfig = fs.readFileSync(path.join(REPO_ROOT, 'vite.config.js'), 'utf-8');
+assert(viteConfig.includes("base: '/gameShelf/'"), 'vite.config.js base is set to /gameShelf/');
+
+// Verify build output has correct asset paths
+assert(fs.existsSync(distIndex), 'dist/index.html exists (already checked in AC2, re-checking here)');
+const distContent = fs.readFileSync(distIndex, 'utf-8');
+const scriptTags = distContent.match(/<script[^>]+src="([^"]+)"/g) || [];
+const scriptPaths = scriptTags.map(t => {
+  const match = t.match(/src="([^"]+)"/);
+  return match ? match[1] : '';
+});
+scriptPaths.forEach((src, i) => {
+  assert(
+    src.startsWith('/gameShelf/'),
+    `Script tag ${i + 1} has /gameShelf/ prefix: "${src}"`
+  );
+});
+
+// Check CSS link tags (exclude icon/favicon links — those are template artifacts)
+const cssLinkTags = distContent.match(/<link[^>]+rel=["']stylesheet["'][^>]+href="([^"]+)"/g) || [];
+cssLinkTags.forEach((tag, i) => {
+  const match = tag.match(/href="([^"]+)"/);
+  const href = match ? match[1] : '';
+  assert(
+    href.startsWith('/gameShelf/'),
+    `CSS link tag ${i + 1} has /gameShelf/ prefix: "${href}"`
+  );
+});
+
+// ========== AC9: Old index.html and game files remain unchanged ==========
+console.log('--- AC9: Old files unchanged ---');
+assert(fs.existsSync(path.join(REPO_ROOT, 'index.html')), 'Old index.html still exists');
+const oldIndexHtml = fs.readFileSync(path.join(REPO_ROOT, 'index.html'), 'utf-8');
+assert(oldIndexHtml.includes('<div id="app"'), 'Old index.html still contains Vue entry point');
+assert(oldIndexHtml.includes('/src/main.js'), 'Old index.html still references /src/main.js');
+
+const gameFiles = fs.readdirSync(path.join(REPO_ROOT, 'games'));
+assert(gameFiles.length > 0, `Games directory has ${gameFiles.length} files`);
+gameFiles.forEach(f => {
+  assert(f.endsWith('.html'), `Game file ${f} is an HTML file`);
+});
+
 // ========== Summary ==========
 console.log('\n========== RESULTS ==========');
 console.log(`PASSED: ${passed}`);
