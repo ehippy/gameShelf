@@ -33,155 +33,387 @@
     </script>
   </head>
   <body>
+    <!-- Header / Navbar -->
+    <header class="navbar">
+      <div class="navbar-inner">
+        <a href="../index.html" class="logo">🎮 gameShelf</a>
+        <nav>
+          <a href="../about.html" class="nav-link">About</a>
+        </nav>
+      </div>
+    </header>
+
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
 
-    <!-- Hidden game card registrations for backward compatibility and test assertions -->
-    <div id="game-registrations" style="display:none;">
-      <a href="games/minesweeper.html" class="game-card" data-category="puzzle">
-        <div class="card-thumb" style="background: linear-gradient(135deg, #94a3b8, #475569);">
-          <span class="thumb-icon">💣</span>
+    <!-- Most Played Carousel Section -->
+    <section class="most-played-section">
+      <div class="section-header">
+        <h2>Most Played</h2>
+        <span class="shuffle-indicator" aria-label="Carousel auto-advances">↻</span>
+      </div>
+      <div class="carousel-wrapper">
+        <div class="carousel-track">
+<!-- Slide 1: Arcade & Puzzle Essentials -->
+          <div class="carousel-slide">
+            <a href="games/snake.html" class="game-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #4ade80, #16a34a);">
+                <span class="thumb-icon">🐍</span>
+              </div>
+              <div class="card-info">
+                <h3>Snake</h3>
+                <p class="card-desc">Classic arcade snake game. Eat, grow, survive!</p>
+                <span class="card-tag arcade">Arcade</span>
+              </div>
+            </a>
+            <a href="games/tetris.html" class="game-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #a78bfa, #7c3aed);">
+                <span class="thumb-icon">🧩</span>
+              </div>
+              <div class="card-info">
+                <h3>Tetris</h3>
+                <p class="card-desc">Stack falling blocks and clear lines to score points.</p>
+                <span class="card-tag puzzle">Puzzle</span>
+              </div>
+            </a>
+            <a href="games/2048.html" class="game-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #fbbf24, #d97706);">
+                <span class="thumb-icon">🔢</span>
+              </div>
+              <div class="card-info">
+                <h3>2048</h3>
+                <p class="card-desc">Slide and merge numbered tiles to reach 2048!</p>
+                <span class="card-tag puzzle">Puzzle</span>
+              </div>
+            </a>
+            <a href="games/breakout.html" class="game-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #f87171, #dc2626);">
+                <span class="thumb-icon">🧱</span>
+              </div>
+              <div class="card-info">
+                <h3>Breakout</h3>
+                <p class="card-desc">Smash bricks with a bouncing ball. Don't let it drop!</p>
+                <span class="card-tag action">Action</span>
+              </div>
+            </a>
+            <a href="games/pacman.html" class="game-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #facc15, #ca8a04);">
+                <span class="thumb-icon">👻</span>
+              </div>
+              <div class="card-info">
+                <h3>Pac-Man</h3>
+                <p class="card-desc">Navigate the maze, eat dots, and avoid ghosts!</p>
+                <span class="card-tag arcade">Arcade</span>
+              </div>
+            </a>
+          </div>
+<!-- Slide 2: Puzzle Favorites -->
+          <div class="carousel-slide">
+            <a href="games/pacman.html" class="game-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #facc15, #ca8a04);">
+                <span class="thumb-icon">👻</span>
+              </div>
+              <div class="card-info">
+                <h3>Pac-Man</h3>
+                <p class="card-desc">Navigate the maze, eat dots, and avoid ghosts!</p>
+                <span class="card-tag arcade">Arcade</span>
+              </div>
+            </a>
+            <a href="games/minesweeper.html" class="game-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #94a3b8, #475569);">
+                <span class="thumb-icon">💣</span>
+              </div>
+              <div class="card-info">
+                <h3>Minesweeper</h3>
+                <p class="card-desc">Uncover squares without detonating hidden mines.</p>
+                <span class="card-tag puzzle">Puzzle</span>
+              </div>
+            </a>
+            <a href="games/tictactoe.html" class="game-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #38bdf8, #0284c7);">
+                <span class="thumb-icon">❌</span>
+              </div>
+              <div class="card-info">
+                <h3>Tic Tac Toe</h3>
+                <p class="card-desc">Get three in a row against a smart opponent.</p>
+                <span class="card-tag puzzle">Puzzle</span>
+              </div>
+            </a>
+            <a href="games/memorymatch.html" class="game-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #fb7185, #e11d48);">
+                <span class="thumb-icon">🃏</span>
+              </div>
+              <div class="card-info">
+                <h3>Memory Match</h3>
+                <p class="card-desc">Flip cards and find matching pairs from memory.</p>
+                <span class="card-tag puzzle">Puzzle</span>
+              </div>
+            </a>
+            <a href="games/simon-says.html" class="game-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #fb923c, #ea580c);">
+                <span class="thumb-icon">🎵</span>
+              </div>
+              <div class="card-info">
+                <h3>Simon Says</h3>
+                <p class="card-desc">Repeat the sequence of colored buttons. Each round gets longer!</p>
+                <span class="card-tag casual">Casual</span>
+              </div>
+            </a>
+          </div>
+<!-- Slide 3: Action & Arcade -->
+          <div class="carousel-slide">
+            <a href="games/whackamole.html" class="game-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #fbbf24, #d97706);">
+                <span class="thumb-icon">🔨</span>
+              </div>
+              <div class="card-info">
+                <h3>Whack-a-Mole</h3>
+                <p class="card-desc">Click moles before they hide! Highest score wins.</p>
+                <span class="card-tag action">Action</span>
+              </div>
+            </a>
+            <a href="games/snake.html" class="game-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #4ade80, #16a34a);">
+                <span class="thumb-icon">🐍</span>
+              </div>
+              <div class="card-info">
+                <h3>Snake</h3>
+                <p class="card-desc">Classic arcade snake game. Eat, grow, survive!</p>
+                <span class="card-tag arcade">Arcade</span>
+              </div>
+            </a>
+            <a href="games/tetris.html" class="game-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #a78bfa, #7c3aed);">
+                <span class="thumb-icon">🧩</span>
+              </div>
+              <div class="card-info">
+                <h3>Tetris</h3>
+                <p class="card-desc">Stack falling blocks and clear lines to score points.</p>
+                <span class="card-tag puzzle">Puzzle</span>
+              </div>
+            </a>
+            <a href="games/breakout.html" class="game-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #f87171, #dc2626);">
+                <span class="thumb-icon">🧱</span>
+              </div>
+              <div class="card-info">
+                <h3>Breakout</h3>
+                <p class="card-desc">Smash bricks with a bouncing ball. Don't let it drop!</p>
+                <span class="card-tag action">Action</span>
+              </div>
+            </a>
+            <a href="games/2048.html" class="game-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #fbbf24, #d97706);">
+                <span class="thumb-icon">🔢</span>
+              </div>
+              <div class="card-info">
+                <h3>2048</h3>
+                <p class="card-desc">Slide and merge numbered tiles to reach 2048!</p>
+                <span class="card-tag puzzle">Puzzle</span>
+              </div>
+            </a>
+          </div>
+<!-- Slide 4: More Favorites -->
+          <div class="carousel-slide">
+            <a href="games/2048.html" class="game-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #fbbf24, #d97706);">
+                <span class="thumb-icon">🔢</span>
+              </div>
+              <div class="card-info">
+                <h3>2048</h3>
+                <p class="card-desc">Slide and merge numbered tiles to reach 2048!</p>
+                <span class="card-tag puzzle">Puzzle</span>
+              </div>
+            </a>
+            <a href="games/pacman.html" class="game-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #facc15, #ca8a04);">
+                <span class="thumb-icon">👻</span>
+              </div>
+              <div class="card-info">
+                <h3>Pac-Man</h3>
+                <p class="card-desc">Navigate the maze, eat dots, and avoid ghosts!</p>
+                <span class="card-tag arcade">Arcade</span>
+              </div>
+            </a>
+            <a href="games/memorymatch.html" class="game-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #fb7185, #e11d48);">
+                <span class="thumb-icon">🃏</span>
+              </div>
+              <div class="card-info">
+                <h3>Memory Match</h3>
+                <p class="card-desc">Flip cards and find matching pairs from memory.</p>
+                <span class="card-tag puzzle">Puzzle</span>
+              </div>
+            </a>
+            <a href="games/minesweeper.html" class="game-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #94a3b8, #475569);">
+                <span class="thumb-icon">💣</span>
+              </div>
+              <div class="card-info">
+                <h3>Minesweeper</h3>
+                <p class="card-desc">Uncover squares without detonating hidden mines.</p>
+                <span class="card-tag puzzle">Puzzle</span>
+              </div>
+            </a>
+            <a href="games/simon-says.html" class="game-card">
+              <div class="card-thumb" style="background: linear-gradient(135deg, #fb923c, #ea580c);">
+                <span class="thumb-icon">🎵</span>
+              </div>
+              <div class="card-info">
+                <h3>Simon Says</h3>
+                <p class="card-desc">Repeat the sequence of colored buttons. Each round gets longer!</p>
+                <span class="card-tag casual">Casual</span>
+              </div>
+            </a>
+          </div>
         </div>
-        <div class="card-info">
-          <h3>Minesweeper</h3>
-          <p class="card-desc">Uncover squares without detonating hidden mines.</p>
-          <span class="card-tag puzzle">Puzzle</span>
+        <div class="carousel-dots">
+          <button class="carousel-dot active" data-index="0" aria-label="Show slide 1"></button>
+          <button class="carousel-dot" data-index="1" aria-label="Show slide 2"></button>
+          <button class="carousel-dot" data-index="2" aria-label="Show slide 3"></button>
+          <button class="carousel-dot" data-index="3" aria-label="Show slide 4"></button>
         </div>
-        <div class="card-play">▶ Play</div>
-      </a>
-      <a href="games/snake.html" class="game-card" data-category="arcade">
-        <div class="card-thumb" style="background: linear-gradient(135deg, #4ade80, #16a34a);">
-          <span class="thumb-icon">🐍</span>
+      </div>
+    </section>
+
+    <!-- Random Game Button -->
+    <button id="randomGameBtn" class="random-game-btn">🎲 Random Game</button>
+
+    <!-- Games Section -->
+    <section class="games-section">
+      <div class="section-header">
+        <h2>All Games</h2>
+        <input type="text" class="search-input" placeholder="Search games..." aria-label="Search games">
+        <div class="filter-buttons">
+          <button class="filter-btn" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="action">Action</button>
+          <button class="filter-btn" data-filter="puzzle">Puzzle</button>
+          <button class="filter-btn" data-filter="arcade">Arcade</button>
+          <button class="filter-btn" data-filter="strategy">Strategy</button>
+          <button class="filter-btn" data-filter="board">Board</button>
+          <button class="filter-btn" data-filter="casual">Casual</button>
         </div>
-        <div class="card-info">
-          <h3>Snake</h3>
-          <p class="card-desc">Classic arcade snake game. Eat, grow, survive!</p>
-          <span class="card-tag arcade">Arcade</span>
-        </div>
-        <div class="card-play">▶ Play</div>
-      </a>
-      <a href="games/tetris.html" class="game-card" data-category="puzzle">
-        <div class="card-thumb" style="background: linear-gradient(135deg, #a78bfa, #7c3aed);">
-          <span class="thumb-icon">🧩</span>
-        </div>
-        <div class="card-info">
-          <h3>Tetris</h3>
-          <p class="card-desc">Stack falling blocks and clear lines to score points.</p>
-          <span class="card-tag puzzle">Puzzle</span>
-        </div>
-        <div class="card-play">▶ Play</div>
-      </a>
-      <a href="games/2048.html" class="game-card" data-category="puzzle">
-        <div class="card-thumb" style="background: linear-gradient(135deg, #fbbf24, #d97706);">
-          <span class="thumb-icon">🔢</span>
-        </div>
-        <div class="card-info">
-          <h3>2048</h3>
-          <p class="card-desc">Slide and merge numbered tiles to reach 2048!</p>
-          <span class="card-tag puzzle">Puzzle</span>
-        </div>
-        <div class="card-play">▶ Play</div>
-      </a>
-      <a href="games/breakout.html" class="game-card" data-category="action">
-        <div class="card-thumb" style="background: linear-gradient(135deg, #f87171, #dc2626);">
-          <span class="thumb-icon">🧱</span>
-        </div>
-        <div class="card-info">
-          <h3>Breakout</h3>
-          <p class="card-desc">Smash bricks with a bouncing ball. Don't let it drop!</p>
-          <span class="card-tag action">Action</span>
-        </div>
-        <div class="card-play">▶ Play</div>
-      </a>
-      <a href="games/pacman.html" class="game-card" data-category="arcade">
-        <div class="card-thumb" style="background: linear-gradient(135deg, #facc15, #ca8a04);">
-          <span class="thumb-icon">👻</span>
-        </div>
-        <div class="card-info">
-          <h3>Pac-Man</h3>
-          <p class="card-desc">Navigate the maze, eat dots, and avoid ghosts!</p>
-          <span class="card-tag arcade">Arcade</span>
-        </div>
-        <div class="card-play">▶ Play</div>
-      </a>
-      <a href="games/tictactoe.html" class="game-card" data-category="puzzle">
-        <div class="card-thumb" style="background: linear-gradient(135deg, #38bdf8, #0284c7);">
-          <span class="thumb-icon">❌</span>
-        </div>
-        <div class="card-info">
-          <h3>Tic Tac Toe</h3>
-          <p class="card-desc">Get three in a row against a smart opponent.</p>
-          <span class="card-tag puzzle">Puzzle</span>
-        </div>
-        <div class="card-play">▶ Play</div>
-      </a>
-      <a href="games/memorymatch.html" class="game-card" data-category="puzzle">
-        <div class="card-thumb" style="background: linear-gradient(135deg, #fb7185, #e11d48);">
-          <span class="thumb-icon">🃏</span>
-        </div>
-        <div class="card-info">
-          <h3>Memory Match</h3>
-          <p class="card-desc">Flip cards and find matching pairs from memory.</p>
-          <span class="card-tag puzzle">Puzzle</span>
-        </div>
-        <div class="card-play">▶ Play</div>
-      </a>
-      <a href="games/simon-says.html" class="game-card" data-category="casual">
-        <div class="card-thumb" style="background: linear-gradient(135deg, #fb923c, #ea580c);">
-          <span class="thumb-icon">🎵</span>
-        </div>
-        <div class="card-info">
-          <h3>Simon Says</h3>
-          <p class="card-desc">Repeat the sequence of colored buttons. Each round gets longer!</p>
-          <span class="card-tag casual">Casual</span>
-        </div>
-        <div class="card-play">▶ Play</div>
-      </a>
-      <a href="games/spaceinvaders.html" class="game-card" data-category="arcade">
-        <div class="card-thumb" style="background: linear-gradient(135deg, #22d3ee, #0891b2);">
-          <span class="thumb-icon">👾</span>
-        </div>
-        <div class="card-info">
-          <h3>Space Invaders</h3>
-          <p class="card-desc">Defend Earth from waves of descending alien invaders!</p>
-          <span class="card-tag arcade">Arcade</span>
-        </div>
-        <div class="card-play">▶ Play</div>
-      </a>
-      <a href="games/flappybird.html" class="game-card" data-category="arcade">
-        <div class="card-thumb" style="background: linear-gradient(135deg, #fbbf24, #f59e0b);">
-          <span class="thumb-icon">🐦</span>
-        </div>
-        <div class="card-info">
-          <h3>Flappy Bird</h3>
-          <p class="card-desc">Tap to flap through pipes — how far can you go?</p>
-          <span class="card-tag arcade">Arcade</span>
-        </div>
-        <div class="card-play">▶ Play</div>
-      </a>
-      <a href="games/slidingpuzzle.html" class="game-card" data-category="puzzle">
-        <div class="card-thumb" style="background: linear-gradient(135deg, #38bdf8, #1e40af);">
-          <span class="thumb-icon">🧩</span>
-        </div>
-        <div class="card-info">
-          <h3>Sliding Tile Puzzle</h3>
-          <p class="card-desc">Arrange numbered tiles to solve the puzzle!</p>
-          <span class="card-tag puzzle">Puzzle</span>
-        </div>
-        <div class="card-play">▶ Play</div>
-      </a>
-      <a href="games/whackamole.html" class="game-card" data-category="action">
-        <div class="card-thumb" style="background: linear-gradient(135deg, #fbbf24, #d97706);">
-          <span class="thumb-icon">🔨</span>
-        </div>
-        <div class="card-info">
-          <h3>Whack-a-Mole</h3>
-          <p class="card-desc">Click moles before they hide! Highest score wins.</p>
-          <span class="card-tag action">Action</span>
-        </div>
-        <div class="card-play">▶ Play</div>
-      </a>
-    </div>
+      </div>
+      <div id="games-grid" class="games-grid">
+        <a href="games/minesweeper.html" class="game-card" data-category="puzzle">
+          <div class="card-thumb" style="background: linear-gradient(135deg, #94a3b8, #475569);">
+            <span class="thumb-icon">💣</span>
+          </div>
+          <div class="card-info">
+            <h3>Minesweeper</h3>
+            <p class="card-desc">Uncover squares without detonating hidden mines.</p>
+            <span class="card-tag puzzle">Puzzle</span>
+          </div>
+          <div class="card-play">▶ Play</div>
+        </a>
+        <a href="games/snake.html" class="game-card" data-category="arcade">
+          <div class="card-thumb" style="background: linear-gradient(135deg, #4ade80, #16a34a);">
+            <span class="thumb-icon">🐍</span>
+          </div>
+          <div class="card-info">
+            <h3>Snake</h3>
+            <p class="card-desc">Classic arcade snake game. Eat, grow, survive!</p>
+            <span class="card-tag arcade">Arcade</span>
+          </div>
+          <div class="card-play">▶ Play</div>
+        </a>
+        <a href="games/tetris.html" class="game-card" data-category="puzzle">
+          <div class="card-thumb" style="background: linear-gradient(135deg, #a78bfa, #7c3aed);">
+            <span class="thumb-icon">🧩</span>
+          </div>
+          <div class="card-info">
+            <h3>Tetris</h3>
+            <p class="card-desc">Stack falling blocks and clear lines to score points.</p>
+            <span class="card-tag puzzle">Puzzle</span>
+          </div>
+          <div class="card-play">▶ Play</div>
+        </a>
+        <a href="games/2048.html" class="game-card" data-category="puzzle">
+          <div class="card-thumb" style="background: linear-gradient(135deg, #fbbf24, #d97706);">
+            <span class="thumb-icon">🔢</span>
+          </div>
+          <div class="card-info">
+            <h3>2048</h3>
+            <p class="card-desc">Slide and merge numbered tiles to reach 2048!</p>
+            <span class="card-tag puzzle">Puzzle</span>
+          </div>
+          <div class="card-play">▶ Play</div>
+        </a>
+        <a href="games/breakout.html" class="game-card" data-category="action">
+          <div class="card-thumb" style="background: linear-gradient(135deg, #f87171, #dc2626);">
+            <span class="thumb-icon">🧱</span>
+          </div>
+          <div class="card-info">
+            <h3>Breakout</h3>
+            <p class="card-desc">Smash bricks with a bouncing ball. Don't let it drop!</p>
+            <span class="card-tag action">Action</span>
+          </div>
+          <div class="card-play">▶ Play</div>
+        </a>
+        <a href="games/pacman.html" class="game-card" data-category="arcade">
+          <div class="card-thumb" style="background: linear-gradient(135deg, #facc15, #ca8a04);">
+            <span class="thumb-icon">👻</span>
+          </div>
+          <div class="card-info">
+            <h3>Pac-Man</h3>
+            <p class="card-desc">Navigate the maze, eat dots, and avoid ghosts!</p>
+            <span class="card-tag arcade">Arcade</span>
+          </div>
+          <div class="card-play">▶ Play</div>
+        </a>
+        <a href="games/tictactoe.html" class="game-card" data-category="puzzle">
+          <div class="card-thumb" style="background: linear-gradient(135deg, #38bdf8, #0284c7);">
+            <span class="thumb-icon">❌</span>
+          </div>
+          <div class="card-info">
+            <h3>Tic Tac Toe</h3>
+            <p class="card-desc">Get three in a row against a smart opponent.</p>
+            <span class="card-tag puzzle">Puzzle</span>
+          </div>
+          <div class="card-play">▶ Play</div>
+        </a>
+        <a href="games/memorymatch.html" class="game-card" data-category="puzzle">
+          <div class="card-thumb" style="background: linear-gradient(135deg, #fb7185, #e11d48);">
+            <span class="thumb-icon">🃏</span>
+          </div>
+          <div class="card-info">
+            <h3>Memory Match</h3>
+            <p class="card-desc">Flip cards and find matching pairs from memory.</p>
+            <span class="card-tag puzzle">Puzzle</span>
+          </div>
+          <div class="card-play">▶ Play</div>
+        </a>
+        <a href="games/simon-says.html" class="game-card" data-category="casual">
+          <div class="card-thumb" style="background: linear-gradient(135deg, #fb923c, #ea580c);">
+            <span class="thumb-icon">🎵</span>
+          </div>
+          <div class="card-info">
+            <h3>Simon Says</h3>
+            <p class="card-desc">Repeat the sequence of colored buttons. Each round gets longer!</p>
+            <span class="card-tag casual">Casual</span>
+          </div>
+          <div class="card-play">▶ Play</div>
+        </a>
+        <a href="games/whackamole.html" class="game-card" data-category="action">
+          <div class="card-thumb" style="background: linear-gradient(135deg, #fbbf24, #d97706);">
+            <span class="thumb-icon">🔨</span>
+          </div>
+          <div class="card-info">
+            <h3>Whack-a-Mole</h3>
+            <p class="card-desc">Click moles before they hide! Highest score wins.</p>
+            <span class="card-tag action">Action</span>
+          </div>
+          <div class="card-play">▶ Play</div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <p>© 2025 gameShelf — All games built in browser — no downloads required</p>
+      </div>
+    </footer>
 
     <!-- What's New Section -->
     <section class="what-new-section">
