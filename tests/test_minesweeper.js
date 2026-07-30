@@ -26,7 +26,7 @@ console.log('\n--- AC1: Space/Enter on start screen starts game (single key pres
 
 // The playing-state Space/Enter handler must NOT contain !minesPlaced guard
 // Extract the playing-state branch of the keydown handler
-var playingGuard = content.match(/gameState\s*!==\s*['"]playing['"]\s*return;/);
+var playingGuard = content.match(/if\s*\(gameState\s*!==\s*['"]playing['"]\)\s*return;/);
 assert(playingGuard !== null, 'Playing-state guard exists in keydown handler');
 
 if (playingGuard) {
