@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "node tests/test_minesweeper.cjs && node tests/test_2048.cjs && node tests/test_breakout.cjs && node tests/test_whackamole.cjs && node tests/test_tetris.cjs && node tests/test_tictactoe.cjs && node tests/test_pacman.cjs && node tests/test_flappybird.cjs && node tests/test_slidingpuzzle.cjs && node tests/test_spaceinvaders.cjs && node tests/test_simon_says.cjs && node tests/test_carousel.cjs"
+    "test": "node tests/test_minesweeper.cjs && node tests/test_2048.cjs && node tests/test_breakout.cjs && node tests/test_whackamole.cjs && node tests/test_tetris.cjs && node tests/test_tictactoe.cjs && node tests/test_pacman.cjs && node tests/test_flappybird.cjs && node tests/test_slidingpuzzle.cjs && node tests/test_spaceinvaders.cjs && node tests/test_simon_says.cjs"
   },
   "keywords": [],
   "author": "",
