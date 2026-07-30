@@ -1,5 +1,6 @@
 <script setup>
-import { ref, computed, useRouter } from 'vue'
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useGameCatalogStore } from '../stores/gameCatalog'
 import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
