@@ -457,10 +457,17 @@ test('Footer p element uses color: var(--text-muted) and font-size: 0.8rem', () 
 });
 
 test('No bare <p> footer replaced by site-footer', () => {
-    const bodyContent = pacman.split('</head>')[1];
-    const bareFooters = bodyContent.match(/<p[^>]*>© 2025/g);
-    if (bareFooters && bareFooters.length > 0)
-        throw new Error('Bare <p> footer still present (should be in <footer class="site-footer">)');
+    // The copyright <p> should only exist inside <footer class="site-footer">
+    // Check that the <footer> exists and contains the copyright <p>
+    const footerBlock = pacman.match(/<footer[^>]*class="site-footer"[^>]*>[\s\S]*?<\/footer>/);
+    if (!footerBlock) throw new Error('No <footer class="site-footer"> block found');
+    const footerContent = footerBlock[0];
+    if (!footerContent.includes('© 2025 gameShelf — All games built in browser — no downloads required'))
+        throw new Error('Footer does not contain the copyright text');
+    // Verify no <p> with copyright text exists OUTSIDE the footer
+    const afterFooter = pacman.split(footerBlock[0])[1] || '';
+    if (/<p[^>]*>© 2025/.test(afterFooter))
+        throw new Error('Bare <p> footer still present outside <footer class="site-footer">');
 });
 
 console.log('\n🖼️ CANVAS & GAME AREA WRAPPING');
