@@ -275,6 +275,25 @@ assert(content.includes('(function()') || content.includes('(function {'),
        'JS wrapped in IIFE');
 assert(content.includes("'use strict'"), 'Strict mode enabled');
 
+// ── Default record values on first visit ──
+console.log('\n--- Default Record Values (First Visit) ---');
+
+// Verify loadRecord initializes record to {wins:0, losses:0, draws:0}
+var loadRecordFn = content.split('function loadRecord()')[1]?.split('function')[0] || '';
+assert(loadRecordFn && loadRecordFn.includes("record = { wins: 0, losses: 0, draws: 0 }") ||
+       loadRecordFn && loadRecordFn.includes("record.wins = 0") ||
+       content.includes("record = { wins: 0, losses: 0, draws: 0 }"),
+       'Record initialized to {wins:0, losses:0, draws:0}');
+
+// Verify incrementRecord increments the correct counter
+var incrementFn = content.split('function incrementRecord')[1]?.split('function')[0] || '';
+assert(incrementFn && incrementFn.includes("result === 'X'") && incrementFn.includes('record.wins++'),
+       'incrementRecord increments wins on X win');
+assert(incrementFn && incrementFn.includes("result === 'O'") && incrementFn.includes('record.losses++'),
+       'incrementRecord increments losses on O win');
+assert(incrementFn && incrementFn.includes("else") && incrementFn.includes('record.draws++'),
+       'incrementRecord increments draws on draw');
+
 // ── Summary ──
 console.log('\n' + '═'.repeat(50));
 console.log('\nRESULTS: ' + passed + ' passed, ' + failed + ' failed\n');
