@@ -360,12 +360,20 @@ assert(homeSrc.includes('<Footer />'), 'Home renders <Footer />');
 // ============================================================
 section('9. router-link Only for Navigation');
 
-const vueFiles = ['Header.vue', 'Footer.vue', 'About.vue', 'GamePlayer.vue', 'Home.vue', 'GameCard.vue', 'MostPlayedCarousel.vue'];
-vueFiles.forEach(fname => {
-  const content = fs.readFileSync(path.join(REPO_ROOT, 'src', fname), 'utf-8');
+const vueFiles = [
+  { path: 'components/Header.vue', label: 'Header.vue' },
+  { path: 'components/Footer.vue', label: 'Footer.vue' },
+  { path: 'pages/About.vue', label: 'About.vue' },
+  { path: 'pages/GamePlayer.vue', label: 'GamePlayer.vue' },
+  { path: 'pages/Home.vue', label: 'Home.vue' },
+  { path: 'components/GameCard.vue', label: 'GameCard.vue' },
+  { path: 'components/MostPlayedCarousel.vue', label: 'MostPlayedCarousel.vue' }
+];
+vueFiles.forEach(({ path: p, label }) => {
+  const content = fs.readFileSync(path.join(REPO_ROOT, 'src', p), 'utf-8');
   // Find all <a (but not <router-link which renders as <a)
   const plainLinks = content.match(/<a\s[^>]*href=["'][^"']*(?:\/(about|games|)|$)["']/g);
-  assert(!plainLinks || plainLinks.length === 0, `${fname}: no plain <a> tags for client-side navigation`);
+  assert(!plainLinks || plainLinks.length === 0, `${label}: no plain <a> tags for client-side navigation`);
 });
 
 // ============================================================
