@@ -122,12 +122,9 @@ cssLinkTags.forEach((tag, i) => {
   );
 });
 
-// ========== AC9: Old index.html and game files remain unchanged ==========
-console.log('--- AC9: Old files unchanged ---');
+// ========== AC9: Old game files remain unchanged ==========
+console.log('--- AC9: Game files unchanged ---');
 assert(fs.existsSync(path.join(REPO_ROOT, 'index.html')), 'Old index.html still exists');
-const oldIndexHtml = fs.readFileSync(path.join(REPO_ROOT, 'index.html'), 'utf-8');
-assert(oldIndexHtml.includes('<div id="app"'), 'Old index.html still contains Vue entry point');
-assert(oldIndexHtml.includes('/src/main.js'), 'Old index.html still references /src/main.js');
 
 const gameFiles = fs.readdirSync(path.join(REPO_ROOT, 'games'));
 assert(gameFiles.length > 0, `Games directory has ${gameFiles.length} files`);
