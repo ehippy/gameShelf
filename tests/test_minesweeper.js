@@ -132,7 +132,7 @@ if (placeMinesMatch) {
 console.log('\n--- AC6: Arrow key cursor navigation on start screen ---');
 
 // The start-state branch of the keydown handler must process arrow keys
-var startStateKeyMatch = content.match(/if \(gameState === 'start'\)([\s\S]*?)(?=\n\s*if\s*\(\s*gameState\s*===\s*'gameover'/);
+var startStateKeyMatch = content.match(/if \(gameState === 'start'\)([\s\S]*?)(?=\n[\s]*if[\s]*\([\s]*gameState[\s]*===[\s]*'gameover'/);
 assert(startStateKeyMatch !== null, 'Start-state key handler branch exists');
 
 if (startStateKeyMatch) {
