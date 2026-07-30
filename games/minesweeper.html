@@ -963,6 +963,15 @@
             restart();
         });
 
+        // ── Difficulty Buttons ──
+        difficultySelector.addEventListener('click', function(e) {
+            var btn = e.target;
+            if (btn.classList.contains('diff-btn')) {
+                var idx = parseInt(btn.getAttribute('data-diff'), 10);
+                setDifficulty(idx);
+            }
+        });
+
         // ── Initial setup ──
         initBoard();
         render();
