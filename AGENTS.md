@@ -11,9 +11,9 @@ Games live in `games/` as single self-contained HTML files. Convention:
 
 ### Registering the Game
 
-Adding a game file is not enough — you must also add a card entry to `games/index.html` inside the `<div class="games-grid">`:
+Adding a game file is not enough — you must also add a card entry to `index.html` inside the `<div class="games-grid">`:
 
-⚠️ **Merge conflict risk**: `games/index.html` is edited whenever a new game is registered. Coordinate with other agents or resolve conflicts early.
+⚠️ **Merge conflict risk**: `index.html` is edited whenever a new game is registered. Coordinate with other agents or resolve conflicts early.
 
 Valid categories: `action`, `puzzle`, `arcade`, `strategy`, `board`, `casual`.
 
