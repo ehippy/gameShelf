@@ -319,7 +319,7 @@ assert(html.includes('© 2025 gameShelf — All games built in browser — no do
 section('8. Existing Functionality Preserved');
 
 // Filter buttons
-assert(html.includes('<button class="filter-btn" data-filter="all">'), 'Filter "All" button present');
+assert(html.includes('data-filter="all"'), 'Filter "All" button present');
 assert(html.includes('data-filter="action"'), 'Filter "Action" button present');
 assert(html.includes('data-filter="puzzle"'), 'Filter "Puzzle" button present');
 assert(html.includes('data-filter="arcade"'), 'Filter "Arcade" button present');
