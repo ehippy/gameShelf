@@ -784,14 +784,6 @@
             }
 
             if (e.code === 'Space' || e.code === 'Enter') {
-                // If first reveal (mines not yet placed), place them now
-                if (!minesPlaced) {
-                    placeMines(cursorX, cursorY);
-                    calculateAdjacentMines();
-                    beginPlaying();
-                    startTimer();
-                    minesPlaced = true;
-                }
                 revealCell(cursorX, cursorY);
                 render();
             }
@@ -871,7 +863,7 @@
             timerSeconds = 0;
             timerEl.textContent = '000';
             startOverlay.classList.add('hidden');
-            render();
+            handleFirstReveal();
         });
 
         restartBtnGameOver.addEventListener('click', function() {
