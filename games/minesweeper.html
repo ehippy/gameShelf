@@ -264,6 +264,35 @@
             transform: translateY(0);
         }
 
+        .difficulty-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .diff-btn {
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.3rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .diff-btn:hover {
+            color: var(--text-primary);
+            border-color: var(--accent);
+        }
+
+        .diff-btn.active {
+            background: var(--accent);
+            color: var(--bg-primary);
+            border-color: var(--accent);
+        }
+
         /* Footer */
         .site-footer {
             margin-top: auto;
