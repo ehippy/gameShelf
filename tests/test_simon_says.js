@@ -12,6 +12,21 @@ const SIMON_PATH = path.resolve(__dirname, '..', 'games', 'simon-says.html');
 const ROOT_INDEX_PATH = path.resolve(__dirname, '..', 'index.html');
 const SCRIPT_JS_PATH = path.resolve(__dirname, '..', 'script.js');
 
+let passed = 0;
+let failed = 0;
+const failures = [];
+
+function assert(condition, message) {
+    if (condition) {
+        passed++;
+        console.log(`  ✅ ${message}`);
+    } else {
+        failed++;
+        failures.push(message);
+        console.log(`  ❌ ${message}`);
+    }
+}
+
 const rootIndex = fs.readFileSync(ROOT_INDEX_PATH, 'utf-8');
 const scriptJs = fs.readFileSync(SCRIPT_JS_PATH, 'utf-8');
 
