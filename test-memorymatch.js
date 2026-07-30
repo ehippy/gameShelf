@@ -158,7 +158,7 @@ assert(/<header/.test(memorymatchHtml), 'Header element exists');
 assert(/class=["']logo["']/.test(memorymatchHtml) || /href=["']\.\.\/index\.html["']/.test(memorymatchHtml), 'Logo links to ../index.html');
 assert(/gameShelf/.test(memorymatchHtml), 'Header has gameShelf logo text');
 assert(/Memory Match/.test(memorymatchHtml), 'Game title "Memory Match" present');
-assert(/\.\.\/games\/index\.html/.test(memorymatchHtml), 'Back link to ../games/index.html exists');
+assert(/\.\.\/index\.html/.test(memorymatchHtml), 'Back link to ../index.html exists');
 assert(/← Back to Games|← Back to All Games/.test(memorymatchHtml), 'Back link text includes arrow');
 // Verify the logo href specifically
 assert(/<a\s+href=["']\.\.\/index\.html["'].*class=["']logo["']/i.test(memorymatchHtml) ||
