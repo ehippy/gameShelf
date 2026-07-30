@@ -343,12 +343,230 @@ test('Root index.html references games/pacman.html', () => {
         throw new Error('href="games/pacman.html" not in root index.html');
 });
 
-console.log('\n🔗 NAVIGATION');
+console.log('\n🔗 HEADER & NAVIGATION');
 console.log('─'.repeat(50));
 
-test('Has click handler for game restart on canvas', () => {
-    if (!pacman.includes('addEventListener("click"') && !pacman.includes('click', pacman))
-        throw new Error('Canvas click handler not found');
+test('Sticky <header class="game-header"> exists', () => {
+    if (!pacman.includes('class="game-header"'))
+        throw new Error('No <header class="game-header"> found');
+    if (!pacman.includes('position: sticky'))
+        throw new Error('Header is not sticky');
+    if (!pacman.includes('backdrop-filter: blur(12px)'))
+        throw new Error('Header missing backdrop-filter blur');
+    if (!pacman.includes('border-bottom: 1px solid var(--border-color)'))
+        throw new Error('Header missing border-bottom');
+});
+
+test('Header contains .header-inner div', () => {
+    if (!pacman.includes('class="header-inner"'))
+        throw new Error('No .header-inner found');
+    if (!pacman.includes('max-width: 1200px'))
+        throw new Error('.header-inner missing max-width');
+});
+
+test('Header contains .header-left group', () => {
+    if (!pacman.includes('class="header-left"'))
+        throw new Error('No .header-left found');
+});
+
+test('Header logo: anchor href="../index.html" with class="logo"', () => {
+    if (!pacman.includes('href="../index.html"') || !pacman.includes('class="logo"'))
+        throw new Error('Logo anchor with correct href/class not found');
+});
+
+test('Logo ::before pseudo-element has 🎮 emoji', () => {
+    if (!pacman.includes("content: '🎮'"))
+        throw new Error('Logo ::before content 🎮 not found');
+});
+
+test('Header .game-title span with "Pac-Man" text', () => {
+    if (!pacman.includes('class="game-title"'))
+        throw new Error('No .game-title span found');
+    if (!pacman.match(/<span[^>]*class="game-title"[^>]*>Pac-Man<\/span>/))
+        throw new Error('Game title span text not "Pac-Man"');
+});
+
+test('Back link: anchor href="../index.html" class="back-link" with "← Back to All Games"', () => {
+    if (!pacman.includes('class="back-link"'))
+        throw new Error('No .back-link found');
+    if (!pacman.includes('← Back to All Games'))
+        throw new Error('Back link text not "← Back to All Games"');
+});
+
+test('No bare <h1> in page (title moved to header)', () => {
+    const bodyContent = pacman.split('</head>')[1];
+    if (/<h1[\s>]/.test(bodyContent))
+        throw new Error('Bare <h1> still present in body');
+});
+
+test('Back/home link to ../index.html present', () => {
+    if (!pacman.includes('href="../index.html"'))
+        throw new Error('No link to ../index.html');
+});
+
+test('Page title is "gameShelf — Pac-Man"', () => {
+    if (!pacman.includes('<title>gameShelf — Pac-Man</title>'))
+        throw new Error('<title> is not "gameShelf — Pac-Man"');
+});
+
+console.log('\n📄 FOOTER');
+console.log('─'.repeat(50));
+
+test('Footer: <footer class="site-footer"> exists', () => {
+    if (!pacman.includes('<footer class="site-footer">'))
+        throw new Error('No <footer class="site-footer"> found');
+});
+
+test('Footer contains .footer-inner', () => {
+    if (!pacman.includes('class="footer-inner"'))
+        throw new Error('No .footer-inner found');
+});
+
+test('Footer contains .footer-links with Home/All Games links', () => {
+    if (!pacman.includes('class="footer-links"'))
+        throw new Error('No .footer-links found');
+    const footerLinksMatch = pacman.match(/<div[^>]*class="footer-links"[^>]*>[\s\S]*?<\/div>/);
+    if (!footerLinksMatch) throw new Error('.footer-links not found as div');
+    const links = footerLinksMatch[0];
+    if (!links.includes('>Home<')) throw new Error('.footer-links missing Home link');
+    if (!links.includes('>All Games<')) throw new Error('.footer-links missing All Games link');
+    if (!links.includes('href="../index.html"'))
+        throw new Error('.footer-links links not pointing to ../index.html');
+});
+
+test('Footer contains exact copyright text without trailing period', () => {
+    if (!pacman.includes('<p>© 2025 gameShelf — All games built in browser — no downloads required</p>'))
+        throw new Error('Footer copyright text not found');
+    if (pacman.includes('no downloads required.</p>'))
+        throw new Error('Footer copyright text has trailing period');
+});
+
+test('Footer links section has margin-bottom spacing', () => {
+    if (!pacman.includes('margin-bottom: 0.5rem') && !pacman.includes('margin-bottom'))
+        throw new Error('Footer links missing margin-bottom');
+});
+
+test('Footer p element uses color: var(--text-muted) and font-size: 0.8rem', () => {
+    const footerCSSMatch = pacman.match(/\.site-footer\s+p\s*{[^}]*}/);
+    if (!footerCSSMatch) throw new Error('.site-footer p CSS rule not found');
+    const footerPStyle = footerCSSMatch[0];
+    if (!footerPStyle.includes('var(--text-muted)'))
+        throw new Error('Footer p missing color: var(--text-muted)');
+    if (!footerPStyle.includes('0.8rem'))
+        throw new Error('Footer p missing font-size: 0.8rem');
+});
+
+test('No bare <p> footer replaced by site-footer', () => {
+    // The copyright <p> should only exist inside <footer class="site-footer">
+    // Check that the <footer> exists and contains the copyright <p>
+    const footerBlock = pacman.match(/<footer[^>]*class="site-footer"[^>]*>[\s\S]*?<\/footer>/);
+    if (!footerBlock) throw new Error('No <footer class="site-footer"> block found');
+    const footerContent = footerBlock[0];
+    if (!footerContent.includes('© 2025 gameShelf — All games built in browser — no downloads required'))
+        throw new Error('Footer does not contain the copyright text');
+    // Verify no <p> with copyright text exists OUTSIDE the footer
+    const afterFooter = pacman.split(footerBlock[0])[1] || '';
+    if (/<p[^>]*>© 2025/.test(afterFooter))
+        throw new Error('Bare <p> footer still present outside <footer class="site-footer">');
+});
+
+console.log('\n🖼️ CANVAS & GAME AREA WRAPPING');
+console.log('─'.repeat(50));
+
+test('Canvas is 560×620', () => {
+    if (!pacman.includes('width="560"') || !pacman.includes('height="620"'))
+        throw new Error('Canvas dimensions not 560×620');
+});
+
+test('Canvas wrapped in <div class="canvas-wrapper">', () => {
+    if (!pacman.includes('class="canvas-wrapper"'))
+        throw new Error('No .canvas-wrapper div found');
+    if (!pacman.includes('position: relative'))
+        throw new Error('.canvas-wrapper missing position: relative');
+    if (!pacman.includes('border: 2px solid var(--border-color)'))
+        throw new Error('.canvas-wrapper missing border');
+    if (!pacman.includes('border-radius: 0.75rem'))
+        throw new Error('.canvas-wrapper missing border-radius');
+    if (!pacman.includes('overflow: hidden'))
+        throw new Error('.canvas-wrapper missing overflow: hidden');
+    if (!pacman.includes('box-shadow'))
+        throw new Error('.canvas-wrapper missing box-shadow');
+});
+
+test('Game content wrapped in <div class="game-area">', () => {
+    if (!pacman.includes('class="game-area"'))
+        throw new Error('No .game-area div found');
+});
+
+test('Game area has flex centering styles', () => {
+    const gameAreaCSS = pacman.match(/\.game-area\s*{[^}]*}/);
+    if (!gameAreaCSS) throw new Error('.game-area CSS rule not found');
+    const cssBlock = gameAreaCSS[0];
+    if (!cssBlock.includes('flex-direction: column'))
+        throw new Error('.game-area missing flex-direction: column');
+    if (!cssBlock.includes('align-items: center'))
+        throw new Error('.game-area missing align-items: center');
+    if (!cssBlock.includes('justify-content: center'))
+        throw new Error('.game-area missing justify-content: center');
+    if (!cssBlock.includes('padding: 2rem 1.5rem'))
+        throw new Error('.game-area missing padding: 2rem 1.5rem');
+});
+
+console.log('\n🎨 CSS CUSTOM PROPERTIES');
+console.log('─'.repeat(50));
+
+test(':root custom properties defined', () => {
+    if (!pacman.includes(':root {'))
+        throw new Error(':root custom properties not defined');
+    const requiredProps = [
+        '--bg-primary: #0f0f23',
+        '--bg-secondary: #1a1a3e',
+        '--accent: #00d4ff',
+        '--accent-hover: #00b8d9',
+        '--accent-glow: rgba(0, 212, 255, 0.3)',
+        '--border-color: #2a2a5a',
+        '--header-bg: rgba(15, 15, 35, 0.95)',
+        '--footer-bg: #0a0a1a',
+        '--text-primary',
+        '--text-secondary',
+        '--text-muted'
+    ];
+    for (const prop of requiredProps) {
+        if (!pacman.includes(prop)) throw new Error(`Missing :root property: ${prop}`);
+    }
+});
+
+test('Body uses flex column layout with min-height 100vh', () => {
+    if (!pacman.includes('display: flex;') || !pacman.includes('flex-direction: column'))
+        throw new Error('Body missing flex column layout');
+    if (!pacman.includes('min-height: 100vh'))
+        throw new Error('Body missing min-height: 100vh');
+});
+
+test('Body background uses var(--bg-primary)', () => {
+    const bodyCSS = pacman.match(/body\s*{[^}]*}/);
+    if (!bodyCSS) throw new Error('body CSS rule not found');
+    if (!bodyCSS[0].includes('var(--bg-primary)'))
+        throw new Error('Body not using var(--bg-primary) for background');
+});
+
+test('Header background uses var(--header-bg)', () => {
+    const headerCSS = pacman.match(/\.game-header\s*{[^}]*}/);
+    if (!headerCSS) throw new Error('.game-header CSS rule not found');
+    if (!headerCSS[0].includes('var(--header-bg)'))
+        throw new Error('Header not using var(--header-bg)');
+});
+
+test('Footer background uses var(--footer-bg)', () => {
+    const footerCSS = pacman.match(/\.site-footer\s*{[^}]*}/);
+    if (!footerCSS) throw new Error('.site-footer CSS rule not found');
+    if (!footerCSS[0].includes('var(--footer-bg)'))
+        throw new Error('Footer not using var(--footer-bg)');
+});
+
+test('Border color uses var(--border-color)', () => {
+    if (!pacman.includes('var(--border-color)'))
+        throw new Error('Border color not using var(--border-color)');
 });
 
 // ── Summary ──
