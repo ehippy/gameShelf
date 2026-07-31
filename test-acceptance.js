@@ -213,7 +213,7 @@ assert(catalog.includes("2025-02-01T00:00:00Z"), 'gamesCatalog.js entries have d
 assert(catalog.includes("2025-06-15T00:00:00Z"), 'minesweeper has dateAdded')
 assert(catalog.includes("2025-06-20T00:00:00Z"), 'memory has dateAdded')
 assert(catalog.includes('data:image/svg+xml'), 'gamesCatalog.js entries have SVG thumbnail data URIs')
-assert(catalog.includes('class:'), 'gamesCatalog.js does not use id field', false)
+assert(!catalog.includes('id:'), 'gamesCatalog.js does not use old id field')
 
 // --- No old field/method names ---
 assert(!catalog.includes("id: 'snake'"), 'gamesCatalog.js does not use old id field for snake')
