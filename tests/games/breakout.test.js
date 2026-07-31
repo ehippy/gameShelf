@@ -80,6 +80,16 @@ describe('breakout', () => {
       expect(true).toBe(true)
     })
 
+    it('exports CANVAS_WIDTH = 250', () => {
+      if (!breakoutModule) return
+      expect(breakoutModule.CANVAS_WIDTH).toBe(250)
+    })
+
+    it('exports CANVAS_HEIGHT = 250', () => {
+      if (!breakoutModule) return
+      expect(breakoutModule.CANVAS_HEIGHT).toBe(250)
+    })
+
     it('init() runs without error', () => {
       if (!breakoutModule) return
       expect(() => breakoutModule.init()).not.toThrow()
