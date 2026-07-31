@@ -74,10 +74,10 @@ describe('breakout', () => {
     })
 
     it('exports state', () => {
-      // Stub game may not have state - this is expected
+      // Stub game may not have state - but verify CANVAS dims are exported
       if (!breakoutModule) return
-      // Just check that the module loads without error
-      expect(true).toBe(true)
+      expect(typeof breakoutModule.CANVAS_WIDTH).toBe('number')
+      expect(typeof breakoutModule.CANVAS_HEIGHT).toBe('number')
     })
 
     it('exports CANVAS_WIDTH = 250', () => {
