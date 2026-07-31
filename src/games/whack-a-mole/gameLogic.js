@@ -216,8 +216,10 @@ function randomAvailableCell(occupied, maxCount) {
     }
   }
   if (available.length === 0) return null
-  // Pick up to maxCount available cells
-  const count = Math.min(maxCount, available.length)
+  // Cap total moles to maxCount: only pick maxCount - occupied.length new cells
+  const canSpawn = Math.max(0, maxCount - occupied.length)
+  if (canSpawn === 0) return null
+  const count = Math.min(canSpawn, available.length)
   const picked = []
   for (let i = 0; i < count; i++) {
     const idx = Math.floor(Math.random() * available.length)
