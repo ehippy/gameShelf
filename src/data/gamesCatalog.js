@@ -27,6 +27,15 @@ export default [
     dateAdded: '2025-02-01T00:00:00Z'
   },
   {
+    slug: 'flappy-bird',
+    title: 'Flappy Bird',
+    description: 'Guide the bird through gaps in the pipes',
+    thumbnail: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="120"><rect width="200" height="120" fill="%2327ae60"/><rect x="10" y="30" width="15" height="60" fill="%232ecc71"/><rect x="10" y="30" width="15" height="10" fill="%2325a05a"/><rect x="175" y="30" width="15" height="60" fill="%232ecc71"/><rect x="175" y="80" width="15" height="10" fill="%2325a05a"/><circle cx="100" cy="60" r="14" fill="%23FFD700"/><circle cx="106" cy="56" r="4" fill="%23ffffff"/><circle cx="107" cy="56" r="2" fill="%23000000"/><polygon points="114,58 122,60 114,63" fill="%23FF8C00"/></svg>',
+    category: 'Arcade',
+    isNew: true,
+    dateAdded: '2025-07-01T00:00:00Z'
+  },
+  {
     slug: 'minesweeper',
     title: 'Minesweeper',
     description: 'Clear the minefield without detonating any mines',
