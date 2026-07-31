@@ -56,8 +56,13 @@ let lastSnapshotScore = null
 
 onMounted(async () => {
   const slug = route.params.id
+  const game = gameStore.getGameBySlug(slug)
+  if (!game) {
+    router.replace('/404')
+    return
+  }
   // Dynamically import the game module
-  gameLogic = await import(`../games/${slug}/gameLogic.js`)
+  gameLogic = await import('../games/' + slug + '/gameLogic.js')
   canvasWidth.value = gameLogic.CANVAS_WIDTH ?? 250
   canvasHeight.value = gameLogic.CANVAS_HEIGHT ?? 200
 
