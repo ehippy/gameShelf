@@ -57,6 +57,8 @@ onMounted(async () => {
   const slug = route.params.id
   // Dynamically import the game module
   gameLogic = await import(`../games/${slug}/gameLogic.js`)
+  canvasWidth.value = gameLogic.CANVAS_WIDTH ?? 250
+  canvasHeight.value = gameLogic.CANVAS_HEIGHT ?? 200
 
   const canvas = gameCanvas.value
   if (!canvas) return
