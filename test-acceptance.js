@@ -398,7 +398,9 @@ assert(deployYml.includes('- main'), 'deploy.yml triggers on main branch')
 
 assert(existsSync(join(root, 'node_modules', '.package-lock.json')) || existsSync(join(root, 'node_modules', 'vue')), 'npm install has completed (node_modules exists)')
 
-// --- Extended tests for layout shell acceptance criteria ---
+// ─────────────────────────────────────────────────────────────────────────────
+// Extended tests for layout shell acceptance criteria
+// ─────────────────────────────────────────────────────────────────────────────
 
 // --- AppHeader: search input ---
 assert(appHeader.includes("type=\"text\"") || appHeader.includes("type='text'"), 'AppHeader.vue has search input with type=text')
