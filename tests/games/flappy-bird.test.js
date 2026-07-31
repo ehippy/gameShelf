@@ -30,7 +30,7 @@ describe('flappy-bird', () => {
     })
 
     it('exports handleKeydown', () => {
-      expect(flappySrc).toContain('export function handleKeydown') || expect(flappySrc).toContain('export {')
+      expect(flappySrc).toContain('export function handleKeydown')
     })
 
     it('exports state', () => {
