@@ -123,6 +123,9 @@ onMounted(async () => {
     if (animFrameId) {
       cancelAnimationFrame(animFrameId)
     }
+    if (resizeObserver) {
+      resizeObserver.disconnect()
+    }
   })
 })
 
