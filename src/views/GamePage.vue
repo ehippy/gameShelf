@@ -52,6 +52,7 @@ const canvasHeight = ref(200)
 let gameLogic = null
 let animFrameId = null
 let lastSnapshotScore = null
+let resizeObserver = null
 
 onMounted(async () => {
   const slug = route.params.id
