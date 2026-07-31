@@ -245,7 +245,8 @@ describe('router/index.js', () => {
   })
 
   it('maps catch-all to NotFoundView', () => {
-    expect(router).toContain("path: '/:pathMatch(.*)*',") && expect(router).toContain('NotFoundView')
+    expect(router).toContain("path: '/:pathMatch(.*)*',")
+    expect(router).toContain('NotFoundView')
   })
 
   it('uses createWebHistory', () => {
