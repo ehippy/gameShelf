@@ -195,7 +195,10 @@ function playAgain() {
 
 .canvas-wrapper canvas {
   width: 100%;
-  height: auto;
+  height: 100%;
+  background-color: #0f0f23;
+  border: 2px solid var(--color-bg-tertiary);
+  border-radius: 8px;
   display: block;
 }
 
