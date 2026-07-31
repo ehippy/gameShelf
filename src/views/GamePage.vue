@@ -47,7 +47,7 @@ const gameCanvas = ref(null)
 let state = null
 
 const canvasWidth = 250
-const canvasHeight = 500
+const canvasHeight = 200
 
 let gameLogic = null
 let animFrameId = null
@@ -74,7 +74,7 @@ onMounted(async () => {
     gameLogic.handleKeydown(key)
 
     // If game over and score hasn't been submitted yet, submit it
-    if (state.isGameOver && lastSnapshotScore !== state.score) {
+    if (state.isGameOver && lastSnapshotScore !== state.score && state.score > 0) {
       lastSnapshotScore = state.score
       scoreStore.submitScore(slug, state.score)
     }
@@ -88,7 +88,7 @@ onMounted(async () => {
       gameLogic.render(canvas)
 
       // Check for game over to submit score
-      if (state.isGameOver && lastSnapshotScore !== state.score) {
+      if (state.isGameOver && lastSnapshotScore !== state.score && state.score > 0) {
         lastSnapshotScore = state.score
         scoreStore.submitScore(slug, state.score)
       }

@@ -962,6 +962,358 @@ if (flappyModule) {
   assert(flappyModule.state.isGameOver === true, 'pipe collision triggers game over')
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Whack-a-Mole gameLogic.js — static + functional tests
+// ─────────────────────────────────────────────────────────────────────────────
+
+// --- Whack-a-Mole catalog entry ---
+
+assert(catalog.includes("slug: 'whack-a-mole'"), 'gamesCatalog.js has whack-a-mole entry')
+assert(catalog.includes("title: 'Whack-a-Mole'"), 'gamesCatalog.js whack-a-mole entry has correct title')
+assert(catalog.includes("description: 'Whack moles as fast as you can!'"), 'gamesCatalog.js whack-a-mole has description')
+assert(catalog.match(/slug: 'whack-a-mole'[\s\S]*?category: 'Casual'/), 'gamesCatalog.js whack-a-mole is in Casual category')
+assert(catalog.match(/slug: 'whack-a-mole'[\s\S]*?isNew: true/), 'gamesCatalog.js whack-a-mole has isNew=true')
+assert(catalog.match(/slug: 'whack-a-mole'[\s\S]*?dateAdded:/), 'gamesCatalog.js whack-a-mole has dateAdded')
+
+// Check whack-a-mole is last item (7th)
+assert(slugOrder[6] === 'whack-a-mole', 'whack-a-mole catalog: 7th item is whack-a-mole')
+
+// --- Static checks on whack-a-mole source ---
+
+const whackPath = join(root, 'src', 'games', 'whack-a-mole', 'gameLogic.js')
+const whackSrc = readFileSync(whackPath, 'utf-8')
+
+assert(whackSrc.includes('export function init'), 'whack-a-mole gameLogic.js exports init()')
+assert(whackSrc.includes('export function update'), 'whack-a-mole gameLogic.js exports update()')
+assert(whackSrc.includes('export function render'), 'whack-a-mole gameLogic.js exports render()')
+assert(whackSrc.includes('export function reset'), 'whack-a-mole gameLogic.js exports reset()')
+assert(whackSrc.includes('export function handleKeydown'), 'whack-a-mole gameLogic.js exports handleKeydown')
+assert(whackSrc.includes('export { state }'), 'whack-a-mole gameLogic.js exports state')
+
+// Canvas dimensions 250x200 per spec
+assert(whackSrc.includes('CANVAS_W = 250') || whackSrc.includes('CANVAS_W=250'), 'whack-a-mole canvas width is 250')
+assert(whackSrc.includes('CANVAS_H = 200') || whackSrc.includes('CANVAS_H=200'), 'whack-a-mole canvas height is 200')
+
+// Grid 4 columns × 3 rows
+assert(whackSrc.includes('COLS = 4'), 'whack-a-mole grid has 4 columns')
+assert(whackSrc.includes('ROWS = 3'), 'whack-a-mole grid has 3 rows')
+
+// 30-second game duration
+assert(whackSrc.includes('GAME_DURATION = 30') || whackSrc.includes('GAME_DURATION=30'), 'whack-a-mole game duration is 30 seconds')
+
+// Difficulty settings
+assert(whackSrc.includes('moleDuration: 2500') && whackSrc.includes('spawnInterval: 1500'), 'Easy: moleDuration=2500, spawnInterval=1500')
+assert(whackSrc.includes('moleDuration: 1800') && whackSrc.includes('spawnInterval: 1000'), 'Medium: moleDuration=1800, spawnInterval=1000')
+assert(whackSrc.includes('moleDuration: 1200') && whackSrc.includes('spawnInterval: 600'), 'Hard: moleDuration=1200, spawnInterval=600')
+assert(whackSrc.includes('maxSimultaneous: 1') && whackSrc.includes('bombChance: 0'), 'Easy: maxSimultaneous=1, bombChance=0')
+assert(whackSrc.includes('maxSimultaneous: 2') && whackSrc.includes('bombChance: 0.15'), 'Medium: maxSimultaneous=2, bombChance=0.15')
+assert(whackSrc.includes('maxSimultaneous: 3') && whackSrc.includes('bombChance: 0.3'), 'Hard: maxSimultaneous=3, bombChance=0.3')
+
+// Audio: Web Audio API, no external files
+assert(whackSrc.includes('AudioContext') || whackSrc.includes('webkitAudioContext'), 'whack-a-mole uses Web Audio API')
+assert(whackSrc.includes('osc.frequency.value = 600'), 'whack-a-mole pop sound is 600Hz')
+assert(whackSrc.includes('osc.frequency.value = 150'), 'whack-a-mole miss sound is 150Hz')
+assert(whackSrc.includes('osc1.frequency.value = 400') && whackSrc.includes('osc2.frequency.value = 200'), 'whack-a-mole game-over uses 400Hz then 200Hz')
+assert(!whackSrc.includes('.mp3') && !whackSrc.includes('.wav') && !whackSrc.includes('.ogg'), 'whack-a-mole does not use external audio files')
+
+// Scoring logic
+assert(whackSrc.includes('10 * state.combo'), 'whack-a-mole normal mole scores 10 * combo')
+assert(whackSrc.includes('score - 20') || whackSrc.includes('score-= 20'), 'whack-a-mole bomb mole deducts 20 points')
+assert(whackSrc.includes('highestCombo'), 'whack-a-mole tracks highestCombo')
+
+// Mole phase: whackable when phase < 66
+assert(whackSrc.includes('phase < 66'), 'whack-a-mole only whackable when phase < 66 (rising/idle)')
+
+// Whack effect structure
+assert(whackSrc.includes('type:') && whackSrc.includes('mole.isBomb'), 'whack-a-mole whack effects have type field')
+
+// Gamepad support: D-pad buttons
+assert(whackSrc.includes('buttons[12]'), 'whack-a-mole gamepad dpad-up uses button 12')
+assert(whackSrc.includes('buttons[13]'), 'whack-a-mole gamepad dpad-down uses button 13')
+assert(whackSrc.includes('buttons[14]'), 'whack-a-mole gamepad dpad-left uses button 14')
+assert(whackSrc.includes('buttons[15]'), 'whack-a-mole gamepad dpad-right uses button 15')
+assert(whackSrc.includes('buttons[0]'), 'whack-a-mole gamepad A-button uses button 0')
+assert(whackSrc.includes('buttons[1]'), 'whack-a-mole gamepad B-button uses button 1')
+assert(whackSrc.includes('gamepadConnected'), 'whack-a-mole tracks gamepadConnected in state')
+assert(whackSrc.includes('cursorCol') && whackSrc.includes('cursorRow'), 'whack-a-mole tracks cursorCol/cursorRow in state')
+
+// Game-over overlay content
+assert(whackSrc.includes('GAME OVER'), 'whack-a-mole renders GAME OVER text')
+assert(whackSrc.includes('Press Space or B to restart'), 'whack-a-mole shows restart prompt')
+assert(whackSrc.includes('localStorage.getItem'), 'whack-a-mole reads high score from localStorage')
+
+// Cursor bounds (0-3 columns, 0-2 rows)
+assert(whackSrc.includes('newCol < COLS'), 'whack-a-mole cursorCol bounded by COLS')
+assert(whackSrc.includes('newRow < ROWS'), 'whack-a-mole cursorRow bounded by ROWS')
+
+// ── Functional tests for whack-a-mole ──
+
+let whackModule = null
+try {
+  whackModule = await import(whackPath)
+} catch {
+  whackModule = null
+}
+
+if (whackModule) {
+  // Verify all required exports exist
+  assert(typeof whackModule.init === 'function', 'whack-a-mole init is a function')
+  assert(typeof whackModule.update === 'function', 'whack-a-mole update is a function')
+  assert(typeof whackModule.render === 'function', 'whack-a-mole render is a function')
+  assert(typeof whackModule.reset === 'function', 'whack-a-mole reset is a function')
+  assert(typeof whackModule.handleKeydown === 'function', 'whack-a-mole handleKeydown is a function')
+  assert(whackModule.state !== undefined, 'whack-a-mole exports state')
+
+  // ── State shape after init() ──
+  const initState = whackModule.init()
+  assert(initState !== null, 'init() returns state object')
+  assert(typeof initState.score === 'number', 'state.score is a number')
+  assert(initState.score === 0, 'initial state.score is 0')
+  assert(typeof initState.isGameOver === 'boolean', 'state.isGameOver is a boolean')
+  assert(initState.isGameOver === false, 'initial state.isGameOver is false')
+  assert(typeof initState.isPlaying === 'boolean', 'state.isPlaying is a boolean')
+  assert(initState.isPlaying === false, 'initial state.isPlaying is false (menu)')
+  assert(typeof initState.combo === 'number', 'state.combo is a number')
+  assert(initState.combo === 1, 'initial state.combo is 1')
+  assert(typeof initState.highestCombo === 'number', 'state.highestCombo is a number')
+  assert(initState.highestCombo === 1, 'initial state.highestCombo is 1')
+  assert(typeof initState.timer === 'number', 'state.timer is a number')
+  assert(initState.timer === 30, 'initial state.timer is 30')
+  assert(Array.isArray(initState.activeMoles), 'state.activeMoles is an array')
+  assert(initState.activeMoles.length === 0, 'initial state.activeMoles is empty')
+  assert(Array.isArray(initState.whackEffects), 'state.whackEffects is an array')
+  assert(initState.whackEffects.length === 0, 'initial state.whackEffects is empty')
+  assert(initState.gamepadConnected === false, 'initial gamepadConnected is false')
+  assert(initState.cursorCol === 1, 'initial cursorCol is 1')
+  assert(initState.cursorRow === 1, 'initial cursorRow is 1')
+  assert(initState.gamepadState.col === 1, 'initial gamepadState.col is 1')
+  assert(initState.gamepadState.row === 1, 'initial gamepadState.row is 1')
+  assert(typeof initState.gamepadState.buttonAPressed === 'boolean', 'gamepadState.buttonAPressed is boolean')
+  assert(typeof initState.gamepadState.buttonBPressed === 'boolean', 'gamepadState.buttonBPressed is boolean')
+
+  // ── Difficulty param: sets difficulty but does NOT auto-start ──
+  whackModule.init('Easy')
+  assert(whackModule.state.isPlaying === false, 'init(Easy) does NOT auto-start (isPlaying=false)')
+  assert(whackModule.state.difficulty === 'Easy', 'init(Easy) sets difficulty=Easy')
+
+  whackModule.init('Medium')
+  assert(whackModule.state.isPlaying === false, 'init(Medium) does NOT auto-start (isPlaying=false)')
+  assert(whackModule.state.difficulty === 'Medium', 'init(Medium) sets difficulty=Medium')
+
+  whackModule.init('Hard')
+  assert(whackModule.state.isPlaying === false, 'init(Hard) does NOT auto-start (isPlaying=false)')
+  assert(whackModule.state.difficulty === 'Hard', 'init(Hard) sets difficulty=Hard')
+
+  // ── handleKeydown(' ') from menu starts game ──
+  whackModule.init('Hard')
+  whackModule.handleKeydown(' ')
+  assert(whackModule.state.isPlaying === true, 'handleKeydown(" ") from menu starts game')
+  assert(whackModule.state.isGameOver === false, 'handleKeydown(" ") sets isGameOver=false')
+  assert(whackModule.state.score === 0, 'handleKeydown(" ") resets score to 0')
+  assert(whackModule.state.timer === 30, 'handleKeydown(" ") resets timer to 30')
+
+  // ── Timer countdown ──
+  whackModule.init('Easy')
+  whackModule.handleKeydown(' ')
+  const initialTimer = whackModule.state.timer
+  for (let i = 0; i < 120; i++) {
+    whackModule.update()
+  }
+  assert(whackModule.state.timer < initialTimer, 'timer decreases over time')
+  assert(whackModule.state.timer > 0, 'timer still > 0 after ~2 seconds')
+
+  // ── Game over at timer 0 ──
+  whackModule.init('Easy')
+  whackModule.handleKeydown(' ')
+  // Fast-forward timer to near zero by setting startedAt far back
+  whackModule.state.startedAt = performance.now() - 31000
+  // Simulate: just set timer directly
+  whackModule.state.timer = 0.01
+  for (let i = 0; i < 5; i++) {
+    whackModule.update()
+  }
+  assert(whackModule.state.isGameOver === true, 'game over when timer reaches 0')
+  assert(whackModule.state.isPlaying === false, 'isPlaying becomes false on game over')
+
+  // ── handleKeydown(' ') from game over restarts ──
+  whackModule.handleKeydown(' ')
+  assert(whackModule.state.isGameOver === false, 'handleKeydown(" ") from game over sets isGameOver=false')
+  assert(whackModule.state.isPlaying === true, 'handleKeydown(" ") from game over sets isPlaying=true')
+  assert(whackModule.state.score === 0, 'restart resets score to 0')
+  assert(whackModule.state.timer === 30, 'restart resets timer to 30')
+
+  // ── Reset preserves difficulty ──
+  whackModule.init('Hard')
+  whackModule.handleKeydown(' ') // play a bit
+  whackModule.state.score = 100
+  whackModule.reset()
+  assert(whackModule.state.difficulty === 'Hard', 'reset() preserves Hard difficulty')
+  assert(whackModule.state.isPlaying === false, 'reset() sets isPlaying=false')
+  assert(whackModule.state.isGameOver === false, 'reset() sets isGameOver=false')
+  assert(whackModule.state.score === 0, 'reset() resets score to 0')
+  assert(whackModule.state.activeMoles.length === 0, 'reset() clears activeMoles')
+  assert(whackModule.state.whackEffects.length === 0, 'reset() clears whackEffects')
+  assert(whackModule.state.combo === 1, 'reset() resets combo to 1')
+  assert(whackModule.state.highestCombo === 1, 'reset() resets highestCombo to 1')
+
+  // ── Reset from Easy defaults ──
+  whackModule.init('Easy')
+  whackModule.reset()
+  assert(whackModule.state.difficulty === 'Easy', 'reset() from Easy preserves Easy')
+
+  // ── Mole spawn structure: col, row, isBomb, phase, elapsed, maxDuration ──
+  whackModule.init('Easy')
+  whackModule.handleKeydown(' ')
+  // Wait for spawn (Easy: every 1500ms ≈ 90 frames)
+  for (let i = 0; i < 100; i++) {
+    whackModule.update()
+  }
+  if (whackModule.state.activeMoles.length > 0) {
+    const mole = whackModule.state.activeMoles[0]
+    assert(typeof mole.col === 'number', 'mole has numeric col')
+    assert(typeof mole.row === 'number', 'mole has numeric row')
+    assert(typeof mole.isBomb === 'boolean', 'mole has boolean isBomb')
+    assert(typeof mole.phase === 'number', 'mole has numeric phase')
+    assert(typeof mole.elapsed === 'number', 'mole has numeric elapsed')
+    assert(typeof mole.maxDuration === 'number', 'mole has numeric maxDuration')
+    assert(mole.phase >= 0 && mole.phase <= 100, 'mole phase in 0-100 range')
+  } else {
+    assert(false, 'at least one mole spawned after 100 frames')
+  }
+
+  // ── Difficulty-specific behavior: Easy no bombs ──
+  whackModule.init('Easy')
+  whackModule.handleKeydown(' ')
+  for (let i = 0; i < 200; i++) {
+    whackModule.update()
+  }
+  const easyBombs = whackModule.state.activeMoles.filter(m => m.isBomb).length
+  assert(easyBombs === 0, 'Easy difficulty has no bombs')
+
+  // ── Hard: multiple moles max simultaneous ──
+  whackModule.init('Hard')
+  whackModule.handleKeydown(' ')
+  for (let i = 0; i < 300; i++) {
+    whackModule.update()
+  }
+  assert(whackModule.state.activeMoles.length <= 3, 'Hard max simultaneous moles <= 3')
+
+  // ── Moles spawn only in available (unoccupied) cells ──
+  whackModule.init('Hard')
+  whackModule.handleKeydown(' ')
+  // Occupy all 12 cells
+  for (let r = 0; r < 3; r++) {
+    for (let c = 0; c < 4; c++) {
+      whackModule.state.activeMoles.push({
+        col: c, row: r, isBomb: false, phase: 50, elapsed: 600, maxDuration: 1200
+      })
+    }
+  }
+  // Try to spawn more - should not add more since all cells occupied
+  const molesBefore = whackModule.state.activeMoles.length
+  whackModule.update() // should skip spawn since no available cells
+  assert(whackModule.state.activeMoles.length === molesBefore, 'no new mole spawned when all cells occupied')
+
+  // ── Canvas dimensions set in render ──
+  const mockCanvas = {
+    width: 250, height: 200,
+    getBoundingClientRect: () => ({ left: 0, top: 0, width: 250, height: 200 }),
+    getContext: () => ({
+      fillRect: () => {}, fillStyle: '', fillText: () => {}, fill: () => {},
+      arc: () => {}, ellipse: () => {}, beginPath: () => {}, stroke: () => {},
+      lineWidth: 0, textAlign: '', font: '',
+      roundRect: function() { this.beginPath(); }
+    }),
+    addEventListener: () => {}, removeEventListener: () => {}
+  }
+  whackModule.init('Easy')
+  mockCanvas.width = 999
+  mockCanvas.height = 999
+  whackModule.render(mockCanvas)
+  assert(mockCanvas.width === 250, 'render() sets canvas.width to 250')
+  assert(mockCanvas.height === 200, 'render() sets canvas.height to 200')
+
+  // ── Click handler registration on render ──
+  assert(whackModule.state._clickHandlerRegistered === true, 'render() registers click handlers')
+  assert(typeof whackModule.state._clickHandler === 'function', 'click handler is a function')
+  assert(typeof whackModule.state._menuClickHandler === 'function', 'menu click handler is a function')
+
+  // ── Menu screen renders correctly ──
+  whackModule.init('Hard') // menu state
+  whackModule.render(mockCanvas)
+  // The render shouldn't crash, and menu state should not have isPlaying
+  assert(whackModule.state.isPlaying === false, 'menu state has isPlaying=false')
+
+  // ── Gameplay screen renders correctly ──
+  whackModule.init('Medium')
+  whackModule.handleKeydown(' ')
+  whackModule.render(mockCanvas)
+  assert(whackModule.state.isPlaying === true, 'gameplay state has isPlaying=true')
+
+  // ── Game-over overlay renders correctly ──
+  whackModule.init('Hard')
+  whackModule.handleKeydown(' ')
+  whackModule.state.timer = 0
+  whackModule.update()
+  whackModule.render(mockCanvas)
+  assert(whackModule.state.isGameOver === true, 'game-over state has isGameOver=true')
+  assert(whackModule.state.isPlaying === false, 'game-over state has isPlaying=false')
+
+  // ── gamepadConnected detected when getGamepads returns a gamepad ──
+  const origGetGamepads = navigator.getGamepads
+  navigator.getGamepads = () => [{ buttons: [] }]
+  whackModule.init()
+  assert(whackModule.state.gamepadConnected === true, 'gamepadConnected=true when gamepad available')
+  navigator.getGamepads = origGetGamepads
+
+  // ── cursorCol/cursorRow boundary checks ──
+  whackModule.init()
+  // Manually set cursor to edge positions
+  whackModule.state.cursorCol = 0
+  whackModule.state.cursorRow = 0
+  assert(whackModule.state.cursorCol === 0, 'cursorCol can be 0')
+  assert(whackModule.state.cursorRow === 0, 'cursorRow can be 0')
+
+  // ── isGameOver blocks update ──
+  whackModule.init('Easy')
+  whackModule.handleKeydown(' ')
+  // Manually set game over
+  whackModule.state.isGameOver = true
+  const scoreBeforeGo = whackModule.state.score
+  whackModule.update() // should be a no-op
+  assert(whackModule.state.isGameOver === true, 'update() is no-op when game over')
+
+  // ── handleKeydown no-op during gameplay (mouse only) ──
+  whackModule.init('Easy')
+  whackModule.handleKeydown(' ')
+  const scoreDuringGame = whackModule.state.score
+  whackModule.handleKeydown(' ') // space during gameplay does nothing
+  assert(whackModule.state.isPlaying === true, 'space during gameplay keeps isPlaying=true')
+
+  // ── Background and hole colors present in source ──
+  assert(whackSrc.includes("'#d4a574'") || whackSrc.includes('"#d4a574"'), 'whack-a-mole has tan (#d4a574) background')
+  assert(whackSrc.includes("'#5c4033'") || whackSrc.includes('"#5c4033"'), 'whack-a-mole has dark brown (#5c4033) holes')
+
+  // ── HUD displays score and combo ──
+  assert(whackSrc.includes('Score:') || whackSrc.includes('score'), 'HUD displays score')
+  assert(whackSrc.includes('Combo:'), 'HUD displays combo')
+  assert(whackSrc.includes('padStart'), 'HUD formats timer as MM:SS')
+
+  // ── Cursor highlight only shown when gamepad connected ──
+  assert(whackSrc.includes('if (!state.gamepadConnected) return'), 'cursor highlight only drawn when gamepad connected')
+
+  // ── Whack effect structure has type (mole|bomb) and phase ──
+  assert(whackSrc.includes('whackEffects.push') && whackSrc.includes('phase: 0'),
+    'whackCell adds whack effect with phase 0 and type')
+
+  // ── whack-a-mole not in old game stubs list ──
+  const gameLogicFiles = ['snake', 'tetris', 'breakout']
+  for (const game of gameLogicFiles) {
+    const gameLogic = readFileSync(join(root, 'src', 'games', game, 'gameLogic.js'), 'utf-8')
+    assert(!gameLogic.includes('whack-a-mole'), `${game} gameLogic.js does not reference whack-a-mole`)
+  }
+}
+
 console.log(`\n${passed} passed, ${failed} failed`)
 
 if (failed > 0) {

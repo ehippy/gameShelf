@@ -52,5 +52,14 @@ export default [
     category: 'Casual',
     isNew: true,
     dateAdded: '2025-06-20T00:00:00Z'
+  },
+  {
+    slug: 'whack-a-mole',
+    title: 'Whack-a-Mole',
+    description: 'Whack moles as fast as you can!',
+    thumbnail: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="120"><rect width="200" height="120" fill="%23ff8c00"/><circle cx="50" cy="70" r="20" fill="%238B4513"/><circle cx="100" cy="50" r="20" fill="%238B4513"/><circle cx="150" cy="70" r="20" fill="%238B4513"/><circle cx="45" cy="65" r="3" fill="%23000000"/><circle cx="55" cy="65" r="3" fill="%23000000"/><circle cx="95" cy="45" r="3" fill="%23000000"/><circle cx="105" cy="45" r="3" fill="%23000000"/><circle cx="145" cy="65" r="3" fill="%23000000"/><circle cx="155" cy="65" r="3" fill="%23000000"/><circle cx="50" cy="75" r="5" fill="%23FF69B4"/><circle cx="100" cy="55" r="5" fill="%23FF69B4"/><circle cx="150" cy="75" r="5" fill="%23FF69B4"/></svg>',
+    category: 'Casual',
+    isNew: true,
+    dateAdded: '2025-07-01T00:00:00Z'
   }
 ]
