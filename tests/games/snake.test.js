@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest'
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { readFileSync, fileURLToPath } from 'node:fs'
+import { join, dirname } from 'node:path'
 
-const root = import.meta.dirname + '/..'
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const root = join(__dirname, '..', '..')
 const snakePath = join(root, 'src', 'games', 'snake', 'gameLogic.js')
 
 // --- Static checks ---
