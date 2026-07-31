@@ -201,9 +201,12 @@ assert(scoreStore.includes('clearScores'), 'scoreStore has clearScores action')
 
 // --- gamesCatalog: full entry fields ---
 
-assert(catalog.includes('name'), 'gamesCatalog.js entries have name field')
+assert(catalog.includes('title'), 'gamesCatalog.js entries have title field')
 assert(catalog.includes('description'), 'gamesCatalog.js entries have description field')
-assert(catalog.includes('genre'), 'gamesCatalog.js entries have genre field')
+assert(catalog.includes('category'), 'gamesCatalog.js entries have category field')
+assert(catalog.includes('isNew'), 'gamesCatalog.js entries have isNew field')
+assert(catalog.includes('dateAdded'), 'gamesCatalog.js entries have dateAdded field')
+assert(catalog.includes('thumbnail'), 'gamesCatalog.js entries have thumbnail field')
 
 // --- HomeView.vue: template content ---
 
