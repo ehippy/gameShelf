@@ -91,8 +91,10 @@ describe('tetris', () => {
     })
 
     it('handleKeydown handles arrow keys', () => {
-      expect(tetrisSrc).toContain('ArrowLeft') && expect(tetrisSrc).toContain('ArrowRight') &&
-        expect(tetrisSrc).toContain('ArrowDown') && expect(tetrisSrc).toContain('ArrowUp')
+      expect(tetrisSrc).toContain('ArrowLeft')
+      expect(tetrisSrc).toContain('ArrowRight')
+      expect(tetrisSrc).toContain('ArrowDown')
+      expect(tetrisSrc).toContain('ArrowUp')
     })
 
     it('handleKeydown handles space bar', () => {
