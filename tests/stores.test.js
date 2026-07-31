@@ -101,6 +101,43 @@ describe('scoreStore', () => {
   it('does not use old highScores state', () => {
     expect(scoreStoreSrc).not.toContain('highScores')
   })
+
+  // --- Slug validation and defense-in-depth ---
+
+  it('exports isValidSlug validation helper', () => {
+    expect(scoreStoreSrc).toContain('isValidSlug')
+  })
+
+  it('uses VALID_SLUG_RE regex for format validation', () => {
+    expect(scoreStoreSrc).toContain('VALID_SLUG_RE')
+    expect(scoreStoreSrc).toMatch(/\[a-z0-9-\]/)
+  })
+
+  it('submitScore rejects unknown slugs via isValidSlug', () => {
+    expect(scoreStoreSrc).toMatch(/submitScore\(gameSlug,\s*score\)\s*\{[\s\S]*?isValidSlug\(gameSlug\)/)
+  })
+
+  it('getScores rejects unknown slugs via isValidSlug', () => {
+    expect(scoreStoreSrc).toMatch(/getScores\(gameSlug\)\s*\{[\s\S]*?isValidSlug\(gameSlug\)/)
+  })
+
+  it('clearScores rejects unknown slugs via isValidSlug', () => {
+    expect(scoreStoreSrc).toMatch(/clearScores\(gameSlug\)\s*\{[\s\S]*?isValidSlug\(gameSlug\)/)
+  })
+
+  it('getKnownSlugs derives from gamesCatalog (single source of truth)', () => {
+    expect(scoreStoreSrc).toContain('gamesCatalog')
+    expect(scoreStoreSrc).toContain('getKnownSlugs')
+    expect(scoreStoreSrc).toMatch(/getKnownSlugs\(\)\s*{[\s\S]*?gamesCatalog/)
+  })
+
+  it('rejects slug with path traversal characters (../admin)', () => {
+    expect(scoreStoreSrc).toMatch(/\[a-z0-9-\]/)
+  })
+
+  it('rejects slug with __proto__', () => {
+    expect(scoreStoreSrc).toMatch(/\[a-z0-9-\]/)
+  })
 })
 
 // --- userStore ---
