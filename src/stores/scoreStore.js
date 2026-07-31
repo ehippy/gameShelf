@@ -1,6 +1,16 @@
 import { defineStore } from 'pinia'
 import gamesCatalog from '../data/gamesCatalog.js'
 
+const VALID_SLUG_RE = /^[a-z0-9-]+$/
+
+function getKnownSlugs() {
+  return new Set(gamesCatalog.map(g => g.slug))
+}
+
+function isValidSlug(slug) {
+  return typeof slug === 'string' && VALID_SLUG_RE.test(slug) && getKnownSlugs().has(slug)
+}
+
 function loadScoresFromLocalStorage() {
   const scores = {}
   for (const game of gamesCatalog) {
