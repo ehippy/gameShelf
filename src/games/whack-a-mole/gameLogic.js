@@ -52,7 +52,7 @@ const DIFFICULTIES = {
 let audioCtx = null
 
 function ensureAudioCtx() {
-  if (!audioCtx) {
+  if (!audioCtx && typeof window !== 'undefined') {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)()
   }
 }
