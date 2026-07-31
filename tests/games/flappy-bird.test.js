@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-const root = import.meta.dirname
+const root = import.meta.dirname + '/..'
 const flappyPath = join(root, 'src', 'games', 'flappy-bird', 'gameLogic.js')
 
 // --- Static checks ---
