@@ -162,6 +162,9 @@ function playAgain() {
 
 .canvas-wrapper {
   position: relative;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
   border: 2px solid var(--color-bg-tertiary);
   border-radius: 8px;
   overflow: hidden;
