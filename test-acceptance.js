@@ -165,6 +165,15 @@ assert(mainJs.includes("createPinia"), 'main.js calls createPinia')
 assert(mainJs.includes("app.use(createPinia())"), 'main.js uses pinia plugin')
 assert(mainJs.includes("app.use(router)"), 'main.js uses router plugin')
 assert(mainJs.includes("app.mount('#app')"), 'main.js mounts to #app')
+assert(mainJs.includes("window.location.hash"), 'main.js reads window.location.hash')
+assert(mainJs.includes("router.push"), 'main.js calls router.push for hash redirect')
+
+// --- 404.html: redirect logic ---
+
+const fortyFour = readFileSync(join(root, '404.html'), 'utf-8')
+assert(fortyFour.includes('window.location.pathname'), '404.html reads window.location.pathname')
+assert(fortyFour.includes('window.location.replace'), '404.html uses window.location.replace for redirect')
+assert(fortyFour.includes('/#'), '404.html encodes path as hash fragment /#')
 
 // --- src/App.vue: template and component imports ---
 
