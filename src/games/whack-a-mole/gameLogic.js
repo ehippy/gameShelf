@@ -491,6 +491,12 @@ export function render(canvas) {
   // Store canvas reference for click handling
   state._canvas = canvas
 
+  // Register click handlers once per canvas
+  if (!state._clickHandlerRegistered) {
+    state._clickHandlerRegistered = true
+    registerClickHandlers()
+  }
+
   const ctx = canvas.getContext('2d')
 
   // Set canvas dimensions
@@ -509,6 +515,73 @@ export function render(canvas) {
     renderGameplay(ctx)
     renderGameOver(ctx)
   }
+}
+
+// ─── Click Handling ───────────────────────────────────────────────────────────
+
+function registerClickHandlers() {
+  const canvas = state._canvas
+  if (!canvas) return
+
+  // Gameplay click handler
+  const handler = (e) => {
+    ensureAudioCtx()
+
+    if (state.isGameOver || !state.isPlaying) {
+      return
+    }
+
+    const rect = canvas.getBoundingClientRect()
+    const scaleX = canvas.width / rect.width
+    const scaleY = canvas.height / rect.height
+    const px = (e.clientX - rect.left) * scaleX
+    const py = (e.clientY - rect.top) * scaleY
+
+    // Check if click is in grid area
+    const cellCol = Math.floor((px - GRID_X) / CELL_W)
+    const cellRow = Math.floor((py - GRID_Y) / CELL_H)
+    if (cellCol >= 0 && cellCol < COLS && cellRow >= 0 && cellRow < ROWS) {
+      whackCell(cellCol, cellRow)
+    }
+  }
+  canvas.addEventListener('click', handler)
+  canvas.addEventListener('touchstart', (e) => {
+    e.preventDefault()
+    const touch = e.touches[0]
+    handler({ clientX: touch.clientX, clientY: touch.clientY })
+  }, { passive: false })
+  state._clickHandler = handler
+
+  // Menu difficulty button click handler
+  const menuHandler = (e) => {
+    ensureAudioCtx()
+    const rect = canvas.getBoundingClientRect()
+    const scaleX = canvas.width / rect.width
+    const scaleY = canvas.height / rect.height
+    const px = (e.clientX - rect.left) * scaleX
+    const py = (e.clientY - rect.top) * scaleY
+
+    // Difficulty buttons on menu screen
+    const btnW = CANVAS_W / 3 - 10
+    const btnH = 35
+    const btnY = 120
+    const diffNames = ['Easy', 'Medium', 'Hard']
+
+    for (let i = 0; i < 3; i++) {
+      const btnX = 10 + i * (btnW + 10)
+      if (isInRect(px, py, { x: btnX, y: btnY, w: btnW, h: btnH })) {
+        startGame(diffNames[i])
+        return
+      }
+    }
+  }
+  canvas.addEventListener('click', menuHandler)
+  canvas.addEventListener('touchstart', (e) => {
+    e.preventDefault()
+    const touch = e.touches[0]
+    menuHandler({ clientX: touch.clientX, clientY: touch.clientY })
+  }, { passive: false })
+  state._menuClickHandler = menuHandler
 }
 
 function renderMenu(ctx) {
