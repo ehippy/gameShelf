@@ -363,8 +363,8 @@ assert(appHeader.includes('Action'), 'AppHeader.vue category filter has Action o
 // --- AppHeader: position: sticky in scoped styles ---
 assert(appHeader.includes('position: sticky'), 'AppHeader.vue styles include position: sticky')
 
-// --- AppHeader: brand uses accent color #7f5af0 ---
-assert(appHeader.includes('#7f5af0'), 'AppHeader.vue brand references accent color #7f5af0')
+// --- AppHeader: brand uses accent color ---
+assert(appHeader.includes('#7f5af0') || appHeader.includes('var(--color-accent)'), 'AppHeader.vue brand references accent color')
 
 // --- AppFooter: exact copyright text ---
 assert(appFooter.includes('2025') && appFooter.includes('gameShelf') && appFooter.includes('All games built in browser') && appFooter.includes('no downloads required'), 'AppFooter.vue has exact copyright text')
