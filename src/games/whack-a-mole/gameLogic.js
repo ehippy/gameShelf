@@ -16,15 +16,16 @@ const GAME_DURATION = 30 // seconds
 const GAP_PADDING = 20 // px from canvas edges for grid area
 
 // Grid cell dimensions
+const HUD_HEIGHT = 36
 const GRID_AREA_W = CANVAS_W - 2 * GAP_PADDING
-const GRID_AREA_H = CANVAS_H - GAP_PADDING - 80 - 80 // top margin + bottom margin
+const GRID_AREA_H = CANVAS_H - HUD_HEIGHT - GAP_PADDING - GAP_PADDING
 const CELL_W = GRID_AREA_W / COLS
 const CELL_H = GRID_AREA_H / ROWS
 const HOLE_RADIUS = CELL_W / 2 - 6
 
-// Grid top-left corner
+// Grid top-left corner (below HUD bar)
 const GRID_X = GAP_PADDING
-const GRID_Y = GAP_PADDING + 40 // 40px for HUD bar
+const GRID_Y = HUD_HEIGHT + GAP_PADDING
 
 // Colors
 const BG_COLOR = '#d4a574'
