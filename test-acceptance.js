@@ -29,6 +29,7 @@ assert(existsSync(join(root, 'src', 'App.vue')), 'src/App.vue exists')
 assert(existsSync(join(root, 'vite.config.js')), 'vite.config.js exists')
 assert(existsSync(join(root, 'src', 'router', 'index.js')), 'src/router/index.js exists')
 assert(existsSync(join(root, 'src', 'assets', 'styles.css')), 'src/assets/styles.css exists')
+assert(existsSync(join(root, '404.html')), '404.html exists at project root')
 
 // --- Stores ---
 
@@ -164,6 +165,15 @@ assert(mainJs.includes("createPinia"), 'main.js calls createPinia')
 assert(mainJs.includes("app.use(createPinia())"), 'main.js uses pinia plugin')
 assert(mainJs.includes("app.use(router)"), 'main.js uses router plugin')
 assert(mainJs.includes("app.mount('#app')"), 'main.js mounts to #app')
+assert(mainJs.includes("window.location.hash"), 'main.js reads window.location.hash')
+assert(mainJs.includes("router.push"), 'main.js calls router.push for hash redirect')
+
+// --- 404.html: redirect logic ---
+
+const fortyFour = readFileSync(join(root, '404.html'), 'utf-8')
+assert(fortyFour.includes('window.location.pathname'), '404.html reads window.location.pathname')
+assert(fortyFour.includes('window.location.replace'), '404.html uses window.location.replace for redirect')
+assert(fortyFour.includes('/#'), '404.html encodes path as hash fragment /#')
 
 // --- src/App.vue: template and component imports ---
 
@@ -494,6 +504,10 @@ try {
   assert(false, 'npm run build completes successfully')
   console.error('  Build output:', e.stdout?.toString() || e.stderr?.toString() || '')
 }
+
+// --- dist/404.html exists after build ---
+assert(existsSync(join(root, 'dist', '404.html')), 'dist/404.html exists after build')
+assert(existsSync(join(root, 'dist', 'index.html')), 'dist/index.html exists after build')
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Tetris gameLogic.js — functional tests

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting…</title>
+  <style>
+    body { margin:0; display:flex; justify-content:center; align-items:center;
+           height:100vh; background:#0f0f23; color:#e0e0e0; font-family:system-ui; }
+    h1 { font-size:1.25rem; }
+  </style>
+</head>
+<body>
+  <h1>Loading…</h1>
+  <script>
+    (() => {
+      const raw = window.location.pathname;
+      // On GitHub Pages subdirectory deployments (e.g. /gameShelf/game/snake),
+      // strip the repo prefix to get the SPA route (/game/snake).
+      // For local dev with base '/', the path is already clean — keep it as-is.
+      // We detect repo prefix by checking if the first path segment is NOT a known route.
+      const firstSeg = raw.split('/')[1]; // undefined for '/', 'about' for '/about', etc.
+      if (firstSeg && !['game', 'about', 'highscores'].includes(firstSeg)) {
+        const rest = raw.slice(firstSeg.length + 1); // strip "/repoPrefix"
+        window.location.replace('/#' + rest);
+      } else {
+        window.location.replace('/#' + raw);
+      }
+    })();
+  </script>
+</body>
+</html>
