@@ -84,8 +84,10 @@ describe('tetris', () => {
     })
 
     it('Scoring includes 100/300/500/800 point values', () => {
-      expect(tetrisSrc).toContain('100') && expect(tetrisSrc).toContain('300') &&
-        expect(tetrisSrc).toContain('500') && expect(tetrisSrc).toContain('800')
+      expect(tetrisSrc).toContain('100')
+      expect(tetrisSrc).toContain('300')
+      expect(tetrisSrc).toContain('500')
+      expect(tetrisSrc).toContain('800')
     })
 
     it('handleKeydown handles arrow keys', () => {
