@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-const root = import.meta.dirname
+const root = import.meta.dirname + '/..'
 
 // Load source files for content assertions
 const gameStoreSrc = readFileSync(join(root, 'src', 'stores', 'gameStore.js'), 'utf-8')
