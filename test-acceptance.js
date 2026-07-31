@@ -226,7 +226,7 @@ assert(aboutView.includes('<p>'), 'AboutView.vue has paragraph about the project
 
 const gamePage = readFileSync(join(root, 'src', 'views', 'GamePage.vue'), 'utf-8')
 assert(gamePage.includes('route.params.id') || gamePage.includes('useRoute()'), 'GamePage.vue reads route params')
-assert(gamePage.includes('gameStore') || gamePage.includes('getGameById'), 'GamePage.vue looks up game in store')
+assert(gamePage.includes('gameStore') || gamePage.includes('getGameBySlug'), 'GamePage.vue looks up game in store')
 assert(gamePage.includes('Game canvas coming soon'), 'GamePage.vue has game canvas placeholder')
 
 // --- HighScoresView.vue: table rendering ---
