@@ -37,7 +37,8 @@ describe('HomeView', () => {
   })
 
   it('has GameCard import statement', () => {
-    expect(homeViewSrc).toContain('from') && expect(homeViewSrc).toContain('GameCard')
+    expect(homeViewSrc).toContain('from')
+    expect(homeViewSrc).toContain('GameCard')
   })
 
   it('passes :slug prop from catalog', () => {
@@ -159,6 +160,79 @@ describe('GamePage', () => {
 
   it('does NOT show old placeholder text', () => {
     expect(gamePageSrc).not.toContain('Game canvas coming soon')
+  })
+
+  // --- Canvas dimension reading from game module ---
+
+  it('uses ref for canvasWidth (reactive)', () => {
+    expect(gamePageSrc).toContain('canvasWidth = ref(')
+  })
+
+  it('uses ref for canvasHeight (reactive)', () => {
+    expect(gamePageSrc).toContain('canvasHeight = ref(')
+  })
+
+  it('reads CANVAS_WIDTH from gameLogic module in onMounted', () => {
+    expect(gamePageSrc).toContain('gameLogic.CANVAS_WIDTH')
+  })
+
+  it('reads CANVAS_HEIGHT from gameLogic module in onMounted', () => {
+    expect(gamePageSrc).toContain('gameLogic.CANVAS_HEIGHT')
+  })
+
+  it('binds canvasWidth ref to canvas :width attribute', () => {
+    expect(gamePageSrc).toContain(':width="canvasWidth"')
+  })
+
+  it('binds canvasHeight ref to canvas :height attribute', () => {
+    expect(gamePageSrc).toContain(':height="canvasHeight"')
+  })
+
+  // --- CSS: canvas-wrapper scaling ---
+
+  it('canvas-wrapper has width: 100%', () => {
+    expect(gamePageSrc).toContain('width: 100%')
+  })
+
+  it('canvas-wrapper has max-width: 700px', () => {
+    expect(gamePageSrc).toContain('max-width: 700px')
+  })
+
+  it('canvas-wrapper has margin: 0 auto', () => {
+    expect(gamePageSrc).toContain('margin: 0 auto')
+  })
+
+  it('canvas-wrapper has border', () => {
+    expect(gamePageSrc).toContain('border:')
+  })
+
+  it('canvas-wrapper has border-radius', () => {
+    expect(gamePageSrc).toContain('border-radius:')
+  })
+
+  it('canvas-wrapper has overflow: hidden', () => {
+    expect(gamePageSrc).toContain('overflow: hidden')
+  })
+
+  // --- CSS: canvas scaling ---
+
+  it('canvas wrapper has CSS width: 100% for scaling', () => {
+    expect(gamePageSrc).toContain('.canvas-wrapper canvas')
+    expect(gamePageSrc).toContain('width: 100%')
+  })
+
+  it('canvas wrapper has CSS height: auto', () => {
+    expect(gamePageSrc).toContain('height: auto')
+  })
+
+  it('canvas wrapper has CSS display: block', () => {
+    expect(gamePageSrc).toContain('display: block')
+  })
+
+  // --- CSS: game-page max-width ---
+
+  it('game-page has max-width: 720px', () => {
+    expect(gamePageSrc).toContain('max-width: 720px')
   })
 })
 

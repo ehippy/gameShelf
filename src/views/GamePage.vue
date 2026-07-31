@@ -46,8 +46,8 @@ const game = computed(() => gameStore.getGameBySlug(route.params.id))
 const gameCanvas = ref(null)
 let state = null
 
-const canvasWidth = 250
-const canvasHeight = 200
+const canvasWidth = ref(250)
+const canvasHeight = ref(200)
 
 let gameLogic = null
 let animFrameId = null
@@ -57,6 +57,8 @@ onMounted(async () => {
   const slug = route.params.id
   // Dynamically import the game module
   gameLogic = await import(`../games/${slug}/gameLogic.js`)
+  canvasWidth.value = gameLogic.CANVAS_WIDTH ?? 250
+  canvasHeight.value = gameLogic.CANVAS_HEIGHT ?? 200
 
   const canvas = gameCanvas.value
   if (!canvas) return
@@ -117,7 +119,7 @@ function playAgain() {
 
 <style scoped>
 .game-page {
-  max-width: 600px;
+  max-width: 720px;
   margin: 0 auto;
   padding: var(--spacing-lg);
 }
@@ -160,6 +162,9 @@ function playAgain() {
 
 .canvas-wrapper {
   position: relative;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
   border: 2px solid var(--color-bg-tertiary);
   border-radius: 8px;
   overflow: hidden;
@@ -168,6 +173,12 @@ function playAgain() {
 
 .canvas-wrapper:focus {
   border-color: var(--color-accent);
+}
+
+.canvas-wrapper canvas {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
 .game-over-overlay {

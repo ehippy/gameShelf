@@ -9,8 +9,8 @@
 
 const COLS = 7
 const ROWS = 7
-const CANVAS_WIDTH = 250
-const CANVAS_HEIGHT = 500
+export const CANVAS_WIDTH = 250
+export const CANVAS_HEIGHT = 500
 const CELL_SIZE = CANVAS_WIDTH / COLS // ~36px
 
 const GRAVITY = 0.12 // cells per frame

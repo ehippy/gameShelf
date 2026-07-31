@@ -30,13 +30,13 @@ describe('snake', () => {
     })
 
     it('exports state or const state', () => {
-      // Stub game may not have state export - accept if present
-      expect(true).toBe(true)
+      // Stub game - verify module loads without error
+      expect(snakeSrc).not.toBeUndefined()
     })
 
     it('has handleKeydown reference', () => {
-      // Stub game may not have handleKeydown - accept if present
-      expect(true).toBe(true)
+      // Stub game - verify module loads without error
+      expect(snakeSrc).not.toBeUndefined()
     })
   })
 
@@ -74,10 +74,21 @@ describe('snake', () => {
     })
 
     it('exports state', () => {
-      // Stub game may not have state - this is expected
+      // Stub game may not have state - but verify module loads
       if (!snakeModule) return
-      // Just check that the module loads without error
-      expect(true).toBe(true)
+      // Verify the module itself is valid (not the tautology expect(true).toBe(true))
+      expect(typeof snakeModule.CANVAS_WIDTH).toBe('number')
+      expect(typeof snakeModule.CANVAS_HEIGHT).toBe('number')
+    })
+
+    it('exports CANVAS_WIDTH = 250', () => {
+      if (!snakeModule) return
+      expect(snakeModule.CANVAS_WIDTH).toBe(250)
+    })
+
+    it('exports CANVAS_HEIGHT = 250', () => {
+      if (!snakeModule) return
+      expect(snakeModule.CANVAS_HEIGHT).toBe(250)
     })
 
     it('init() runs without error', () => {

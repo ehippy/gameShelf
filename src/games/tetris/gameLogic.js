@@ -9,6 +9,8 @@
 
 const COLS = 10
 const ROWS = 20
+export const CANVAS_WIDTH = 300
+export const CANVAS_HEIGHT = 400
 
 const TETROMINOES = {
   I: {

@@ -224,7 +224,9 @@ describe('no old fields', () => {
   })
 
   it('tetris entry is correct', () => {
-    expect(catalog).toContain("slug: 'tetris'") && expect(catalog).toContain("title: 'Tetris'") && expect(catalog).toContain("category: 'Puzzle'")
+    expect(catalog).toContain("slug: 'tetris'")
+    expect(catalog).toContain("title: 'Tetris'")
+    expect(catalog).toContain("category: 'Puzzle'")
   })
 
   it('flappy-bird has description', () => {

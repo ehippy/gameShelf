@@ -30,7 +30,7 @@ describe('tetris', () => {
     })
 
     it('exports handleKeydown', () => {
-      expect(tetrisSrc).toContain('export function handleKeydown') || expect(tetrisSrc).toContain('export { handleKeydown }')
+      expect(tetrisSrc).toContain('export function handleKeydown')
     })
 
     it('exports state', () => {
@@ -38,9 +38,13 @@ describe('tetris', () => {
     })
 
     it('defines all 7 tetromino types (I, O, T, S, Z, J, L)', () => {
-      expect(tetrisSrc).toContain('I:') && expect(tetrisSrc).toContain('O:') && expect(tetrisSrc).toContain('T:') &&
-        expect(tetrisSrc).toContain('S:') && expect(tetrisSrc).toContain('Z:') && expect(tetrisSrc).toContain('J:') &&
-        expect(tetrisSrc).toContain('L:')
+      expect(tetrisSrc).toContain('I:')
+      expect(tetrisSrc).toContain('O:')
+      expect(tetrisSrc).toContain('T:')
+      expect(tetrisSrc).toContain('S:')
+      expect(tetrisSrc).toContain('Z:')
+      expect(tetrisSrc).toContain('J:')
+      expect(tetrisSrc).toContain('L:')
     })
 
     it('I tetromino is cyan (#00f0f0)', () => {
@@ -72,21 +76,27 @@ describe('tetris', () => {
     })
 
     it('Grid has 10 columns', () => {
-      expect(tetrisSrc).toContain('COLS') && expect(tetrisSrc).toContain('10')
+      expect(tetrisSrc).toContain('COLS')
+      expect(tetrisSrc).toContain('10')
     })
 
     it('Grid has 20 rows', () => {
-      expect(tetrisSrc).toContain('ROWS') && expect(tetrisSrc).toContain('20')
+      expect(tetrisSrc).toContain('ROWS')
+      expect(tetrisSrc).toContain('20')
     })
 
     it('Scoring includes 100/300/500/800 point values', () => {
-      expect(tetrisSrc).toContain('100') && expect(tetrisSrc).toContain('300') &&
-        expect(tetrisSrc).toContain('500') && expect(tetrisSrc).toContain('800')
+      expect(tetrisSrc).toContain('100')
+      expect(tetrisSrc).toContain('300')
+      expect(tetrisSrc).toContain('500')
+      expect(tetrisSrc).toContain('800')
     })
 
     it('handleKeydown handles arrow keys', () => {
-      expect(tetrisSrc).toContain('ArrowLeft') && expect(tetrisSrc).toContain('ArrowRight') &&
-        expect(tetrisSrc).toContain('ArrowDown') && expect(tetrisSrc).toContain('ArrowUp')
+      expect(tetrisSrc).toContain('ArrowLeft')
+      expect(tetrisSrc).toContain('ArrowRight')
+      expect(tetrisSrc).toContain('ArrowDown')
+      expect(tetrisSrc).toContain('ArrowUp')
     })
 
     it('handleKeydown handles space bar', () => {
@@ -166,6 +176,16 @@ describe('tetris', () => {
     it('exports state', () => {
       if (!tetrisModule) return
       expect(tetrisModule.state).toBeDefined()
+    })
+
+    it('exports CANVAS_WIDTH = 300', () => {
+      if (!tetrisModule) return
+      expect(tetrisModule.CANVAS_WIDTH).toBe(300)
+    })
+
+    it('exports CANVAS_HEIGHT = 400', () => {
+      if (!tetrisModule) return
+      expect(tetrisModule.CANVAS_HEIGHT).toBe(400)
     })
 
     it('init() returns state object', () => {
