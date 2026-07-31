@@ -99,7 +99,8 @@ describe('flappy-bird', () => {
 
     // Bird column
     it('bird column is 3', () => {
-      expect(flappySrc).toContain('BIRD_COL') && expect(flappySrc).toContain('3')
+      expect(flappySrc).toContain('BIRD_COL')
+      expect(flappySrc).toContain('3')
     })
 
     // Sky-blue background
