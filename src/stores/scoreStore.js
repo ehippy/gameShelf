@@ -42,6 +42,7 @@ export const useScoreStore = defineStore('score', {
       this.scores[gameSlug] = current
     },
     getScores(gameSlug) {
+      if (!isValidSlug(gameSlug)) return []
       const key = `gamescore_${gameSlug}`
       const raw = localStorage.getItem(key)
       try {
