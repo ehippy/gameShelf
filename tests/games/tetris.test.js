@@ -38,9 +38,13 @@ describe('tetris', () => {
     })
 
     it('defines all 7 tetromino types (I, O, T, S, Z, J, L)', () => {
-      expect(tetrisSrc).toContain('I:') && expect(tetrisSrc).toContain('O:') && expect(tetrisSrc).toContain('T:') &&
-        expect(tetrisSrc).toContain('S:') && expect(tetrisSrc).toContain('Z:') && expect(tetrisSrc).toContain('J:') &&
-        expect(tetrisSrc).toContain('L:')
+      expect(tetrisSrc).toContain('I:')
+      expect(tetrisSrc).toContain('O:')
+      expect(tetrisSrc).toContain('T:')
+      expect(tetrisSrc).toContain('S:')
+      expect(tetrisSrc).toContain('Z:')
+      expect(tetrisSrc).toContain('J:')
+      expect(tetrisSrc).toContain('L:')
     })
 
     it('I tetromino is cyan (#00f0f0)', () => {
