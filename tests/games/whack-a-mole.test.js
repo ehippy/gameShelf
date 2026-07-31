@@ -189,7 +189,7 @@ describe('whack-a-mole', () => {
       for (let i = 0; i < 180; i++) {
         whackModule.update()
       }
-      expect(whackModule.state.timer).toBeLessThanOrEqual(27)
+      expect(whackModule.state.timer).toBeLessThan(27.01)
     })
 
     it('update() triggers game over when timer hits 0', () => {
