@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-const root = import.meta.dirname
+const root = import.meta.dirname + '/..'
 
 const catalog = readFileSync(join(root, 'src', 'data', 'gamesCatalog.js'), 'utf-8')
 
