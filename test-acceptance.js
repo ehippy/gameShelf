@@ -222,8 +222,9 @@ assert(gameStore.includes('setActiveGame'), 'gameStore has setActiveGame action'
 
 const gameCardPath = join(root, 'src', 'components', 'GameCard.vue')
 assert(existsSync(gameCardPath), 'src/components/GameCard.vue exists')
+let gameCardContent = ''
 if (existsSync(gameCardPath)) {
-  const gameCardContent = readFileSync(gameCardPath, 'utf-8')
+  gameCardContent = readFileSync(gameCardPath, 'utf-8')
   assert(gameCardContent.includes('title'), 'GameCard.vue has title prop')
   assert(gameCardContent.includes('description'), 'GameCard.vue has description prop')
   assert(gameCardContent.includes('thumbnail'), 'GameCard.vue has thumbnail prop')
