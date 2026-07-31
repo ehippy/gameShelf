@@ -196,7 +196,7 @@ describe('whack-a-mole', () => {
       if (!whackModule) return
       whackModule.init('Easy')
       whackModule.handleKeydown(' ')
-      whackModule.state.timer = 2
+      whackModule.state.timer = 2.01
       // 121 frames at ~60fps ≈ 2+ seconds ensures timer crosses 0
       for (let i = 0; i < 121; i++) {
         whackModule.update()
