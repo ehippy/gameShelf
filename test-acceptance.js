@@ -3,7 +3,8 @@
 
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
-import { readFileSync, existsSync, readdirSync, execFileSync } from 'node:fs'
+import { readFileSync, existsSync, readdirSync } from 'node:fs'
+import { execFileSync } from 'node:child_process'
 
 const __filename = fileURLToPath(import.meta.url)
 const root = dirname(__filename)
