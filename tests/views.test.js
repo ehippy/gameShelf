@@ -37,7 +37,8 @@ describe('HomeView', () => {
   })
 
   it('has GameCard import statement', () => {
-    expect(homeViewSrc).toContain('from') && expect(homeViewSrc).toContain('GameCard')
+    expect(homeViewSrc).toContain('from')
+    expect(homeViewSrc).toContain('GameCard')
   })
 
   it('passes :slug prop from catalog', () => {
