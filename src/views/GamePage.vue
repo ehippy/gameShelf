@@ -101,8 +101,8 @@ onMounted(async () => {
   animFrameId = requestAnimationFrame(gameLoop)
 
   // Resize handler
-  const canvasWrapper = canvasWrapperRef.value
-  if (canvasWrapper) {
+  const wrapperEl = canvasWrapper.value
+  if (wrapperEl) {
     resizeObserver = new ResizeObserver(() => {
       const availableHeight = window.innerHeight - 160
       const availableWidth = Math.min(window.innerWidth, 95 * window.innerWidth / 100)
@@ -114,7 +114,7 @@ onMounted(async () => {
       canvas.style.width = `${displayWidth}px`
       canvas.style.height = `${displayHeight}px`
     })
-    resizeObserver.observe(canvasWrapper)
+    resizeObserver.observe(wrapperEl)
   }
 
   // Cleanup on unmount
