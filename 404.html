@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting…</title>
+  <style>
+    body { margin:0; display:flex; justify-content:center; align-items:center;
+           height:100vh; background:#0f0f23; color:#e0e0e0; font-family:system-ui; }
+    h1 { font-size:1.25rem; }
+  </style>
+</head>
+<body>
+  <h1>Loading…</h1>
+  <script>
+    (() => {
+      const raw = window.location.pathname;
+      // Strip /repoName/ prefix if present (GitHub Pages subdirectory deployment)
+      // Falls through to keep full path if base is truly root
+      const baseMatch = raw.match(/^\/([^\/]+)\//);
+      const stripped = baseMatch ? '/' + raw.slice(baseMatch[1].length + 1) : raw;
+      window.location.replace('/#' + stripped);
+    })();
+  </script>
+</body>
+</html>
