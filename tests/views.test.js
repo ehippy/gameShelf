@@ -246,6 +246,62 @@ describe('HighScoresView', () => {
   it('renders a table', () => {
     expect(highScoresViewSrc).toContain('<table')
   })
+
+  it('does not use old highScores state', () => {
+    expect(highScoresViewSrc).not.toContain('scoreStore.highScores')
+  })
+
+  it('does not use old getGameById method', () => {
+    expect(highScoresViewSrc).not.toContain('getGameById')
+  })
+
+  it('uses scoreStore.scores for iteration', () => {
+    expect(highScoresViewSrc).toContain('scoreStore.scores')
+  })
+
+  it('uses getGameBySlug to look up games', () => {
+    expect(highScoresViewSrc).toContain('getGameBySlug')
+  })
+
+  it('uses game.title for displayed game name', () => {
+    expect(highScoresViewSrc).toMatch(/game\.title|p\.title|y\.title/)
+  })
+
+  it('falls back to slug when game not found', () => {
+    expect(highScoresViewSrc).toMatch(/gameSlug|:gameSlug|o$/)
+  })
+
+  it('maps timestamp to date display', () => {
+    expect(highScoresViewSrc).toContain('timestamp')
+    expect(highScoresViewSrc).toContain('toLocaleDateString')
+  })
+
+  it('handles missing player name with a placeholder', () => {
+    expect(highScoresViewSrc).toContain("'Player'")
+  })
+
+  it('sorts results by score descending', () => {
+    expect(highScoresViewSrc).toMatch(/sort\(\(a,\s*b\)\s*=>\s*b\.score/)
+  })
+
+  it('renders Game, Name, Score, Date columns', () => {
+    expect(highScoresViewSrc).toContain('<th>Game</th>')
+    expect(highScoresViewSrc).toContain('<th>Name</th>')
+    expect(highScoresViewSrc).toContain('<th>Score</th>')
+    expect(highScoresViewSrc).toContain('<th>Date</th>')
+  })
+
+  it('shows No high scores yet when no scores', () => {
+    expect(highScoresViewSrc).toContain('No high scores yet.')
+  })
+
+  it('renders table with v-if="hasScores"', () => {
+    expect(highScoresViewSrc).toContain('v-if="hasScores"')
+  })
+
+  it('renders empty state with v-else', () => {
+    expect(highScoresViewSrc).toContain('v-else')
+  })
 })
 
 // --- NotFoundView ---
