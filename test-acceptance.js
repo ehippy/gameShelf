@@ -1219,14 +1219,14 @@ if (whackModule) {
     width: 250, height: 200,
     getBoundingClientRect: () => ({ left: 0, top: 0, width: 250, height: 200 }),
     getContext: () => ({
-      fillRect: () => {}, fillStyle: '', fillText: () => {}, arc: () => {},
-      ellipse: () => {}, beginPath: () => {}, stroke: () => {},
+      fillRect: () => {}, fillStyle: '', fillText: () => {}, fill: () => {},
+      arc: () => {}, ellipse: () => {}, beginPath: () => {}, stroke: () => {},
       lineWidth: 0, textAlign: '', font: '',
       roundRect: function() { this.beginPath(); }
     }),
     addEventListener: () => {}, removeEventListener: () => {}
   }
-  whackModule.init()
+  whackModule.init('Easy')
   mockCanvas.width = 999
   mockCanvas.height = 999
   whackModule.render(mockCanvas)
