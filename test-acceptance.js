@@ -201,6 +201,13 @@ assert(scoreStore.includes('clearScores'), 'scoreStore has clearScores action')
 
 // --- gamesCatalog: exact entry values ---
 
+// Check title field exists in catalog entries
+assert(catalog.includes("title: 'Snake'"), 'gamesCatalog.js entries have title field')
+assert(catalog.includes("title: 'Tetris'"), 'gamesCatalog.js entries have title field')
+assert(catalog.includes("title: 'Breakout'"), 'gamesCatalog.js entries have title field')
+assert(catalog.includes("title: 'Minesweeper'"), 'gamesCatalog.js entries have title field')
+assert(catalog.includes("title: 'Memory'"), 'gamesCatalog.js entries have title field')
+
 // snake: Arcade, isNew=false, dateAdded=2025-01-15
 assert(catalog.includes("category: 'Arcade'"), 'snake/tetris/breakout have Arcade category')
 assert(catalog.includes("category: 'Puzzle'"), 'tetris has Puzzle category')
