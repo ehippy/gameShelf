@@ -305,7 +305,9 @@ export function init(difficulty) {
   function onGamepadConnected(e) {
     state.gamepadConnected = true
   }
-  window.addEventListener('gamepadconnected', onGamepadConnected)
+  if (typeof window !== 'undefined') {
+    window.addEventListener('gamepadconnected', onGamepadConnected)
+  }
   state._gamepadConnectedListener = onGamepadConnected
 
   // Check if gamepad is already connected
