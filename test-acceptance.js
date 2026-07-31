@@ -836,9 +836,6 @@ if (flappyModule) {
 
   // Test scoring: simulate bird passing through pipe gap
   flappyModule.init()
-  // Set up a pipe at bird's position with gap covering bird
-  flappyModule.state.pipes = [createPipePair ? { x: 2, gapStart: 1, scored: false } : null]
-  // Actually we need to use the module's internal function. Let's do it differently.
   // Manually set up state for scoring test
   flappyModule.state.bird.col = 3
   flappyModule.state.pipes = [
