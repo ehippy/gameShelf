@@ -63,18 +63,20 @@ onMounted(async () => {
 
   // Start the game
   gameLogic.init()
-  state.value = gameLogic.state
+  state = reactive(gameLogic.state)
 
   // Keyboard handler
   const onKeyDown = (e) => {
     const key = e.key
+    if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' '].includes(key)) {
+      e.preventDefault()
+    }
     gameLogic.handleKeydown(key)
-    state.value = gameLogic.state
 
     // If game over and score hasn't been submitted yet, submit it
-    if (state.value.isGameOver && lastSnapshotScore !== state.value.score) {
-      lastSnapshotScore = state.value.score
-      scoreStore.submitScore(slug, state.value.score)
+    if (state.isGameOver && lastSnapshotScore !== state.score) {
+      lastSnapshotScore = state.score
+      scoreStore.submitScore(slug, state.score)
     }
   }
   window.addEventListener('keydown', onKeyDown)
@@ -84,12 +86,11 @@ onMounted(async () => {
     if (gameLogic) {
       gameLogic.update()
       gameLogic.render(canvas)
-      state.value = gameLogic.state
 
       // Check for game over to submit score
-      if (state.value.isGameOver && lastSnapshotScore !== state.value.score) {
-        lastSnapshotScore = state.value.score
-        scoreStore.submitScore(slug, state.value.score)
+      if (state.isGameOver && lastSnapshotScore !== state.score) {
+        lastSnapshotScore = state.score
+        scoreStore.submitScore(slug, state.score)
       }
     }
     animFrameId = requestAnimationFrame(gameLoop)
@@ -108,7 +109,7 @@ onMounted(async () => {
 function playAgain() {
   if (gameLogic) {
     gameLogic.reset()
-    state.value = gameLogic.state
+    state = reactive(gameLogic.state)
     lastSnapshotScore = null
   }
 }
