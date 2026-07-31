@@ -59,9 +59,11 @@ assert(existsSync(join(root, 'src', 'games', 'breakout', 'gameLogic.js')), 'src/
 
 assert(existsSync(join(root, 'src', 'data', 'gamesCatalog.js')), 'src/data/gamesCatalog.js exists')
 const catalog = readFileSync(join(root, 'src', 'data', 'gamesCatalog.js'), 'utf-8')
-assert(catalog.includes("id: 'snake'"), 'gamesCatalog.js has snake entry')
-assert(catalog.includes("id: 'tetris'"), 'gamesCatalog.js has tetris entry')
-assert(catalog.includes("id: 'breakout'"), 'gamesCatalog.js has breakout entry')
+assert(catalog.includes("slug: 'snake'"), 'gamesCatalog.js has snake entry')
+assert(catalog.includes("slug: 'tetris'"), 'gamesCatalog.js has tetris entry')
+assert(catalog.includes("slug: 'breakout'"), 'gamesCatalog.js has breakout entry')
+assert(catalog.includes("slug: 'minesweeper'"), 'gamesCatalog.js has minesweeper entry')
+assert(catalog.includes("slug: 'memory'"), 'gamesCatalog.js has memory entry')
 
 // --- index.html is Vite entry point ---
 
