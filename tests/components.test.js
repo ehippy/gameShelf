@@ -253,4 +253,36 @@ describe('WhatsNew', () => {
   it('uses <style scoped>', () => {
     expect(whatsNewSrc).toContain('scoped')
   })
+
+  it('uses game.slug for :key binding', () => {
+    expect(whatsNewSrc).toMatch(/:key="game\.slug"/)
+  })
+
+  it('uses game.slug for :slug binding', () => {
+    expect(whatsNewSrc).toMatch(/:slug="game\.slug"/)
+  })
+
+  it('does not use old game.id field', () => {
+    expect(whatsNewSrc).not.toMatch(/game\.id/)
+  })
+
+  it('uses game.title for :title binding', () => {
+    expect(whatsNewSrc).toMatch(/:title="game\.title"/)
+  })
+
+  it('does not use old game.name field', () => {
+    expect(whatsNewSrc).not.toMatch(/game\.name/)
+  })
+
+  it('uses game.category for :category binding', () => {
+    expect(whatsNewSrc).toMatch(/:category="game\.category"/)
+  })
+
+  it('does not use old game.genre field', () => {
+    expect(whatsNewSrc).not.toMatch(/game\.genre/)
+  })
+
+  it('uses game.description for :description binding (unchanged)', () => {
+    expect(whatsNewSrc).toMatch(/:description="game\.description"/)
+  })
 })
