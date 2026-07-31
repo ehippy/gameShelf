@@ -76,11 +76,13 @@ describe('tetris', () => {
     })
 
     it('Grid has 10 columns', () => {
-      expect(tetrisSrc).toContain('COLS') && expect(tetrisSrc).toContain('10')
+      expect(tetrisSrc).toContain('COLS')
+      expect(tetrisSrc).toContain('10')
     })
 
     it('Grid has 20 rows', () => {
-      expect(tetrisSrc).toContain('ROWS') && expect(tetrisSrc).toContain('20')
+      expect(tetrisSrc).toContain('ROWS')
+      expect(tetrisSrc).toContain('20')
     })
 
     it('Scoring includes 100/300/500/800 point values', () => {
