@@ -273,3 +273,11 @@ assert(deployYml.includes('- main'), 'deploy.yml triggers on main branch')
 
 assert(existsSync(join(root, 'node_modules', '.package-lock.json')) || existsSync(join(root, 'node_modules', 'vue')), 'npm install has completed (node_modules exists)')
 
+
+// --- Summary ---
+
+console.log(`\n${passed} passed, ${failed} failed`)
+
+if (failed > 0) {
+  process.exit(1)
+}
