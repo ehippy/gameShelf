@@ -186,24 +186,24 @@ describe('MostPlayedCarousel', () => {
     expect(mostPlayedSrc).not.toContain('getGameById')
   })
 
-  it('uses ?\.title for title fallback (not ?\.name)', () => {
-    expect(mostPlayedSrc).toContain('?\.title')
+  it('uses ?.title for title binding', () => {
+    expect(mostPlayedSrc).toMatch(/getGameBySlug\(slug\)\?\.\s*title/)
   })
 
-  it('does not use old ?\.name field', () => {
-    expect(mostPlayedSrc).not.toContain('?\.name')
+  it('does not use old ?.name field', () => {
+    expect(mostPlayedSrc).not.toMatch(/getGameBySlug\(slug\)\?\.\s*name/)
   })
 
-  it('uses ?\.category for category fallback', () => {
-    expect(mostPlayedSrc).toContain('?\.category')
+  it('uses ?.category for category binding', () => {
+    expect(mostPlayedSrc).toMatch(/getGameBySlug\(slug\)\?\.\s*category/)
   })
 
   it('uses "Arcade" as category default', () => {
     expect(mostPlayedSrc).toContain("'Arcade'")
   })
 
-  it('does not use old ?\.genre field', () => {
-    expect(mostPlayedSrc).not.toContain('?\.genre')
+  it('does not use old ?.genre field', () => {
+    expect(mostPlayedSrc).not.toMatch(/getGameBySlug\(slug\)\?\.\s*genre/)
   })
 })
 
