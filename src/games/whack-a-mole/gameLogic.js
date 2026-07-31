@@ -928,7 +928,7 @@ export function reset() {
     window.removeEventListener('gamepadconnected', state._gamepadConnectedListener)
   }
 
-  state = createInitialState()
+  state = createInitialState(true)
   return state
 }
 
