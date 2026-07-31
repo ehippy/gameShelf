@@ -30,11 +30,11 @@ describe('snake', () => {
     })
 
     it('exports state', () => {
-      expect(snakeSrc).toContain('export { state }') || expect(snakeSrc).toContain('export const state')
+      expect(snakeSrc).toMatch(/export { state }|export const state/)
     })
 
     it('exports handleKeydown', () => {
-      expect(snakeSrc).toContain('handleKeydown') || expect(snakeSrc).toContain('export function handleKeydown')
+      expect(snakeSrc).toMatch(/handleKeydown|export function handleKeydown/)
     })
   })
 
