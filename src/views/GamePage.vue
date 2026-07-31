@@ -18,7 +18,7 @@
         </div>
       </div>
 
-      <div class="canvas-wrapper" ref="canvasWrapper" tabindex="0">
+      <div class="canvas-wrapper" ref="canvasWrapperRef" tabindex="0">
         <canvas ref="gameCanvas" :width="canvasWidth" :height="canvasHeight"></canvas>
 
         <div v-if="state && state.isGameOver" class="game-over-overlay">
