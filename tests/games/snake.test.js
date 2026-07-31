@@ -74,10 +74,11 @@ describe('snake', () => {
     })
 
     it('exports state', () => {
-      // Stub game may not have state - this is expected
+      // Stub game may not have state - but verify module loads
       if (!snakeModule) return
-      // Just check that the module loads without error
-      expect(true).toBe(true)
+      // Verify the module itself is valid (not the tautology expect(true).toBe(true))
+      expect(typeof snakeModule.CANVAS_WIDTH).toBe('number')
+      expect(typeof snakeModule.CANVAS_HEIGHT).toBe('number')
     })
 
     it('init() runs without error', () => {
