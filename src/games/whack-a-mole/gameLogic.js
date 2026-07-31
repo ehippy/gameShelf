@@ -287,88 +287,14 @@ function whackCell(col, row) {
 
 /**
  * Initialize the Whack-a-Mole game.
- * @param {string} [difficulty] - 'Easy', 'Medium', or 'Hard'. If provided, start immediately.
+ * @param {string} [difficulty] - 'Easy', 'Medium', or 'Hard'. Sets initial difficulty but does NOT auto-start.
  */
 export function init(difficulty) {
   state = createInitialState()
 
-  // Add click handler to canvas once
-  const addClickHandler = () => {
-    const canvas = state._canvas
-    if (!canvas || state._clickHandler) return
-    const handler = (e) => {
-      ensureAudioCtx()
-
-      if (state.isGameOver || !state.isPlaying) {
-        // In menu or game over, clicking canvas does nothing special
-        // (keyboard/gamepad handles start/restart)
-        return
-      }
-
-      const rect = canvas.getBoundingClientRect()
-      const scaleX = canvas.width / rect.width
-      const scaleY = canvas.height / rect.height
-      const px = (e.clientX - rect.left) * scaleX
-      const py = (e.clientY - rect.top) * scaleY
-
-      // Check if click is in grid area
-      const cellCol = Math.floor((px - GRID_X) / CELL_W)
-      const cellRow = Math.floor((py - GRID_Y) / CELL_H)
-      if (cellCol >= 0 && cellCol < COLS && cellRow >= 0 && cellRow < ROWS) {
-        whackCell(cellCol, cellRow)
-      }
-    }
-    canvas.addEventListener('click', handler)
-    canvas.addEventListener('touchstart', (e) => {
-      e.preventDefault()
-      // Convert touch to click-like behavior
-      const touch = e.touches[0]
-      handler({ clientX: touch.clientX, clientY: touch.clientY })
-    }, { passive: false })
-    state._clickHandler = handler
-  }
-
-  // Difficulty selection
-  const addMenuClickHandler = () => {
-    const canvas = state._canvas
-    if (!canvas || state._menuClickHandler) return
-    const handler = (e) => {
-      ensureAudioCtx()
-      const rect = canvas.getBoundingClientRect()
-      const scaleX = canvas.width / rect.width
-      const scaleY = canvas.height / rect.height
-      const px = (e.clientX - rect.left) * scaleX
-      const py = (e.clientY - rect.top) * scaleY
-
-      // Difficulty buttons on menu screen
-      // Each button is a rectangle at the top of the canvas
-      const btnW = CANVAS_W / 3 - 10
-      const btnH = 35
-      const btnY = 140
-      const diffNames = ['Easy', 'Medium', 'Hard']
-
-      for (let i = 0; i < 3; i++) {
-        const btnX = 10 + i * (btnW + 10)
-        if (isInRect(px, py, { x: btnX, y: btnY, w: btnW, h: btnH })) {
-          // Start game with this difficulty
-          startGame(diffNames[i])
-          return
-        }
-      }
-    }
-    canvas.addEventListener('click', handler)
-    canvas.addEventListener('touchstart', (e) => {
-      e.preventDefault()
-      const touch = e.touches[0]
-      handler({ clientX: touch.clientX, clientY: touch.clientY })
-    }, { passive: false })
-    state._menuClickHandler = handler
-  }
-
   // Set up difficulty
   if (difficulty && DIFFICULTIES[difficulty]) {
     state.difficulty = difficulty
-    startGame(difficulty)
   }
 
   // Gamepad detection
