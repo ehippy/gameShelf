@@ -926,7 +926,7 @@ export function reset() {
     state._canvas.removeEventListener('click', state._menuClickHandler)
     state._canvas.removeEventListener('touchstart', state._menuClickHandler)
   }
-  if (state._gamepadConnectedListener) {
+  if (typeof window !== 'undefined' && state._gamepadConnectedListener) {
     window.removeEventListener('gamepadconnected', state._gamepadConnectedListener)
   }
 
