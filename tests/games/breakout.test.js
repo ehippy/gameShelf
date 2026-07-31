@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { readFileSync, fileURLToPath } from 'node:fs'
 import { join, dirname } from 'node:path'
+import { join, dirname } from 'node:path'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = join(__dirname, '..', '..')
