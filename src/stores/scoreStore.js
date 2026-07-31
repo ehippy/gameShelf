@@ -31,6 +31,7 @@ export const useScoreStore = defineStore('score', {
   }),
   actions: {
     submitScore(gameSlug, score) {
+      if (!isValidSlug(gameSlug)) return
       const key = `gamescore_${gameSlug}`
       const current = JSON.parse(localStorage.getItem(key) || '[]')
       current.push({ gameSlug, score, timestamp: new Date().toISOString() })
