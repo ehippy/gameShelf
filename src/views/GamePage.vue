@@ -38,6 +38,7 @@ import { useGameStore } from '../stores/gameStore.js'
 import { useScoreStore } from '../stores/scoreStore.js'
 
 const route = useRoute()
+const router = useRouter()
 const gameStore = useGameStore()
 const scoreStore = useScoreStore()
 
