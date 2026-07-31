@@ -269,6 +269,10 @@ assert(deployYml.includes('id-token: write'), 'deploy.yml has id-token: write pe
 assert(deployYml.includes('on:') || deployYml.includes('on :'), 'deploy.yml has on trigger')
 assert(deployYml.includes('- main'), 'deploy.yml triggers on main branch')
 
+// --- npm install completes without errors ---
+
+assert(existsSync(join(root, 'node_modules', '.package-lock.json')) || existsSync(join(root, 'node_modules', 'vue')), 'npm install has completed (node_modules exists)')
+
 // --- Summary ---
 
 console.log(`\n${passed} passed, ${failed} failed`)
