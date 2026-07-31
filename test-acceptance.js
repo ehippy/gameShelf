@@ -199,14 +199,48 @@ assert(gameStore.includes('setActiveGame'), 'gameStore has setActiveGame action'
 
 assert(scoreStore.includes('clearScores'), 'scoreStore has clearScores action')
 
-// --- gamesCatalog: full entry fields ---
+// --- gamesCatalog: exact entry values ---
 
-assert(catalog.includes('title'), 'gamesCatalog.js entries have title field')
-assert(catalog.includes('description'), 'gamesCatalog.js entries have description field')
-assert(catalog.includes('category'), 'gamesCatalog.js entries have category field')
-assert(catalog.includes('isNew'), 'gamesCatalog.js entries have isNew field')
-assert(catalog.includes('dateAdded'), 'gamesCatalog.js entries have dateAdded field')
-assert(catalog.includes('thumbnail'), 'gamesCatalog.js entries have thumbnail field')
+// snake: Arcade, isNew=false, dateAdded=2025-01-15
+assert(catalog.includes("category: 'Arcade'"), 'snake/tetris/breakout have Arcade category')
+assert(catalog.includes("category: 'Puzzle'"), 'tetris has Puzzle category')
+assert(catalog.includes("category: 'Strategy'"), 'minesweeper has Strategy category')
+assert(catalog.includes("category: 'Casual'"), 'memory has Casual category')
+assert(catalog.includes("isNew: false"), 'gamesCatalog.js entries have isNew=false')
+assert(catalog.includes("isNew: true"), 'gamesCatalog.js entries have isNew=true')
+assert(catalog.includes("2025-01-15T00:00:00Z"), 'gamesCatalog.js entries have dateAdded')
+assert(catalog.includes("2025-02-01T00:00:00Z"), 'gamesCatalog.js entries have dateAdded')
+assert(catalog.includes("2025-06-15T00:00:00Z"), 'minesweeper has dateAdded')
+assert(catalog.includes("2025-06-20T00:00:00Z"), 'memory has dateAdded')
+assert(catalog.includes('data:image/svg+xml'), 'gamesCatalog.js entries have SVG thumbnail data URIs')
+assert(catalog.includes('class:'), 'gamesCatalog.js does not use id field', false)
+
+// --- No old field/method names ---
+assert(!catalog.includes("id: 'snake'"), 'gamesCatalog.js does not use old id field for snake')
+assert(!catalog.includes("id: 'tetris'"), 'gamesCatalog.js does not use old id field for tetris')
+assert(!catalog.includes("id: 'breakout'"), 'gamesCatalog.js does not use old id field for breakout')
+assert(!catalog.includes('genre'), 'gamesCatalog.js does not use old genre field')
+
+// --- gameStore: no old methods ---
+assert(gameStore.includes("g.slug === slug"), 'gameStore uses slug field for getGameBySlug')
+assert(!gameStore.includes('getGameById'), 'gameStore does not have old getGameById method')
+
+// --- scoreStore: no old methods ---
+assert(scoreStore.includes("gamescore_"), 'scoreStore uses gamescore_ localStorage key format')
+assert(scoreStore.includes('submitScore'), 'scoreStore has submitScore action')
+assert(scoreStore.includes('getScores'), 'scoreStore has getScores action')
+assert(scoreStore.includes('getAllScores'), 'scoreStore has getAllScores action')
+assert(scoreStore.includes('clearScores'), 'scoreStore has clearScores action')
+assert(!scoreStore.includes('addScore'), 'scoreStore does not have old addScore method')
+assert(!scoreStore.includes('getHighScores'), 'scoreStore does not have old getHighScores method')
+assert(!scoreStore.includes('highScores'), 'scoreStore does not use old highScores state')
+
+// --- userStore: no old methods ---
+assert(userStore.includes('markPlayed'), 'userStore has markPlayed action')
+assert(userStore.includes('getRecentlyPlayed'), 'userStore has getRecentlyPlayed action')
+assert(userStore.includes("user_recentlyPlayed"), 'userStore persists to user_recentlyPlayed localStorage key')
+assert(!userStore.includes('setUserName'), 'userStore does not have old setUserName method')
+assert(!userStore.includes('setLastPlayedGame'), 'userStore does not have old setLastPlayedGame method')
 
 // --- HomeView.vue: template content ---
 
