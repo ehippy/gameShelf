@@ -229,6 +229,14 @@ describe('RandomGameBtn', () => {
   it('uses <style scoped>', () => {
     expect(randomGameBtnSrc).toContain('scoped')
   })
+
+  it('uses randomGame.slug in router.push path', () => {
+    expect(randomGameBtnSrc).toMatch(/router\.push\('\/game\/' \+ randomGame\.slug\)/)
+  })
+
+  it('does not use old randomGame.id field', () => {
+    expect(randomGameBtnSrc).not.toMatch(/randomGame\.id/)
+  })
 })
 
 // --- WhatsNew ---
