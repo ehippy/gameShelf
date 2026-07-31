@@ -1,3 +1,4 @@
+import { computed } from 'vue'
 import { defineStore } from 'pinia'
 import gamesCatalog from '../data/gamesCatalog.js'
 
@@ -10,11 +11,11 @@ export const useGameStore = defineStore('game', {
     gamesByCategory(category) {
       const lower = category.toLowerCase()
       return this.catalog.filter(g => g.category.toLowerCase() === lower)
-    },
-    newestGames() {
-      return [...this.catalog]
-        .sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded))
-        .slice(0, 4)
+    }
+  },
+  getters: {
+    newestGames: (state) => {
+      return state.catalog.slice(-3).reverse()
     }
   },
   actions: {

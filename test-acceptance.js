@@ -175,12 +175,27 @@ assert(appVue.includes('./components/AppFooter.vue'), 'App.vue imports AppFooter
 // --- src/assets/styles.css: global resets and theme ---
 
 const styles = readFileSync(join(root, 'src', 'assets', 'styles.css'), 'utf-8')
+assert(styles.includes(':root {'), 'styles.css defines :root block for tokens')
+assert(styles.includes('--color-bg-primary: #0f0f23'), 'styles.css defines --color-bg-primary')
+assert(styles.includes('--color-bg-secondary: #1a1a2e'), 'styles.css defines --color-bg-secondary')
+assert(styles.includes('--color-bg-tertiary: #2a2a4a'), 'styles.css defines --color-bg-tertiary')
+assert(styles.includes('--color-accent: #7f5af0'), 'styles.css defines --color-accent')
+assert(styles.includes('--color-accent-hover: #6c47d9'), 'styles.css defines --color-accent-hover')
+assert(styles.includes('--color-text-primary: #e0e0e0'), 'styles.css defines --color-text-primary')
+assert(styles.includes('--color-text-secondary: #a0a0c0'), 'styles.css defines --color-text-secondary')
+assert(styles.includes('--color-text-muted: #666680'), 'styles.css defines --color-text-muted')
+assert(styles.includes('--color-success: #2cb67d'), 'styles.css defines --color-success')
+assert(styles.includes('--spacing-sm: 0.5rem'), 'styles.css defines --spacing-sm')
+assert(styles.includes('--spacing-md: 1rem'), 'styles.css defines --spacing-md')
+assert(styles.includes('--spacing-lg: 1.5rem'), 'styles.css defines --spacing-lg')
+assert(styles.includes('--spacing-xl: 2rem'), 'styles.css defines --spacing-xl')
+assert(styles.match(/var\(--/g) !== null && styles.match(/var\(--/g).length >= 3, 'styles.css uses var(-- tokens at least 3 times')
 assert(styles.includes('margin: 0'), 'styles.css resets margin')
 assert(styles.includes('padding: 0'), 'styles.css resets padding')
 assert(styles.includes('box-sizing: border-box'), 'styles.css sets box-sizing border-box')
 assert(styles.includes('scroll-behavior: smooth'), 'styles.css sets scroll-behavior smooth')
-assert(styles.includes("background-color: #0f0f23") || styles.includes("background: #0f0f23"), 'styles.css has dark background #0f0f23')
-assert(styles.includes('color: #e0e0e0') || styles.includes("color: '#e0e0e0'"), 'styles.css has light text')
+assert(styles.includes("background-color: var(--color-bg-primary)") || styles.includes("background-color: #0f0f23"), 'styles.css has dark background')
+assert(styles.includes('color: var(--color-text-primary)') || styles.includes('color: #e0e0e0'), 'styles.css has light text')
 assert(styles.includes('#7f5af0'), 'styles.css has accent color #7f5af0')
 assert(styles.includes('position: sticky') || styles.includes('sticky'), 'styles.css has sticky header')
 assert(styles.includes('flex-direction: column'), 'styles.css has flex column body')
@@ -190,10 +205,69 @@ assert(styles.includes('@media'), 'styles.css has responsive @media queries')
 
 assert(router.includes('createWebHistory'), 'router uses createWebHistory')
 
-// --- gameStore: additional state/actions ---
+// --- gameStore: newestGames computed getter ---
 
+assert(gameStore.includes('useGameStore'), 'gameStore exports useGameStore')
+assert(gameStore.includes('catalog'), 'gameStore has catalog state')
+assert(gameStore.includes('addGame'), 'gameStore has addGame action')
+assert(gameStore.includes('removeGame'), 'gameStore has removeGame action')
+assert(gameStore.includes('getGameById'), 'gameStore has getGameById action')
+assert(gameStore.includes('newestGames'), 'gameStore has newestGames getter')
 assert(gameStore.includes('activeGame'), 'gameStore has activeGame state')
 assert(gameStore.includes('setActiveGame'), 'gameStore has setActiveGame action')
+
+// --- src/components/GameCard.vue ---
+
+const gameCardPath = join(root, 'src', 'components', 'GameCard.vue')
+assert(existsSync(gameCardPath), 'src/components/GameCard.vue exists')
+if (existsSync(gameCardPath)) {
+  const gameCardContent = readFileSync(gameCardPath, 'utf-8')
+  assert(gameCardContent.includes('title'), 'GameCard.vue has title prop')
+  assert(gameCardContent.includes('description'), 'GameCard.vue has description prop')
+  assert(gameCardContent.includes('thumbnail'), 'GameCard.vue has thumbnail prop')
+  assert(gameCardContent.includes('category'), 'GameCard.vue has category prop')
+  assert(gameCardContent.includes('slug'), 'GameCard.vue has slug prop')
+  assert(gameCardContent.includes('router-link') || gameCardContent.includes('router.push'), 'GameCard.vue renders a Play button using router-link or router.push')
+  assert(gameCardContent.includes('overflow: hidden') && gameCardContent.includes('text-overflow: ellipsis'), 'GameCard.vue truncates description with overflow:hidden and text-overflow:ellipsis')
+  assert(gameCardContent.includes('scoped'), 'GameCard.vue uses <style scoped>')
+}
+
+// --- src/components/MostPlayedCarousel.vue ---
+
+const carouselPath = join(root, 'src', 'components', 'MostPlayedCarousel.vue')
+assert(existsSync(carouselPath), 'src/components/MostPlayedCarousel.vue exists')
+if (existsSync(carouselPath)) {
+  const carouselContent = readFileSync(carouselPath, 'utf-8')
+  assert(carouselContent.includes('useGameStore'), 'MostPlayedCarousel.vue imports and uses useGameStore')
+  assert(carouselContent.includes('gameStore'), 'MostPlayedCarousel.vue uses gameStore')
+  assert(carouselContent.includes('GameCard'), 'MostPlayedCarousel.vue renders GameCard components')
+  assert(carouselContent.includes('games'), 'MostPlayedCarousel.vue has games prop')
+  assert(carouselContent.includes('scoped'), 'MostPlayedCarousel.vue uses <style scoped>')
+}
+
+// --- src/components/RandomGameBtn.vue ---
+
+const randomBtnPath = join(root, 'src', 'components', 'RandomGameBtn.vue')
+assert(existsSync(randomBtnPath), 'src/components/RandomGameBtn.vue exists')
+if (existsSync(randomBtnPath)) {
+  const randomBtnContent = readFileSync(randomBtnPath, 'utf-8')
+  assert(randomBtnContent.includes('useGameStore'), 'RandomGameBtn.vue imports useGameStore')
+  assert(randomBtnContent.includes('gameStore'), 'RandomGameBtn.vue uses gameStore')
+  assert(randomBtnContent.includes('router.push'), 'RandomGameBtn.vue navigates with router.push')
+  assert(randomBtnContent.includes('Math.random'), 'RandomGameBtn.vue picks a random game')
+  assert(randomBtnContent.includes('scoped'), 'RandomGameBtn.vue uses <style scoped>')
+}
+
+// --- src/components/WhatsNew.vue ---
+
+const whatsNewPath = join(root, 'src', 'components', 'WhatsNew.vue')
+assert(existsSync(whatsNewPath), 'src/components/WhatsNew.vue exists')
+if (existsSync(whatsNewPath)) {
+  const whatsNewContent = readFileSync(whatsNewPath, 'utf-8')
+  assert(whatsNewContent.includes('newestGames'), 'WhatsNew.vue uses gameStore.newestGames')
+  assert(whatsNewContent.includes('GameCard'), 'WhatsNew.vue renders GameCard components')
+  assert(whatsNewContent.includes('scoped'), 'WhatsNew.vue uses <style scoped>')
+}
 
 // --- scoreStore: additional action ---
 
@@ -340,8 +414,8 @@ assert(appHeader.includes('Action'), 'AppHeader.vue category filter has Action o
 // --- AppHeader: position: sticky in scoped styles ---
 assert(appHeader.includes('position: sticky'), 'AppHeader.vue styles include position: sticky')
 
-// --- AppHeader: brand uses accent color #7f5af0 ---
-assert(appHeader.includes('#7f5af0'), 'AppHeader.vue brand references accent color #7f5af0')
+// --- AppHeader: brand uses accent color ---
+assert(appHeader.includes('#7f5af0') || appHeader.includes('var(--color-accent)'), 'AppHeader.vue brand references accent color')
 
 // --- AppFooter: exact copyright text ---
 assert(appFooter.includes('2025') && appFooter.includes('gameShelf') && appFooter.includes('All games built in browser') && appFooter.includes('no downloads required'), 'AppFooter.vue has exact copyright text')
