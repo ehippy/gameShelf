@@ -33,21 +33,21 @@ const gameStore = useGameStore()
 
 const allScores = computed(() => {
   const entries = []
-  for (const [gameId, scores] of Object.entries(scoreStore.highScores)) {
-    if (scores.length === 0) continue
-    const game = gameStore.getGameById(gameId)
-    const gameName = game ? game.name : gameId
+  for (const [gameSlug, scores] of Object.entries(scoreStore.scores)) {
+    if (!scores || scores.length === 0) continue
+    const game = gameStore.getGameBySlug(gameSlug)
+    const gameName = game ? game.title : gameSlug
     for (const s of scores) {
       entries.push({
-        key: `${gameId}-${s.date}`,
+        key: `${gameSlug}-${s.timestamp}`,
         gameName,
-        name: s.name,
+        name: s.name || 'Player',
         score: s.score,
-        date: new Date(s.date).toLocaleDateString()
+        date: new Date(s.timestamp).toLocaleDateString()
       })
     }
   }
-  return entries
+  return entries.sort((a, b) => b.score - a.score)
 })
 
 const hasScores = computed(() => allScores.value.length > 0)
