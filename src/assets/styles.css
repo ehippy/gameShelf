@@ -30,6 +30,20 @@ body {
   top: 0;
   z-index: 100;
   border-bottom: 1px solid #2a2a4a;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.search-input,
+.category-filter {
+  background-color: #1a1a2e;
+  border: 1px solid #2a2a4a;
+  color: #e0e0e0;
+  padding: 0.5rem;
+  border-radius: 4px;
 }
 
 .brand {
