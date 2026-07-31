@@ -29,6 +29,7 @@ assert(existsSync(join(root, 'src', 'App.vue')), 'src/App.vue exists')
 assert(existsSync(join(root, 'vite.config.js')), 'vite.config.js exists')
 assert(existsSync(join(root, 'src', 'router', 'index.js')), 'src/router/index.js exists')
 assert(existsSync(join(root, 'src', 'assets', 'styles.css')), 'src/assets/styles.css exists')
+assert(existsSync(join(root, '404.html')), '404.html exists at project root')
 
 // --- Stores ---
 
