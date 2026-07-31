@@ -140,8 +140,6 @@ function playAgain() {
 
 <style scoped>
 .game-page {
-  max-width: 720px;
-  margin: 0 auto;
   padding: var(--spacing-lg);
 }
 
