@@ -631,7 +631,7 @@ if (tetrisModule) {
 
   // ── Behavioral: line clearing + scoring ──
   // Fill rows 17, 18, 19 completely. Place piece at row 15.
-  // When update() locks piece at row 15, clearLines() finds rows 17-19 full.
+  // Force the drop timer so update() actually moves the piece and triggers locking.
   tetrisModule.init()
   for (let r of [17, 18, 19]) {
     for (let c = 0; c < 10; c++) {
@@ -640,10 +640,11 @@ if (tetrisModule) {
   }
   tetrisModule.state.currentPiece.row = 15
   tetrisModule.state.currentPiece.col = 3
+  tetrisModule.state.lastDropTime = performance.now() - 2000  // force drop timer
   const scoreBeforeLC = tetrisModule.state.score
   const linesBeforeLC = tetrisModule.state.lines
-  tetrisModule.update() // piece at 15 tries down to 16: shape blocks at 16,17,18 overlap filled rows → locks at 15
-  tetrisModule.update() // already locked at 15, tries down → locks again
+  tetrisModule.update()  // drops from 15→16, can't go further → locks, clearLines finds rows 17-19
+  tetrisModule.update()  // no-op (new piece at row 0)
   assert(tetrisModule.state.score > scoreBeforeLC, 'line clearing increases score')
   assert(tetrisModule.state.lines > linesBeforeLC, 'lines counter increases after clearing')
 
