@@ -67,6 +67,7 @@ export const useScoreStore = defineStore('score', {
       return all.sort((a, b) => b.score - a.score)
     },
     clearScores(gameSlug) {
+      if (!isValidSlug(gameSlug)) return
       localStorage.removeItem(`gamescore_${gameSlug}`)
       this.scores[gameSlug] = []
     }
