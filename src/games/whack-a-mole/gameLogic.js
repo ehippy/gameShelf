@@ -958,3 +958,5 @@ export function handleKeydown(key) {
 
 // Export the state object for GamePage to read
 export { state }
+
+export { CANVAS_W as CANVAS_WIDTH, CANVAS_H as CANVAS_HEIGHT }
