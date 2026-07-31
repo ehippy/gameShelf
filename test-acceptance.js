@@ -199,10 +199,69 @@ assert(styles.includes('@media'), 'styles.css has responsive @media queries')
 
 assert(router.includes('createWebHistory'), 'router uses createWebHistory')
 
-// --- gameStore: additional state/actions ---
+// --- gameStore: newestGames computed getter ---
 
+assert(gameStore.includes('useGameStore'), 'gameStore exports useGameStore')
+assert(gameStore.includes('catalog'), 'gameStore has catalog state')
+assert(gameStore.includes('addGame'), 'gameStore has addGame action')
+assert(gameStore.includes('removeGame'), 'gameStore has removeGame action')
+assert(gameStore.includes('getGameById'), 'gameStore has getGameById action')
+assert(gameStore.includes('newestGames'), 'gameStore has newestGames getter')
 assert(gameStore.includes('activeGame'), 'gameStore has activeGame state')
 assert(gameStore.includes('setActiveGame'), 'gameStore has setActiveGame action')
+
+// --- src/components/GameCard.vue ---
+
+const gameCardPath = join(root, 'src', 'components', 'GameCard.vue')
+assert(existsSync(gameCardPath), 'src/components/GameCard.vue exists')
+if (existsSync(gameCardPath)) {
+  const gameCardContent = readFileSync(gameCardPath, 'utf-8')
+  assert(gameCardContent.includes('title'), 'GameCard.vue has title prop')
+  assert(gameCardContent.includes('description'), 'GameCard.vue has description prop')
+  assert(gameCardContent.includes('thumbnail'), 'GameCard.vue has thumbnail prop')
+  assert(gameCardContent.includes('category'), 'GameCard.vue has category prop')
+  assert(gameCardContent.includes('slug'), 'GameCard.vue has slug prop')
+  assert(gameCardContent.includes('router-link') || gameCardContent.includes('router.push'), 'GameCard.vue renders a Play button using router-link or router.push')
+  assert(gameCardContent.includes('overflow: hidden') && gameCardContent.includes('text-overflow: ellipsis'), 'GameCard.vue truncates description with overflow:hidden and text-overflow:ellipsis')
+  assert(gameCardContent.includes('scoped'), 'GameCard.vue uses <style scoped>')
+}
+
+// --- src/components/MostPlayedCarousel.vue ---
+
+const carouselPath = join(root, 'src', 'components', 'MostPlayedCarousel.vue')
+assert(existsSync(carouselPath), 'src/components/MostPlayedCarousel.vue exists')
+if (existsSync(carouselPath)) {
+  const carouselContent = readFileSync(carouselPath, 'utf-8')
+  assert(carouselContent.includes('useGameStore'), 'MostPlayedCarousel.vue imports and uses useGameStore')
+  assert(carouselContent.includes('gameStore'), 'MostPlayedCarousel.vue uses gameStore')
+  assert(carouselContent.includes('GameCard'), 'MostPlayedCarousel.vue renders GameCard components')
+  assert(carouselContent.includes('games'), 'MostPlayedCarousel.vue has games prop')
+  assert(carouselContent.includes('scoped'), 'MostPlayedCarousel.vue uses <style scoped>')
+}
+
+// --- src/components/RandomGameBtn.vue ---
+
+const randomBtnPath = join(root, 'src', 'components', 'RandomGameBtn.vue')
+assert(existsSync(randomBtnPath), 'src/components/RandomGameBtn.vue exists')
+if (existsSync(randomBtnPath)) {
+  const randomBtnContent = readFileSync(randomBtnPath, 'utf-8')
+  assert(randomBtnContent.includes('useGameStore'), 'RandomGameBtn.vue imports useGameStore')
+  assert(randomBtnContent.includes('gameStore'), 'RandomGameBtn.vue uses gameStore')
+  assert(randomBtnContent.includes('router.push'), 'RandomGameBtn.vue navigates with router.push')
+  assert(randomBtnContent.includes('Math.random'), 'RandomGameBtn.vue picks a random game')
+  assert(randomBtnContent.includes('scoped'), 'RandomGameBtn.vue uses <style scoped>')
+}
+
+// --- src/components/WhatsNew.vue ---
+
+const whatsNewPath = join(root, 'src', 'components', 'WhatsNew.vue')
+assert(existsSync(whatsNewPath), 'src/components/WhatsNew.vue exists')
+if (existsSync(whatsNewPath)) {
+  const whatsNewContent = readFileSync(whatsNewPath, 'utf-8')
+  assert(whatsNewContent.includes('newestGames'), 'WhatsNew.vue uses gameStore.newestGames')
+  assert(whatsNewContent.includes('GameCard'), 'WhatsNew.vue renders GameCard components')
+  assert(whatsNewContent.includes('scoped'), 'WhatsNew.vue uses <style scoped>')
+}
 
 // --- scoreStore: additional action ---
 
