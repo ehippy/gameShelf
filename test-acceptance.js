@@ -140,6 +140,134 @@ assert(gitignore.includes('dist/'), '.gitignore includes dist/')
 assert(gitignore.includes('.env'), '.gitignore includes .env')
 assert(gitignore.includes('.env.*'), '.gitignore includes .env.*')
 
+// --- package.json: remaining deps ---
+
+assert(pkg.devDependencies && pkg.devDependencies.vite, 'package.json has vite dependency')
+assert(pkg.devDependencies && pkg.devDependencies['@vitejs/plugin-vue'], 'package.json has @vitejs/plugin-vue dependency')
+assert(pkg.devDependencies && pkg.devDependencies.eslint, 'package.json has eslint dependency')
+assert(pkg.devDependencies && pkg.devDependencies.vitest, 'package.json has vitest dependency')
+
+// --- src/main.js: imports and wiring ---
+
+const mainJs = readFileSync(join(root, 'src', 'main.js'), 'utf-8')
+assert(mainJs.includes("createApp"), 'main.js calls createApp')
+assert(mainJs.includes("createPinia"), 'main.js calls createPinia')
+assert(mainJs.includes("app.use(createPinia())"), 'main.js uses pinia plugin')
+assert(mainJs.includes("app.use(router)"), 'main.js uses router plugin')
+assert(mainJs.includes("app.mount('#app')"), 'main.js mounts to #app')
+
+// --- src/App.vue: template and component imports ---
+
+const appVue = readFileSync(join(root, 'src', 'App.vue'), 'utf-8')
+assert(appVue.includes('<AppHeader />'), 'App.vue template has <AppHeader />')
+assert(appVue.includes('<router-view />'), 'App.vue template has <router-view />')
+assert(appVue.includes('<AppFooter />'), 'App.vue template has <AppFooter />')
+assert(appVue.includes('./components/AppHeader.vue'), 'App.vue imports AppHeader component')
+assert(appVue.includes('./components/AppFooter.vue'), 'App.vue imports AppFooter component')
+
+// --- src/assets/styles.css: global resets and theme ---
+
+const styles = readFileSync(join(root, 'src', 'assets', 'styles.css'), 'utf-8')
+assert(styles.includes('margin: 0'), 'styles.css resets margin')
+assert(styles.includes('padding: 0'), 'styles.css resets padding')
+assert(styles.includes('box-sizing: border-box'), 'styles.css sets box-sizing border-box')
+assert(styles.includes('scroll-behavior: smooth'), 'styles.css sets scroll-behavior smooth')
+assert(styles.includes("background-color: #0f0f23") || styles.includes("background: #0f0f23"), 'styles.css has dark background #0f0f23')
+assert(styles.includes('color: #e0e0e0') || styles.includes("color: '#e0e0e0'"), 'styles.css has light text')
+assert(styles.includes('#7f5af0'), 'styles.css has accent color #7f5af0')
+assert(styles.includes('position: sticky') || styles.includes('sticky'), 'styles.css has sticky header')
+assert(styles.includes('flex-direction: column'), 'styles.css has flex column body')
+assert(styles.includes('@media'), 'styles.css has responsive @media queries')
+
+// --- router: history-based ---
+
+assert(router.includes('createWebHistory'), 'router uses createWebHistory')
+
+// --- gameStore: additional state/actions ---
+
+assert(gameStore.includes('activeGame'), 'gameStore has activeGame state')
+assert(gameStore.includes('setActiveGame'), 'gameStore has setActiveGame action')
+
+// --- scoreStore: additional action ---
+
+assert(scoreStore.includes('clearScores'), 'scoreStore has clearScores action')
+
+// --- gamesCatalog: full entry fields ---
+
+assert(catalog.includes('name'), 'gamesCatalog.js entries have name field')
+assert(catalog.includes('description'), 'gamesCatalog.js entries have description field')
+assert(catalog.includes('genre'), 'gamesCatalog.js entries have genre field')
+
+// --- HomeView.vue: template content ---
+
+const homeView = readFileSync(join(root, 'src', 'views', 'HomeView.vue'), 'utf-8')
+assert(homeView.includes('<h1>'), 'HomeView.vue has h1 heading')
+assert(homeView.includes('gameShelf'), 'HomeView.vue shows gameShelf brand')
+assert(homeView.includes('tagline') || homeView.includes('Play classic games'), 'HomeView.vue has tagline')
+assert(homeView.includes('games-grid') || homeView.includes('gameStore.catalog'), 'HomeView.vue renders games grid from gameStore')
+
+// --- AboutView.vue: template content ---
+
+const aboutView = readFileSync(join(root, 'src', 'views', 'AboutView.vue'), 'utf-8')
+assert(aboutView.includes('<h1>About gameShelf</h1>') || aboutView.includes('About gameShelf'), 'AboutView.vue has h1 About gameShelf')
+assert(aboutView.includes('<p>'), 'AboutView.vue has paragraph about the project')
+
+// --- GamePage.vue: route params and placeholder ---
+
+const gamePage = readFileSync(join(root, 'src', 'views', 'GamePage.vue'), 'utf-8')
+assert(gamePage.includes('route.params.id') || gamePage.includes('useRoute()'), 'GamePage.vue reads route params')
+assert(gamePage.includes('gameStore') || gamePage.includes('getGameById'), 'GamePage.vue looks up game in store')
+assert(gamePage.includes('Game canvas coming soon'), 'GamePage.vue has game canvas placeholder')
+
+// --- HighScoresView.vue: table rendering ---
+
+const highScoresView = readFileSync(join(root, 'src', 'views', 'HighScoresView.vue'), 'utf-8')
+assert(highScoresView.includes('scoreStore') || highScoresView.includes('highScores'), 'HighScoresView.vue reads from scoreStore')
+assert(highScoresView.includes('<table') || highScoresView.includes('table'), 'HighScoresView.vue renders a table')
+
+// --- NotFoundView.vue: 404 content ---
+
+const notFoundView = readFileSync(join(root, 'src', 'views', 'NotFoundView.vue'), 'utf-8')
+assert(notFoundView.includes('<h1>404</h1>') || notFoundView.includes('404'), 'NotFoundView.vue renders 404 heading')
+assert(notFoundView.includes('Page not found'), 'NotFoundView.vue has Page not found text')
+
+// --- AppHeader.vue: header, brand, nav ---
+
+const appHeader = readFileSync(join(root, 'src', 'components', 'AppHeader.vue'), 'utf-8')
+assert(appHeader.includes('<header') || appHeader.includes('<header class'), 'AppHeader.vue has header element')
+assert(appHeader.includes('gameShelf'), 'AppHeader.vue has brand name gameShelf')
+assert(appHeader.includes('router-link'), 'AppHeader.vue has router-link nav items')
+assert(appHeader.includes('Home'), 'AppHeader.vue has Home nav link')
+assert(appHeader.includes('Games'), 'AppHeader.vue has Games nav link')
+assert(appHeader.includes('High Scores'), 'AppHeader.vue has High Scores nav link')
+assert(appHeader.includes('About'), 'AppHeader.vue has About nav link')
+
+// --- AppFooter.vue: footer, copyright ---
+
+const appFooter = readFileSync(join(root, 'src', 'components', 'AppFooter.vue'), 'utf-8')
+assert(appFooter.includes('<footer') || appFooter.includes('<footer class'), 'AppFooter.vue has footer element')
+assert(appFooter.includes('2025') && appFooter.includes('gameShelf'), 'AppFooter.vue has copyright with year and name')
+assert(appFooter.includes('no downloads required'), 'AppFooter.vue has no downloads required text')
+
+// --- gameLogic stubs: exported functions ---
+
+const gameLogicFiles = ['snake', 'tetris', 'breakout']
+for (const game of gameLogicFiles) {
+  const gameLogic = readFileSync(join(root, 'src', 'games', game, 'gameLogic.js'), 'utf-8')
+  assert(gameLogic.includes('export function init'), `${game}/gameLogic.js exports init()`)
+  assert(gameLogic.includes('export function update'), `${game}/gameLogic.js exports update()`)
+  assert(gameLogic.includes('export function render'), `${game}/gameLogic.js exports render()`)
+  assert(gameLogic.includes('export function reset'), `${game}/gameLogic.js exports reset()`)
+}
+
+// --- deploy.yml: more specific checks ---
+
+assert(deployYml.includes('checkout@v4'), 'deploy.yml uses actions/checkout@v4')
+assert(deployYml.includes('pages: write'), 'deploy.yml has pages: write permission')
+assert(deployYml.includes('id-token: write'), 'deploy.yml has id-token: write permission')
+assert(deployYml.includes('on:') || deployYml.includes('on :'), 'deploy.yml has on trigger')
+assert(deployYml.includes('- main'), 'deploy.yml triggers on main branch')
+
 // --- Summary ---
 
 console.log(`\n${passed} passed, ${failed} failed`)
