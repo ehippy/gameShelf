@@ -33,7 +33,7 @@ describe('snake', () => {
     })
 
     it('has handleKeydown reference', () => {
-      expect(snakeSrc).toContain('handleKeydown') || expect(snakeSrc).toMatch(/handleKeydown|export function handleKeydown/)
+      expect(snakeSrc).toMatch(/handleKeydown|export function handleKeydown/)
     })
   })
 
