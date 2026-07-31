@@ -178,6 +178,16 @@ describe('tetris', () => {
       expect(tetrisModule.state).toBeDefined()
     })
 
+    it('exports CANVAS_WIDTH = 300', () => {
+      if (!tetrisModule) return
+      expect(tetrisModule.CANVAS_WIDTH).toBe(300)
+    })
+
+    it('exports CANVAS_HEIGHT = 400', () => {
+      if (!tetrisModule) return
+      expect(tetrisModule.CANVAS_HEIGHT).toBe(400)
+    })
+
     it('init() returns state object', () => {
       if (!tetrisModule) return
       const initState = tetrisModule.init()
