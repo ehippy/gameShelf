@@ -143,8 +143,8 @@ function playGameOver() {
 
 let state = null
 
-function createInitialState() {
-  return {
+function createInitialState(preserveDifficulty) {
+  const initial = {
     score: 0,
     isGameOver: false,
     isPlaying: false,
@@ -165,6 +165,10 @@ function createInitialState() {
     _canvas: null,
     _clickHandler: null
   }
+  if (preserveDifficulty && state && state.difficulty) {
+    initial.difficulty = state.difficulty
+  }
+  return initial
 }
 
 function getHighScore() {
