@@ -177,6 +177,34 @@ describe('MostPlayedCarousel', () => {
   it('uses <style scoped>', () => {
     expect(mostPlayedSrc).toContain('scoped')
   })
+
+  it('calls gameStore.getGameBySlug (not getGameById)', () => {
+    expect(mostPlayedSrc).toContain('getGameBySlug')
+  })
+
+  it('does not call old getGameById method', () => {
+    expect(mostPlayedSrc).not.toContain('getGameById')
+  })
+
+  it('uses ?\.title for title fallback (not ?\.name)', () => {
+    expect(mostPlayedSrc).toContain('?\.title')
+  })
+
+  it('does not use old ?\.name field', () => {
+    expect(mostPlayedSrc).not.toContain('?\.name')
+  })
+
+  it('uses ?\.category for category fallback', () => {
+    expect(mostPlayedSrc).toContain('?\.category')
+  })
+
+  it('uses "Arcade" as category default', () => {
+    expect(mostPlayedSrc).toContain("'Arcade'")
+  })
+
+  it('does not use old ?\.genre field', () => {
+    expect(mostPlayedSrc).not.toContain('?\.genre')
+  })
 })
 
 // --- RandomGameBtn ---
