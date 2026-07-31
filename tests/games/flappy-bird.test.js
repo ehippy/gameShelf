@@ -39,47 +39,57 @@ describe('flappy-bird', () => {
 
     // Canvas dimensions
     it('canvas width is 250', () => {
-      expect(flappySrc).toContain('CANVAS_WIDTH') && expect(flappySrc).toContain('250')
+      expect(flappySrc).toContain('CANVAS_WIDTH')
+      expect(flappySrc).toContain('250')
     })
 
     it('canvas height is 500', () => {
-      expect(flappySrc).toContain('CANVAS_HEIGHT') && expect(flappySrc).toContain('500')
+      expect(flappySrc).toContain('CANVAS_HEIGHT')
+      expect(flappySrc).toContain('500')
     })
 
     it('grid has 7 columns', () => {
-      expect(flappySrc).toContain('COLS') && expect(flappySrc).toContain('7')
+      expect(flappySrc).toContain('COLS')
+      expect(flappySrc).toContain('7')
     })
 
     it('grid has 7 rows', () => {
-      expect(flappySrc).toContain('ROWS') && expect(flappySrc).toContain('7')
+      expect(flappySrc).toContain('ROWS')
+      expect(flappySrc).toContain('7')
     })
 
     // Bird physics constants
     it('has gravity constant ~0.12', () => {
-      expect(flappySrc).toContain('GRAVITY') && expect(flappySrc).toContain('0.12')
+      expect(flappySrc).toContain('GRAVITY')
+      expect(flappySrc).toContain('0.12')
     })
 
     it('has flap strength ~-2.5', () => {
-      expect(flappySrc).toContain('FLAP_STRENGTH') && expect(flappySrc).toContain('-2.5')
+      expect(flappySrc).toContain('FLAP_STRENGTH')
+      expect(flappySrc).toContain('-2.5')
     })
 
     it('has pipe speed ~0.08', () => {
-      expect(flappySrc).toContain('PIPE_SPEED') && expect(flappySrc).toContain('0.08')
+      expect(flappySrc).toContain('PIPE_SPEED')
+      expect(flappySrc).toContain('0.08')
     })
 
     // Pipe gap
     it('gap is 4 cells (~144 pixels)', () => {
-      expect(flappySrc).toContain('GAP_SIZE_CELLS') && expect(flappySrc).toContain('4')
+      expect(flappySrc).toContain('GAP_SIZE_CELLS')
+      expect(flappySrc).toContain('4')
     })
 
     // Pipe spawning interval
     it('pipe spawn interval ~7 frames', () => {
-      expect(flappySrc).toContain('PIPE_SPAWN_INTERVAL') && expect(flappySrc).toContain('7')
+      expect(flappySrc).toContain('PIPE_SPAWN_INTERVAL')
+      expect(flappySrc).toContain('7')
     })
 
     // Grace period
     it('has grace period ~30 frames', () => {
-      expect(flappySrc).toContain('GRACE_PERIOD_FRAMES') && expect(flappySrc).toContain('30')
+      expect(flappySrc).toContain('GRACE_PERIOD_FRAMES')
+      expect(flappySrc).toContain('30')
     })
 
     // Green pipe color
