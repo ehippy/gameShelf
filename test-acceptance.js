@@ -222,8 +222,9 @@ assert(gameStore.includes('setActiveGame'), 'gameStore has setActiveGame action'
 
 const gameCardPath = join(root, 'src', 'components', 'GameCard.vue')
 assert(existsSync(gameCardPath), 'src/components/GameCard.vue exists')
+let gameCardContent = ''
 if (existsSync(gameCardPath)) {
-  const gameCardContent = readFileSync(gameCardPath, 'utf-8')
+  gameCardContent = readFileSync(gameCardPath, 'utf-8')
   assert(gameCardContent.includes('title'), 'GameCard.vue has title prop')
   assert(gameCardContent.includes('description'), 'GameCard.vue has description prop')
   assert(gameCardContent.includes('thumbnail'), 'GameCard.vue has thumbnail prop')
@@ -333,6 +334,47 @@ assert(homeView.includes('<h1>'), 'HomeView.vue has h1 heading')
 assert(homeView.includes('gameShelf'), 'HomeView.vue shows gameShelf brand')
 assert(homeView.includes('tagline') || homeView.includes('Play classic games'), 'HomeView.vue has tagline')
 assert(homeView.includes('games-grid') || homeView.includes('gameStore.catalog'), 'HomeView.vue renders games grid from gameStore')
+
+// --- HomeView.vue: GameCard import and usage ---
+
+assert(homeView.includes('GameCard'), 'HomeView.vue imports and uses GameCard component')
+assert(homeView.includes('from') && homeView.includes('GameCard'), 'HomeView.vue has GameCard import statement')
+assert(homeView.includes(':slug="game.slug"'), 'HomeView.vue passes :slug prop from catalog')
+assert(homeView.includes(':title="game.title"'), 'HomeView.vue passes :title prop from catalog')
+assert(homeView.includes(':description="game.description"'), 'HomeView.vue passes :description prop from catalog')
+assert(homeView.includes(':thumbnail="game.thumbnail"'), 'HomeView.vue passes :thumbnail prop from catalog')
+assert(homeView.includes(':category="game.category"'), 'HomeView.vue passes :category prop from catalog')
+assert(homeView.includes('v-for="game in gameStore.catalog"'), 'HomeView.vue iterates over gameStore.catalog with v-for')
+assert(homeView.includes(':key="game.slug"'), 'HomeView.vue uses game.slug as key')
+
+// --- HomeView.vue: no old field references ---
+
+assert(!homeView.includes('game.id'), 'HomeView.vue has no reference to game.id')
+assert(!homeView.includes('game.name'), 'HomeView.vue has no reference to game.name')
+assert(!homeView.includes('game.genre'), 'HomeView.vue has no reference to game.genre')
+
+// --- HomeView.vue: v-for loop with GameCard rendering ---
+
+const gameCardLoopMatch = homeView.match(/<GameCard[\s\S]*?v-for="game in gameStore.catalog"[\s\S]*?\/>/)
+assert(gameCardLoopMatch !== null, 'HomeView.vue has a GameCard loop using v-for')
+
+// --- HomeView.vue: games-grid div and heading structure preserved ---
+
+assert(homeView.includes('<div class="games-grid">') || homeView.includes('games-grid'), 'HomeView.vue has games-grid wrapper div')
+assert(homeView.includes('<h1>gameShelf</h1>'), 'HomeView.vue has h1 with gameShelf')
+assert(homeView.includes('class="tagline"') || homeView.includes('"tagline"'), 'HomeView.vue has tagline element')
+
+// --- GameCard: router-link navigates to /game/:slug ---
+
+assert(gameCardContent.includes("'/game/' + slug") || gameCardContent.includes('"/game/" + slug'), 'GameCard.vue renders router-link to /game/:slug')
+assert(gameCardContent.includes(':to="\'/game/\' + slug"') || gameCardContent.includes(":to=\"'/game/' + slug\""), 'GameCard.vue router-link uses dynamic slug path')
+
+// --- Catalog: verify all six slugs are navigable from GameCard ---
+
+const slugs = ['snake', 'tetris', 'breakout', 'flappy-bird', 'minesweeper', 'memory']
+for (const slug of slugs) {
+  assert(catalog.includes(`slug: '${slug}'`), `gamesCatalog.js has entry with slug '${slug}'`)
+}
 
 // --- AboutView.vue: template content ---
 
