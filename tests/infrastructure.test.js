@@ -1,9 +1,10 @@
 import { describe, it, expect } from 'vitest'
-import { readFileSync, existsSync, readdirSync } from 'node:fs'
-import { join } from 'node:path'
+import { readFileSync, fileURLToPath } from 'node:fs'
+import { join, dirname } from 'node:path'
 import { execFileSync } from 'node:child_process'
 
-const root = import.meta.dirname + '/..'
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const root = join(__dirname, '..')
 
 // --- Directory structure ---
 
