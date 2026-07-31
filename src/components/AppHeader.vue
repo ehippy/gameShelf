@@ -30,8 +30,8 @@
   flex-wrap: wrap;
   gap: 1rem;
   padding: 1rem 1.5rem;
-  background-color: #1a1a2e;
-  border-bottom: 1px solid #2a2a4a;
+  background-color: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-bg-tertiary);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -40,7 +40,7 @@
 .brand {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #7f5af0;
+  color: var(--color-accent);
   letter-spacing: 1px;
   margin: 0;
 }
@@ -56,9 +56,9 @@
 
 .search-input,
 .category-filter {
-  background-color: #1a1a2e;
-  border: 1px solid #2a2a4a;
-  color: #e0e0e0;
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-bg-tertiary);
+  color: var(--color-text-primary);
   padding: 0.5rem;
   border-radius: 4px;
   font-size: 0.9rem;
@@ -79,7 +79,7 @@
 }
 
 .app-header nav a {
-  color: #e0e0e0;
+  color: var(--color-text-primary);
   text-decoration: none;
   font-size: 0.95rem;
   transition: color 0.2s;
@@ -87,6 +87,6 @@
 
 .app-header nav a:hover,
 .app-header nav a.router-link-active {
-  color: #7f5af0;
+  color: var(--color-accent);
 }
 </style>
