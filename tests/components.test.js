@@ -201,6 +201,14 @@ describe('RandomGameBtn', () => {
   it('uses <style scoped>', () => {
     expect(randomGameBtnSrc).toContain('scoped')
   })
+
+  it('uses randomGame.slug for navigation (not .id)', () => {
+    expect(randomGameBtnSrc).toContain('randomGame.slug')
+  })
+
+  it('does NOT use randomGame.id for navigation', () => {
+    expect(randomGameBtnSrc).not.toContain('randomGame.id')
+  })
 })
 
 // --- WhatsNew ---
