@@ -128,10 +128,9 @@ assert(scoreStore.includes('gamescore_'), 'scoreStore uses gamescore_ localStora
 
 const userStore = readFileSync(join(root, 'src', 'stores', 'userStore.js'), 'utf-8')
 assert(userStore.includes('useUserStore'), 'userStore exports useUserStore')
-assert(userStore.includes('username'), 'userStore has username state')
-assert(userStore.includes('lastPlayedGame'), 'userStore has lastPlayedGame state')
-assert(userStore.includes('setUserName'), 'userStore has setUserName action')
-assert(userStore.includes('setLastPlayedGame'), 'userStore has setLastPlayedGame action')
+assert(userStore.includes('recentlyPlayed'), 'userStore has recentlyPlayed state')
+assert(userStore.includes('markPlayed'), 'userStore has markPlayed action')
+assert(userStore.includes('getRecentlyPlayed'), 'userStore has getRecentlyPlayed action')
 
 // --- .github/workflows/deploy.yml ---
 
