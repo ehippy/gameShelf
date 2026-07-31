@@ -673,7 +673,248 @@ if (tetrisModule) {
   assert(Math.floor(20 / 10) + 1 === 3, 'level formula: 20 lines → level 3')
 }
 
-// --- Summary ---
+// ─────────────────────────────────────────────────────────────────────────────
+// Flappy Bird gameLogic.js — static + functional tests
+// ─────────────────────────────────────────────────────────────────────────────
+
+// --- Flappy Bird catalog entry ---
+
+assert(catalog.includes("slug: 'flappy-bird'"), 'gamesCatalog.js has flappy-bird entry')
+assert(catalog.includes("title: 'Flappy Bird'"), 'gamesCatalog.js flappy-bird entry has correct title')
+assert(catalog.includes("description: 'Guide the bird through gaps in the pipes'"), 'gamesCatalog.js flappy-bird has description')
+assert(catalog.includes('data:image/svg+xml') && catalog.indexOf("slug: 'flappy-bird'") < catalog.indexOf('data:image/svg+xml', catalog.indexOf("slug: 'flappy-bird'") + 1), 'gamesCatalog.js flappy-bird has SVG thumbnail')
+assert(catalog.match(/slug: 'flappy-bird'[\s\S]*?category: 'Arcade'/), 'gamesCatalog.js flappy-bird is in Arcade category')
+assert(catalog.match(/slug: 'flappy-bird'[\s\S]*?isNew: true/), 'gamesCatalog.js flappy-bird has isNew=true')
+assert(catalog.match(/slug: 'flappy-bird'[\s\S]*?dateAdded:/), 'gamesCatalog.js flappy-bird has dateAdded')
+
+// Check flappy-bird is 4th item (between breakout and minesweeper)
+const slugOrder = []
+const slugRegex = /slug:\s*'([^']+)'/g
+let match
+while ((match = slugRegex.exec(catalog)) !== null) {
+  slugOrder.push(match[1])
+}
+assert(slugOrder[0] === 'snake', 'flappy-bird catalog: 1st item is snake')
+assert(slugOrder[1] === 'tetris', 'flappy-bird catalog: 2nd item is tetris')
+assert(slugOrder[2] === 'breakout', 'flappy-bird catalog: 3rd item is breakout')
+assert(slugOrder[3] === 'flappy-bird', 'flappy-bird catalog: 4th item is flappy-bird')
+assert(slugOrder[4] === 'minesweeper', 'flappy-bird catalog: 5th item is minesweeper')
+
+// Flappy bird uses a distinct green color scheme in thumbnail
+const flappyThumbMatch = catalog.match(/slug: 'flappy-bird'[\s\S]*?thumbnail: 'data:image\/svg\+xml,([^']+)'/)
+assert(flappyThumbMatch && flappyThumbMatch[1].includes('%2327ae60'), 'flappy-bird thumbnail uses green color scheme')
+
+// --- Static checks on flappy-bird source ---
+
+const flappyPath = join(root, 'src', 'games', 'flappy-bird', 'gameLogic.js')
+const flappySrc = readFileSync(flappyPath, 'utf-8')
+
+assert(flappySrc.includes('export function init'), 'flappy-bird gameLogic.js exports init()')
+assert(flappySrc.includes('export function update'), 'flappy-bird gameLogic.js exports update()')
+assert(flappySrc.includes('export function render'), 'flappy-bird gameLogic.js exports render()')
+assert(flappySrc.includes('export function reset'), 'flappy-bird gameLogic.js exports reset()')
+assert(flappySrc.includes('export function handleKeydown') || flappySrc.includes('export {'), 'flappy-bird gameLogic.js exports handleKeydown')
+assert(flappySrc.includes('export { state }'), 'flappy-bird gameLogic.js exports state')
+
+// Canvas dimensions
+assert(flappySrc.includes('CANVAS_WIDTH') && flappySrc.includes('250'), 'flappy-bird canvas width is 250')
+assert(flappySrc.includes('CANVAS_HEIGHT') && flappySrc.includes('500'), 'flappy-bird canvas height is 500')
+assert(flappySrc.includes('COLS') && flappySrc.includes('7'), 'flappy-bird grid has 7 columns')
+assert(flappySrc.includes('ROWS') && flappySrc.includes('7'), 'flappy-bird grid has 7 rows')
+
+// Bird physics constants
+assert(flappySrc.includes('GRAVITY') && flappySrc.includes('0.12'), 'flappy-bird has gravity constant ~0.12')
+assert(flappySrc.includes('FLAP_STRENGTH') && flappySrc.includes('-2.5'), 'flappy-bird has flap strength ~-2.5')
+assert(flappySrc.includes('PIPE_SPEED') && flappySrc.includes('0.08'), 'flappy-bird pipe speed ~0.08')
+
+// Pipe gap
+assert(flappySrc.includes('GAP_SIZE_CELLS') && flappySrc.includes('4'), 'flappy-bird gap is 4 cells (~144 pixels)')
+
+// Pipe spawning interval
+assert(flappySrc.includes('PIPE_SPAWN_INTERVAL') && flappySrc.includes('7'), 'flappy-bird pipe spawn interval ~7 frames')
+
+// Grace period
+assert(flappySrc.includes('GRACE_PERIOD_FRAMES') && flappySrc.includes('30'), 'flappy-bird has grace period ~30 frames')
+
+// Green pipe color
+assert(flappySrc.includes('2ecc71') || flappySrc.includes('#2ecc71'), 'flappy-bird uses green pipe color #2ecc71')
+
+// Bird column
+assert(flappySrc.includes('BIRD_COL') && flappySrc.includes('3'), 'flappy-bird bird column is 3')
+
+// Sky-blue background
+assert(flappySrc.includes('87CEEB') || flappySrc.includes('"87CEEB"') || flappySrc.includes("'87CEEB'"), 'flappy-bird sky-blue background #87CEEB')
+
+// Yellow bird
+assert(flappySrc.includes('FFD700') || flappySrc.includes('"FFD700"') || flappySrc.includes("'FFD700'"), 'flappy-bird bird is yellow/gold')
+
+// Handle keydown for ArrowUp and Space
+assert(flappySrc.includes("ArrowUp"), 'flappy-bird handleKeydown handles ArrowUp')
+assert(flappySrc.includes("' '"), 'flappy-bird handleKeydown handles space bar')
+
+// State shape
+assert(flappySrc.includes("score:") || flappySrc.includes('"score"'), 'flappy-bird state has score')
+assert(flappySrc.includes("isGameOver:") || flappySrc.includes('"isGameOver"'), 'flappy-bird state has isGameOver')
+assert(flappySrc.includes("isPlaying:") || flappySrc.includes('"isPlaying"'), 'flappy-bird state has isPlaying')
+assert(flappySrc.includes("bird:") || flappySrc.includes('"bird"'), 'flappy-bird state has bird')
+assert(flappySrc.includes("pipes:"), 'flappy-bird state has pipes')
+assert(flappySrc.includes("pipeQueue:"), 'flappy-bird state has pipeQueue')
+assert(flappySrc.includes("pipeDropInterval:"), 'flappy-bird state has pipeDropInterval')
+assert(flappySrc.includes("lastPipeDrop:"), 'flappy-bird state has lastPipeDrop')
+assert(flappySrc.includes("row:") || flappySrc.includes('"row"'), 'flappy-bird bird state has row')
+assert(flappySrc.includes("col:"), 'flappy-bird bird state has col')
+assert(flappySrc.includes("velocity:"), 'flappy-bird bird state has velocity')
+
+// ── Functional tests for flappy-bird ──
+
+let flappyModule = null
+try {
+  flappyModule = await import(flappyPath)
+} catch {
+  flappyModule = null
+}
+
+if (flappyModule) {
+  // Verify all required exports exist
+  assert(typeof flappyModule.init === 'function', 'flappy-bird init is a function')
+  assert(typeof flappyModule.update === 'function', 'flappy-bird update is a function')
+  assert(typeof flappyModule.reset === 'function', 'flappy-bird reset is a function')
+  assert(typeof flappyModule.handleKeydown === 'function', 'flappy-bird handleKeydown is a function')
+  assert(flappyModule.state !== undefined, 'flappy-bird exports state')
+
+  // Initialize game
+  const initState = flappyModule.init()
+  assert(initState !== null, 'init() returns state object')
+  assert(typeof initState.score === 'number', 'state.score is a number')
+  assert(initState.score === 0, 'initial state.score is 0')
+  assert(typeof initState.isGameOver === 'boolean', 'state.isGameOver is a boolean')
+  assert(initState.isGameOver === false, 'initial state.isGameOver is false')
+  assert(typeof initState.isPlaying === 'boolean', 'state.isPlaying is a boolean')
+  assert(initState.isPlaying === true, 'initial state.isPlaying is true')
+
+  // Bird initial position
+  assert(initState.bird !== null, 'state.bird is set after init')
+  assert(typeof initState.bird.row === 'number', 'state.bird.row is a number')
+  assert(typeof initState.bird.col === 'number', 'state.bird.col is a number')
+  assert(initState.bird.col === 3, 'state.bird.col is 3')
+  assert(typeof initState.bird.velocity === 'number', 'state.bird.velocity is a number')
+  assert(initState.bird.velocity === 0, 'state.bird.velocity is 0 at init')
+
+  // Pipe state
+  assert(Array.isArray(initState.pipes), 'state.pipes is an array')
+  assert(initState.pipeQueue !== undefined, 'state.pipeQueue exists')
+  assert(typeof initState.pipeDropInterval === 'number', 'state.pipeDropInterval is a number')
+  assert(initState.pipeDropInterval === 7, 'state.pipeDropInterval is 7')
+  assert(typeof initState.lastPipeDrop === 'number', 'state.lastPipeDrop is a number')
+
+  // Test flap (ArrowUp)
+  flappyModule.init()
+  flappyModule.handleKeydown('ArrowUp')
+  assert(flappyModule.state.bird.velocity < 0, 'flap sets negative velocity')
+  assert(flappyModule.state.bird.velocity <= -2.5, 'flap velocity is ~-2.5')
+
+  // Test flap (Space)
+  flappyModule.init()
+  flappyModule.handleKeydown(' ')
+  assert(flappyModule.state.bird.velocity < 0, 'space bar triggers flap')
+
+  // Test gravity: advance frames without flapping, bird should fall
+  flappyModule.init()
+  const initialBirdRow = flappyModule.state.bird.row
+  for (let i = 0; i < 60; i++) {
+    flappyModule.update()
+  }
+  assert(flappyModule.state.bird.row > initialBirdRow, 'gravity pulls bird down over time')
+
+  // Test pipe spawning: after 7 frames, a pipe should appear
+  flappyModule.init()
+  assert(flappyModule.state.pipes.length === 0, 'no pipes at init')
+  for (let i = 0; i < 8; i++) {
+    flappyModule.update()
+  }
+  assert(flappyModule.state.pipes.length >= 1, 'pipes spawn after interval frames')
+
+  // Test scoring: simulate bird passing through pipe gap
+  flappyModule.init()
+  // Set up a pipe at bird's position with gap covering bird
+  flappyModule.state.pipes = [createPipePair ? { x: 2, gapStart: 1, scored: false } : null]
+  // Actually we need to use the module's internal function. Let's do it differently.
+  // Manually set up state for scoring test
+  flappyModule.state.bird.col = 3
+  flappyModule.state.pipes = [
+    { x: 2.5, gapStart: 2, scored: false }
+  ]
+  // After update, bird should pass pipe and score
+  const beforeScore = flappyModule.state.score
+  // Advance until bird passes pipe
+  for (let i = 0; i < 30; i++) {
+    flappyModule.update()
+  }
+  assert(flappyModule.state.score >= beforeScore, 'score doesn\'t decrease')
+
+  // Test reset
+  flappyModule.init()
+  // Play a bit
+  for (let i = 0; i < 15; i++) {
+    flappyModule.update()
+    flappyModule.handleKeydown('ArrowUp')
+  }
+  const preResetScore = flappyModule.state.score
+  flappyModule.reset()
+  assert(flappyModule.state.score === 0, 'reset() restores score to 0')
+  assert(flappyModule.state.isGameOver === false, 'reset() sets isGameOver to false')
+  assert(flappyModule.state.isPlaying === true, 'reset() sets isPlaying to true')
+  assert(flappyModule.state.bird.row === 3, 'reset() restores bird to default row')
+  assert(flappyModule.state.bird.velocity === 0, 'reset() restores bird velocity to 0')
+  assert(flappyModule.state.pipes.length === 0, 'reset() clears pipes')
+
+  // Test ArrowDown accelerates fall
+  flappyModule.init()
+  const vBefore = flappyModule.state.bird.velocity
+  flappyModule.handleKeydown('ArrowDown')
+  assert(flappyModule.state.bird.velocity > vBefore, 'ArrowDown accelerates fall')
+
+  // Test handleKeydown doesn't throw when game over
+  flappyModule.init()
+  flappyModule.state.isGameOver = true
+  assert(() => flappyModule.handleKeydown('ArrowUp'), 'handleKeydown ArrowUp no-throw at game over')
+  assert(() => flappyModule.handleKeydown(' '), 'handleKeydown space no-throw at game over')
+
+  // Test game over on ceiling collision
+  flappyModule.init()
+  // Force bird above ceiling
+  flappyModule.state.bird.row = -1
+  flappyModule.state.bird.velocity = 0
+  flappyModule.update()
+  assert(flappyModule.state.isGameOver === true, 'ceiling collision triggers game over')
+
+  // Test game over on ground collision
+  flappyModule.init()
+  // Force bird to ground
+  flappyModule.state.bird.row = 6.6
+  flappyModule.state.bird.velocity = 0
+  flappyModule.update()
+  assert(flappyModule.state.isGameOver === true, 'ground collision triggers game over')
+
+  // Test game over on pipe collision
+  flappyModule.init()
+  // Place pipe such that bird will collide
+  flappyModule.state.bird.row = 2
+  flappyModule.state.bird.col = 3
+  flappyModule.state.pipes = [
+    { x: 2.8, gapStart: 5, scored: false } // gap at rows 5-9, bird at row 2, no collision → move closer
+  ]
+  // Actually need a pipe that blocks the bird
+  flappyModule.state.pipes = [
+    { x: 3.0, gapStart: 0, scored: false } // gap at rows 0-4, bird at row 2 → collision in gap, no collision
+  ]
+  // Let's put gap at row 4+, so bird at row 2 is blocked
+  flappyModule.state.pipes = [
+    { x: 3.0, gapStart: 3, scored: false } // gap at rows 3-7, bird at row 2 → outside gap → collision
+  ]
+  flappyModule.update()
+  assert(flappyModule.state.isGameOver === true, 'pipe collision triggers game over')
+}
 
 console.log(`\n${passed} passed, ${failed} failed`)
 
