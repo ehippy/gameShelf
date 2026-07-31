@@ -2,6 +2,8 @@
  * Initialize the Breakout game.
  * @returns {void}
  */
+export const CANVAS_WIDTH = 250
+export const CANVAS_HEIGHT = 250
 export function init() {
   // Stub: game initialization
 }
