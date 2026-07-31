@@ -874,8 +874,8 @@ if (flappyModule) {
   // Test handleKeydown doesn't throw when game over
   flappyModule.init()
   flappyModule.state.isGameOver = true
-  assert(() => flappyModule.handleKeydown('ArrowUp'), 'handleKeydown ArrowUp no-throw at game over')
-  assert(() => flappyModule.handleKeydown(' '), 'handleKeydown space no-throw at game over')
+  try { flappyModule.handleKeydown('ArrowUp'); assert(true, 'handleKeydown ArrowUp no-throw at game over') } catch { assert(false, 'handleKeydown ArrowUp no-throw at game over') }
+  try { flappyModule.handleKeydown(' '); assert(true, 'handleKeydown space no-throw at game over') } catch { assert(false, 'handleKeydown space no-throw at game over') }
 
   // Test game over on ceiling collision
   flappyModule.init()
@@ -895,19 +895,12 @@ if (flappyModule) {
 
   // Test game over on pipe collision
   flappyModule.init()
-  // Place pipe such that bird will collide
+  // Place pipe such that bird will collide (bird at row 2, gap at rows 3-7)
   flappyModule.state.bird.row = 2
   flappyModule.state.bird.col = 3
+  flappyModule.state.bird.velocity = 0
   flappyModule.state.pipes = [
-    { x: 2.8, gapStart: 5, scored: false } // gap at rows 5-9, bird at row 2, no collision → move closer
-  ]
-  // Actually need a pipe that blocks the bird
-  flappyModule.state.pipes = [
-    { x: 3.0, gapStart: 0, scored: false } // gap at rows 0-4, bird at row 2 → collision in gap, no collision
-  ]
-  // Let's put gap at row 4+, so bird at row 2 is blocked
-  flappyModule.state.pipes = [
-    { x: 3.0, gapStart: 3, scored: false } // gap at rows 3-7, bird at row 2 → outside gap → collision
+    { x: 3.0, gapStart: 3, scored: false }
   ]
   flappyModule.update()
   assert(flappyModule.state.isGameOver === true, 'pipe collision triggers game over')
