@@ -46,8 +46,8 @@ const game = computed(() => gameStore.getGameBySlug(route.params.id))
 const gameCanvas = ref(null)
 let state = null
 
-const canvasWidth = 250
-const canvasHeight = 200
+const canvasWidth = ref(250)
+const canvasHeight = ref(200)
 
 let gameLogic = null
 let animFrameId = null
