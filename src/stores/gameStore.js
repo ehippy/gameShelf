@@ -1,3 +1,4 @@
+import { computed } from 'vue'
 import { defineStore } from 'pinia'
 import gamesCatalog from '../data/gamesCatalog.js'
 
@@ -6,6 +7,11 @@ export const useGameStore = defineStore('game', {
     catalog: [...gamesCatalog],
     activeGame: null
   }),
+  getters: {
+    newestGames: (state) => {
+      return state.catalog.slice(-3).reverse()
+    }
+  },
   actions: {
     addGame(game) {
       this.catalog.push(game)
