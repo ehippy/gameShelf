@@ -32,7 +32,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, reactive } from 'vue'
 import { useRoute } from 'vue-router'
 import { useGameStore } from '../stores/gameStore.js'
 import { useScoreStore } from '../stores/scoreStore.js'
@@ -44,7 +44,7 @@ const scoreStore = useScoreStore()
 const game = computed(() => gameStore.getGameBySlug(route.params.id))
 
 const gameCanvas = ref(null)
-const state = ref(null)
+let state = null
 
 const canvasWidth = 250
 const canvasHeight = 500
