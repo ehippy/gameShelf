@@ -189,7 +189,7 @@ function playAgain() {
   outline: none;
 }
 
-.canvas-wrapper:focus {
+.canvas-wrapper canvas:focus {
   border-color: var(--color-accent);
 }
 
