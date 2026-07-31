@@ -47,7 +47,7 @@ const gameCanvas = ref(null)
 let state = null
 
 const canvasWidth = 250
-const canvasHeight = 500
+const canvasHeight = 200
 
 let gameLogic = null
 let animFrameId = null
