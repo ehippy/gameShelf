@@ -30,7 +30,7 @@ describe('tetris', () => {
     })
 
     it('exports handleKeydown', () => {
-      expect(tetrisSrc).toContain('export function handleKeydown') || expect(tetrisSrc).toContain('export { handleKeydown }')
+      expect(tetrisSrc).toContain('export function handleKeydown')
     })
 
     it('exports state', () => {
