@@ -5,9 +5,9 @@
       <GameCard
         v-for="slug in games"
         :key="slug"
-        :title="gameStore.getGameById(slug)?.name || slug"
-        :description="gameStore.getGameById(slug)?.description || ''"
-        :category="gameStore.getGameById(slug)?.genre || 'Arcade'"
+        :title="gameStore.getGameBySlug(slug)?.title || slug"
+        :description="gameStore.getGameBySlug(slug)?.description || ''"
+        :category="gameStore.getGameBySlug(slug)?.category || 'Arcade'"
         :slug="slug"
       />
     </div>
