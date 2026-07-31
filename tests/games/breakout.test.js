@@ -106,6 +106,7 @@ describe('breakout', () => {
       breakoutModule.init()
       expect(() => breakoutModule.reset()).not.toThrow()
     })
+
     it('handleKeydown is a function', () => {
       if (!breakoutModule) return
       expect(typeof breakoutModule.handleKeydown).toBe('function')
