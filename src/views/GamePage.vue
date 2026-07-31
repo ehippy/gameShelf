@@ -100,6 +100,23 @@ onMounted(async () => {
   }
   animFrameId = requestAnimationFrame(gameLoop)
 
+  // Resize handler
+  const canvasWrapper = canvasWrapperRef.value
+  if (canvasWrapper) {
+    resizeObserver = new ResizeObserver(() => {
+      const availableHeight = window.innerHeight - 160
+      const availableWidth = Math.min(window.innerWidth, 95 * window.innerWidth / 100)
+      const scale_x = availableWidth / gameLogic.CANVAS_WIDTH
+      const scale_y = availableHeight / gameLogic.CANVAS_HEIGHT
+      const scale = Math.min(scale_x, scale_y)
+      const displayWidth = Math.round(gameLogic.CANVAS_WIDTH * scale)
+      const displayHeight = Math.round(gameLogic.CANVAS_HEIGHT * scale)
+      canvas.style.width = `${displayWidth}px`
+      canvas.style.height = `${displayHeight}px`
+    })
+    resizeObserver.observe(canvasWrapper)
+  }
+
   // Cleanup on unmount
   onBeforeUnmount(() => {
     window.removeEventListener('keydown', onKeyDown)
