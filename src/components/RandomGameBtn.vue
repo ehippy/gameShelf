@@ -15,7 +15,7 @@ function pickRandom() {
   const games = gameStore.catalog
   if (games.length === 0) return
   const randomGame = games[Math.floor(Math.random() * games.length)]
-  router.push('/game/' + randomGame.id)
+  router.push('/game/' + randomGame.slug)
 }
 </script>
 
