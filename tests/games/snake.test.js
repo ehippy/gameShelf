@@ -107,5 +107,16 @@ describe('snake', () => {
       snakeModule.init()
       expect(() => snakeModule.reset()).not.toThrow()
     })
+    it('handleKeydown is a function', () => {
+      if (!snakeModule) return
+      expect(typeof snakeModule.handleKeydown).toBe('function')
+    })
+
+    it('handleKeydown is a no-op', () => {
+      if (!snakeModule) return
+      expect(() => snakeModule.handleKeydown('ArrowLeft')).not.toThrow()
+      expect(() => snakeModule.handleKeydown('ArrowRight')).not.toThrow()
+      expect(() => snakeModule.handleKeydown(' ')).not.toThrow()
+    })
   })
 })
