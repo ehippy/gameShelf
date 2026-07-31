@@ -505,6 +505,10 @@ try {
   console.error('  Build output:', e.stdout?.toString() || e.stderr?.toString() || '')
 }
 
+// --- dist/404.html exists after build ---
+assert(existsSync(join(root, 'dist', '404.html')), 'dist/404.html exists after build')
+assert(existsSync(join(root, 'dist', 'index.html')), 'dist/index.html exists after build')
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Tetris gameLogic.js — functional tests
 // ─────────────────────────────────────────────────────────────────────────────
