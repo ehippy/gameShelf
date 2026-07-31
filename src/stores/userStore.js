@@ -1,16 +1,39 @@
 import { defineStore } from 'pinia'
 
+function loadRecentlyPlayed() {
+  try {
+    const raw = localStorage.getItem('user_recentlyPlayed')
+    if (raw) {
+      return JSON.parse(raw)
+    }
+  } catch {
+    // ignore
+  }
+  return []
+}
+
+function saveRecentlyPlayed(arr) {
+  localStorage.setItem('user_recentlyPlayed', JSON.stringify(arr))
+}
+
 export const useUserStore = defineStore('user', {
   state: () => ({
-    username: '',
-    lastPlayedGame: null
+    recentlyPlayed: loadRecentlyPlayed()
   }),
   actions: {
-    setUserName(name) {
-      this.username = name
+    markPlayed(slug) {
+      const idx = this.recentlyPlayed.indexOf(slug)
+      if (idx !== -1) {
+        this.recentlyPlayed.splice(idx, 1)
+      }
+      this.recentlyPlayed.push(slug)
+      if (this.recentlyPlayed.length > 8) {
+        this.recentlyPlayed.shift()
+      }
+      saveRecentlyPlayed(this.recentlyPlayed)
     },
-    setLastPlayedGame(gameId) {
-      this.lastPlayedGame = gameId
+    getRecentlyPlayed() {
+      return this.recentlyPlayed
     }
   }
 })

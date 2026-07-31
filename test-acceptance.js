@@ -59,9 +59,11 @@ assert(existsSync(join(root, 'src', 'games', 'breakout', 'gameLogic.js')), 'src/
 
 assert(existsSync(join(root, 'src', 'data', 'gamesCatalog.js')), 'src/data/gamesCatalog.js exists')
 const catalog = readFileSync(join(root, 'src', 'data', 'gamesCatalog.js'), 'utf-8')
-assert(catalog.includes("id: 'snake'"), 'gamesCatalog.js has snake entry')
-assert(catalog.includes("id: 'tetris'"), 'gamesCatalog.js has tetris entry')
-assert(catalog.includes("id: 'breakout'"), 'gamesCatalog.js has breakout entry')
+assert(catalog.includes("slug: 'snake'"), 'gamesCatalog.js has snake entry')
+assert(catalog.includes("slug: 'tetris'"), 'gamesCatalog.js has tetris entry')
+assert(catalog.includes("slug: 'breakout'"), 'gamesCatalog.js has breakout entry')
+assert(catalog.includes("slug: 'minesweeper'"), 'gamesCatalog.js has minesweeper entry')
+assert(catalog.includes("slug: 'memory'"), 'gamesCatalog.js has memory entry')
 
 // --- index.html is Vite entry point ---
 
@@ -111,20 +113,24 @@ assert(gameStore.includes('useGameStore'), 'gameStore exports useGameStore')
 assert(gameStore.includes('catalog'), 'gameStore has catalog state')
 assert(gameStore.includes('addGame'), 'gameStore has addGame action')
 assert(gameStore.includes('removeGame'), 'gameStore has removeGame action')
-assert(gameStore.includes('getGameById'), 'gameStore has getGameById action')
+assert(gameStore.includes("g.slug === slug"), 'gameStore uses slug field for getGameBySlug')
+assert(gameStore.includes('getGameBySlug'), 'gameStore has getGameBySlug action')
+assert(gameStore.includes('gamesByCategory'), 'gameStore has gamesByCategory computed')
+assert(gameStore.includes('newestGames'), 'gameStore has newestGames computed')
 
 const scoreStore = readFileSync(join(root, 'src', 'stores', 'scoreStore.js'), 'utf-8')
 assert(scoreStore.includes('useScoreStore'), 'scoreStore exports useScoreStore')
-assert(scoreStore.includes('highScores'), 'scoreStore has highScores state')
-assert(scoreStore.includes('addScore'), 'scoreStore has addScore action')
-assert(scoreStore.includes('getHighScores'), 'scoreStore has getHighScores action')
+assert(scoreStore.includes('scores'), 'scoreStore has scores state')
+assert(scoreStore.includes('submitScore'), 'scoreStore has submitScore action')
+assert(scoreStore.includes('getScores'), 'scoreStore has getScores action')
+assert(scoreStore.includes('getAllScores'), 'scoreStore has getAllScores action')
+assert(scoreStore.includes('gamescore_'), 'scoreStore uses gamescore_ localStorage key format')
 
 const userStore = readFileSync(join(root, 'src', 'stores', 'userStore.js'), 'utf-8')
 assert(userStore.includes('useUserStore'), 'userStore exports useUserStore')
-assert(userStore.includes('username'), 'userStore has username state')
-assert(userStore.includes('lastPlayedGame'), 'userStore has lastPlayedGame state')
-assert(userStore.includes('setUserName'), 'userStore has setUserName action')
-assert(userStore.includes('setLastPlayedGame'), 'userStore has setLastPlayedGame action')
+assert(userStore.includes('recentlyPlayed'), 'userStore has recentlyPlayed state')
+assert(userStore.includes('markPlayed'), 'userStore has markPlayed action')
+assert(userStore.includes('getRecentlyPlayed'), 'userStore has getRecentlyPlayed action')
 
 // --- .github/workflows/deploy.yml ---
 
@@ -193,11 +199,56 @@ assert(gameStore.includes('setActiveGame'), 'gameStore has setActiveGame action'
 
 assert(scoreStore.includes('clearScores'), 'scoreStore has clearScores action')
 
-// --- gamesCatalog: full entry fields ---
+// --- gamesCatalog: exact entry values ---
 
-assert(catalog.includes('name'), 'gamesCatalog.js entries have name field')
-assert(catalog.includes('description'), 'gamesCatalog.js entries have description field')
-assert(catalog.includes('genre'), 'gamesCatalog.js entries have genre field')
+// Check title field exists in catalog entries
+assert(catalog.includes("title: 'Snake'"), 'gamesCatalog.js entries have title field')
+assert(catalog.includes("title: 'Tetris'"), 'gamesCatalog.js entries have title field')
+assert(catalog.includes("title: 'Breakout'"), 'gamesCatalog.js entries have title field')
+assert(catalog.includes("title: 'Minesweeper'"), 'gamesCatalog.js entries have title field')
+assert(catalog.includes("title: 'Memory'"), 'gamesCatalog.js entries have title field')
+
+// snake: Arcade, isNew=false, dateAdded=2025-01-15
+assert(catalog.includes("category: 'Arcade'"), 'snake/tetris/breakout have Arcade category')
+assert(catalog.includes("category: 'Puzzle'"), 'tetris has Puzzle category')
+assert(catalog.includes("category: 'Strategy'"), 'minesweeper has Strategy category')
+assert(catalog.includes("category: 'Casual'"), 'memory has Casual category')
+assert(catalog.includes("isNew: false"), 'gamesCatalog.js entries have isNew=false')
+assert(catalog.includes("isNew: true"), 'gamesCatalog.js entries have isNew=true')
+assert(catalog.includes("2025-01-15T00:00:00Z"), 'gamesCatalog.js entries have dateAdded')
+assert(catalog.includes("2025-02-01T00:00:00Z"), 'gamesCatalog.js entries have dateAdded')
+assert(catalog.includes("2025-06-15T00:00:00Z"), 'minesweeper has dateAdded')
+assert(catalog.includes("2025-06-20T00:00:00Z"), 'memory has dateAdded')
+assert(catalog.includes('data:image/svg+xml'), 'gamesCatalog.js entries have SVG thumbnail data URIs')
+assert(!catalog.includes('id:'), 'gamesCatalog.js does not use old id field')
+
+// --- No old field/method names ---
+assert(!catalog.includes("id: 'snake'"), 'gamesCatalog.js does not use old id field for snake')
+assert(!catalog.includes("id: 'tetris'"), 'gamesCatalog.js does not use old id field for tetris')
+assert(!catalog.includes("id: 'breakout'"), 'gamesCatalog.js does not use old id field for breakout')
+assert(!catalog.includes('name:'), 'gamesCatalog.js does not use old name field')
+assert(!catalog.includes('genre'), 'gamesCatalog.js does not use old genre field')
+
+// --- gameStore: no old methods ---
+assert(gameStore.includes("g.slug === slug"), 'gameStore uses slug field for getGameBySlug')
+assert(!gameStore.includes('getGameById'), 'gameStore does not have old getGameById method')
+
+// --- scoreStore: no old methods ---
+assert(scoreStore.includes("gamescore_"), 'scoreStore uses gamescore_ localStorage key format')
+assert(scoreStore.includes('submitScore'), 'scoreStore has submitScore action')
+assert(scoreStore.includes('getScores'), 'scoreStore has getScores action')
+assert(scoreStore.includes('getAllScores'), 'scoreStore has getAllScores action')
+assert(scoreStore.includes('clearScores'), 'scoreStore has clearScores action')
+assert(!scoreStore.includes('addScore'), 'scoreStore does not have old addScore method')
+assert(!scoreStore.includes('getHighScores'), 'scoreStore does not have old getHighScores method')
+assert(!scoreStore.includes('highScores'), 'scoreStore does not use old highScores state')
+
+// --- userStore: no old methods ---
+assert(userStore.includes('markPlayed'), 'userStore has markPlayed action')
+assert(userStore.includes('getRecentlyPlayed'), 'userStore has getRecentlyPlayed action')
+assert(userStore.includes("user_recentlyPlayed"), 'userStore persists to user_recentlyPlayed localStorage key')
+assert(!userStore.includes('setUserName'), 'userStore does not have old setUserName method')
+assert(!userStore.includes('setLastPlayedGame'), 'userStore does not have old setLastPlayedGame method')
 
 // --- HomeView.vue: template content ---
 
@@ -217,7 +268,7 @@ assert(aboutView.includes('<p>'), 'AboutView.vue has paragraph about the project
 
 const gamePage = readFileSync(join(root, 'src', 'views', 'GamePage.vue'), 'utf-8')
 assert(gamePage.includes('route.params.id') || gamePage.includes('useRoute()'), 'GamePage.vue reads route params')
-assert(gamePage.includes('gameStore') || gamePage.includes('getGameById'), 'GamePage.vue looks up game in store')
+assert(gamePage.includes('gameStore') || gamePage.includes('getGameBySlug'), 'GamePage.vue looks up game in store')
 assert(gamePage.includes('Game canvas coming soon'), 'GamePage.vue has game canvas placeholder')
 
 // --- HighScoresView.vue: table rendering ---

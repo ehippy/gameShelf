@@ -1,29 +1,62 @@
 import { defineStore } from 'pinia'
+import gamesCatalog from '../data/gamesCatalog.js'
+
+function loadScoresFromLocalStorage() {
+  const scores = {}
+  for (const game of gamesCatalog) {
+    const key = `gamescore_${game.slug}`
+    const raw = localStorage.getItem(key)
+    try {
+      scores[game.slug] = JSON.parse(raw || '[]')
+    } catch {
+      scores[game.slug] = []
+    }
+  }
+  return scores
+}
 
 export const useScoreStore = defineStore('score', {
   state: () => ({
-    highScores: {
-      snake: [],
-      tetris: [],
-      breakout: []
-    }
+    scores: loadScoresFromLocalStorage()
   }),
   actions: {
-    addScore(gameId, name, score) {
-      if (!this.highScores[gameId]) {
-        this.highScores[gameId] = []
+    submitScore(gameSlug, score) {
+      const key = `gamescore_${gameSlug}`
+      const current = JSON.parse(localStorage.getItem(key) || '[]')
+      current.push({ gameSlug, score, timestamp: new Date().toISOString() })
+      localStorage.setItem(key, JSON.stringify(current))
+      if (!this.scores[gameSlug]) {
+        this.scores[gameSlug] = []
       }
-      this.highScores[gameId].push({
-        name,
-        score,
-        date: new Date().toISOString()
-      })
+      this.scores[gameSlug] = current
     },
-    getHighScores(gameId) {
-      return this.highScores[gameId] || []
+    getScores(gameSlug) {
+      const key = `gamescore_${gameSlug}`
+      const raw = localStorage.getItem(key)
+      try {
+        const scores = JSON.parse(raw || '[]')
+        return scores.sort((a, b) => b.score - a.score)
+      } catch {
+        return []
+      }
     },
-    clearScores(gameId) {
-      this.highScores[gameId] = []
+    getAllScores() {
+      const all = []
+      for (const game of gamesCatalog) {
+        const key = `gamescore_${game.slug}`
+        const raw = localStorage.getItem(key)
+        try {
+          const scores = JSON.parse(raw || '[]')
+          all.push(...scores)
+        } catch {
+          // skip
+        }
+      }
+      return all.sort((a, b) => b.score - a.score)
+    },
+    clearScores(gameSlug) {
+      localStorage.removeItem(`gamescore_${gameSlug}`)
+      this.scores[gameSlug] = []
     }
   }
 })
