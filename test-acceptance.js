@@ -605,39 +605,132 @@ if (tetrisModule) {
 
   // ── Behavioral: hard-drop (space bar) ──
   tetrisModule.init()
-  const dropRow = tetrisModule.state.currentPiece.row
+  // Move piece to the bottom first
+  while (tetrisModule.state.currentPiece.row < 15) {
+    tetrisModule.handleKeydown('ArrowDown')
+  }
+  const preDropScore = tetrisModule.state.score
   tetrisModule.handleKeydown(' ')
-  // After hard drop, the piece should be as low as possible
-  assert(tetrisModule.state.currentPiece.row > dropRow || tetrisModule.state.isGameOver, 'hard drop moves piece down or locks it')
+  // After hard drop, the old piece locks and a new piece spawns at row 0
+  // Score should increase by hard drop bonus (2 per row dropped)
+  assert(tetrisModule.state.score >= preDropScore, 'hard drop does not reduce score')
+  // The piece should be locked (new piece spawned at top)
+  assert(tetrisModule.state.currentPiece.row >= 0 && tetrisModule.state.currentPiece.row <= 2, 'hard drop spawns new piece near top')
 
   // ── Behavioral: rotation (arrow up) ──
   tetrisModule.init()
   const shapeBefore = tetrisModule.state.currentPiece.shape.map(r => [...r])
   tetrisModule.handleKeydown('ArrowUp')
-  // After rotation, shape should be transposed (90° clockwise)
+  // After rotation, shape should be different (90° clockwise)
   const shapeAfter = tetrisModule.state.currentPiece.shape
-  assert(shapeBefore !== shapeAfter, 'rotation changes piece shape')
+  assert(shapeBefore.length !== shapeAfter.length ||
+    shapeBefore.some((r, i) => r.some((v, j) => v !== shapeAfter[i]?.[j])),
+    'rotation changes piece shape')
 
   // ── Behavioral: line clearing + scoring ──
-  // Fill an entire row with blocks, then drop a piece onto it to trigger lock/clear
+  // Fill an entire row with blocks, then manually place a piece ON that row
+  // so that when the piece locks, the full row gets cleared
   tetrisModule.init()
-  // Fill row 18 (second from bottom) completely
+  // Fill row 19 (bottom row) completely
+  for (let c = 0; c < 10; c++) {
+    tetrisModule.state.board[19][c] = '#ff0000'
+  }
+  // Manually place current piece so that it fills the gaps and locks onto row 19
+  // The piece is at top; set its position so its bottom blocks land on row 19
+  // For a 3-row-tall piece (T, J, L, etc.): set row to 17 (17+2=19)
+  if (tetrisModule.state.currentPiece.shape.length === 3) {
+    tetrisModule.state.currentPiece.row = 16  // blocks at 16, 17, 18 (bottom at 18, one above filled row)
+    // Actually we want the piece's filled blocks to overlap row 19
+    // Set piece row so its blocks land exactly where they lock
+  }
+  // Simpler approach: fill row 18 completely instead, and place a 2-row piece
+  tetrisModule.init()
+  // Fill row 18 completely
   for (let c = 0; c < 10; c++) {
     tetrisModule.state.board[18][c] = '#ff0000'
   }
-  // Move the current piece down until it hits row 18
-  while (
-    tetrisModule.state.currentPiece.row + tetrisModule.state.currentPiece.shape.length < 18
-  ) {
+  // Find a piece that's 2 rows tall (O is 2x2) and position it so it locks on row 17
+  // Then update() will try to drop, fail (row 18 filled), lock piece at row 17,
+  // but row 18 stays full. No line clears.
+  // We need the piece to LAND ON the full row. Let's fill row 19 and use update().
+  tetrisModule.init()
+  for (let c = 0; c < 10; c++) {
+    tetrisModule.state.board[19][c] = '#ff0000'
+  }
+  // Move piece down until it's one row above the filled row
+  while (tetrisModule.state.currentPiece.row < 16) {
     tetrisModule.handleKeydown('ArrowDown')
   }
-  // Now the piece is above row 18; call update to try to drop further
-  // and lock it on row 18
-  const scoreAfterInit = tetrisModule.state.score
-  tetrisModule.update() // try to drop further (will hit wall/row 18)
-  tetrisModule.update() // lock piece on row 18
-  tetrisModule.update() // should clear the full row and award points
-  assert(tetrisModule.state.score > scoreAfterInit, 'line clearing increases score')
+  // Now piece is near bottom. Next update() tries to drop further.
+  // The piece's bottom row + shape offset will overlap row 19 (filled),
+  // so update() locks at current position. But row 18 might not be full.
+  // For line clearing we need a FULL row to become full after piece locks.
+  // Let's take a different approach: just call update() multiple times
+  // and check if linesCleared > 0 happened.
+  const scoreBefore = tetrisModule.state.score
+  // Drop the piece until it locks
+  for (let i = 0; i < 10; i++) {
+    tetrisModule.update()
+  }
+  // At this point the piece should be locked somewhere near the bottom.
+  // Row 19 is full but no piece landed on it, so row 18 isn't cleared.
+  // Let's check if any lines were actually cleared
+  assert(tetrisModule.state.score >= scoreBefore, 'update() runs and score does not decrease')
+
+  // ── More direct line-clearing test: fill a row and spawn a piece on top of it ──
+  tetrisModule.init()
+  // Fill row 17 completely
+  for (let c = 0; c < 10; c++) {
+    tetrisModule.state.board[17][c] = '#ff0000'
+  }
+  // Also fill row 18 completely
+  for (let c = 0; c < 10; c++) {
+    tetrisModule.state.board[18][c] = '#ff0000'
+  }
+  // Fill row 19 completely
+  for (let c = 0; c < 10; c++) {
+    tetrisModule.state.board[19][c] = '#ff0000'
+  }
+  // Now clear rows 18 and 19 (they're already full)
+  // Actually, we need to use the clearLines function. Since it's not exported,
+  // we trigger it via lockPiece -> update(). Place a piece on top, then update().
+  // But the real issue is: these rows are ALREADY full from init, they won't be
+  // "cleared" unless the game processes them. Let's instead use the board state.
+  // The clearLines function is called from lockPiece. Since init() creates an empty board
+  // and doesn't call clearLines, we need to trigger line clearing via piece locking.
+  // Fill row 15 completely. Place the piece at row 13 (so when update locks it,
+  // row 15 still has the pre-filled blocks). That won't help.
+  // The simplest test: set board[15] to all filled, then use update() to force
+  // a lock at a lower row. But update() locks when piece can't go down.
+  // Let me just set up the board so rows 17, 18, 19 are full, place piece at row 16,
+  // and have update() lock it. But update() will see the piece overlapping filled rows
+  // and can't move down from row 16.
+  // 
+  // Easier approach: directly set the board to have a full row, then trigger
+  // line clearing by calling lockPiece. Since lockPiece isn't exported, we use
+  // update() to trigger it.
+  tetrisModule.init()
+  // Fill rows 17, 18, 19
+  for (let r of [17, 18, 19]) {
+    for (let c = 0; c < 10; c++) {
+      tetrisModule.state.board[r][c] = '#ff0000'
+    }
+  }
+  // Place piece at row 16 so update() tries to drop to row 17 (blocked by filled row)
+  tetrisModule.state.currentPiece.row = 15
+  tetrisModule.state.currentPiece.col = 3
+  const scoreBeforeLC = tetrisModule.state.score
+  tetrisModule.update() // tries to move down to 16, locks if can't move to 17
+  tetrisModule.update() // tries again
+  // update() at row 16: can it go to 17? Row 17 is all filled. The piece blocks at row 17 will overlap.
+  // So update() locks piece at row 16. Rows 17, 18, 19 are already full but weren't just cleared.
+  // The clearLines() is only called when lockPiece() is called, and lockPiece only processes
+  // the row(s) the locked piece touches. It won't clear pre-existing full rows.
+  // 
+  // Actually, clearLines() iterates ALL rows and clears ANY full row. So after lockPiece
+  // at row 16, clearLines() should find rows 17, 18, 19 full and clear them.
+  assert(tetrisModule.state.score > scoreBeforeLC, 'full rows are cleared by line clearing, score increases')
+  assert(tetrisModule.state.lines > 0, 'lines counter increases after clearing')
 
   // ── Behavioral: game-over on spawn collision ──
   // Fill the entire board except row 19, then re-init to trigger game-over on spawn
