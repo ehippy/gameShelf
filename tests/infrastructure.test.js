@@ -3,7 +3,7 @@ import { readFileSync, existsSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { execFileSync } from 'node:child_process'
 
-const root = import.meta.dirname
+const root = import.meta.dirname + '/..'
 
 // --- Directory structure ---
 
