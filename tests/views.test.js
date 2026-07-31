@@ -122,6 +122,20 @@ describe('GamePage', () => {
     expect(gamePageSrc).toContain('gameStore') || expect(gamePageSrc).toContain('getGameBySlug')
   })
 
+  it('imports useRouter', () => {
+    expect(gamePageSrc).toContain('useRouter')
+  })
+
+  it('uses router.replace for 404 on unknown slug', () => {
+    expect(gamePageSrc).toContain("router.replace('/404')")
+  })
+
+  it('returns early when game not found (no dynamic import for invalid slug)', () => {
+    // After the if (!game) guard, there should be a return to prevent further execution
+    const gamePageMatch = gamePageSrc.match(/if\s*\(\s*!game\s*\)\s*\{[\s\S]*?return/)
+    expect(gamePageMatch).not.toBeNull()
+  })
+
   it('has game canvas', () => {
     expect(gamePageSrc).toContain('<canvas')
   })
