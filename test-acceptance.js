@@ -226,6 +226,7 @@ assert(!catalog.includes('id:'), 'gamesCatalog.js does not use old id field')
 assert(!catalog.includes("id: 'snake'"), 'gamesCatalog.js does not use old id field for snake')
 assert(!catalog.includes("id: 'tetris'"), 'gamesCatalog.js does not use old id field for tetris')
 assert(!catalog.includes("id: 'breakout'"), 'gamesCatalog.js does not use old id field for breakout')
+assert(!catalog.includes('name:'), 'gamesCatalog.js does not use old name field')
 assert(!catalog.includes('genre'), 'gamesCatalog.js does not use old genre field')
 
 // --- gameStore: no old methods ---
