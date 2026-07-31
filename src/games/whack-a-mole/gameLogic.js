@@ -10,7 +10,7 @@
 const COLS = 4
 const ROWS = 3
 const CANVAS_W = 250
-const CANVAS_H = 500
+const CANVAS_H = 200
 const GAME_DURATION = 30 // seconds
 
 const GAP_PADDING = 20 // px from canvas edges for grid area
