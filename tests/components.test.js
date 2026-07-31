@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest'
-import { readFileSync, existsSync } from 'node:fs'
-import { join } from 'node:path'
+import { readFileSync, fileURLToPath } from 'node:fs'
+import { join, dirname } from 'node:path'
 
-const root = import.meta.dirname + '/..'
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const root = join(__dirname, '..')
 
 // Load component source files
 const appHeaderSrc = readFileSync(join(root, 'src', 'components', 'AppHeader.vue'), 'utf-8')
