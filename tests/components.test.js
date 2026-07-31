@@ -77,7 +77,7 @@ describe('AppHeader', () => {
   })
 
   it('brand references accent color', () => {
-    expect(appHeaderSrc).toContain('#7f5af0') || expect(appHeaderSrc).toContain('var(--color-accent)')
+    expect(appHeaderSrc).toMatch(/#7f5af0|var\(--color-accent\)/)
   })
 })
 
