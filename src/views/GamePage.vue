@@ -175,6 +175,12 @@ function playAgain() {
   border-color: var(--color-accent);
 }
 
+.canvas-wrapper canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 .game-over-overlay {
   position: absolute;
   inset: 0;
