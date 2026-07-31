@@ -55,6 +55,8 @@ assert(existsSync(join(root, 'src', 'games', 'snake', 'gameLogic.js')), 'src/gam
 assert(existsSync(join(root, 'src', 'games', 'tetris', 'gameLogic.js')), 'src/games/tetris/gameLogic.js exists')
 assert(existsSync(join(root, 'src', 'games', 'breakout', 'gameLogic.js')), 'src/games/breakout/gameLogic.js exists')
 
+assert(existsSync(join(root, 'src', 'games', 'flappy-bird', 'gameLogic.js')), 'src/games/flappy-bird/gameLogic.js exists')
+
 // --- Data ---
 
 assert(existsSync(join(root, 'src', 'data', 'gamesCatalog.js')), 'src/data/gamesCatalog.js exists')
