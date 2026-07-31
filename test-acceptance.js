@@ -460,10 +460,10 @@ const tetrisSrc = readFileSync(tetrisPath, 'utf-8')
 
 // Static checks on tetris source
 
-// All 7 tetrominoes present with correct shapes and colors
-assert(tetrisSrc.includes("'I'") && tetrisSrc.includes("'O'") && tetrisSrc.includes("'T'") &&
-  tetrisSrc.includes("'S'") && tetrisSrc.includes("'Z'") && tetrisSrc.includes("'J'") &&
-  tetrisSrc.includes("'L'"), 'tetris gameLogic.js defines all 7 tetromino types')
+// All 7 tetrominoes present (as object keys I:, O:, T:, S:, Z:, J:, L:)
+assert(tetrisSrc.includes('I:') && tetrisSrc.includes('O:') && tetrisSrc.includes('T:') &&
+  tetrisSrc.includes('S:') && tetrisSrc.includes('Z:') && tetrisSrc.includes('J:') &&
+  tetrisSrc.includes('L:'), 'tetris gameLogic.js defines all 7 tetromino types')
 
 // Correct colors
 assert(tetrisSrc.includes("color: '#00f0f0'") || tetrisSrc.includes('color: "#00f0f0"'), 'I tetromino is cyan (#00f0f0)')
