@@ -107,6 +107,7 @@ describe('snake', () => {
       snakeModule.init()
       expect(() => snakeModule.reset()).not.toThrow()
     })
+
     it('handleKeydown is a function', () => {
       if (!snakeModule) return
       expect(typeof snakeModule.handleKeydown).toBe('function')
