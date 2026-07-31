@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { readFileSync, fileURLToPath } from 'node:fs'
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import { join, dirname } from 'node:path'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
