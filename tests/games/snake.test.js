@@ -81,6 +81,16 @@ describe('snake', () => {
       expect(typeof snakeModule.CANVAS_HEIGHT).toBe('number')
     })
 
+    it('exports CANVAS_WIDTH = 250', () => {
+      if (!snakeModule) return
+      expect(snakeModule.CANVAS_WIDTH).toBe(250)
+    })
+
+    it('exports CANVAS_HEIGHT = 250', () => {
+      if (!snakeModule) return
+      expect(snakeModule.CANVAS_HEIGHT).toBe(250)
+    })
+
     it('init() runs without error', () => {
       if (!snakeModule) return
       expect(() => snakeModule.init()).not.toThrow()
