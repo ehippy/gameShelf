@@ -18,7 +18,7 @@
 
 <script setup>
 import { useGameStore } from '../stores/gameStore.js'
-import GameCard from '../components/GameCard.vue'
+import GameCard from './GameCard.vue'
 
 const gameStore = useGameStore()
 </script>
