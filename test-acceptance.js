@@ -93,7 +93,7 @@ assert(pkg.devDependencies && pkg.devDependencies.pinia, 'package.json has pinia
 const viteConfig = readFileSync(join(root, 'vite.config.js'), 'utf-8')
 assert(viteConfig.includes('defineConfig'), 'vite.config.js uses defineConfig')
 assert(viteConfig.includes("@vitejs/plugin-vue"), 'vite.config.js imports from @vitejs/plugin-vue')
-assert(viteConfig.includes("'/gameShelf/'"), 'vite.config.js sets base to /gameShelf/')
+assert(viteConfig.includes("base: '/'"), 'vite.config.js sets base to /')
 assert(viteConfig.includes('plugins'), 'vite.config.js exports config with plugins')
 assert(viteConfig.includes('fileURLToPath'), 'vite.config.js uses fileURLToPath')
 
