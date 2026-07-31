@@ -44,6 +44,7 @@ const scoreStore = useScoreStore()
 const game = computed(() => gameStore.getGameBySlug(route.params.id))
 
 const gameCanvas = ref(null)
+const canvasWrapper = ref(null)
 let state = null
 
 const canvasWidth = ref(250)
