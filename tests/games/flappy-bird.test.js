@@ -416,6 +416,7 @@ describe('flappy-bird', () => {
     it('ceiling collision triggers game over', () => {
       if (!flappyModule) return
       flappyModule.init()
+      flappyModule.handleKeydown('ArrowUp')
       flappyModule.state.bird.row = -1
       flappyModule.state.bird.velocity = 0
       flappyModule.update()
@@ -425,6 +426,7 @@ describe('flappy-bird', () => {
     it('ground collision triggers game over', () => {
       if (!flappyModule) return
       flappyModule.init()
+      flappyModule.handleKeydown('ArrowUp')
       flappyModule.state.bird.row = 6.6
       flappyModule.state.bird.velocity = 0
       flappyModule.update()
@@ -434,6 +436,7 @@ describe('flappy-bird', () => {
     it('pipe collision triggers game over', () => {
       if (!flappyModule) return
       flappyModule.init()
+      flappyModule.handleKeydown('ArrowUp')
       flappyModule.state.bird.row = 2
       flappyModule.state.bird.col = 3
       flappyModule.state.bird.velocity = 0
