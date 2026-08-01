@@ -30,3 +30,11 @@ export function render(canvas) {
 export function reset() {
   // Stub: game reset logic
 }
+
+/**
+ * Handle keyboard input. No-op for stub.
+ * @param {string} key - The key pressed.
+ */
+export function handleKeydown(key) {
+  // Stub: no-op
+}

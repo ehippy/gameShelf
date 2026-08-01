@@ -18,7 +18,7 @@
         </div>
       </div>
 
-      <div class="canvas-wrapper" tabindex="0">
+      <div class="canvas-wrapper" ref="canvasWrapper" tabindex="0">
         <canvas ref="gameCanvas" :width="canvasWidth" :height="canvasHeight"></canvas>
 
         <div v-if="state && state.isGameOver" class="game-over-overlay">
@@ -33,17 +33,19 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, reactive } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useGameStore } from '../stores/gameStore.js'
 import { useScoreStore } from '../stores/scoreStore.js'
 
 const route = useRoute()
+const router = useRouter()
 const gameStore = useGameStore()
 const scoreStore = useScoreStore()
 
 const game = computed(() => gameStore.getGameBySlug(route.params.id))
 
 const gameCanvas = ref(null)
+const canvasWrapper = ref(null)
 let state = null
 
 const canvasWidth = ref(250)
@@ -52,11 +54,17 @@ const canvasHeight = ref(200)
 let gameLogic = null
 let animFrameId = null
 let lastSnapshotScore = null
+let resizeObserver = null
 
 onMounted(async () => {
   const slug = route.params.id
+  const game = gameStore.getGameBySlug(slug)
+  if (!game) {
+    router.replace('/404')
+    return
+  }
   // Dynamically import the game module
-  gameLogic = await import(`../games/${slug}/gameLogic.js`)
+  gameLogic = await import('../games/' + slug + '/gameLogic.js')
   canvasWidth.value = gameLogic.CANVAS_WIDTH ?? 250
   canvasHeight.value = gameLogic.CANVAS_HEIGHT ?? 200
 
@@ -99,11 +107,31 @@ onMounted(async () => {
   }
   animFrameId = requestAnimationFrame(gameLoop)
 
+  // Resize handler
+  const wrapperEl = canvasWrapper.value
+  if (wrapperEl) {
+    resizeObserver = new ResizeObserver(() => {
+      const availableHeight = window.innerHeight - 160
+      const availableWidth = Math.min(window.innerWidth, 95 * window.innerWidth / 100)
+      const scale_x = availableWidth / gameLogic.CANVAS_WIDTH
+      const scale_y = availableHeight / gameLogic.CANVAS_HEIGHT
+      const scale = Math.min(scale_x, scale_y)
+      const displayWidth = Math.round(gameLogic.CANVAS_WIDTH * scale)
+      const displayHeight = Math.round(gameLogic.CANVAS_HEIGHT * scale)
+      canvas.style.width = `${displayWidth}px`
+      canvas.style.height = `${displayHeight}px`
+    })
+    resizeObserver.observe(wrapperEl)
+  }
+
   // Cleanup on unmount
   onBeforeUnmount(() => {
     window.removeEventListener('keydown', onKeyDown)
     if (animFrameId) {
       cancelAnimationFrame(animFrameId)
+    }
+    if (resizeObserver) {
+      resizeObserver.disconnect()
     }
   })
 })
@@ -119,8 +147,6 @@ function playAgain() {
 
 <style scoped>
 .game-page {
-  max-width: 720px;
-  margin: 0 auto;
   padding: var(--spacing-lg);
 }
 
@@ -161,23 +187,25 @@ function playAgain() {
 }
 
 .canvas-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
   position: relative;
-  width: 100%;
-  max-width: 700px;
-  margin: 0 auto;
-  border: 2px solid var(--color-bg-tertiary);
   border-radius: 8px;
   overflow: hidden;
   outline: none;
 }
 
-.canvas-wrapper:focus {
+.canvas-wrapper canvas:focus {
   border-color: var(--color-accent);
 }
 
 .canvas-wrapper canvas {
   width: 100%;
-  height: auto;
+  height: 100%;
+  background-color: #0f0f23;
+  border: 2px solid var(--color-bg-tertiary);
+  border-radius: 8px;
   display: block;
 }
 

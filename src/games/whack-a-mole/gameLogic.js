@@ -259,7 +259,7 @@ function spawnMoles() {
 
 // ─── Whack Logic ──────────────────────────────────────────────────────────────
 
-function whackCell(col, row) {
+export function whackCell(col, row) {
   const mole = state.activeMoles.find(
     m => m.col === col && m.row === row && m.phase < 66 // whackable: rising or idle
   )
