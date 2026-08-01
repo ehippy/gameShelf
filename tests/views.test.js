@@ -82,7 +82,7 @@ describe('HomeView', () => {
   })
 
   it('has a GameCard loop using v-for', () => {
-    const gameCardLoopMatch = homeViewSrc.match(/<GameCard[\s\S]*?v-for="game in gameStore.catalog"[\s\S]*?\/>/)
+    const gameCardLoopMatch = homeViewSrc.match(/<GameCard[\s\S]*?v-for="game in filteredGames"[\s\S]*?\/>/)
     expect(gameCardLoopMatch).not.toBeNull()
   })
 
