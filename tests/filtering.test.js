@@ -121,7 +121,7 @@ describe('filtering behavior', () => {
   it('case-insensitive search: "CLASSIC" + "arcade" (lowercase category) → Snake, Breakout', () => {
     const results = computeFilteredGames(gamesCatalog, 'CLASSIC', 'arcade')
     expect(results.length).toBe(2)
-    expect(results.map(g => g.slug).sort()).toEqual(['snake', 'breakout'])
+    expect(results.map(g => g.slug).sort()).toEqual(['breakout', 'snake'])
   })
 
   it('search "brick" → shows only Breakout', () => {
