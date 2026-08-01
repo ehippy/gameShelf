@@ -544,9 +544,10 @@ describe('breakout', () => {
 
     it('update() reverses dx on side collision with brick', () => {
       breakoutModule.init()
-      const brick = breakoutModule.state.bricks[0]
+      // Use brick at col 2 to avoid wall interference
+      const brick = breakoutModule.state.bricks[2]
       // Position ball to hit the left side of the brick
-      breakoutModule.state.ball.x = brick.x - breakoutModule.state.ball.size + 2
+      breakoutModule.state.ball.x = brick.x - breakoutModule.state.ball.size + 3
       breakoutModule.state.ball.y = brick.y + 5
       breakoutModule.state.ball.dx = 2
       breakoutModule.state.ball.dy = 0
