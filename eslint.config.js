@@ -4,7 +4,7 @@ import n from 'eslint-plugin-n'
 import globals from 'globals'
 
 export default [
-  // 1. Default (all files): @eslint/js recommended rules + node/recommended rules + node/browser/es2021 globals
+  // 1. Default (all files): @eslint/js recommended rules + eslint-plugin-n recommended rules + node/browser/es2021 globals
   {
     files: ['**/*.js', '**/*.vue'],
     ignores: ['node_modules/', 'dist/', 'tests/e2e/'],
