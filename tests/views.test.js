@@ -326,8 +326,8 @@ describe('GamePage', () => {
   })
 
   it('gameLoop calls submitScoreIfGameOver instead of inline logic', () => {
-    // Extract the gameLoop function body
-    const loopMatch = gamePageSrc.match(/const gameLoop = \(\)\s*=>\s*\{([\s\S]*?)\n\s*\}/)
+    // Extract the gameLoop function body — use greedy match to get to the outer closing brace
+    const loopMatch = gamePageSrc.match(/const gameLoop = \(\)\s*=>\s*\{([\s\S]*?)\n  \}\n/)
     expect(loopMatch).not.toBeNull()
     const loopBody = loopMatch[1]
     // Must contain a call to the helper
