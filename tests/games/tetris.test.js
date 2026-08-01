@@ -108,27 +108,27 @@ describe('tetris', () => {
     })
 
     it('State has score field', () => {
-      expect(tetrisSrc).toContain('score:') || expect(tetrisSrc).toContain('"score"')
+      expect(tetrisSrc).toContain('score:')
     })
 
     it('State has level field', () => {
-      expect(tetrisSrc).toContain('level:') || expect(tetrisSrc).toContain('"level"')
+      expect(tetrisSrc).toContain('level:')
     })
 
     it('State has lines field', () => {
-      expect(tetrisSrc).toContain('lines:') || expect(tetrisSrc).toContain('"lines"')
+      expect(tetrisSrc).toContain('lines:')
     })
 
     it('State has isGameOver field', () => {
-      expect(tetrisSrc).toContain('isGameOver:') || expect(tetrisSrc).toContain('"isGameOver"')
+      expect(tetrisSrc).toContain('isGameOver:')
     })
 
     it('State has nextPiece field', () => {
-      expect(tetrisSrc).toContain('nextPiece:') || expect(tetrisSrc).toContain('"nextPiece"')
+      expect(tetrisSrc).toContain('nextPiece:')
     })
 
     it('State has board field', () => {
-      expect(tetrisSrc).toContain('board:') || expect(tetrisSrc).toContain('"board"')
+      expect(tetrisSrc).toContain('board:')
     })
 
     it('has line clearing logic', () => {
