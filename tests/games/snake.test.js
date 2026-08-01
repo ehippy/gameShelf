@@ -427,12 +427,19 @@ describe('snake', () => {
 
     it('update() moves snake left by 1 cell on move frame', () => {
       snakeModule.init()
+      // The initial snake [{2,5},{1,5},{0,5}] would self-collide going left.
+      // Reposition so body is going downward, then turn left to move safely.
+      snakeModule.state.snake = [
+        { x: 5, y: 5 },
+        { x: 5, y: 6 },
+        { x: 5, y: 7 }
+      ]
       snakeModule.state.direction = 'up'
       snakeModule.handleKeydown('ArrowLeft')
-      expect(snakeModule.state.direction).toBe('left') // verify direction changed
+      expect(snakeModule.state.direction).toBe('left')
       const headBefore = { ...snakeModule.state.snake[0] }
-      expect(headBefore.x).toBe(2)
-      // Consume any leftover framesPlayed from prior tests
+      expect(headBefore.x).toBe(5)
+      // Reset framesPlayed to ensure we hit a move frame
       snakeModule.state.framesPlayed = 0
       for (let i = 0; i < 9; i++) {
         snakeModule.update()
