@@ -188,7 +188,8 @@ describe('GamePage', () => {
   })
 
   it('looks up game in store', () => {
-    expect(gamePageSrc).toContain('gameStore') || expect(gamePageSrc).toContain('getGameBySlug')
+    expect(gamePageSrc).toContain('gameStore')
+    expect(gamePageSrc).toContain('getGameBySlug')
   })
 
   it('imports useRouter', () => {
