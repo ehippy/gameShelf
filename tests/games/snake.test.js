@@ -381,10 +381,10 @@ describe('snake', () => {
 
     it('update() increments framesPlayed each move frame', () => {
       snakeModule.init()
+      snakeModule.handleKeydown('ArrowRight') // start the game
       expect(snakeModule.state.framesPlayed).toBe(0)
-      snakeModule.update() // frame 0→1
       // After 10 updates, framesPlayed = 10
-      for (let i = 1; i < 10; i++) {
+      for (let i = 0; i < 10; i++) {
         snakeModule.update()
       }
       expect(snakeModule.state.framesPlayed).toBe(10)
@@ -392,6 +392,7 @@ describe('snake', () => {
 
     it('update() moves snake right by 1 cell on a move frame', () => {
       snakeModule.init()
+      snakeModule.handleKeydown('ArrowRight') // start the game
       const headBefore = { ...snakeModule.state.snake[0] }
       // After first update: framesPlayed=1, no move (1%10≠0). After 9 more: framesPlayed=10, move occurs.
       for (let i = 0; i < 9; i++) {
