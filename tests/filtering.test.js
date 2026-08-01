@@ -143,3 +143,86 @@ describe('filtering behavior', () => {
     expect(results[0].slug).toBe('flappy-bird')
   })
 })
+
+// --- Integration tests: mounted HomeView reacts to Pinia store changes ---
+
+describe('HomeView integration', () => {
+  it('mounts HomeView and renders all 5 game cards when store is empty', async () => {
+    const pinia = createPinia()
+    const wrapper = mount(HomeView, {
+      global: { plugins: [pinia] }
+    })
+    const gameCards = wrapper.findAllComponents({ name: 'GameCard' })
+    expect(gameCards.length).toBe(5)
+  })
+
+  it('HomeView filters games when searchQuery is set on store', async () => {
+    const pinia = createPinia()
+    const { useGameStore } = await import('../src/stores/gameStore.js')
+    const wrapper = mount(HomeView, {
+      global: { plugins: [pinia] }
+    })
+    const store = useGameStore(pinia)
+    store.searchQuery = 'snake'
+    await wrapper.vm.$nextTick()
+    const gameCards = wrapper.findAllComponents({ name: 'GameCard' })
+    expect(gameCards.length).toBe(1)
+  })
+
+  it('HomeView filters games when selectedCategory is set on store', async () => {
+    const pinia = createPinia()
+    const { useGameStore } = await import('../src/stores/gameStore.js')
+    const wrapper = mount(HomeView, {
+      global: { plugins: [pinia] }
+    })
+    const store = useGameStore(pinia)
+    store.selectedCategory = 'Puzzle'
+    await wrapper.vm.$nextTick()
+    const gameCards = wrapper.findAllComponents({ name: 'GameCard' })
+    expect(gameCards.length).toBe(1)
+  })
+
+  it('HomeView filters by both searchQuery and selectedCategory (AND logic)', async () => {
+    const pinia = createPinia()
+    const { useGameStore } = await import('../src/stores/gameStore.js')
+    const wrapper = mount(HomeView, {
+      global: { plugins: [pinia] }
+    })
+    const store = useGameStore(pinia)
+    store.searchQuery = 'classic'
+    store.selectedCategory = 'Arcade'
+    await wrapper.vm.$nextTick()
+    const gameCards = wrapper.findAllComponents({ name: 'GameCard' })
+    expect(gameCards.length).toBe(2)
+  })
+
+  it('AppHeader binds search input to gameStore.searchQuery via :value', async () => {
+    const pinia = createPinia()
+    const { useGameStore } = await import('../src/stores/gameStore.js')
+    const wrapper = mount(AppHeader, {
+      global: { plugins: [pinia] }
+    })
+    const store = useGameStore(pinia)
+    const input = wrapper.find('.search-input')
+    expect(input.exists()).toBe(true)
+    expect(input.attributes('value')).toBe('')
+    store.searchQuery = 'snake'
+    await wrapper.vm.$nextTick()
+    expect(input.attributes('value')).toBe('snake')
+  })
+
+  it('AppHeader binds category select to gameStore.selectedCategory via :value', async () => {
+    const pinia = createPinia()
+    const { useGameStore } = await import('../src/stores/gameStore.js')
+    const wrapper = mount(AppHeader, {
+      global: { plugins: [pinia] }
+    })
+    const store = useGameStore(pinia)
+    const select = wrapper.find('.category-filter')
+    expect(select.exists()).toBe(true)
+    expect(select.attributes('value')).toBe('')
+    store.selectedCategory = 'Arcade'
+    await wrapper.vm.$nextTick()
+    expect(select.attributes('value')).toBe('Arcade')
+  })
+})
