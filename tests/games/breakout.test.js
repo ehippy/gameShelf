@@ -608,14 +608,15 @@ describe('breakout', () => {
 
     // --- update() win condition tests ---
 
-    it('update() sets isGameOver=true when all bricks are destroyed', () => {
+    it('update() sets isGameOver=false and won=true when all bricks are destroyed', () => {
       breakoutModule.init()
       // Destroy all bricks by manipulating state
       for (const brick of breakoutModule.state.bricks) {
         brick.alive = false
       }
       breakoutModule.update()
-      expect(breakoutModule.state.isGameOver).toBe(true)
+      expect(breakoutModule.state.isGameOver).toBe(false)
+      expect(breakoutModule.state.won).toBe(true)
     })
 
     it('update() sets isPlaying=true on win', () => {
