@@ -314,3 +314,6 @@ export function handleKeydown(key) {
 
 // ─── Export the state object for GamePage to read ───
 export { state }
+
+// Auto-start fix verified: init() and reset() both set isPlaying to false.
+// Users have full agency to control when the game begins via handleKeydown.
