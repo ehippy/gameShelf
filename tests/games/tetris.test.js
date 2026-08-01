@@ -360,6 +360,27 @@ describe('tetris', () => {
       expect(tetrisModule.state.isPlaying).toBe(false)
     })
 
+    // Additional auto-start regression tests for Breakout
+
+    it('init() does not auto-start Breakout (isPlaying stays false)', () => {
+      breakoutModule.init()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+    })
+
+    it('reset() does not auto-start Breakout (isPlaying stays false)', () => {
+      breakoutModule.init()
+      breakoutModule.state.score = 100
+      breakoutModule.reset()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+    })
+
+    it('handleKeydown starts Breakout game when not playing (three-way logic)', () => {
+      breakoutModule.init()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+      breakoutModule.handleKeydown('ArrowRight')
+      expect(breakoutModule.state.isPlaying).toBe(true)
+    })
+
     it('hard drop does not reduce score', () => {
       if (!tetrisModule) return
       tetrisModule.init()
