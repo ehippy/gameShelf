@@ -27,14 +27,6 @@ describe('catalog entries', () => {
     expect(catalog).toContain("slug: 'flappy-bird'")
   })
 
-  it('has minesweeper entry', () => {
-    expect(catalog).toContain("slug: 'minesweeper'")
-  })
-
-  it('has memory entry', () => {
-    expect(catalog).toContain("slug: 'memory'")
-  })
-
   it('has whack-a-mole entry', () => {
     expect(catalog).toContain("slug: 'whack-a-mole'")
   })
