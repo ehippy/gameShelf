@@ -17,6 +17,7 @@
     "@vitest/eslint-plugin": "^1.6.24",
     "@vue/test-utils": "^2.4.11",
     "eslint": "^9",
+    "eslint-plugin-n": "^18.2.2",
     "globals": "^17.8.0",
     "jsdom": "^30.0.1",
     "pinia": "^2",
