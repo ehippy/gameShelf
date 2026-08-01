@@ -25,7 +25,8 @@ describe('HomeView', () => {
   })
 
   it('has tagline', () => {
-    expect(homeViewSrc).toContain('tagline') || expect(homeViewSrc).toContain('Play classic games')
+    expect(homeViewSrc).toContain('tagline')
+    expect(homeViewSrc).toContain('Play classic games')
   })
 
   it('renders games grid with filtered games', () => {
