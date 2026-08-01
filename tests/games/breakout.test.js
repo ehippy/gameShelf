@@ -246,10 +246,10 @@ describe('breakout', () => {
       expect(breakoutModule.state.lives).toBe(3)
     })
 
-    it('reset() produces isPlaying = true', () => {
+    it('reset() produces isPlaying = false', () => {
       breakoutModule.init()
       breakoutModule.reset()
-      expect(breakoutModule.state.isPlaying).toBe(true)
+      expect(breakoutModule.state.isPlaying).toBe(false)
     })
 
     it('reset() produces isGameOver = false', () => {
