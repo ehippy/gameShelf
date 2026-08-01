@@ -347,8 +347,8 @@ describe('breakout', () => {
     })
 
     it('all three games: init() ensures isPlaying is false (comprehensive regression)', () => {
-      // Snake
-      expect(snakeModule.state.isPlaying).toBe(false)
+      // Breakout: verify directly
+      expect(breakoutModule.state.isPlaying).toBe(false)
     })
 
     it('handleKeydown ArrowLeft moves paddle left by 10', () => {
