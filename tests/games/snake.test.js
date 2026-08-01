@@ -159,10 +159,10 @@ describe('snake', () => {
       expect(state.isGameOver).toBe(false)
     })
 
-    it('init() sets state.isPlaying to true', () => {
+    it('init() sets state.isPlaying to false', () => {
       const state = snakeModule.init()
       expect(typeof state.isPlaying).toBe('boolean')
-      expect(state.isPlaying).toBe(true)
+      expect(state.isPlaying).toBe(false)
     })
 
     it('init() sets state.direction to "right"', () => {
