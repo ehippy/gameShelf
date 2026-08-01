@@ -130,7 +130,6 @@ function triggerGameOver() {
 export function init() {
   state = createInitialState()
   state.lastPipeDrop = state.framesPlayed
-  state.isPlaying = true
   return state
 }
 
@@ -315,7 +314,6 @@ function drawBird(ctx, bird) {
 export function reset() {
   state = createInitialState()
   state.lastPipeDrop = state.framesPlayed
-  state.isPlaying = true
   return state
 }
 
@@ -323,15 +321,30 @@ export function reset() {
  * Handle keyboard input. Exported for GamePage to wire up.
  */
 export function handleKeydown(key) {
-  if (!state || state.isGameOver || !state.isPlaying) return
+  if (!state) return
 
   if (key === 'ArrowUp' || key === ' ') {
-    state.bird.velocity = FLAP_STRENGTH
+    if (state.isGameOver) {
+      // Restart: reset state and start playing
+      state = createInitialState()
+      state.lastPipeDrop = state.framesPlayed
+      state.isPlaying = true
+      state.bird.velocity = FLAP_STRENGTH
+    } else if (!state.isPlaying) {
+      // Start game on first input
+      state.isPlaying = true
+      state.bird.velocity = FLAP_STRENGTH
+    } else {
+      // Already playing — flap as normal
+      state.bird.velocity = FLAP_STRENGTH
+    }
   }
 
   if (key === 'ArrowDown') {
-    // Accelerate fall speed
-    state.bird.velocity += 0.5
+    if (state.isPlaying && !state.isGameOver) {
+      // Accelerate fall speed
+      state.bird.velocity += 0.5
+    }
   }
 }
 
