@@ -5,6 +5,10 @@ inputs:
   attempt:
     description: 'Which attempt number (1, 2, or 3)'
     required: true
+  artifact_path:
+    description: 'Path to the artifact directory'
+    required: true
+    default: './dist/'
 
 outputs:
   page_url:
