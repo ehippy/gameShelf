@@ -360,7 +360,7 @@ describe('tetris', () => {
       expect(tetrisModule.state.isPlaying).toBe(false)
     })
 
-    // Additional auto-start regression tests for Breakout
+    // Additional auto-start regression tests for Breakout (cross-module verification)
 
     it('init() does not auto-start Breakout (isPlaying stays false)', () => {
       breakoutModule.init()
