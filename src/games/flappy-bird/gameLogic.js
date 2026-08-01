@@ -130,7 +130,6 @@ function triggerGameOver() {
 export function init() {
   state = createInitialState()
   state.lastPipeDrop = state.framesPlayed
-  state.isPlaying = true
   return state
 }
 
