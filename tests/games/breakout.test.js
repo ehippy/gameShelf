@@ -889,6 +889,7 @@ describe('breakout', () => {
 
     it('render() displays YOU WIN overlay when won is true', async () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       for (const brick of breakoutModule.state.bricks) {
         brick.alive = false
       }
