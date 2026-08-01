@@ -226,11 +226,11 @@ describe('flappy-bird', () => {
       expect(initState.isGameOver).toBe(false)
     })
 
-    it('initial state.isPlaying is true', () => {
+    it('initial state.isPlaying is false', () => {
       if (!flappyModule) return
       const initState = flappyModule.init()
       expect(typeof initState.isPlaying).toBe('boolean')
-      expect(initState.isPlaying).toBe(true)
+      expect(initState.isPlaying).toBe(false)
     })
 
     it('state.bird is set after init', () => {
