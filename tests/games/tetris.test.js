@@ -292,16 +292,24 @@ describe('tetris', () => {
       expect(() => tetrisModule.update()).not.toThrow()
     })
 
-    it('handleKeydown does not throw when game is over', () => {
+    it('handleKeydown resets state and starts playing when game is over', () => {
       if (!tetrisModule) return
       tetrisModule.init()
       tetrisModule.state.isGameOver = true
-      expect(() => {
-        tetrisModule.handleKeydown('ArrowLeft')
-        tetrisModule.handleKeydown('ArrowRight')
-        tetrisModule.handleKeydown('ArrowUp')
-        tetrisModule.handleKeydown(' ')
-      }).not.toThrow()
+      tetrisModule.handleKeydown('ArrowLeft')
+      expect(tetrisModule.state.isGameOver).toBe(false)
+      expect(tetrisModule.state.isPlaying).toBe(true)
+    })
+
+    it('handleKeydown starts playing and performs action when not playing', () => {
+      if (!tetrisModule) return
+      tetrisModule.init()
+      const scoreBefore = tetrisModule.state.score
+      tetrisModule.state.isPlaying = false
+      tetrisModule.handleKeydown('ArrowLeft')
+      expect(tetrisModule.state.isPlaying).toBe(true)
+      // Score should not have changed (just a left move without soft drop)
+      expect(tetrisModule.state.score).toBe(scoreBefore)
     })
 
     it('hard drop does not reduce score', () => {
