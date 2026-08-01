@@ -107,39 +107,28 @@ describe('HomeView', () => {
   })
 })
 
-// --- knownGameSlugs sync ---
+// --- GamePage slug guard uses isValidSlug ---
 
-describe('knownGameSlugs matches catalog exactly', () => {
-  const catalog = readFileSync(join(root, 'src', 'data', 'gamesCatalog.js'), 'utf-8')
-  const gamePage = readFileSync(join(root, 'src', 'views', 'GamePage.vue'), 'utf-8')
-
-  const catalogSlugs = []
-  let m
-  const slugRe = /slug:\s*'([^']+)'/g
-  while ((m = slugRe.exec(catalog)) !== null) catalogSlugs.push(m[1])
-
-  const knownMatch = gamePage.match(/knownGameSlugs\s*=\s*\[([^\]]+)\]/)
-  const knownSlugsRaw = knownMatch ? knownMatch[1] : ''
-  const knownSlugs = knownSlugsRaw.split(',').map(s => s.trim().replace(/'/g, '').replace(/"/g, '')).filter(Boolean)
-
-  it('knownGameSlugs has exactly 5 entries', () => {
-    expect(knownSlugs.length).toBe(5)
+describe('GamePage slug guard uses isValidSlug', () => {
+  it('imports isValidSlug from scoreStore', () => {
+    expect(gamePageSrc).toContain("import { useScoreStore, isValidSlug } from '../stores/scoreStore.js'")
   })
 
-  it('knownGameSlugs matches catalog slugs exactly', () => {
-    expect(knownSlugs.sort()).toEqual(catalogSlugs.sort())
+  it('uses isValidSlug(slug) in the guard', () => {
+    expect(gamePageSrc).toMatch(/if\s*\(\s*!isValidSlug\(slug\)\s*\)/)
   })
 
-  it('no catalog slug is missing from knownGameSlugs', () => {
-    for (const slug of catalogSlugs) {
-      expect(knownSlugs).toContain(slug)
-    }
+  it('redirects to /404 for invalid slugs', () => {
+    const guardMatch = gamePageSrc.match(/if\s*\(\s*!isValidSlug\(slug\)\s*\)\s*\{[\s\S]*?router\.replace\('\/404'\)/)
+    expect(guardMatch).not.toBeNull()
   })
 
-  it('no extra slug in knownGameSlugs', () => {
-    for (const slug of knownSlugs) {
-      expect(catalogSlugs).toContain(slug)
-    }
+  it('isValidSlug guard runs before dynamic import', () => {
+    const guardIdx = gamePageSrc.indexOf('isValidSlug(slug)')
+    const importIdx = gamePageSrc.indexOf("import('../games/'")
+    expect(guardIdx).toBeGreaterThan(-1)
+    expect(importIdx).toBeGreaterThan(-1)
+    expect(guardIdx).toBeLessThan(importIdx)
   })
 })
 
