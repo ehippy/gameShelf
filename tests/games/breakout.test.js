@@ -396,6 +396,7 @@ describe('breakout', () => {
 
     it('update() increments framesPlayed', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       expect(breakoutModule.state.framesPlayed).toBe(0)
       breakoutModule.update()
       expect(breakoutModule.state.framesPlayed).toBe(1)
