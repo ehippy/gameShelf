@@ -90,6 +90,11 @@ describe('HomeView', () => {
     expect(homeViewSrc).toContain('<div class="games-grid">') || expect(homeViewSrc).toContain('games-grid')
   })
 
+  it('uses filteredGames computed for v-for, not direct gameStore.catalog', () => {
+    expect(homeViewSrc).toContain('v-for="game in filteredGames"')
+    expect(homeViewSrc).not.toContain('v-for="game in gameStore.catalog"')
+  })
+
   it('has h1 with gameShelf', () => {
     expect(homeViewSrc).toContain('<h1>gameShelf</h1>')
   })
