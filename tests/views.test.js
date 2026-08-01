@@ -262,6 +262,13 @@ describe('GamePage', () => {
     expect(pattern).toContain('gameLogic.js')
   })
 
+  it('does NOT contain string-concatenated dynamic import pattern', () => {
+    // The old broken pattern 'import(\'../games/\' + slug + \'/gameLogic.js\')'
+    // must not remain anywhere in the file.
+    expect(gamePageSrc).not.toMatch(/import\s*\(\s*['"`]\.\.\/games\//)
+    expect(gamePageSrc).not.toMatch(/\+\s*slug\s*\+\s*['"`]\//)
+  })
+
   it('modulePath lookup key matches glob key format', () => {
     // The modulePath used for lookup must match the glob's key format.
     // If the glob is '../../src/games/', the lookup key must also be
