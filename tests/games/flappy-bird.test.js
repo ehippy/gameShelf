@@ -310,6 +310,7 @@ describe('flappy-bird', () => {
     it('gravity pulls bird down over time', () => {
       if (!flappyModule) return
       flappyModule.init()
+      flappyModule.handleKeydown('ArrowUp')
       const initialBirdRow = flappyModule.state.bird.row
       for (let i = 0; i < 60; i++) {
         flappyModule.update()
