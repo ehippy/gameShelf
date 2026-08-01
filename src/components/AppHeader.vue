@@ -2,8 +2,8 @@
   <header class="app-header">
     <h1 class="brand">gameShelf</h1>
     <div class="header-center">
-      <input type="text" placeholder="Search games..." class="search-input">
-      <select class="category-filter">
+      <input type="text" placeholder="Search games..." class="search-input" :value="gameStore.searchQuery" @input="gameStore.searchQuery = $event.target.value">
+      <select class="category-filter" :value="gameStore.selectedCategory" @change="gameStore.selectedCategory = $event.target.value">
         <option value="">All Categories</option>
         <option value="Arcade">Arcade</option>
         <option value="Puzzle">Puzzle</option>
@@ -20,6 +20,9 @@
 </template>
 
 <script setup>
+import { useGameStore } from '../stores/gameStore.js'
+
+const gameStore = useGameStore()
 </script>
 
 <style scoped>

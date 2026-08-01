@@ -25,11 +25,12 @@ describe('HomeView', () => {
   })
 
   it('has tagline', () => {
-    expect(homeViewSrc).toContain('tagline') || expect(homeViewSrc).toContain('Play classic games')
+    expect(homeViewSrc).toContain('tagline')
+    expect(homeViewSrc).toContain('Play classic games')
   })
 
-  it('renders games grid from gameStore', () => {
-    expect(homeViewSrc).toContain('gameStore.catalog')
+  it('renders games grid with filtered games', () => {
+    expect(homeViewSrc).toContain('filteredGames')
   })
 
   it('imports and uses GameCard component', () => {
@@ -61,8 +62,8 @@ describe('HomeView', () => {
     expect(homeViewSrc).toContain(':category="game.category"')
   })
 
-  it('iterates over gameStore.catalog with v-for', () => {
-    expect(homeViewSrc).toContain('v-for="game in gameStore.catalog"')
+  it('iterates over filteredGames with v-for', () => {
+    expect(homeViewSrc).toContain('v-for="game in filteredGames"')
   })
 
   it('uses game.slug as key', () => {
@@ -82,12 +83,18 @@ describe('HomeView', () => {
   })
 
   it('has a GameCard loop using v-for', () => {
-    const gameCardLoopMatch = homeViewSrc.match(/<GameCard[\s\S]*?v-for="game in gameStore.catalog"[\s\S]*?\/>/)
+    const gameCardLoopMatch = homeViewSrc.match(/<GameCard[\s\S]*?v-for="game in filteredGames"[\s\S]*?\/>/)
     expect(gameCardLoopMatch).not.toBeNull()
   })
 
   it('has games-grid wrapper div', () => {
-    expect(homeViewSrc).toContain('<div class="games-grid">') || expect(homeViewSrc).toContain('games-grid')
+    expect(homeViewSrc).toContain('<div class="games-grid">')
+    expect(homeViewSrc).toContain('games-grid')
+  })
+
+  it('uses filteredGames computed for v-for, not direct gameStore.catalog', () => {
+    expect(homeViewSrc).toContain('v-for="game in filteredGames"')
+    expect(homeViewSrc).not.toContain('v-for="game in gameStore.catalog"')
   })
 
   it('has h1 with gameShelf', () => {
@@ -95,7 +102,8 @@ describe('HomeView', () => {
   })
 
   it('has tagline element', () => {
-    expect(homeViewSrc).toContain('class="tagline"') || expect(homeViewSrc).toContain('"tagline"')
+    expect(homeViewSrc).toContain('class="tagline"')
+    expect(homeViewSrc).toContain('"tagline"')
   })
 })
 
@@ -162,7 +170,8 @@ describe('catalog count matches game directories', () => {
 
 describe('AboutView', () => {
   it('has h1 About gameShelf', () => {
-    expect(aboutViewSrc).toContain('<h1>About gameShelf</h1>') || expect(aboutViewSrc).toContain('About gameShelf')
+    expect(aboutViewSrc).toContain('<h1>About gameShelf</h1>')
+    expect(aboutViewSrc).toContain('About gameShelf')
   })
 
   it('has paragraph about the project', () => {
@@ -174,11 +183,13 @@ describe('AboutView', () => {
 
 describe('GamePage', () => {
   it('reads route params', () => {
-    expect(gamePageSrc).toContain('route.params.id') || expect(gamePageSrc).toContain('useRoute()')
+    expect(gamePageSrc).toContain('route.params.id')
+    expect(gamePageSrc).toContain('useRoute()')
   })
 
   it('looks up game in store', () => {
-    expect(gamePageSrc).toContain('gameStore') || expect(gamePageSrc).toContain('getGameBySlug')
+    expect(gamePageSrc).toContain('gameStore')
+    expect(gamePageSrc).toContain('getGameBySlug')
   })
 
   it('imports useRouter', () => {
@@ -287,7 +298,8 @@ describe('GamePage', () => {
   })
 
   it('calls reset on Play Again', () => {
-    expect(gamePageSrc).toContain('gameLogic.reset') || expect(gamePageSrc).toContain('reset()')
+    expect(gamePageSrc).toContain('gameLogic.reset')
+    expect(gamePageSrc).toContain('reset()')
   })
 
   it('does NOT show old placeholder text', () => {
@@ -470,7 +482,8 @@ describe('HighScoresView', () => {
 
 describe('NotFoundView', () => {
   it('renders 404 heading', () => {
-    expect(notFoundViewSrc).toContain('<h1>404</h1>') || expect(notFoundViewSrc).toContain('404')
+    expect(notFoundViewSrc).toContain('<h1>404</h1>')
+    expect(notFoundViewSrc).toContain('404')
   })
 
   it('has Page not found text', () => {
@@ -478,6 +491,7 @@ describe('NotFoundView', () => {
   })
 
   it('has router-link pointing to /', () => {
-    expect(notFoundViewSrc).toContain("to=\"/\"") || expect(notFoundViewSrc).toContain("to='/'")
+    expect(notFoundViewSrc).toContain('to="/"')
+    expect(notFoundViewSrc).toContain('Go back to Home')
   })
 })

@@ -5,7 +5,9 @@ import gamesCatalog from '../data/gamesCatalog.js'
 export const useGameStore = defineStore('game', {
   state: () => ({
     catalog: [...gamesCatalog],
-    activeGame: null
+    activeGame: null,
+    searchQuery: '',
+    selectedCategory: ''
   }),
   computed: {
     gamesByCategory(category) {
