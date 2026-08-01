@@ -619,13 +619,13 @@ describe('breakout', () => {
       expect(breakoutModule.state.won).toBe(true)
     })
 
-    it('update() sets isPlaying=true on win', () => {
+    it('update() sets isPlaying=false on win', () => {
       breakoutModule.init()
       for (const brick of breakoutModule.state.bricks) {
         brick.alive = false
       }
       breakoutModule.update()
-      expect(breakoutModule.state.isPlaying).toBe(true)
+      expect(breakoutModule.state.isPlaying).toBe(false)
     })
 
     it('update() sets won=true on win', () => {
