@@ -408,6 +408,7 @@ export function reset() {
  *   - Already playing → perform normal action (move/rotate/hard drop)
  *
  * @param {string} key - The key pressed (e.g. 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ').
+ * @returns {void}
  */
 export function handleKeydown(key) {
   if (!state) return
