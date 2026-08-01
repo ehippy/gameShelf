@@ -641,7 +641,23 @@ describe('breakout', () => {
       breakoutModule.state.lives = 1
       breakoutModule.state.ball.y = breakoutModule.CANVAS_HEIGHT
       breakoutModule.update()
-      expect(breakoutModule.state.won).toBeUndefined()
+      expect(breakoutModule.state.won).toBe(false)
+    })
+
+    it('reset() after a win clears state.won', () => {
+      breakoutModule.init()
+      // Destroy all bricks to trigger a win
+      for (const brick of breakoutModule.state.bricks) {
+        brick.alive = false
+      }
+      breakoutModule.update()
+      expect(breakoutModule.state.won).toBe(true)
+
+      // Reset to start a new game
+      breakoutModule.reset()
+
+      // won should be false after reset, not true from the previous win
+      expect(breakoutModule.state.won).toBe(false)
     })
 
     it('update() does NOT set win on partial brick destruction', () => {
