@@ -360,6 +360,8 @@ describe('breakout', () => {
       expect(breakoutModule.state.paddle.x).toBe(105)
     })
 
+    // ─── Auto-start regression tests ───
+
     it('handleKeydown ArrowLeft moves paddle left by 10', () => {
       breakoutModule.init()
       const before = breakoutModule.state.paddle.x
