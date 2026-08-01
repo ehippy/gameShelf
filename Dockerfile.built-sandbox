@@ -3,4 +3,5 @@ RUN apk add --no-cache bash
 WORKDIR /workspace
 COPY package.json package-lock.json* ./
 RUN npm install
+ENV PATH="/workspace/node_modules/.bin:$PATH"
 COPY . .
