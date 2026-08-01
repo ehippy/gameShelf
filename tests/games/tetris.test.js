@@ -368,6 +368,17 @@ describe('tetris', () => {
       expect(tetrisModule.state.isPlaying).toBe(false)
     })
 
+    it('handleKeydown resets state on game over for Tetris (three-way logic)', () => {
+      if (!tetrisModule) return
+      tetrisModule.init()
+      tetrisModule.state.isGameOver = true
+      tetrisModule.state.score = 42
+      tetrisModule.handleKeydown(' ')
+      expect(tetrisModule.state.isGameOver).toBe(false)
+      expect(tetrisModule.state.isPlaying).toBe(true)
+      expect(tetrisModule.state.score).toBe(0)
+    })
+
     it('hard drop does not reduce score', () => {
       if (!tetrisModule) return
       tetrisModule.init()
