@@ -176,7 +176,7 @@ describe('GamePage', () => {
 
   it('does NOT allow loading gameLogic for non-existent game directories', () => {
     // The knownGameSlugs check must appear before any import('../games/' ... )
-    // to prevent 404 module errors for catalog entries like minesweeper/memory
+    // to prevent module-not-found errors for non-existent gameLogic.js.
     const lines = gamePageSrc.split('\n')
     let guardFound = false
     let importFound = false
