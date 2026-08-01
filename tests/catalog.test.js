@@ -27,14 +27,6 @@ describe('catalog entries', () => {
     expect(catalog).toContain("slug: 'flappy-bird'")
   })
 
-  it('has minesweeper entry', () => {
-    expect(catalog).toContain("slug: 'minesweeper'")
-  })
-
-  it('has memory entry', () => {
-    expect(catalog).toContain("slug: 'memory'")
-  })
-
   it('has whack-a-mole entry', () => {
     expect(catalog).toContain("slug: 'whack-a-mole'")
   })
@@ -52,14 +44,6 @@ describe('catalog entries', () => {
     expect(catalog).toContain("title: 'Breakout'")
   })
 
-  it('has title Minesweeper', () => {
-    expect(catalog).toContain("title: 'Minesweeper'")
-  })
-
-  it('has title Memory', () => {
-    expect(catalog).toContain("title: 'Memory'")
-  })
-
   it('has title Flappy Bird', () => {
     expect(catalog).toContain("title: 'Flappy Bird'")
   })
@@ -75,10 +59,6 @@ describe('catalog entries', () => {
 
   it('has Puzzle category', () => {
     expect(catalog).toContain("category: 'Puzzle'")
-  })
-
-  it('has Strategy category', () => {
-    expect(catalog).toContain("category: 'Strategy'")
   })
 
   it('has Casual category', () => {
@@ -99,15 +79,6 @@ describe('catalog entries', () => {
     expect(catalog).toContain('2025-01-15T00:00:00Z')
   })
 
-  it('has minesweeper dateAdded', () => {
-    expect(catalog).toContain('2025-06-15T00:00:00Z')
-  })
-
-  it('has memory dateAdded', () => {
-    expect(catalog).toContain('2025-06-20T00:00:00Z')
-  })
-
-  // SVG thumbnails
   it('has SVG thumbnail data URIs', () => {
     expect(catalog).toContain('data:image/svg+xml')
   })
@@ -139,16 +110,8 @@ describe('catalog order', () => {
     expect(slugOrder[3]).toBe('flappy-bird')
   })
 
-  it('5th item is minesweeper', () => {
-    expect(slugOrder[4]).toBe('minesweeper')
-  })
-
-  it('6th item is memory', () => {
-    expect(slugOrder[5]).toBe('memory')
-  })
-
-  it('7th item is whack-a-mole', () => {
-    expect(slugOrder[6]).toBe('whack-a-mole')
+  it('5th item is whack-a-mole', () => {
+    expect(slugOrder[4]).toBe('whack-a-mole')
   })
 })
 
@@ -235,5 +198,20 @@ describe('no old fields', () => {
 
   it('whack-a-mole has description', () => {
     expect(catalog).toContain("description: 'Whack moles as fast as you can!'")
+  })
+
+  // --- non-existent game removal ---
+
+  it('does NOT contain minesweeper entry', () => {
+    expect(catalog).not.toContain("slug: 'minesweeper'")
+  })
+
+  it('does NOT contain memory entry', () => {
+    expect(catalog).not.toContain("slug: 'memory'")
+  })
+
+  it('has exactly 5 catalog entries', () => {
+    const slugMatches = catalog.match(/slug:\s*'([^']+)'/g) || []
+    expect(slugMatches.length).toBe(5)
   })
 })

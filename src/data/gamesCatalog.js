@@ -36,24 +36,6 @@ export default [
     dateAdded: '2025-07-01T00:00:00Z'
   },
   {
-    slug: 'minesweeper',
-    title: 'Minesweeper',
-    description: 'Clear the minefield without detonating any mines',
-    thumbnail: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="120"><rect width="200" height="120" fill="%23a855f7"/><rect x="40" y="30" width="30" height="30" fill="%237e22ce"/><rect x="90" y="50" width="30" height="30" fill="%239333ea"/><rect x="140" y="40" width="30" height="30" fill="%236b21a8"/></svg>',
-    category: 'Strategy',
-    isNew: true,
-    dateAdded: '2025-06-15T00:00:00Z'
-  },
-  {
-    slug: 'memory',
-    title: 'Memory',
-    description: 'Match pairs of cards to find all the pairs',
-    thumbnail: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="120"><rect width="200" height="120" fill="%23ec4899"/><rect x="50" y="30" width="30" height="40" rx="4" fill="%23be185d"/><rect x="95" y="30" width="30" height="40" rx="4" fill="%23db2777"/><rect x="140" y="30" width="30" height="40" rx="4" fill="%239d174d"/></svg>',
-    category: 'Casual',
-    isNew: true,
-    dateAdded: '2025-06-20T00:00:00Z'
-  },
-  {
     slug: 'whack-a-mole',
     title: 'Whack-a-Mole',
     description: 'Whack moles as fast as you can!',

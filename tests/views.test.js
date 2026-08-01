@@ -99,6 +99,65 @@ describe('HomeView', () => {
   })
 })
 
+// --- knownGameSlugs sync ---
+
+describe('knownGameSlugs matches catalog exactly', () => {
+  const catalog = readFileSync(join(root, 'src', 'data', 'gamesCatalog.js'), 'utf-8')
+  const gamePage = readFileSync(join(root, 'src', 'views', 'GamePage.vue'), 'utf-8')
+
+  const catalogSlugs = []
+  let m
+  const slugRe = /slug:\s*'([^']+)'/g
+  while ((m = slugRe.exec(catalog)) !== null) catalogSlugs.push(m[1])
+
+  const knownMatch = gamePage.match(/knownGameSlugs\s*=\s*\[([^\]]+)\]/)
+  const knownSlugsRaw = knownMatch ? knownMatch[1] : ''
+  const knownSlugs = knownSlugsRaw.split(',').map(s => s.trim().replace(/'/g, '').replace(/"/g, '')).filter(Boolean)
+
+  it('knownGameSlugs has exactly 5 entries', () => {
+    expect(knownSlugs.length).toBe(5)
+  })
+
+  it('knownGameSlugs matches catalog slugs exactly', () => {
+    expect(knownSlugs.sort()).toEqual(catalogSlugs.sort())
+  })
+
+  it('no catalog slug is missing from knownGameSlugs', () => {
+    for (const slug of catalogSlugs) {
+      expect(knownSlugs).toContain(slug)
+    }
+  })
+
+  it('no extra slug in knownGameSlugs', () => {
+    for (const slug of knownSlugs) {
+      expect(catalogSlugs).toContain(slug)
+    }
+  })
+})
+
+// --- catalog count matches game directories ---
+
+describe('catalog count matches game directories', () => {
+  const { readdirSync, existsSync } = require('fs')
+  const gamesDir = join(root, 'src', 'games')
+  const gameDirs = readdirSync(gamesDir).filter(d => existsSync(join(gamesDir, d, 'gameLogic.js')))
+  const catalog = readFileSync(join(root, 'src', 'data', 'gamesCatalog.js'), 'utf-8')
+  const catalogSlugs = []
+  let m2
+  const slugRe2 = /slug:\s*'([^']+)'/g
+  while ((m2 = slugRe2.exec(catalog)) !== null) catalogSlugs.push(m2[1])
+
+  it('catalog entry count equals game directory count', () => {
+    expect(catalogSlugs.length).toBe(gameDirs.length)
+  })
+
+  it('every game directory has a matching catalog slug', () => {
+    for (const dir of gameDirs) {
+      expect(catalogSlugs).toContain(dir)
+    }
+  })
+})
+
 // --- AboutView ---
 
 describe('AboutView', () => {
@@ -148,9 +207,9 @@ describe('GamePage', () => {
     expect(gamePageSrc).toContain('whack-a-mole')
   })
 
-  it('redirects to /404 for minesweeper (catalog entry without gameLogic.js)', () => {
-    // minesweeper is in the catalog but has no src/games/minesweeper/ directory.
-    // The knownGameSlugs guard must catch this and redirect to /404.
+  it('redirects to /404 for any unknown game slug', () => {
+    // Any slug not in knownGameSlugs gets redirected to /404,
+    // preventing dynamic import errors for non-existent gameLogic.js.
     expect(gamePageSrc).toContain("router.replace('/404')")
     // Verify the guard runs BEFORE the dynamic import for slugs not in known list
     const guardMatch = gamePageSrc.match(/if\s*\(\s*!knownGameSlugs\.includes\(slug\)\s*\)\s*\{[\s\S]*?router\.replace\('\/404'\)/)
@@ -163,8 +222,9 @@ describe('GamePage', () => {
     expect(guardIdx).toBeLessThan(importIdx)
   })
 
-  it('redirects to /404 for memory (catalog entry without gameLogic.js)', () => {
-    // memory is in the catalog but has no src/games/memory/ directory.
+  it('blocks import for any slug not in knownGameSlugs', () => {
+    // The knownGameSlugs check prevents loading gameLogic for
+    // slugs without actual game directories.
     const guardMatch = gamePageSrc.match(/if\s*\(\s*!knownGameSlugs\.includes\(slug\)\s*\)\s*\{[\s\S]*?router\.replace\('\/404'\)/)
     expect(guardMatch).not.toBeNull()
     // Verify the guard comes before the dynamic import
@@ -175,7 +235,7 @@ describe('GamePage', () => {
 
   it('does NOT allow loading gameLogic for non-existent game directories', () => {
     // The knownGameSlugs check must appear before any import('../games/' ... )
-    // to prevent 404 module errors for catalog entries like minesweeper/memory
+    // to prevent module-not-found errors for non-existent gameLogic.js.
     const lines = gamePageSrc.split('\n')
     let guardFound = false
     let importFound = false
