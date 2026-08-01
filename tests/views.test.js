@@ -202,51 +202,81 @@ describe('GamePage', () => {
     expect(gamePageSrc).toContain(':height="canvasHeight"')
   })
 
-  // --- CSS: canvas-wrapper scaling ---
-
-  it('canvas-wrapper has width: 100%', () => {
-    expect(gamePageSrc).toContain('width: 100%')
+  it('uses ResizeObserver in onMounted', () => {
+    expect(gamePageSrc).toContain('ResizeObserver')
   })
 
-  it('canvas-wrapper has max-width: 700px', () => {
-    expect(gamePageSrc).toContain('max-width: 700px')
+  it('reads window.innerHeight in resize handler', () => {
+    expect(gamePageSrc).toContain('window.innerHeight')
   })
 
-  it('canvas-wrapper has margin: 0 auto', () => {
-    expect(gamePageSrc).toContain('margin: 0 auto')
+  // --- CSS: canvas-wrapper ---
+
+  it('canvas-wrapper CSS does not contain max-width: 700px', () => {
+    const wrapperStyle = gamePageSrc.match(/\.canvas-wrapper\s*\{([^}]*)\}/s)
+    expect(wrapperStyle).not.toBeNull()
+    expect(wrapperStyle[1]).not.toContain('max-width: 700px')
+  })
+
+  it('canvas-wrapper CSS does not contain margin: 0 auto', () => {
+    const wrapperStyle = gamePageSrc.match(/\.canvas-wrapper\s*\{([^}]*)\}/s)
+    expect(wrapperStyle).not.toBeNull()
+    expect(wrapperStyle[1]).not.toContain('margin: 0 auto')
+  })
+
+  it('canvas-wrapper CSS contains display: flex', () => {
+    const wrapperStyle = gamePageSrc.match(/\.canvas-wrapper\s*\{([^}]*)\}/s)
+    expect(wrapperStyle).not.toBeNull()
+    expect(wrapperStyle[1]).toContain('display: flex')
+  })
+
+  it('canvas-wrapper CSS contains justify-content: center', () => {
+    const wrapperStyle = gamePageSrc.match(/\.canvas-wrapper\s*\{([^}]*)\}/s)
+    expect(wrapperStyle).not.toBeNull()
+    expect(wrapperStyle[1]).toContain('justify-content: center')
+  })
+
+  it('canvas-wrapper CSS contains align-items: flex-start', () => {
+    const wrapperStyle = gamePageSrc.match(/\.canvas-wrapper\s*\{([^}]*)\}/s)
+    expect(wrapperStyle).not.toBeNull()
+    expect(wrapperStyle[1]).toContain('align-items: flex-start')
+  })
+
+  it('canvas-wrapper CSS contains position: relative', () => {
+    const wrapperStyle = gamePageSrc.match(/\.canvas-wrapper\s*\{([^}]*)\}/s)
+    expect(wrapperStyle).not.toBeNull()
+    expect(wrapperStyle[1]).toContain('position: relative')
   })
 
   it('canvas-wrapper has border', () => {
     expect(gamePageSrc).toContain('border:')
   })
 
-  it('canvas-wrapper has border-radius', () => {
-    expect(gamePageSrc).toContain('border-radius:')
-  })
-
   it('canvas-wrapper has overflow: hidden', () => {
     expect(gamePageSrc).toContain('overflow: hidden')
   })
 
-  // --- CSS: canvas scaling ---
+  // --- CSS: canvas ---
 
   it('canvas wrapper has CSS width: 100% for scaling', () => {
     expect(gamePageSrc).toContain('.canvas-wrapper canvas')
     expect(gamePageSrc).toContain('width: 100%')
   })
 
-  it('canvas wrapper has CSS height: auto', () => {
-    expect(gamePageSrc).toContain('height: auto')
+  it('canvas wrapper CSS contains height: 100%', () => {
+    expect(gamePageSrc).toContain('height: 100%')
   })
 
-  it('canvas wrapper has CSS display: block', () => {
-    expect(gamePageSrc).toContain('display: block')
+  it('canvas wrapper CSS contains background-color', () => {
+    expect(gamePageSrc).toContain('background-color: #0f0f23')
   })
 
-  // --- CSS: game-page max-width ---
+  // --- CSS: game-page ---
 
-  it('game-page has max-width: 720px', () => {
-    expect(gamePageSrc).toContain('max-width: 720px')
+  it('game-page CSS does not contain max-width: 720px', () => {
+    const gamePageStyle = gamePageSrc.match(/\.game-page\s*\{([^}]*)\}/s)
+    expect(gamePageStyle).not.toBeNull()
+    expect(gamePageStyle[1]).not.toContain('max-width: 720px')
   })
 })
 
