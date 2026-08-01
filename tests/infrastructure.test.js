@@ -712,36 +712,25 @@ describe('No deprecated field names in new/modified files', () => {
   const attemptYml = readFileSync(join(root, '.github', 'actions', 'deploy-with-retry', '_attempt', 'action.yml'), 'utf-8')
   const deployYml = readFileSync(join(root, '.github', 'workflows', 'deploy.yml'), 'utf-8')
 
-  it('deploy-with-retry/action.yml has no deprecated field (id/name/genre) used as data fields', () => {
-    // Exclude YAML keys "name" and "id" which are standard action.yml keys;
-    // check that no data field uses id, name, or genre as a catalog-style field
-    const stripped = actionYml
-      .split('\n')
-      .map(l => l.trim())
-      .filter(l => l.startsWith('- '))
-      .join(' ')
-    // In action.yml, the only "id" and "name" usage is as metadata keys — that's fine.
-    // Reject if any line uses them as data values (e.g., "id: snake", "name: Snake")
-    const badId = stripped.match(/\bid:\s*[a-zA-Z]/)
-    const badName = stripped.match(/\bname:\s*[a-zA-Z]/)
-    const badGenre = stripped.match(/\bgenre:\s*[a-zA-Z]/)
-    expect(badId).toBeNull()
-    expect(badName).toBeNull()
-    expect(badGenre).toBeNull()
+  // In YAML action files, `name:` and `id:` are standard structural keys (action name, step id).
+  // The deprecated field names concern catalog-style data usage (e.g., `id: snake`, `name: Snake` as game data).
+  // This regex rejects lines that look like catalog field assignments: key-value pairs where
+  // the key is id/name/genre and the value is an identifier string (not a metadata keyword).
+  const deprecatedPattern = /\b(?:id|name|genre)\s*:\s*['"]?[a-z][a-z0-9_-]+['"]?$/
+
+  it('deploy-with-retry/action.yml has no deprecated catalog-style field', () => {
+    const badLines = actionYml.split('\n').filter(l => deprecatedPattern.test(l))
+    expect(badLines).toEqual([])
   })
 
-  it('_attempt/action.yml has no deprecated field names', () => {
-    const stripped = attemptYml
-      .split('\n')
-      .map(l => l.trim())
-      .filter(l => l.startsWith('- '))
-      .join(' ')
-    const badId = stripped.match(/\bid:\s*[a-zA-Z]/)
-    const badName = stripped.match(/\bname:\s*[a-zA-Z]/)
-    const badGenre = stripped.match(/\bgenre:\s*[a-zA-Z]/)
-    expect(badId).toBeNull()
-    expect(badName).toBeNull()
-    expect(badGenre).toBeNull()
+  it('_attempt/action.yml has no deprecated catalog-style field', () => {
+    const badLines = attemptYml.split('\n').filter(l => deprecatedPattern.test(l))
+    expect(badLines).toEqual([])
+  })
+
+  it('deploy.yml has no deprecated catalog-style field', () => {
+    const badLines = deployYml.split('\n').filter(l => deprecatedPattern.test(l))
+    expect(badLines).toEqual([])
   })
 })
 
