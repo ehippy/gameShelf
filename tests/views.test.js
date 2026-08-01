@@ -148,9 +148,9 @@ describe('GamePage', () => {
     expect(gamePageSrc).toContain('whack-a-mole')
   })
 
-  it('redirects to /404 for minesweeper (catalog entry without gameLogic.js)', () => {
-    // minesweeper is in the catalog but has no src/games/minesweeper/ directory.
-    // The knownGameSlugs guard must catch this and redirect to /404.
+  it('redirects to /404 for any unknown game slug', () => {
+    // Any slug not in knownGameSlugs gets redirected to /404,
+    // preventing dynamic import errors for non-existent gameLogic.js.
     expect(gamePageSrc).toContain("router.replace('/404')")
     // Verify the guard runs BEFORE the dynamic import for slugs not in known list
     const guardMatch = gamePageSrc.match(/if\s*\(\s*!knownGameSlugs\.includes\(slug\)\s*\)\s*\{[\s\S]*?router\.replace\('\/404'\)/)
@@ -163,8 +163,9 @@ describe('GamePage', () => {
     expect(guardIdx).toBeLessThan(importIdx)
   })
 
-  it('redirects to /404 for memory (catalog entry without gameLogic.js)', () => {
-    // memory is in the catalog but has no src/games/memory/ directory.
+  it('blocks import for any slug not in knownGameSlugs', () => {
+    // The knownGameSlugs check prevents loading gameLogic for
+    // slugs without actual game directories.
     const guardMatch = gamePageSrc.match(/if\s*\(\s*!knownGameSlugs\.includes\(slug\)\s*\)\s*\{[\s\S]*?router\.replace\('\/404'\)/)
     expect(guardMatch).not.toBeNull()
     // Verify the guard comes before the dynamic import
