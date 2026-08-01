@@ -475,6 +475,7 @@ describe('breakout', () => {
     it('update() does NOT reset velocity direction after bottom death', () => {
       // Ball should be reset with initial velocity (2, 2) regardless of previous direction
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       breakoutModule.state.ball.dx = -2
       breakoutModule.state.ball.dy = -2
       breakoutModule.state.ball.y = breakoutModule.CANVAS_HEIGHT
