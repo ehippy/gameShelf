@@ -548,6 +548,203 @@ describe('npm install', () => {
   })
 })
 
+// --- Deployment Failure Convention (AGENTS.md) ---
+
+describe('AGENTS.md — Deployment Failure Convention', () => {
+  const agentsMd = readFileSync(join(root, 'AGENTS.md'), 'utf-8')
+
+  it('has a Deployment Failure Convention section', () => {
+    expect(agentsMd).toContain('Deployment Failure Convention')
+  })
+
+  it('mentions HTTP 408 as a transient failure', () => {
+    expect(agentsMd).toContain('408')
+  })
+
+  it('mentions network errors as a transient failure', () => {
+    expect(agentsMd).toContain('network error')
+  })
+
+  it('specifies up to 2 additional retries (3 total attempts)', () => {
+    expect(agentsMd).toContain('2 additional')
+    expect(agentsMd).toContain('3 total')
+  })
+
+  it('specifies approximately 30 seconds between retries', () => {
+    expect(agentsMd).toContain('30 seconds')
+  })
+
+  it('specifies escalation to PM with "approved but blocked by infrastructure"', () => {
+    expect(agentsMd).toContain('approved but blocked by infrastructure')
+  })
+
+  it('says not to bounce the card back to developer/PM', () => {
+    expect(agentsMd.toLowerCase()).toContain('do not bounce')
+  })
+
+  it('requires including failure details (error messages, timestamps)', () => {
+    const section = agentsMd.slice(agentsMd.indexOf('Deployment Failure Convention'))
+    expect(section).toMatch(/error.?message/i)
+    expect(section).toMatch(/timestamp/i)
+  })
+
+  it('mentions setting card status to reflect approved/blocked', () => {
+    expect(agentsMd.toLowerCase()).toContain('card status')
+    expect(agentsMd.toLowerCase()).toMatch(/approv.*block/i)
+  })
+})
+
+// --- .github/actions/deploy-with-retry/action.yml ---
+
+describe('.github/actions/deploy-with-retry/action.yml', () => {
+  const actionYml = readFileSync(join(root, '.github', 'actions', 'deploy-with-retry', 'action.yml'), 'utf-8')
+
+  it('is a composite action', () => {
+    expect(actionYml).toContain("using: 'composite'")
+  })
+
+  it('runs attempt 1 unconditionally', () => {
+    expect(actionYml).toContain('attempt: 1')
+  })
+
+  it('runs attempt 2 only if previous attempt failed', () => {
+    expect(actionYml).toMatch(/attempt:\s*2/)
+    expect(actionYml).toContain("steps.deploy.outcome == 'failure'")
+  })
+
+  it('runs attempt 3 only if previous attempt failed', () => {
+    expect(actionYml).toMatch(/attempt:\s*3/)
+  })
+
+  it('fails the job if all 3 attempts exhausted', () => {
+    expect(actionYml).toContain('exit 1')
+    expect(actionYml).toMatch(/all.*3.*attempt/i)
+  })
+
+  it('has step logging with attempt numbers', () => {
+    expect(actionYml).toMatch(/attempt\s*\d/i)
+  })
+
+  it('forwards the page_url output', () => {
+    expect(actionYml).toContain('page_url')
+  })
+})
+
+// --- .github/actions/deploy-with-retry/_attempt/action.yml ---
+
+describe('.github/actions/deploy-with-retry/_attempt/action.yml', () => {
+  const attemptYml = readFileSync(join(root, '.github', 'actions', 'deploy-with-retry', '_attempt', 'action.yml'), 'utf-8')
+
+  it('is a composite action', () => {
+    expect(attemptYml).toContain("using: 'composite'")
+  })
+
+  it('accepts an attempt input', () => {
+    expect(attemptYml).toContain('inputs:')
+    expect(attemptYml).toContain('attempt:')
+  })
+
+  it('accepts an artifact_path input with default ./dist/', () => {
+    expect(attemptYml).toContain('artifact_path:')
+    expect(attemptYml).toContain('./dist/')
+  })
+
+  it('sleeps before retries (not before attempt 1)', () => {
+    expect(attemptYml).toContain('sleep 30')
+    expect(attemptYml).toContain("inputs.attempt != '1'")
+  })
+
+  it('uses actions/upload-pages-artifact@v3', () => {
+    expect(attemptYml).toContain('upload-pages-artifact@v3')
+  })
+
+  it('uses actions/deploy-pages@v4', () => {
+    expect(attemptYml).toContain('deploy-pages@v4')
+  })
+
+  it('logs the attempt number in step names', () => {
+    expect(attemptYml).toContain('${{ inputs.attempt }}')
+  })
+
+  it('forwards the page_url output', () => {
+    expect(attemptYml).toContain('page_url')
+  })
+})
+
+// --- .github/workflows/deploy.yml — retry integration ---
+
+describe('.github/workflows/deploy.yml — retry integration', () => {
+  const deployYml = readFileSync(join(root, '.github', 'workflows', 'deploy.yml'), 'utf-8')
+
+  it('uses the deploy-with-retry composite action', () => {
+    expect(deployYml).toContain('./.github/actions/deploy-with-retry')
+  })
+
+  it('still runs npm ci (deterministic, no retry)', () => {
+    expect(deployYml).toContain('npm ci')
+  })
+
+  it('still runs npm run build (deterministic, no retry)', () => {
+    expect(deployYml).toContain('npm run build')
+  })
+
+  it('preserves the pages: write permission', () => {
+    expect(deployYml).toContain('pages: write')
+  })
+
+  it('preserves the id-token: write permission', () => {
+    expect(deployYml).toContain('id-token: write')
+  })
+
+  it('preserves the github-pages environment', () => {
+    expect(deployYml).toContain('github-pages')
+  })
+
+  it('preserves the push trigger on main', () => {
+    expect(deployYml).toContain('- main')
+  })
+})
+
+// --- No deprecated field names ---
+
+describe('No deprecated field names in new/modified files', () => {
+  const actionYml = readFileSync(join(root, '.github', 'actions', 'deploy-with-retry', 'action.yml'), 'utf-8')
+  const attemptYml = readFileSync(join(root, '.github', 'actions', 'deploy-with-retry', '_attempt', 'action.yml'), 'utf-8')
+  const deployYml = readFileSync(join(root, '.github', 'workflows', 'deploy.yml'), 'utf-8')
+
+  it('deploy-with-retry/action.yml has no deprecated field (id/name/genre) used as data fields', () => {
+    // Exclude YAML keys "name" and "id" which are standard action.yml keys;
+    // check that no data field uses id, name, or genre as a catalog-style field
+    const stripped = actionYml
+      .split('\n')
+      .map(l => l.trim())
+      .filter(l => l.startsWith('- '))
+      .join(' ')
+    // In action.yml, the only "id" and "name" usage is as metadata keys — that's fine.
+    // Reject if any line uses them as data values (e.g., "id: snake", "name: Snake")
+    const badId = stripped.match(/\bid:\s*[a-zA-Z]/)
+    const badName = stripped.match(/\bname:\s*[a-zA-Z]/)
+    const badGenre = stripped.match(/\bgenre:\s*[a-zA-Z]/)
+    expect(badId).toBeNull()
+    expect(badName).toBeNull()
+    expect(badGenre).toBeNull()
+  })
+
+  it('_attempt/action.yml has no deprecated field names', () => {
+    const stripped = attemptYml
+      .split('\n')
+      .map(l => l.trim())
+      .filter(l => l.startsWith('- '))
+      .join(' ')
+    const badId = stripped.match(/\bid:\s*[a-zA-Z]/)
+    const badName = stripped.match(/\bname:\s*[a-zA-Z]/)
+    const badGenre = stripped.match(/\bgenre:\s*[a-zA-Z]/)
+    expect(badId).toBeNull()
+    expect(badName).toBeNull()
+    expect(badGenre).toBeNull()
+  })
+})
+
 // --- Build test ---
 
 describe('build test', () => {
