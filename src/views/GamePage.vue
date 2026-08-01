@@ -33,11 +33,12 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, reactive } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useGameStore } from '../stores/gameStore.js'
 import { useScoreStore } from '../stores/scoreStore.js'
 
 const route = useRoute()
+const router = useRouter()
 const gameStore = useGameStore()
 const scoreStore = useScoreStore()
 
@@ -55,8 +56,13 @@ let lastSnapshotScore = null
 
 onMounted(async () => {
   const slug = route.params.id
+  const game = gameStore.getGameBySlug(slug)
+  if (!game) {
+    router.replace('/404')
+    return
+  }
   // Dynamically import the game module
-  gameLogic = await import(`../games/${slug}/gameLogic.js`)
+  gameLogic = await import('../games/' + slug + '/gameLogic.js')
   canvasWidth.value = gameLogic.CANVAS_WIDTH ?? 250
   canvasHeight.value = gameLogic.CANVAS_HEIGHT ?? 200
 

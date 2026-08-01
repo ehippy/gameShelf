@@ -1,6 +1,16 @@
 import { defineStore } from 'pinia'
 import gamesCatalog from '../data/gamesCatalog.js'
 
+const VALID_SLUG_RE = /^[a-z0-9-]+$/
+
+function getKnownSlugs() {
+  return new Set(gamesCatalog.map(g => g.slug))
+}
+
+function isValidSlug(slug) {
+  return typeof slug === 'string' && VALID_SLUG_RE.test(slug) && getKnownSlugs().has(slug)
+}
+
 function loadScoresFromLocalStorage() {
   const scores = {}
   for (const game of gamesCatalog) {
@@ -21,6 +31,7 @@ export const useScoreStore = defineStore('score', {
   }),
   actions: {
     submitScore(gameSlug, score) {
+      if (!isValidSlug(gameSlug)) return
       const key = `gamescore_${gameSlug}`
       const current = JSON.parse(localStorage.getItem(key) || '[]')
       current.push({ gameSlug, score, timestamp: new Date().toISOString() })
@@ -31,6 +42,7 @@ export const useScoreStore = defineStore('score', {
       this.scores[gameSlug] = current
     },
     getScores(gameSlug) {
+      if (!isValidSlug(gameSlug)) return []
       const key = `gamescore_${gameSlug}`
       const raw = localStorage.getItem(key)
       try {
@@ -55,6 +67,7 @@ export const useScoreStore = defineStore('score', {
       return all.sort((a, b) => b.score - a.score)
     },
     clearScores(gameSlug) {
+      if (!isValidSlug(gameSlug)) return
       localStorage.removeItem(`gamescore_${gameSlug}`)
       this.scores[gameSlug] = []
     }
