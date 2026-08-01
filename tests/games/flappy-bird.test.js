@@ -312,12 +312,12 @@ describe('flappy-bird', () => {
       flappyModule.init()
       // Start the game loop without modifying velocity (bypass handleKeydown)
       flappyModule.state.isPlaying = true
-      // Advance past grace period (30 frames) to start gravity
-      for (let i = 0; i < 40; i++) {
+      // Advance past grace period (30 frames) — at frame 30 gravity starts
+      for (let i = 0; i < 31; i++) {
         flappyModule.update()
       }
       const initialBirdRow = flappyModule.state.bird.row
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 5; i++) {
         flappyModule.update()
       }
       expect(flappyModule.state.bird.row > initialBirdRow).toBe(true)
