@@ -31,7 +31,7 @@ runs:
       id: upload
       uses: actions/upload-pages-artifact@v3
       with:
-        path: './dist/'
+        path: ${{ inputs.artifact_path }}
 
     # Deploy to GitHub Pages
     - name: Deploy to GitHub Pages (attempt ${{ inputs.attempt }})
