@@ -61,8 +61,8 @@ describe('HomeView', () => {
     expect(homeViewSrc).toContain(':category="game.category"')
   })
 
-  it('iterates over gameStore.catalog with v-for', () => {
-    expect(homeViewSrc).toContain('v-for="game in gameStore.catalog"')
+  it('iterates over filteredGames with v-for', () => {
+    expect(homeViewSrc).toContain('v-for="game in filteredGames"')
   })
 
   it('uses game.slug as key', () => {
