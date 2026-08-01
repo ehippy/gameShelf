@@ -249,25 +249,17 @@ export function render(canvas) {
 
   // ── Game Over overlay ──
   if (state.isGameOver || state.won) {
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'
-    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
-
-    ctx.fillStyle = state.won ? '#2ecc71' : '#ff4444'
-    ctx.font = 'bold 24px sans-serif'
-    ctx.textAlign = 'center'
-
-    if (state.won) {
-      ctx.fillText('YOU WIN!', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 10)
-    } else {
-      ctx.fillText('GAME OVER', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 10)
-    }
-
-    ctx.fillStyle = '#ffffff'
-    ctx.font = '14px sans-serif'
-    ctx.fillText(`Score: ${state.score}`, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 20)
-    ctx.fillStyle = '#cccccc'
-    ctx.font = '12px sans-serif'
-    ctx.fillText('Press Space to restart', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 45)
+    renderGameOver(ctx, state, CANVAS_WIDTH, CANVAS_HEIGHT, {
+      overlayColor: 'rgba(0, 0, 0, 0.7)',
+      title: state.won ? 'YOU WIN!' : 'GAME OVER',
+      titleColor: state.won ? '#2ecc71' : '#ff4444',
+      titleFont: 'bold 24px sans-serif',
+      titleY: CANVAS_HEIGHT / 2 - 10,
+      scoreFont: '14px sans-serif',
+      scoreY: CANVAS_HEIGHT / 2 + 20,
+      showRestartPrompt: true,
+      restartPromptY: CANVAS_HEIGHT / 2 + 45
+    })
   }
 }
 
