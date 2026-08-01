@@ -98,7 +98,6 @@ function checkSelfCollision(newHead) {
  */
 export function init() {
   state = createInitialState()
-  state.isPlaying = true
   spawnFood()
   return state
 }
