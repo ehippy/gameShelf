@@ -369,6 +369,43 @@ describe('breakout', () => {
       expect(breakoutModule.state.paddle.x).toBe(before - 10)
     })
 
+    it('breakout: init() sets isPlaying to false (no auto-start)', () => {
+      breakoutModule.init()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+    })
+
+    it('breakout: reset() sets isPlaying to false (no auto-start)', () => {
+      breakoutModule.init()
+      breakoutModule.state.score = 100
+      breakoutModule.reset()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+    })
+
+    it('breakout: handleKeydown starts the game when not playing', () => {
+      breakoutModule.init()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+      breakoutModule.handleKeydown('ArrowRight')
+      expect(breakoutModule.state.isPlaying).toBe(true)
+    })
+
+    it('breakout: handleKeydown resets on game over and starts playing', () => {
+      breakoutModule.init()
+      breakoutModule.state.isGameOver = true
+      breakoutModule.state.score = 999
+      expect(breakoutModule.state.isPlaying).toBe(false)
+      breakoutModule.handleKeydown('ArrowRight')
+      expect(breakoutModule.state.isPlaying).toBe(true)
+      expect(breakoutModule.state.isGameOver).toBe(false)
+      expect(breakoutModule.state.score).toBe(0)
+    })
+
+    it('breakout: update() is no-op when isPlaying is false after init', () => {
+      breakoutModule.init()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+      breakoutModule.update()
+      expect(breakoutModule.state.framesPlayed).toBe(0)
+    })
+
     it('handleKeydown ArrowRight moves paddle right by 10', () => {
       breakoutModule.init()
       const before = breakoutModule.state.paddle.x
