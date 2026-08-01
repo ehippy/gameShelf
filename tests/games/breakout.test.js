@@ -334,6 +334,11 @@ describe('breakout', () => {
       expect(breakoutModule.state.score).toBe(0)
     })
 
+    it('init() does not set isPlaying = true (regression: no auto-start)', () => {
+      breakoutModule.init()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+    })
+
     it('handleKeydown ArrowLeft moves paddle left by 10', () => {
       breakoutModule.init()
       const before = breakoutModule.state.paddle.x
