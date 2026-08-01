@@ -244,13 +244,16 @@ export function reset() {
  * @param {string} key - The key pressed.
  */
 export function handleKeydown(key) {
-  if (!state || state.isGameOver || !state.isPlaying) return
+  if (!state) return
 
-  const oppositeDirections = {
-    'up': 'down',
-    'down': 'up',
-    'left': 'right',
-    'right': 'left'
+  if (state.isGameOver) {
+    // Game over: reset and start playing
+    state = createInitialState()
+    spawnFood()
+    state.isPlaying = true
+  } else if (!state.isPlaying) {
+    // Not playing yet: start playing
+    state.isPlaying = true
   }
 
   switch (key) {
