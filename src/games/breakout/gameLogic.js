@@ -282,6 +282,16 @@ export function reset() {
 export function handleKeydown(key) {
   if (!state) return
 
+  if (state.isGameOver) {
+    // Game over: reset and start playing
+    state = createInitialState()
+    state.isPlaying = true
+  } else if (!state.isPlaying) {
+    // Not playing: start playing
+    state.isPlaying = true
+  }
+
+  // Normal paddle movement (also executed after game-over reset)
   if (key === 'ArrowLeft') {
     state.paddle.x -= PADDLE_SPEED
     if (state.paddle.x < 0) {
@@ -293,7 +303,6 @@ export function handleKeydown(key) {
       state.paddle.x = CANVAS_WIDTH - state.paddle.width
     }
   }
-  // All other keys: no-op
 }
 
 // Export the state object for GamePage to read
