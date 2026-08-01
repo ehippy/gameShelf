@@ -446,6 +446,7 @@ describe('breakout', () => {
     })
 
     // ─── End of auto-start fix regression tests ───
+    // All three games (Snake, Tetris, Breakout) now correctly keep isPlaying: false on init/reset
 
     it('handleKeydown ArrowRight moves paddle right by 10', () => {
       breakoutModule.init()
