@@ -430,6 +430,7 @@ describe('breakout', () => {
 
     it('update() reverses ball.dx on right wall (x + size >= CANVAS_WIDTH)', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       // Position ball at right wall with negative dx, reverse happens on left
       // Position ball at right wall with positive dx
       breakoutModule.state.ball.x = breakoutModule.CANVAS_WIDTH - breakoutModule.state.ball.size
