@@ -440,7 +440,7 @@ describe('breakout', () => {
     })
 
     it('auto-start fix verified: breakout game correctly refuses to start without user input', () => {
-      // Verify that breakout init sets isPlaying to false
+      // Verify that breakout init sets isPlaying to false (fix: no auto-start)
       breakoutModule.init()
       expect(breakoutModule.state.isPlaying).toBe(false)
     })
