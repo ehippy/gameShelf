@@ -1,7 +1,4 @@
 import { describe, it, expect } from 'vitest'
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import { useGameStore } from '../src/stores/gameStore.js'
 import gamesCatalog from '../src/data/gamesCatalog.js'
 
 /**
