@@ -1,9 +1,10 @@
 import eslintJs from '@eslint/js'
 import vitest from '@vitest/eslint-plugin'
+import n from 'eslint-plugin-n'
 import globals from 'globals'
 
 export default [
-  // 1. Default (all files): @eslint/js recommended rules + node/browser/es2021 globals
+  // 1. Default (all files): @eslint/js recommended rules + node/recommended rules + node/browser/es2021 globals
   {
     files: ['**/*.js', '**/*.vue'],
     ignores: ['node_modules/', 'dist/', 'tests/e2e/'],
@@ -16,7 +17,7 @@ export default [
     },
     rules: {
       ...eslintJs.configs.recommended.rules,
-      ...eslintJs.configs.node.rules ?? {},
+      ...n.configs.recommended.rules,
     },
   },
   // 2. Tests (**/*.test.js): vitest plugin with recommended rules + specific rules
