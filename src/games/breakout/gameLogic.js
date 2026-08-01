@@ -314,5 +314,3 @@ export function handleKeydown(key) {
 
 // ─── Export the state object for GamePage to read ───
 export { state }
-
-// ─── Auto-start fix: all three games correctly keep isPlaying: false on init/reset, users control when play begins ───
