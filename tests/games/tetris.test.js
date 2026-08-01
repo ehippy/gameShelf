@@ -56,23 +56,23 @@ describe('tetris', () => {
     })
 
     it('T tetromino is purple (#a000f0)', () => {
-      expect(tetrisSrc).toContain("color: '#a000f0'") || expect(tetrisSrc).toContain('color: "#a000f0"')
+      expect(tetrisSrc).toContain("color: '#a000f0'")
     })
 
     it('S tetromino is green (#00f000)', () => {
-      expect(tetrisSrc).toContain("color: '#00f000'") || expect(tetrisSrc).toContain('color: "#00f000"')
+      expect(tetrisSrc).toContain("color: '#00f000'")
     })
 
     it('Z tetromino is red (#f00000)', () => {
-      expect(tetrisSrc).toContain("color: '#f00000'") || expect(tetrisSrc).toContain('color: "#f00000"')
+      expect(tetrisSrc).toContain("color: '#f00000'")
     })
 
     it('J tetromino is blue (#0000f0)', () => {
-      expect(tetrisSrc).toContain("color: '#0000f0'") || expect(tetrisSrc).toContain('color: "#0000f0"')
+      expect(tetrisSrc).toContain("color: '#0000f0'")
     })
 
     it('L tetromino is orange (#f0a000)', () => {
-      expect(tetrisSrc).toContain("color: '#f0a000'") || expect(tetrisSrc).toContain('color: "#f0a000"')
+      expect(tetrisSrc).toContain("color: '#f0a000'")
     })
 
     it('Grid has 10 columns', () => {
