@@ -310,7 +310,12 @@ describe('flappy-bird', () => {
     it('gravity pulls bird down over time', () => {
       if (!flappyModule) return
       flappyModule.init()
-      flappyModule.handleKeydown('ArrowUp')
+      // Start the game loop without modifying velocity (bypass handleKeydown)
+      flappyModule.state.isPlaying = true
+      // Advance past grace period (30 frames) so gravity takes effect
+      for (let i = 0; i < 40; i++) {
+        flappyModule.update()
+      }
       const initialBirdRow = flappyModule.state.bird.row
       for (let i = 0; i < 60; i++) {
         flappyModule.update()
@@ -321,7 +326,8 @@ describe('flappy-bird', () => {
     it('pipes spawn after interval frames', () => {
       if (!flappyModule) return
       flappyModule.init()
-      flappyModule.handleKeydown('ArrowUp')
+      // Start the game loop without modifying velocity
+      flappyModule.state.isPlaying = true
       expect(flappyModule.state.pipes.length).toBe(0)
       for (let i = 0; i < 8; i++) {
         flappyModule.update()
