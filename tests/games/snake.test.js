@@ -475,6 +475,21 @@ describe('snake', () => {
       expect(headAfter.y).toBe(headBefore.y)
     })
 
+    it('three-way logic: init → no playing, keypress → starts, game over → reset & plays', () => {
+      snakeModule.init()
+      expect(snakeModule.state.isPlaying).toBe(false)
+      expect(snakeModule.state.isGameOver).toBe(false)
+      snakeModule.handleKeydown('ArrowRight')
+      expect(snakeModule.state.isPlaying).toBe(true)
+      snakeModule.state.isGameOver = true
+      snakeModule.state.score = 99
+      snakeModule.handleKeydown('ArrowLeft')
+      expect(snakeModule.state.isPlaying).toBe(true)
+      expect(snakeModule.state.isGameOver).toBe(false)
+      expect(snakeModule.state.score).toBe(0)
+      expect(snakeModule.state.direction).toBe('left')
+    })
+
     // ─── update() wall collision tests ───
 
     it('update() triggers game over on right wall collision', () => {
