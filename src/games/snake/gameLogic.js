@@ -1,19 +1,163 @@
 /**
- * Initialize the Snake game.
- * @returns {void}
+ * Snake game for gameShelf platform.
+ * Classic snake mechanics: snake moves continuously, player changes direction with arrow keys.
+ * API: init(), update(), render(canvas), reset(), handleKeydown(key)
+ * Exports: state (readable by GamePage)
  */
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
 export const CANVAS_WIDTH = 250
 export const CANVAS_HEIGHT = 250
-export function init() {
-  // Stub: game initialization
+
+const GRID_COLS = 10
+const GRID_ROWS = 10
+const CELL_SIZE = CANVAS_WIDTH / GRID_COLS // 25px
+
+const MOVE_INTERVAL = 10 // snake moves every 10 frames (~6 moves/sec at 60fps)
+
+// Colors
+const BG_COLOR = '#0f0f23'
+const SNAKE_HEAD_COLOR = '#4ade80'
+const SNAKE_BODY_COLOR = '#22c55e'
+const SNAKE_OUTLINE = '#166534'
+const FOOD_COLOR = '#ef4444'
+const FOOD_OUTLINE = '#991b1b'
+const SCORE_TEXT_COLOR = '#ffffff'
+
+// ─── Game State ───────────────────────────────────────────────────────────────
+
+let state = null
+
+function createInitialState() {
+  // Snake starts with 3 segments on the left side, head at (2,5), body at (1,5), tail at (0,5)
+  const snake = [
+    { x: 2, y: 5 },
+    { x: 1, y: 5 },
+    { x: 0, y: 5 }
+  ]
+
+  return {
+    score: 0,
+    isGameOver: false,
+    isPlaying: true,
+    direction: 'right',
+    snake: snake,
+    food: null, // will be set by spawnFood
+    framesPlayed: 0
+  }
 }
 
 /**
- * Update the Snake game state.
- * @returns {void}
+ * Spawn food at a random grid cell not occupied by the snake.
+ */
+function spawnFood() {
+  const occupied = new Set(state.snake.map(s => `${s.x},${s.y}`))
+  let x, y
+  let attempts = 0
+  do {
+    x = Math.floor(Math.random() * GRID_COLS)
+    y = Math.floor(Math.random() * GRID_ROWS)
+    attempts++
+    // Safety: if we can't find an empty cell after many attempts, just use current
+    if (attempts > 1000) break
+  } while (occupied.has(`${x},${y}`))
+
+  state.food = { x, y }
+}
+
+// ─── Collision Detection ──────────────────────────────────────────────────────
+
+function checkWallCollision(newHead) {
+  return (
+    newHead.x < 0 ||
+    newHead.x >= GRID_COLS ||
+    newHead.y < 0 ||
+    newHead.y >= GRID_ROWS
+  )
+}
+
+function checkSelfCollision(newHead) {
+  for (let i = 0; i < state.snake.length; i++) {
+    if (state.snake[i].x === newHead.x && state.snake[i].y === newHead.y) {
+      return true
+    }
+  }
+  return false
+}
+
+// ─── Public Functions ─────────────────────────────────────────────────────────
+
+/**
+ * Initialize the Snake game.
+ * @returns {object} The initialized game state.
+ */
+export function init() {
+  state = createInitialState()
+  state.isPlaying = true
+  spawnFood()
+  return state
+}
+
+/**
+ * Update the Snake game state. Called ~60fps.
  */
 export function update() {
-  // Stub: game update logic
+  if (!state || state.isGameOver || !state.isPlaying) {
+    return
+  }
+
+  state.framesPlayed++
+
+  // Only move the snake every MOVE_INTERVAL frames
+  if (state.framesPlayed % MOVE_INTERVAL !== 0) {
+    return
+  }
+
+  // Calculate new head position based on current direction
+  const head = state.snake[0]
+  const newHead = { x: head.x, y: head.y }
+
+  switch (state.direction) {
+    case 'up':
+      newHead.y -= 1
+      break
+    case 'down':
+      newHead.y += 1
+      break
+    case 'left':
+      newHead.x -= 1
+      break
+    case 'right':
+      newHead.x += 1
+      break
+  }
+
+  // Check wall collision
+  if (checkWallCollision(newHead)) {
+    state.isGameOver = true
+    state.isPlaying = false
+    return
+  }
+
+  // Check self collision
+  if (checkSelfCollision(newHead)) {
+    state.isGameOver = true
+    state.isPlaying = false
+    return
+  }
+
+  // Check food collision
+  if (newHead.x === state.food.x && newHead.y === state.food.y) {
+    // Eat food: increment score, grow snake (don't remove tail), spawn new food
+    state.score += 1
+    state.snake.unshift(newHead)
+    spawnFood()
+  } else {
+    // Move: add new head, remove tail
+    state.snake.unshift(newHead)
+    state.snake.pop()
+  }
 }
 
 /**
@@ -21,20 +165,120 @@ export function update() {
  * @param {HTMLCanvasElement} canvas - The canvas to render to.
  */
 export function render(canvas) {
-  // Stub: game render logic
+  if (!state || !canvas) return
+
+  // Set canvas dimensions
+  canvas.width = CANVAS_WIDTH
+  canvas.height = CANVAS_HEIGHT
+
+  const ctx = canvas.getContext('2d')
+
+  // ── Clear canvas with dark background ──
+  ctx.fillStyle = BG_COLOR
+  ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
+
+  // ── Draw snake body segments ──
+  for (let i = 0; i < state.snake.length; i++) {
+    const segment = state.snake[i]
+    const x = segment.x * CELL_SIZE
+    const y = segment.y * CELL_SIZE
+
+    // Head is first segment, draw with head color; body with body color
+    if (i === 0) {
+      ctx.fillStyle = SNAKE_HEAD_COLOR
+    } else {
+      ctx.fillStyle = SNAKE_BODY_COLOR
+    }
+
+    // Draw rounded rectangle for segment
+    const padding = 1
+    ctx.fillRect(x + padding, y + padding, CELL_SIZE - padding * 2, CELL_SIZE - padding * 2)
+
+    // Segment outline
+    ctx.strokeStyle = SNAKE_OUTLINE
+    ctx.lineWidth = 1
+    ctx.strokeRect(x + padding, y + padding, CELL_SIZE - padding * 2, CELL_SIZE - padding * 2)
+  }
+
+  // ── Draw food ──
+  if (state.food) {
+    const fx = state.food.x * CELL_SIZE
+    const fy = state.food.y * CELL_SIZE
+
+    ctx.fillStyle = FOOD_COLOR
+    ctx.fillRect(fx + 2, fy + 2, CELL_SIZE - 4, CELL_SIZE - 4)
+
+    // Food outline
+    ctx.strokeStyle = FOOD_OUTLINE
+    ctx.lineWidth = 1.5
+    ctx.strokeRect(fx + 2, fy + 2, CELL_SIZE - 4, CELL_SIZE - 4)
+  }
+
+  // ── Draw score text ──
+  ctx.fillStyle = SCORE_TEXT_COLOR
+  ctx.font = 'bold 16px sans-serif'
+  ctx.textAlign = 'left'
+  ctx.fillText(`Score: ${state.score}`, 8, 20)
+
+  // ── Game Over overlay ──
+  if (state.isGameOver) {
+    // Semi-transparent dark overlay
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.75)'
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
+
+    // Game Over text
+    ctx.fillStyle = '#ff4444'
+    ctx.font = 'bold 28px sans-serif'
+    ctx.textAlign = 'center'
+    ctx.fillText('GAME OVER', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 20)
+
+    // Final score
+    ctx.fillStyle = '#ffffff'
+    ctx.font = '18px sans-serif'
+    ctx.fillText(`Score: ${state.score}`, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 20)
+  }
 }
 
 /**
- * Reset the Snake game to its initial state.
+ * Reset the Snake game to its initial state for a new game.
+ * @returns {object} The reset game state.
  */
 export function reset() {
-  // Stub: game reset logic
+  state = createInitialState()
+  state.isPlaying = true
+  spawnFood()
+  return state
 }
 
 /**
- * Handle keyboard input. No-op for stub.
+ * Handle keyboard input. Exported for GamePage to wire up.
  * @param {string} key - The key pressed.
  */
 export function handleKeydown(key) {
-  // Stub: no-op
+  if (!state || state.isGameOver || !state.isPlaying) return
+
+  const oppositeDirections = {
+    'up': 'down',
+    'down': 'up',
+    'left': 'right',
+    'right': 'left'
+  }
+
+  switch (key) {
+    case 'ArrowUp':
+      if (state.direction !== 'down') state.direction = 'up'
+      break
+    case 'ArrowDown':
+      if (state.direction !== 'up') state.direction = 'down'
+      break
+    case 'ArrowLeft':
+      if (state.direction !== 'right') state.direction = 'left'
+      break
+    case 'ArrowRight':
+      if (state.direction !== 'left') state.direction = 'right'
+      break
+  }
 }
+
+// Export the state object for GamePage to read
+export { state }
