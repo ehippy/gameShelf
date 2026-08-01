@@ -8,6 +8,9 @@ export default [
   {
     files: ['**/*.js', '**/*.vue'],
     ignores: ['node_modules/', 'dist/', 'tests/e2e/'],
+    plugins: {
+      n,
+    },
     languageOptions: {
       globals: {
         ...globals.browser,
