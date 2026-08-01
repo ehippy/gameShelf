@@ -248,7 +248,7 @@ export function render(canvas) {
   ctx.fillText(`Lives: ${state.lives}`, CANVAS_WIDTH - 4, CANVAS_HEIGHT - 6)
 
   // ── Game Over overlay ──
-  if (state.isGameOver) {
+  if (state.isGameOver || state.won) {
     ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
 
