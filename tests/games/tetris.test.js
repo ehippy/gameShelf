@@ -382,22 +382,24 @@ describe('tetris', () => {
       expect(tetrisModule.state.lines > linesBeforeLC).toBe(true)
     })
 
-    it('input rejected when game is over', () => {
+    it('input accepted when game is over (three-way logic)', () => {
       if (!tetrisModule) return
       tetrisModule.init()
       tetrisModule.state.isGameOver = true
-      const scoreAtGo = tetrisModule.state.score
+      tetrisModule.state.score = 999
       tetrisModule.handleKeydown('ArrowLeft')
-      tetrisModule.handleKeydown(' ')
-      expect(tetrisModule.state.score).toBe(scoreAtGo)
+      // After reset, score is back to 0, game is playing
+      expect(tetrisModule.state.isGameOver).toBe(false)
+      expect(tetrisModule.state.isPlaying).toBe(true)
+      expect(tetrisModule.state.score).toBe(0)
     })
 
-    it('game-over state persists', () => {
+    it('game-over state is cleared by pressing a key (three-way logic)', () => {
       if (!tetrisModule) return
       tetrisModule.init()
       tetrisModule.state.isGameOver = true
       tetrisModule.handleKeydown('ArrowLeft')
-      expect(tetrisModule.state.isGameOver).toBe(true)
+      expect(tetrisModule.state.isGameOver).toBe(false)
     })
 
     it('level formula: floor(lines / 10) + 1 works for 10 → 2', () => {
