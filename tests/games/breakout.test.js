@@ -428,6 +428,17 @@ describe('breakout', () => {
       expect(breakoutModule.state.paddle.x).toBe(115)
     })
 
+    it('breakout: ball resets to start position after losing a life', () => {
+      breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
+      expect(breakoutModule.state.ball.x).toBe(123)
+      expect(breakoutModule.state.ball.y).toBe(123)
+      breakoutModule.state.ball.y = 250
+      breakoutModule.update()
+      expect(breakoutModule.state.ball.x).toBe(123)
+      expect(breakoutModule.state.ball.y).toBe(123)
+    })
+
     it('handleKeydown ArrowRight moves paddle right by 10', () => {
       breakoutModule.init()
       const before = breakoutModule.state.paddle.x
