@@ -235,7 +235,6 @@ export function render(canvas) {
  */
 export function reset() {
   state = createInitialState()
-  state.isPlaying = true
   spawnFood()
   return state
 }
