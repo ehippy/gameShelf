@@ -63,6 +63,14 @@ onMounted(async () => {
     router.replace('/404')
     return
   }
+  // Also verify the slug has a corresponding game directory (prevents
+  // importing for catalog entries like 'minesweeper'/'memory' that lack
+  // a src/games/<slug>/gameLogic.js module)
+  const knownGameSlugs = ['snake', 'tetris', 'breakout', 'flappy-bird', 'whack-a-mole']
+  if (!knownGameSlugs.includes(slug)) {
+    router.replace('/404')
+    return
+  }
   // Dynamically import the game module
   gameLogic = await import('../games/' + slug + '/gameLogic.js')
   canvasWidth.value = gameLogic.CANVAS_WIDTH ?? 250
