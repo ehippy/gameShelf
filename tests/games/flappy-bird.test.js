@@ -124,19 +124,19 @@ describe('flappy-bird', () => {
 
     // State shape
     it('state has score', () => {
-      expect(flappySrc).toContain('score:') || expect(flappySrc).toContain('"score"')
+      expect(flappySrc).toContain('score:')
     })
 
     it('state has isGameOver', () => {
-      expect(flappySrc).toContain('isGameOver:') || expect(flappySrc).toContain('"isGameOver"')
+      expect(flappySrc).toContain('isGameOver:')
     })
 
     it('state has isPlaying', () => {
-      expect(flappySrc).toContain('isPlaying:') || expect(flappySrc).toContain('"isPlaying"')
+      expect(flappySrc).toContain('isPlaying:')
     })
 
     it('state has bird', () => {
-      expect(flappySrc).toContain('bird:') || expect(flappySrc).toContain('"bird"')
+      expect(flappySrc).toContain('bird:')
     })
 
     it('state has pipes', () => {
