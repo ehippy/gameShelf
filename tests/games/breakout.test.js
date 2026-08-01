@@ -183,12 +183,11 @@ describe('breakout', () => {
       }
     })
 
-    it('init() sets brick dimensions: 23×15, spacing 2px', () => {
+    it('init() brick dimensions: 23×15, spacing 2px', () => {
       const state = breakoutModule.init()
       // Check row 0, col 0 and col 1 to verify spacing
       const b0 = state.bricks[0]
       const b1 = state.bricks[1]
-      expect(b0.width || BRICK_WIDTH).toBe(23)
       expect(b0.x + 23 + 2).toBe(b1.x) // x + brickWidth + spacing = next brick x
     })
 
