@@ -393,6 +393,7 @@ describe('flappy-bird', () => {
     it('ArrowDown accelerates fall', () => {
       if (!flappyModule) return
       flappyModule.init()
+      flappyModule.handleKeydown('ArrowUp')
       const vBefore = flappyModule.state.bird.velocity
       flappyModule.handleKeydown('ArrowDown')
       expect(flappyModule.state.bird.velocity > vBefore).toBe(true)
