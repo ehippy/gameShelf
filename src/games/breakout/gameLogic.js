@@ -272,7 +272,6 @@ export function render(canvas) {
  */
 export function reset() {
   state = createInitialState()
-  state.isPlaying = true
   return state
 }
 
