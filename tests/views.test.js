@@ -249,6 +249,33 @@ describe('GamePage', () => {
     expect(guardFound).toBe(true)
   })
 
+  it('glob pattern resolves to src/games relative to project root', () => {
+    // The glob pattern must resolve to the correct path from src/views/
+    // ./src/games/ would resolve to src/views/src/games/ (WRONG)
+    // ../../src/games/ resolves to src/games/ (CORRECT)
+    const globMatch = gamePageSrc.match(/import\.meta\.glob\('([^']+)'/)
+    expect(globMatch).not.toBeNull()
+    const pattern = globMatch[1]
+    // Pattern must go up two levels from src/views/ to reach project root,
+    // then into src/games/
+    expect(pattern).toContain('../../src/games/')
+    expect(pattern).toContain('gameLogic.js')
+  })
+
+  it('modulePath lookup key matches glob key format', () => {
+    // The modulePath used for lookup must match the glob's key format.
+    // If the glob is '../../src/games/', the lookup key must also be
+    // '../../src/games/${slug}/gameLogic.js'.
+    const globMatch = gamePageSrc.match(/import\.meta\.glob\('([^']+)'/)
+    expect(globMatch).not.toBeNull()
+    const globPattern = globMatch[1]
+    const modulePathMatch = gamePageSrc.match(/`(\.\.\/\.\.\/src\/games\/\$\{slug\}\/gameLogic\.js)`/)
+    expect(modulePathMatch).not.toBeNull()
+    const modulePath = modulePathMatch[1]
+    // The modulePath key must start with the glob pattern
+    expect(modulePath).toMatch(/^(\.\.\/\.\.\/src\/games\/)/)
+  })
+
   it('has game canvas', () => {
     expect(gamePageSrc).toContain('<canvas')
   })
