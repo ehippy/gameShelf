@@ -890,6 +890,7 @@ describe('snake', () => {
 
     it('multiple food eats increase score cumulatively', () => {
       snakeModule.init()
+      snakeModule.handleKeydown('ArrowRight')
       for (let i = 0; i < 3; i++) {
         const head = snakeModule.state.snake[0]
         const dir = snakeModule.state.direction
