@@ -691,6 +691,7 @@ describe('breakout', () => {
           fillRect: (x, y, w, h) => {},
           get setFillStyle() { return bgColor },
           set fillStyle(v) { bgColor = v },
+          beginPath: () => {},
           arc: () => {},
           fill: () => {},
           font: null,
@@ -710,6 +711,7 @@ describe('breakout', () => {
         getContext: () => ({
           fillRect: (x, y, w, h) => { brickRects.push({ x, y, w, h }) },
           fillStyle: null,
+          beginPath: () => {},
           arc: () => {},
           fill: () => {},
           font: null,
@@ -719,7 +721,6 @@ describe('breakout', () => {
         })
       }
       breakoutModule.render(mockCanvas)
-      // 40 bricks, all alive, plus background rect, plus paddle, plus GAME OVER? no not game over
       // Background (1) + 40 bricks = 41 rects minimum
       expect(brickRects.length).toBeGreaterThan(39)
     })
@@ -730,12 +731,12 @@ describe('breakout', () => {
       const mockCanvas = {
         getContext: () => ({
           fillRect: (x, y, w, h) => {
-            // Check if this could be the paddle (x near 105, y=228, w=40, h=8)
             if (Math.abs(y - 228) < 1 && Math.abs(w - 40) < 1) {
               paddleDrawn = true
             }
           },
           fillStyle: null,
+          beginPath: () => {},
           arc: () => {},
           fill: () => {},
           font: null,
@@ -755,9 +756,8 @@ describe('breakout', () => {
         getContext: () => ({
           fillRect: () => {},
           fillStyle: null,
-          arc: (cx, cy, r, start, end) => {
-            arcCalled = true
-          },
+          beginPath: () => {},
+          arc: (cx, cy, r, start, end) => { arcCalled = true },
           fill: () => {},
           font: null,
           textAlign: null,
@@ -776,6 +776,7 @@ describe('breakout', () => {
         getContext: () => ({
           fillRect: () => {},
           fillStyle: null,
+          beginPath: () => {},
           arc: () => {},
           fill: () => {},
           font: null,
@@ -795,6 +796,7 @@ describe('breakout', () => {
         getContext: () => ({
           fillRect: () => {},
           fillStyle: null,
+          beginPath: () => {},
           arc: () => {},
           fill: () => {},
           font: null,
@@ -809,7 +811,7 @@ describe('breakout', () => {
 
     it('render() displays GAME OVER overlay when isGameOver is true', async () => {
       breakoutModule.init()
-      breakoutModule.update() // advance a bit
+      breakoutModule.update()
       breakoutModule.state.lives = 0
       breakoutModule.state.isGameOver = true
       breakoutModule.state.isPlaying = false
@@ -818,6 +820,7 @@ describe('breakout', () => {
         getContext: () => ({
           fillRect: () => {},
           fillStyle: null,
+          beginPath: () => {},
           arc: () => {},
           fill: () => {},
           font: null,
@@ -841,6 +844,7 @@ describe('breakout', () => {
         getContext: () => ({
           fillRect: () => {},
           fillStyle: null,
+          beginPath: () => {},
           arc: () => {},
           fill: () => {},
           font: null,
@@ -863,6 +867,7 @@ describe('breakout', () => {
         getContext: () => ({
           fillRect: () => {},
           fillStyle: null,
+          beginPath: () => {},
           arc: () => {},
           fill: () => {},
           font: null,
