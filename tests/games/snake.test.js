@@ -579,6 +579,7 @@ describe('snake', () => {
 
     it('update() grows snake by 1 when eating food (tail is not removed)', () => {
       snakeModule.init()
+      snakeModule.handleKeydown('ArrowRight') // start the game
       const lenBefore = snakeModule.state.snake.length
       snakeModule.state.food = { x: 3, y: 5 }
       for (let f = 0; f < 9; f++) {
