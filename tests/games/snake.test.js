@@ -604,6 +604,7 @@ describe('snake', () => {
       snakeModule.init()
       const lenBefore = snakeModule.state.snake.length
       const headBefore = { ...snakeModule.state.snake[0] }
+      const tailBefore = { ...snakeModule.state.snake[lenBefore - 1] } // save old tail BEFORE update
       // Move in a direction where food is NOT in the path
       snakeModule.state.food = { x: 0, y: 0 } // far away
       for (let f = 0; f < 9; f++) {
@@ -616,8 +617,8 @@ describe('snake', () => {
       // Head moved right by 1
       expect(headAfter.x).toBe(headBefore.x + 1)
       expect(headAfter.y).toBe(headBefore.y)
-      // Tail was removed - old last segment is no longer at end
-      expect(snakeModule.state.snake[lenAfter - 1].x).not.toBe(snakeModule.state.snake[lenBefore - 1].x)
+      // Tail was removed - new tail is different from old tail
+      expect(snakeModule.state.snake[lenAfter - 1]).not.toEqual(tailBefore)
     })
 
     // ─── update() guard tests ───
