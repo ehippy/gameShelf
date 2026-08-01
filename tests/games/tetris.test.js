@@ -312,6 +312,8 @@ describe('tetris', () => {
       expect(tetrisModule.state.score).toBe(scoreBefore)
     })
 
+    // ─── Three-way handleKeydown logic tests ───
+
     it('handleKeydown when isPlaying is false starts the game (three-way logic)', () => {
       if (!tetrisModule) return
       tetrisModule.init()
@@ -360,9 +362,8 @@ describe('tetris', () => {
       expect(tetrisModule.state.isPlaying).toBe(false)
     })
 
-    it('auto-start fix verified: init sets isPlaying to false for all three games', () => {
-      // Snake: imported earlier as snakeModule via separate test
-      // Tetris: verify here
+    it('auto-start fix verified: init sets isPlaying to false', () => {
+      if (!tetrisModule) return
       tetrisModule.init()
       expect(tetrisModule.state.isPlaying).toBe(false)
     })
