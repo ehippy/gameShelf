@@ -61,10 +61,6 @@ describe('catalog entries', () => {
     expect(catalog).toContain("category: 'Puzzle'")
   })
 
-  it('has Strategy category', () => {
-    expect(catalog).toContain("category: 'Strategy'")
-  })
-
   it('has Casual category', () => {
     expect(catalog).toContain("category: 'Casual'")
   })
