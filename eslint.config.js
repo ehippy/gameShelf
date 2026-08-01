@@ -1,13 +1,17 @@
 import eslintJs from '@eslint/js'
 import vitest from '@vitest/eslint-plugin'
+import globals from 'globals'
 
 export default [
-  // 1. Default (all files): @eslint/js recommended rules + browser/node/es2021 globals
+  // 1. Default (all files): @eslint/js recommended rules + node/browser/es2021 globals
   {
-    ...eslintJs.configs.recommended,
+    files: ['**/*.js', '**/*.vue'],
+    ignores: ['node_modules/', 'dist/', 'tests/e2e/'],
     languageOptions: {
       globals: {
-        ...eslintJs.configs.recommended.globals,
+        ...globals.browser,
+        ...globals.es2021,
+        ...globals.node,
       },
     },
     rules: {
@@ -36,12 +40,10 @@ export default [
   {
     files: ['vitest.config.js'],
     languageOptions: {
-      globals: {
-        ...vitest.environments.env.globals,
-      },
+      globals: globals.node,
     },
   },
-  // 4. Ignored paths: node_modules/, dist/, tests/e2e/
+  // 4. Ignored paths: node_modules/, dist/, tests/e2e/ (Playwright files)
   {
     ignores: ['node_modules/', 'dist/', 'tests/e2e/'],
   },
