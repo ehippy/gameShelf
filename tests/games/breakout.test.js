@@ -442,6 +442,7 @@ describe('breakout', () => {
 
     it('update() reverses ball.dy on top wall (y <= 0)', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       // Start at y=0 with dy negative: after move y = -2 <= 0 → bounce
       breakoutModule.state.ball.y = 0
       breakoutModule.state.ball.dy = -2
