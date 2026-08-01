@@ -482,7 +482,8 @@ describe('HighScoresView', () => {
 
 describe('NotFoundView', () => {
   it('renders 404 heading', () => {
-    expect(notFoundViewSrc).toContain('<h1>404</h1>') || expect(notFoundViewSrc).toContain('404')
+    expect(notFoundViewSrc).toContain('<h1>404</h1>')
+    expect(notFoundViewSrc).toContain('404')
   })
 
   it('has Page not found text', () => {
