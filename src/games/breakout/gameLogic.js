@@ -284,6 +284,7 @@ export function reset() {
  *   - Already playing → perform normal paddle movement
  *
  * @param {string} key - The key pressed (e.g. 'ArrowLeft', 'ArrowRight').
+ * @returns {void}
  */
 export function handleKeydown(key) {
   if (!state) return
