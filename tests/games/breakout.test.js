@@ -775,7 +775,7 @@ describe('breakout', () => {
           fillRect: () => {},
           fillStyle: null,
           beginPath: () => {},
-          arc: (cx, cy, r, start, end) => { arcCalled = true },
+          arc: (_cx, _cy, _r, _start, _end) => { arcCalled = true },
           fill: () => {},
           font: null,
           textAlign: null,
