@@ -5,6 +5,10 @@
  * Exports: state (readable by GamePage)
  */
 
+// ─── Imports ──────────────────────────────────────────────────────────────────
+
+import { renderGameOver } from '../shared/renderHelpers.js'
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 export const CANVAS_WIDTH = 250
