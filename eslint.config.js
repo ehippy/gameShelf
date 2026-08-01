@@ -29,11 +29,17 @@ export default [
     ...vitest.configs.recommended,
     plugins: {
       vitest,
+      n,
     },
     rules: {
       ...vitest.configs.recommended.rules,
       'vitest/expect-expect': ['error', { assertFunctionNames: ['expect', '**.expect'] }],
       'vitest/no-focused-tests': 'error',
+      // Disable node/unpublished rules in test files (they import devDependencies)
+      'n/no-unpublished-import': 'off',
+      'n/no-unpublished-require': 'off',
+      'n/no-missing-import': 'off',
+      'n/no-missing-require': 'off',
     },
     languageOptions: {
       globals: {
