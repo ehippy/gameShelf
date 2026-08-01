@@ -952,6 +952,7 @@ describe('breakout', () => {
 
     it('multiple brick destructions increase score cumulatively', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       breakoutModule.state.score = 0
       // Destroy first brick
       const b0 = breakoutModule.state.bricks[0]
