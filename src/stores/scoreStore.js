@@ -7,7 +7,7 @@ function getKnownSlugs() {
   return new Set(gamesCatalog.map(g => g.slug))
 }
 
-function isValidSlug(slug) {
+export function isValidSlug(slug) {
   return typeof slug === 'string' && VALID_SLUG_RE.test(slug) && getKnownSlugs().has(slug)
 }
 

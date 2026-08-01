@@ -35,7 +35,7 @@
 import { ref, computed, onMounted, onBeforeUnmount, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useGameStore } from '../stores/gameStore.js'
-import { useScoreStore } from '../stores/scoreStore.js'
+import { useScoreStore, isValidSlug } from '../stores/scoreStore.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -65,8 +65,7 @@ onMounted(async () => {
   }
   // Also verify the slug has a corresponding game directory (prevents
   // importing for slugs without a src/games/<slug>/gameLogic.js module)
-  const knownGameSlugs = ['snake', 'tetris', 'breakout', 'flappy-bird', 'whack-a-mole']
-  if (!knownGameSlugs.includes(slug)) {
+  if (!isValidSlug(slug)) {
     router.replace('/404')
     return
   }
