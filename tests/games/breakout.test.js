@@ -408,6 +408,19 @@ describe('breakout', () => {
 
     // ─── End of auto-start fix regression tests ───
 
+    it('breakout: handles game over → reset → play cycle correctly', () => {
+      breakoutModule.init()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+      breakoutModule.handleKeydown('ArrowRight')
+      expect(breakoutModule.state.isPlaying).toBe(true)
+      breakoutModule.state.isGameOver = true
+      breakoutModule.state.score = 500
+      breakoutModule.handleKeydown('ArrowRight')
+      expect(breakoutModule.state.isPlaying).toBe(true)
+      expect(breakoutModule.state.isGameOver).toBe(false)
+      expect(breakoutModule.state.score).toBe(0)
+    })
+
     it('handleKeydown ArrowRight moves paddle right by 10', () => {
       breakoutModule.init()
       const before = breakoutModule.state.paddle.x
