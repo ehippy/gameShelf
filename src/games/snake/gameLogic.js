@@ -5,6 +5,10 @@
  * Exports: state (readable by GamePage)
  */
 
+// ─── Imports ──────────────────────────────────────────────────────────────────
+
+import { renderGameOver } from '../shared/renderHelpers.js'
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 export const CANVAS_WIDTH = 250
@@ -220,22 +224,9 @@ export function render(canvas) {
   ctx.textAlign = 'left'
   ctx.fillText(`Score: ${state.score}`, 8, 20)
 
-  // ── Game Over overlay ──
+  // ── Game Over overlay (GAME OVER title rendered via shared helper) ──
   if (state.isGameOver) {
-    // Semi-transparent dark overlay
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.75)'
-    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
-
-    // Game Over text
-    ctx.fillStyle = '#ff4444'
-    ctx.font = 'bold 28px sans-serif'
-    ctx.textAlign = 'center'
-    ctx.fillText('GAME OVER', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 20)
-
-    // Final score
-    ctx.fillStyle = '#ffffff'
-    ctx.font = '18px sans-serif'
-    ctx.fillText(`Score: ${state.score}`, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 20)
+    renderGameOver(ctx, state, CANVAS_WIDTH, CANVAS_HEIGHT)
   }
 }
 

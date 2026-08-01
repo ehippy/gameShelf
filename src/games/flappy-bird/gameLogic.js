@@ -5,6 +5,10 @@
  * Exports: state (readable by GamePage)
  */
 
+// ─── Imports ──────────────────────────────────────────────────────────────────
+
+import { renderGameOver } from '../shared/renderHelpers.js'
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const COLS = 7
@@ -216,15 +220,7 @@ export function render(canvas) {
 
   // ── Game Over overlay ──
   if (state.isGameOver) {
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.75)'
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
-    ctx.fillStyle = '#ff4444'
-    ctx.font = 'bold 28px sans-serif'
-    ctx.textAlign = 'center'
-    ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 20)
-    ctx.fillStyle = '#ffffff'
-    ctx.font = '18px sans-serif'
-    ctx.fillText(`Score: ${state.score}`, canvas.width / 2, canvas.height / 2 + 20)
+    renderGameOver(ctx, state, canvas.width, canvas.height)
   }
 }
 
