@@ -406,6 +406,8 @@ describe('breakout', () => {
       expect(breakoutModule.state.framesPlayed).toBe(0)
     })
 
+    // ─── End of auto-start fix regression tests ───
+
     it('handleKeydown ArrowRight moves paddle right by 10', () => {
       breakoutModule.init()
       const before = breakoutModule.state.paddle.x
