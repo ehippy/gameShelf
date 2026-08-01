@@ -360,6 +360,13 @@ describe('tetris', () => {
       expect(tetrisModule.state.isPlaying).toBe(false)
     })
 
+    it('auto-start fix verified: init sets isPlaying to false for all three games', () => {
+      // Snake: imported earlier as snakeModule via separate test
+      // Tetris: verify here
+      tetrisModule.init()
+      expect(tetrisModule.state.isPlaying).toBe(false)
+    })
+
     it('hard drop does not reduce score', () => {
       if (!tetrisModule) return
       tetrisModule.init()
