@@ -125,10 +125,10 @@ describe('GamePage slug guard uses isValidSlug', () => {
 
   it('isValidSlug guard runs before import.meta.glob lookup', () => {
     const guardIdx = gamePageSrc.indexOf('isValidSlug(slug)')
-    const globIdx = gamePageSrc.indexOf('import.meta.glob')
+    const lookupIdx = gamePageSrc.indexOf('gameModules[')
     expect(guardIdx).toBeGreaterThan(-1)
-    expect(globIdx).toBeGreaterThan(-1)
-    expect(guardIdx).toBeLessThan(globIdx)
+    expect(lookupIdx).toBeGreaterThan(-1)
+    expect(guardIdx).toBeLessThan(lookupIdx)
   })
 })
 
