@@ -569,6 +569,7 @@ describe('breakout', () => {
 
     it('update() increases score by 10 per brick destroyed', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       const brick = breakoutModule.state.bricks[0]
       breakoutModule.state.ball.x = brick.x + 2
       breakoutModule.state.ball.y = brick.y + 2
