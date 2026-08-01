@@ -123,12 +123,12 @@ describe('GamePage slug guard uses isValidSlug', () => {
     expect(guardMatch).not.toBeNull()
   })
 
-  it('isValidSlug guard runs before dynamic import', () => {
+  it('isValidSlug guard runs before import.meta.glob lookup', () => {
     const guardIdx = gamePageSrc.indexOf('isValidSlug(slug)')
-    const importIdx = gamePageSrc.indexOf("import('../games/'")
+    const globIdx = gamePageSrc.indexOf('import.meta.glob')
     expect(guardIdx).toBeGreaterThan(-1)
-    expect(importIdx).toBeGreaterThan(-1)
-    expect(guardIdx).toBeLessThan(importIdx)
+    expect(globIdx).toBeGreaterThan(-1)
+    expect(guardIdx).toBeLessThan(globIdx)
   })
 })
 
