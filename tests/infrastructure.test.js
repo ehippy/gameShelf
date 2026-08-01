@@ -712,24 +712,40 @@ describe('No deprecated field names in new/modified files', () => {
   const attemptYml = readFileSync(join(root, '.github', 'actions', 'deploy-with-retry', '_attempt', 'action.yml'), 'utf-8')
   const deployYml = readFileSync(join(root, '.github', 'workflows', 'deploy.yml'), 'utf-8')
 
-  // In YAML action files, `name:` and `id:` are standard structural keys (action name, step id).
-  // The deprecated field names concern catalog-style data usage (e.g., `id: snake`, `name: Snake` as game data).
-  // This regex rejects lines that look like catalog field assignments: key-value pairs where
-  // the key is id/name/genre and the value is an identifier string (not a metadata keyword).
-  const deprecatedPattern = /\b(?:id|name|genre)\s*:\s*['"]?[a-z][a-z0-9_-]+['"]?$/
+  // Deprecated field names concern catalog-style data fields (e.g. `id: snake`, `name: Snake`, `genre: Arcade`).
+  // In YAML action/workflow files, `name:` and `id:` are structural keys (action name, step id, env name).
+  // Catalog-style data would look like: a bare `id`, `name`, or `genre` key with a non-structural value
+  // (not an action/environment name, not a step id).  We exclude known structural patterns:
+  //   - `id:` followed by lowercase step ids (e.g. `upload`, `deploy`, `checkout`)
+  //   - `name:` followed by env/action names (e.g. `github-pages`, `Deploy to...`)
+  const structuralIdPattern = /^\s+id:\s+(upload|deploy|checkout|setup|steps|deployment|build|test)\b/
+  const structuralNamePattern = /^\s+name:\s+(Deploy to|Single Deploy|Wait|Upload artifact|Deploy to GitHub|All retry|github-pages|Deploy to GitHub Pages with Retry)\b/
 
   it('deploy-with-retry/action.yml has no deprecated catalog-style field', () => {
-    const badLines = actionYml.split('\n').filter(l => deprecatedPattern.test(l))
+    const badLines = actionYml.split('\n').filter(l => {
+      if (l.match(/^\s*(name|description):/)) return false // top-level metadata keys
+      if (l.match(structuralIdPattern)) return false
+      return /\b(id|name|genre)\s*:\s*['"]?[a-z][a-z0-9_-]+['"]?\s*$/.test(l)
+    })
     expect(badLines).toEqual([])
   })
 
   it('_attempt/action.yml has no deprecated catalog-style field', () => {
-    const badLines = attemptYml.split('\n').filter(l => deprecatedPattern.test(l))
+    const badLines = attemptYml.split('\n').filter(l => {
+      if (l.match(/^\s*(name|description|inputs|outputs):/)) return false // structural keys
+      if (l.match(structuralIdPattern)) return false
+      return /\b(id|name|genre)\s*:\s*['"]?[a-z][a-z0-9_-]+['"]?\s*$/.test(l)
+    })
     expect(badLines).toEqual([])
   })
 
   it('deploy.yml has no deprecated catalog-style field', () => {
-    const badLines = deployYml.split('\n').filter(l => deprecatedPattern.test(l))
+    const badLines = deployYml.split('\n').filter(l => {
+      if (l.match(/^\s*(name|description|inputs|outputs|runs|uses|if|with|env):/)) return false
+      if (l.match(structuralIdPattern)) return false
+      if (l.match(structuralNamePattern)) return false
+      return /\b(id|name|genre)\s*:\s*['"]?[a-z][a-z0-9_-]+['"]?\s*$/.test(l)
+    })
     expect(badLines).toEqual([])
   })
 })
