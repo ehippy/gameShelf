@@ -354,6 +354,12 @@ describe('tetris', () => {
       expect(tetrisModule.state.score).toBe(0)
     })
 
+    it('init() does not auto-start the game (isPlaying stays false)', () => {
+      if (!tetrisModule) return
+      tetrisModule.init()
+      expect(tetrisModule.state.isPlaying).toBe(false)
+    })
+
     it('hard drop does not reduce score', () => {
       if (!tetrisModule) return
       tetrisModule.init()
