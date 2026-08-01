@@ -289,8 +289,7 @@ describe('tetris', () => {
     it('update() runs without error', () => {
       if (!tetrisModule) return
       tetrisModule.init()
-      tetrisModule.update()
-      expect(tetrisModule.state.isGameOver === false || tetrisModule.state.isGameOver === true).toBe(true)
+      expect(() => tetrisModule.update()).not.toThrow()
     })
 
     it('handleKeydown does not throw when game is over', () => {
