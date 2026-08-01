@@ -379,6 +379,29 @@ describe('tetris', () => {
       expect(tetrisModule.state.score).toBe(0)
     })
 
+    it('three-way logic: not playing → start playing, game over → reset & play, already playing → normal action', () => {
+      if (!tetrisModule) return
+      tetrisModule.init()
+      // Case 1: not playing → pressing a key starts the game
+      expect(tetrisModule.state.isPlaying).toBe(false)
+      tetrisModule.handleKeydown('ArrowLeft')
+      expect(tetrisModule.state.isPlaying).toBe(true)
+      const dirAfterStart = tetrisModule.state.direction
+
+      // Case 2: already playing → normal action (move)
+      const colBefore = tetrisModule.state.currentPiece.col
+      tetrisModule.handleKeydown('ArrowDown')
+      expect(tetrisModule.state.isPlaying).toBe(true)
+
+      // Case 3: game over → reset and start playing
+      tetrisModule.state.isGameOver = true
+      tetrisModule.state.score = 999
+      tetrisModule.handleKeydown('ArrowLeft')
+      expect(tetrisModule.state.isPlaying).toBe(true)
+      expect(tetrisModule.state.isGameOver).toBe(false)
+      expect(tetrisModule.state.score).toBe(0)
+    })
+
     it('hard drop does not reduce score', () => {
       if (!tetrisModule) return
       tetrisModule.init()
