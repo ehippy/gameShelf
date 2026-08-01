@@ -47,7 +47,7 @@ function createInitialState() {
     score: 0,
     lives: STARTING_LIVES,
     isGameOver: false,
-    isPlaying: true,
+    isPlaying: false,
     ball: {
       x: BALL_START_X,
       y: BALL_START_Y,
