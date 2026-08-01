@@ -136,9 +136,7 @@ describe('snake', () => {
     let snakeModule = null
 
     beforeEach(async () => {
-      // Use query parameter to force fresh module load each test
-      const url = snakePath + `?t=${Date.now()}`
-      snakeModule = await import(url)
+      snakeModule = await import(snakePath)
     })
 
     // ─── init() tests ───
