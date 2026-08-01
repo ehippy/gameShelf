@@ -84,7 +84,7 @@ onMounted(async () => {
 
   // Score submission helper
   const submitScoreIfGameOver = () => {
-    if (state.isGameOver && lastSnapshotScore !== state.score && state.score > 0) {
+    if ((state.isGameOver || state.won) && lastSnapshotScore !== state.score && state.score > 0) {
       lastSnapshotScore = state.score
       scoreStore.submitScore(slug, state.score)
     }
