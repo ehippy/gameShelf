@@ -248,6 +248,7 @@ export function reset() {
  *   - Already playing → perform normal direction change
  *
  * @param {string} key - The key pressed (e.g. 'ArrowUp', 'ArrowDown').
+ * @returns {void}
  */
 export function handleKeydown(key) {
   if (!state) return
