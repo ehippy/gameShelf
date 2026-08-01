@@ -222,10 +222,10 @@ describe('GamePage', () => {
     // slugs without actual game directories.
     const guardMatch = gamePageSrc.match(/if\s*\(\s*!isValidSlug\(slug\)\s*\)\s*\{[\s\S]*?router\.replace\('\/404'\)/)
     expect(guardMatch).not.toBeNull()
-    // Verify the guard comes before the dynamic import
+    // Verify the guard comes before the glob lookup
     const guardIdx = gamePageSrc.indexOf('isValidSlug(slug)')
-    const importIdx = gamePageSrc.indexOf("import('../games/'")
-    expect(guardIdx).toBeLessThan(importIdx)
+    const globIdx = gamePageSrc.indexOf('import.meta.glob')
+    expect(guardIdx).toBeLessThan(globIdx)
   })
 
   it('does NOT allow loading gameLogic for non-existent game directories', () => {
