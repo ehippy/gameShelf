@@ -28,8 +28,8 @@ describe('HomeView', () => {
     expect(homeViewSrc).toContain('tagline') || expect(homeViewSrc).toContain('Play classic games')
   })
 
-  it('renders games grid from gameStore', () => {
-    expect(homeViewSrc).toContain('gameStore.catalog')
+  it('renders games grid with filtered games', () => {
+    expect(homeViewSrc).toContain('filteredGames')
   })
 
   it('imports and uses GameCard component', () => {
