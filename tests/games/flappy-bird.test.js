@@ -105,7 +105,7 @@ describe('flappy-bird', () => {
 
     // Sky-blue background
     it('sky-blue background #87CEEB', () => {
-      expect(flappySrc).toContain('87CEEB') || expect(flappySrc).toContain('"87CEEB"') || expect(flappySrc).toContain("'87CEEB'")
+      expect(flappySrc).toContain('#87CEEB')
     })
 
     // Yellow bird
