@@ -525,7 +525,35 @@ export function render(canvas) {
     renderGameplay(ctx)
   } else if (state.isGameOver) {
     renderGameplay(ctx)
-    renderGameOver(ctx)
+    renderGameOver(ctx, state, CANVAS_W, CANVAS_H, {
+      overlayColor: 'rgba(0, 0, 0, 0.7)',
+      titleY: CANVAS_H / 2 - 80,
+      scoreText: `Score: ${state.score}`,
+      scoreColor: '#ffffff',
+      scoreFont: '16px sans-serif',
+      scoreY: CANVAS_H / 2 - 40,
+      showRestartPrompt: false,
+      lines: [
+        {
+          text: `High Score: ${getHighScore()}`,
+          color: '#ffd700',
+          font: 'bold 16px sans-serif',
+          y: CANVAS_H / 2 - 15
+        },
+        {
+          text: `Highest Combo: x${state.highestCombo}`,
+          color: '#ffffff',
+          font: '14px sans-serif',
+          y: CANVAS_H / 2 + 15
+        },
+        {
+          text: 'Press Space or B to restart',
+          color: '#cccccc',
+          font: '12px sans-serif',
+          y: CANVAS_H / 2 + 50
+        }
+      ]
+    })
   }
 }
 
