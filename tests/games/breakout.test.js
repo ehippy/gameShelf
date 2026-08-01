@@ -556,6 +556,7 @@ describe('breakout', () => {
 
     it('update() destroys a brick when ball overlaps it', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       // Position ball on the first brick (row 0, col 0)
       const brick = breakoutModule.state.bricks[0]
       breakoutModule.state.ball.x = brick.x + 2
