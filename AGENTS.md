@@ -109,6 +109,31 @@ This ensures:
 - Playwright exclusively owns `tests/e2e/**/*.spec.js` files (E2E tests)
 - No namespace collision between the two frameworks' `test` functions
 
+### Short-circuit assertions (`||`) anti-pattern
+
+> **Never combine assertions with `||` to check multiple conditions.**
+
+When you write `expect(a).toBe(1) || expect(b).toBe(2)`, the left side runs and is actually verified. But `expect().toBe()` returns `undefined` (or a Promise in async contexts), which is falsy. This means:
+
+1. The right side (`expect(b).toBe(2)`) **never executes** — `||` short-circuits because the left operand is falsy (even when the assertion *passed*).
+2. Only the **left-most assertion** in the chain is ever checked.
+3. Silent failures: the test file may pass even though the right-side assertions are completely untested.
+
+**Anti-pattern (do not use):**
+```js
+expect(result).toContain('foo') || expect(result).toContain('bar')
+```
+
+**Correct approach:**
+```js
+expect(result).toContain('foo')
+expect(result).toContain('bar')
+```
+
+Each condition gets its own `expect()` call — either on separate lines within the same `it()`, or split into separate `it()` blocks for clarity. This ensures every condition is actually executed and verified by the test framework.
+
+**This trap has appeared repeatedly across `tests/components.test.js`, `tests/games/flappy-bird.test.js`, `tests/games/tetris.test.js`, `tests/games/snake.test.js`, and `tests/infrastructure.test.js`. If you see `||` between `expect()` calls, rewrite each as an independent assertion.**
+
 ## Deployment Failure Convention
 
 ### Transient failures
