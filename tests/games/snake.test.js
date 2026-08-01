@@ -872,6 +872,7 @@ describe('snake', () => {
 
     it('full cycle: init → play → eat food → score increases → reset', () => {
       snakeModule.init()
+      snakeModule.handleKeydown('ArrowRight')
       expect(snakeModule.state.score).toBe(0)
       snakeModule.state.food = { x: 3, y: 5 }
       for (let f = 0; f < 9; f++) {
