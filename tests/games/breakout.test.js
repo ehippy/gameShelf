@@ -304,6 +304,36 @@ describe('breakout', () => {
 
     // --- handleKeydown() tests ---
 
+    it('init() preserves isPlaying: false (no auto-start)', () => {
+      breakoutModule.init()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+    })
+
+    it('reset() preserves isPlaying: false (no auto-start)', () => {
+      breakoutModule.init()
+      breakoutModule.state.score = 100
+      breakoutModule.reset()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+    })
+
+    it('handleKeydown starts Breakout game when isPlaying is false (three-way logic)', () => {
+      breakoutModule.init()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+      breakoutModule.handleKeydown('ArrowRight')
+      expect(breakoutModule.state.isPlaying).toBe(true)
+    })
+
+    it('handleKeydown resets Breakout when game over and starts playing (three-way logic)', () => {
+      breakoutModule.init()
+      breakoutModule.state.isGameOver = true
+      breakoutModule.state.score = 999
+      expect(breakoutModule.state.isPlaying).toBe(false)
+      breakoutModule.handleKeydown('ArrowRight')
+      expect(breakoutModule.state.isPlaying).toBe(true)
+      expect(breakoutModule.state.isGameOver).toBe(false)
+      expect(breakoutModule.state.score).toBe(0)
+    })
+
     it('handleKeydown ArrowLeft moves paddle left by 10', () => {
       breakoutModule.init()
       const before = breakoutModule.state.paddle.x
