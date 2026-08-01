@@ -439,10 +439,12 @@ describe('breakout', () => {
 
     it('update() reverses ball.dy on top wall (y <= 0)', () => {
       breakoutModule.init()
+      // Start at y=0 with dy negative: after move y = -2 <= 0 → bounce
       breakoutModule.state.ball.y = 0
-      breakoutModule.state.ball.dy = 2
+      breakoutModule.state.ball.dy = -2
       breakoutModule.update()
-      expect(breakoutModule.state.ball.dy).toBe(-2)
+      // After move: y = -2 <= 0 → dy reverses from -2 to 2
+      expect(breakoutModule.state.ball.dy).toBe(2)
     })
 
     // --- update() bottom death tests ---
