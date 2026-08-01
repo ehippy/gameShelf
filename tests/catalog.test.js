@@ -199,4 +199,19 @@ describe('no old fields', () => {
   it('whack-a-mole has description', () => {
     expect(catalog).toContain("description: 'Whack moles as fast as you can!'")
   })
+
+  // --- non-existent game removal ---
+
+  it('does NOT contain minesweeper entry', () => {
+    expect(catalog).not.toContain("slug: 'minesweeper'")
+  })
+
+  it('does NOT contain memory entry', () => {
+    expect(catalog).not.toContain("slug: 'memory'")
+  })
+
+  it('has exactly 5 catalog entries', () => {
+    const slugMatches = catalog.match(/slug:\s*'([^']+)'/g) || []
+    expect(slugMatches.length).toBe(5)
+  })
 })
