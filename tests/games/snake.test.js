@@ -429,6 +429,7 @@ describe('snake', () => {
 
     it('update() moves snake left by 1 cell on move frame', () => {
       snakeModule.init()
+      snakeModule.state.direction = 'up'
       snakeModule.handleKeydown('ArrowLeft')
       const headBefore = { ...snakeModule.state.snake[0] }
       for (let i = 0; i < 9; i++) {
