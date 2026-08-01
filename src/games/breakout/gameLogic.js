@@ -64,7 +64,7 @@ function createInitialState() {
     },
     bricks: buildBricks(),
     framesPlayed: 0,
-    won: false
+    won: false // ensures reset() clears stale win state (card: Breakout won flag persistence)
   }
 }
 
