@@ -35,7 +35,7 @@
 import { ref, computed, onMounted, onBeforeUnmount, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useGameStore } from '../stores/gameStore.js'
-import { useScoreStore } from '../stores/scoreStore.js'
+import { useScoreStore, isValidSlug } from '../stores/scoreStore.js'
 
 const route = useRoute()
 const router = useRouter()
