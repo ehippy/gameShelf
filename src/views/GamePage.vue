@@ -71,8 +71,14 @@ onMounted(async () => {
     router.replace('/404')
     return
   }
-  // Dynamically import the game module
-  gameLogic = await import('../games/' + slug + '/gameLogic.js')
+  // Dynamically import the game module via glob map
+  const modulePath = `src/games/${slug}/gameLogic.js`
+  const importedModule = gameModules[modulePath]
+  if (!importedModule) {
+    router.replace('/404')
+    return
+  }
+  gameLogic = await importedModule()
   canvasWidth.value = gameLogic.CANVAS_WIDTH ?? 250
   canvasHeight.value = gameLogic.CANVAS_HEIGHT ?? 200
 
