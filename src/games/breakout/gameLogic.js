@@ -309,5 +309,5 @@ export function handleKeydown(key) {
   }
 }
 
-// Export the state object for GamePage to read
+// ─── Export the state object for GamePage to read ───
 export { state }
