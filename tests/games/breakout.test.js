@@ -332,7 +332,6 @@ describe('breakout', () => {
         breakoutModule.handleKeydown('ArrowRight')
       }
       const maxPaddleX = breakoutModule.CANVAS_WIDTH - breakoutModule.state.paddle.width
-      const before = breakoutModule.state.paddle.x
       breakoutModule.handleKeydown('ArrowRight')
       expect(breakoutModule.state.paddle.x).toBe(maxPaddleX)
       // Should not go past
