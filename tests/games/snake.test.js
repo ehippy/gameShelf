@@ -481,13 +481,16 @@ describe('snake', () => {
       expect(snakeModule.state.isGameOver).toBe(false)
       snakeModule.handleKeydown('ArrowRight')
       expect(snakeModule.state.isPlaying).toBe(true)
+      // Simulate game over (in real game, update() would set this)
       snakeModule.state.isGameOver = true
       snakeModule.state.score = 99
-      snakeModule.handleKeydown('ArrowLeft')
+      snakeModule.handleKeydown('ArrowUp')
+      // After game-over reset: isPlaying should be true, game over should be false, score reset
       expect(snakeModule.state.isPlaying).toBe(true)
       expect(snakeModule.state.isGameOver).toBe(false)
       expect(snakeModule.state.score).toBe(0)
-      expect(snakeModule.state.direction).toBe('left')
+      // Direction should be 'up' (the key we pressed)
+      expect(snakeModule.state.direction).toBe('up')
     })
 
     // ─── update() wall collision tests ───
