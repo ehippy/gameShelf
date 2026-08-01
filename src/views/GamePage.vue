@@ -65,8 +65,7 @@ onMounted(async () => {
   }
   // Also verify the slug has a corresponding game directory (prevents
   // importing for slugs without a src/games/<slug>/gameLogic.js module)
-  const knownGameSlugs = ['snake', 'tetris', 'breakout', 'flappy-bird', 'whack-a-mole']
-  if (!knownGameSlugs.includes(slug)) {
+  if (!isValidSlug(slug)) {
     router.replace('/404')
     return
   }
