@@ -195,8 +195,8 @@ export function update() {
   // ── Win condition ──
   const anyBrickAlive = state.bricks.some(b => b.alive)
   if (!anyBrickAlive) {
-    state.isGameOver = true
-    state.isPlaying = true
+    state.isGameOver = false
+    state.isPlaying = false
     state.won = true
     return
   }
