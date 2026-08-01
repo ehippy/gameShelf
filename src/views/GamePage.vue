@@ -51,6 +51,8 @@ let state = null
 const canvasWidth = ref(250)
 const canvasHeight = ref(200)
 
+const gameModules = import.meta.glob('../src/games/*/gameLogic.js', { eager: false })
+
 let gameLogic = null
 let animFrameId = null
 let lastSnapshotScore = null
