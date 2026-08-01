@@ -4,11 +4,11 @@
     <div class="games-row">
       <GameCard
         v-for="game in gameStore.newestGames"
-        :key="game.id"
-        :title="game.name"
+        :key="game.slug"
+        :title="game.title"
         :description="game.description"
-        :category="game.genre"
-        :slug="game.id"
+        :category="game.category"
+        :slug="game.slug"
       />
     </div>
   </div>

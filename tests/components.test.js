@@ -177,6 +177,34 @@ describe('MostPlayedCarousel', () => {
   it('uses <style scoped>', () => {
     expect(mostPlayedSrc).toContain('scoped')
   })
+
+  it('calls gameStore.getGameBySlug (not getGameById)', () => {
+    expect(mostPlayedSrc).toContain('getGameBySlug')
+  })
+
+  it('does not call old getGameById method', () => {
+    expect(mostPlayedSrc).not.toContain('getGameById')
+  })
+
+  it('uses ?.title for title binding', () => {
+    expect(mostPlayedSrc).toMatch(/getGameBySlug\(slug\)\?\.\s*title/)
+  })
+
+  it('does not use old ?.name field', () => {
+    expect(mostPlayedSrc).not.toMatch(/getGameBySlug\(slug\)\?\.\s*name/)
+  })
+
+  it('uses ?.category for category binding', () => {
+    expect(mostPlayedSrc).toMatch(/getGameBySlug\(slug\)\?\.\s*category/)
+  })
+
+  it('uses "Arcade" as category default', () => {
+    expect(mostPlayedSrc).toContain("'Arcade'")
+  })
+
+  it('does not use old ?.genre field', () => {
+    expect(mostPlayedSrc).not.toMatch(/getGameBySlug\(slug\)\?\.\s*genre/)
+  })
 })
 
 // --- RandomGameBtn ---
@@ -201,6 +229,13 @@ describe('RandomGameBtn', () => {
   it('uses <style scoped>', () => {
     expect(randomGameBtnSrc).toContain('scoped')
   })
+  it('uses randomGame.slug in router.push path', () => {
+    expect(randomGameBtnSrc).toMatch(/router\.push\('\/game\/' \+ randomGame\.slug\)/)
+  })
+
+  it('does not use old randomGame.id field', () => {
+    expect(randomGameBtnSrc).not.toMatch(/randomGame\.id/)
+  })
 
   it('uses randomGame.slug for navigation (not .id)', () => {
     expect(randomGameBtnSrc).toContain('randomGame.slug')
@@ -224,5 +259,37 @@ describe('WhatsNew', () => {
 
   it('uses <style scoped>', () => {
     expect(whatsNewSrc).toContain('scoped')
+  })
+
+  it('uses game.slug for :key binding', () => {
+    expect(whatsNewSrc).toMatch(/:key="game\.slug"/)
+  })
+
+  it('uses game.slug for :slug binding', () => {
+    expect(whatsNewSrc).toMatch(/:slug="game\.slug"/)
+  })
+
+  it('does not use old game.id field', () => {
+    expect(whatsNewSrc).not.toMatch(/game\.id/)
+  })
+
+  it('uses game.title for :title binding', () => {
+    expect(whatsNewSrc).toMatch(/:title="game\.title"/)
+  })
+
+  it('does not use old game.name field', () => {
+    expect(whatsNewSrc).not.toMatch(/game\.name/)
+  })
+
+  it('uses game.category for :category binding', () => {
+    expect(whatsNewSrc).toMatch(/:category="game\.category"/)
+  })
+
+  it('does not use old game.genre field', () => {
+    expect(whatsNewSrc).not.toMatch(/game\.genre/)
+  })
+
+  it('uses game.description for :description binding (unchanged)', () => {
+    expect(whatsNewSrc).toMatch(/:description="game\.description"/)
   })
 })
