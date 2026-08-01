@@ -20,6 +20,9 @@
 </template>
 
 <script setup>
+import { useGameStore } from '../stores/gameStore.js'
+
+const gameStore = useGameStore()
 </script>
 
 <style scoped>
