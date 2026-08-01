@@ -664,6 +664,7 @@ describe('breakout', () => {
 
     it('reset() after a win clears state.won', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       // Destroy all bricks to trigger a win
       for (const brick of breakoutModule.state.bricks) {
         brick.alive = false
