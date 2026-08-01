@@ -703,7 +703,7 @@ describe('breakout', () => {
       let fillStyleOrder = []
       const mockCanvas = {
         getContext: () => ({
-          fillRect: (x, y, w, h) => { fillRects.push({ x, y, w, h }) },
+          fillRect: (x, y, w) => { fillRects.push({ x, y, w, h }) },
           get fillStyle() { return fillStyleOrder[fillStyleOrder.length - 1] },
           set fillStyle(v) { fillStyleOrder.push(v) },
           beginPath: () => {},
@@ -727,7 +727,7 @@ describe('breakout', () => {
       const brickRects = []
       const mockCanvas = {
         getContext: () => ({
-          fillRect: (x, y, w, h) => { brickRects.push({ x, y, w, h }) },
+          fillRect: (x, y, w) => { brickRects.push({ x, y, w, h }) },
           fillStyle: null,
           beginPath: () => {},
           arc: () => {},
@@ -748,7 +748,7 @@ describe('breakout', () => {
       let paddleDrawn = false
       const mockCanvas = {
         getContext: () => ({
-          fillRect: (x, y, w, h) => {
+          fillRect: (x, y, w) => {
             if (Math.abs(y - 228) < 1 && Math.abs(w - 40) < 1) {
               paddleDrawn = true
             }
