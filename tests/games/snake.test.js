@@ -377,6 +377,14 @@ describe('snake', () => {
       expect(snakeModule.state.direction).toBe('right')
     })
 
+    it('handleKeydown starts the game when isPlaying is false (three-way logic)', () => {
+      snakeModule.init()
+      expect(snakeModule.state.isPlaying).toBe(false)
+      snakeModule.handleKeydown('ArrowRight')
+      expect(snakeModule.state.isPlaying).toBe(true)
+      expect(snakeModule.state.direction).toBe('right')
+    })
+
     // ─── update() movement tests ───
 
     it('update() increments framesPlayed each move frame', () => {
