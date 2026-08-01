@@ -139,9 +139,9 @@ describe('breakout', () => {
       expect(state.isGameOver).toBe(false)
     })
 
-    it('init() sets state.won = undefined (not set yet)', () => {
+    it('init() sets state.won = false', () => {
       const state = breakoutModule.init()
-      expect(state.won).toBeUndefined()
+      expect(state.won).toBe(false)
     })
 
     it('init() sets state.framesPlayed = 0', () => {
