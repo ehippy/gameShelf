@@ -82,6 +82,14 @@ onMounted(async () => {
   gameLogic.init()
   state = reactive(gameLogic.state)
 
+  // Score submission helper
+  const submitScoreIfGameOver = () => {
+    if (state.isGameOver && lastSnapshotScore !== state.score && state.score > 0) {
+      lastSnapshotScore = state.score
+      scoreStore.submitScore(slug, state.score)
+    }
+  }
+
   // Keyboard handler
   const onKeyDown = (e) => {
     const key = e.key
@@ -90,11 +98,7 @@ onMounted(async () => {
     }
     gameLogic.handleKeydown(key)
 
-    // If game over and score hasn't been submitted yet, submit it
-    if (state.isGameOver && lastSnapshotScore !== state.score && state.score > 0) {
-      lastSnapshotScore = state.score
-      scoreStore.submitScore(slug, state.score)
-    }
+    submitScoreIfGameOver()
   }
   window.addEventListener('keydown', onKeyDown)
 
