@@ -110,16 +110,8 @@ describe('catalog order', () => {
     expect(slugOrder[3]).toBe('flappy-bird')
   })
 
-  it('5th item is minesweeper', () => {
-    expect(slugOrder[4]).toBe('minesweeper')
-  })
-
-  it('6th item is memory', () => {
-    expect(slugOrder[5]).toBe('memory')
-  })
-
-  it('7th item is whack-a-mole', () => {
-    expect(slugOrder[6]).toBe('whack-a-mole')
+  it('5th item is whack-a-mole', () => {
+    expect(slugOrder[4]).toBe('whack-a-mole')
   })
 })
 
