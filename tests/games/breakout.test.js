@@ -439,6 +439,37 @@ describe('breakout', () => {
       expect(breakoutModule.state.ball.y).toBe(123)
     })
 
+    // ─── Final auto-start fix regression tests ───
+
+    it('snake: full init → keypress → update cycle works correctly', () => {
+      snakeModule.init()
+      expect(snakeModule.state.isPlaying).toBe(false)
+      snakeModule.handleKeydown('ArrowRight')
+      expect(snakeModule.state.isPlaying).toBe(true)
+      const scoreBefore = snakeModule.state.score
+      snakeModule.update()
+      snakeModule.update()
+      expect(snakeModule.state.score).toBe(scoreBefore)
+    })
+
+    it('tetris: full init → keypress → update cycle works correctly', () => {
+      tetrisModule.init()
+      expect(tetrisModule.state.isPlaying).toBe(false)
+      tetrisModule.handleKeydown('ArrowDown')
+      expect(tetrisModule.state.isPlaying).toBe(true)
+      tetrisModule.update()
+      expect(tetrisModule.state.isPlaying).toBe(true)
+    })
+
+    it('breakout: full init → keypress → update cycle works correctly', () => {
+      breakoutModule.init()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+      breakoutModule.handleKeydown('ArrowRight')
+      expect(breakoutModule.state.isPlaying).toBe(true)
+      breakoutModule.update()
+      expect(breakoutModule.state.framesPlayed).toBe(1)
+    })
+
     it('handleKeydown ArrowRight moves paddle right by 10', () => {
       breakoutModule.init()
       const before = breakoutModule.state.paddle.x
