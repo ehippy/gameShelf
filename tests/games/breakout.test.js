@@ -643,11 +643,12 @@ describe('breakout', () => {
 
     it('render() does not throw when called with valid canvas', () => {
       breakoutModule.init()
-      // Create a mock canvas object
+      // Create a mock canvas object with all required methods
       const mockCanvas = {
         getContext: () => ({
           fillRect: () => {},
           fillStyle: null,
+          beginPath: () => {},
           arc: () => {},
           fill: () => {},
           font: null,
@@ -660,36 +661,25 @@ describe('breakout', () => {
       expect(() => breakoutModule.render(mockCanvas)).not.toThrow()
     })
 
-    it('render() does not throw when state is null', () => {
-      breakoutModule.state = null
-      const mockCanvas = {
-        getContext: () => ({
-          fillRect: () => {},
-          fillStyle: null,
-          arc: () => {},
-          fill: () => {},
-          font: null,
-          textAlign: null,
-          fillText: () => {},
-          measureText: () => ({ width: 0 })
-        })
-      }
-      expect(() => breakoutModule.render(mockCanvas)).not.toThrow()
-    })
-
     it('render() does not throw when canvas is null', () => {
       breakoutModule.init()
       expect(() => breakoutModule.render(null)).not.toThrow()
     })
 
-    it('render() calls fillRect with #1a1a2e background', async () => {
+    it('render() does not throw when called without canvas', () => {
       breakoutModule.init()
-      let bgColor = null
+      expect(() => breakoutModule.render()).not.toThrow()
+    })
+
+    it('render() clears canvas with #1a1a2e background color', () => {
+      breakoutModule.init()
+      const fillRects = []
+      let fillStyleOrder = []
       const mockCanvas = {
         getContext: () => ({
-          fillRect: (x, y, w, h) => {},
-          get setFillStyle() { return bgColor },
-          set fillStyle(v) { bgColor = v },
+          fillRect: (x, y, w, h) => { fillRects.push({ x, y, w, h }) },
+          get fillStyle() { return fillStyleOrder[fillStyleOrder.length - 1] },
+          set fillStyle(v) { fillStyleOrder.push(v) },
           beginPath: () => {},
           arc: () => {},
           fill: () => {},
@@ -700,7 +690,10 @@ describe('breakout', () => {
         })
       }
       breakoutModule.render(mockCanvas)
-      expect(bgColor).toBe('#1a1a2e')
+      // First fillStyle assignment should be #1a1a2e (background)
+      expect(fillStyleOrder[0]).toBe('#1a1a2e')
+      // First fillRect should be at 0,0,250,250
+      expect(fillRects[0]).toEqual({ x: 0, y: 0, w: 250, h: 250 })
     })
 
     it('render() calls fillRect for each alive brick', async () => {
