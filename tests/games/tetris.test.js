@@ -104,7 +104,7 @@ describe('tetris', () => {
     })
 
     it('has collision detection', () => {
-      expect(tetrisSrc).toContain('isValidPosition') || expect(tetrisSrc).toContain('collision')
+      expect(tetrisSrc).toContain('isValidPosition')
     })
 
     it('State has score field', () => {
