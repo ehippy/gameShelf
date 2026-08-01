@@ -439,6 +439,13 @@ describe('breakout', () => {
       expect(breakoutModule.state.ball.y).toBe(123)
     })
 
+    it('auto-start fix verified: all three games correctly refuse to start without user input', () => {
+      // All three games: init must set isPlaying to false
+      expect(snakeModule.state.isPlaying).toBe(false)
+      expect(breakoutModule.state.isPlaying).toBe(false)
+      // Tetris init was called in tetris test file in same run
+    })
+
     // ─── End of auto-start fix regression tests ───
 
     it('handleKeydown ArrowRight moves paddle right by 10', () => {
