@@ -491,6 +491,7 @@ describe('NotFoundView', () => {
   })
 
   it('has router-link pointing to /', () => {
-    expect(notFoundViewSrc).toContain("to=\"/\"") || expect(notFoundViewSrc).toContain("to='/'")
+    expect(notFoundViewSrc).toContain("to=\"/\"")
+    expect(notFoundViewSrc).toContain("to='/'")
   })
 })
