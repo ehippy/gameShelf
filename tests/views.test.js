@@ -88,7 +88,8 @@ describe('HomeView', () => {
   })
 
   it('has games-grid wrapper div', () => {
-    expect(homeViewSrc).toContain('<div class="games-grid">') || expect(homeViewSrc).toContain('games-grid')
+    expect(homeViewSrc).toContain('<div class="games-grid">')
+    expect(homeViewSrc).toContain('games-grid')
   })
 
   it('uses filteredGames computed for v-for, not direct gameStore.catalog', () => {
