@@ -103,7 +103,7 @@ describe('filtering behavior', () => {
     // Tetris is Puzzle, so excluded by category filter
     const results = computeFilteredGames(gamesCatalog, 'classic', 'Arcade')
     expect(results.length).toBe(2)
-    expect(results.map(g => g.slug).sort()).toEqual(['snake', 'breakout'])
+    expect(results.map(g => g.slug).sort()).toEqual(['breakout', 'snake'])
   })
 
   it('search "mole" + select "Casual" → shows Whack-a-Mole', () => {
