@@ -621,6 +621,7 @@ describe('snake', () => {
 
     it('update() moves snake correctly (head added, tail removed) when no food eaten', () => {
       snakeModule.init()
+      snakeModule.handleKeydown('ArrowRight')
       const lenBefore = snakeModule.state.snake.length
       const headBefore = { ...snakeModule.state.snake[0] }
       const tailBefore = { ...snakeModule.state.snake[lenBefore - 1] } // save old tail BEFORE update
