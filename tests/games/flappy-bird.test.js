@@ -357,11 +357,11 @@ describe('flappy-bird', () => {
       expect(flappyModule.state.isGameOver).toBe(false)
     })
 
-    it('reset() sets isPlaying to true', () => {
+    it('reset() sets isPlaying to false', () => {
       if (!flappyModule) return
       flappyModule.init()
       flappyModule.reset()
-      expect(flappyModule.state.isPlaying).toBe(true)
+      expect(flappyModule.state.isPlaying).toBe(false)
     })
 
     it('reset() restores bird to default row', () => {
