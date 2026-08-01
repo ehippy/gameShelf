@@ -108,3 +108,30 @@ This ensures:
 - Vitest only processes `tests/**/*.test.js` files (unit/component tests)
 - Playwright exclusively owns `tests/e2e/**/*.spec.js` files (E2E tests)
 - No namespace collision between the two frameworks' `test` functions
+
+## Deployment Failure Convention
+
+### Transient failures
+
+Watch for **HTTP 408 request timeout** and **network errors** that can occur during push or deploy steps (e.g. `actions/upload-pages-artifact`, `actions/deploy-pages`, or `git push` operations). These are infrastructure-level flakiness — not a reflection of the code quality.
+
+### Retry protocol
+
+On encountering a transient failure:
+
+1. Retry the deployment step up to **2 additional times** (3 total attempts).
+2. Wait approximately **30 seconds** between retries to allow the transient issue to resolve.
+3. Log each attempt clearly (e.g. "Attempt 1/3", "Attempt 2/3", "Attempt 3/3") so the history is visible in CI output.
+
+### Escalation
+
+If all 3 attempts fail:
+
+- **Do not bounce the card back** to the developer or PM.
+- Escalate the card to the PM with a note that **the work is approved but blocked by infrastructure**.
+- Include details of the failures: error messages, timestamps, and which step failed.
+- Set the card status to reflect that work is complete and awaiting infrastructure resolution.
+
+### Goal
+
+Avoid the pattern where correct code bounces indefinitely between the Deployer and PM due to flaky CI infrastructure. The Deployer should absorb transient failures, retry, and only escalate with evidence — never reject approved work solely because of infrastructure hiccups.
