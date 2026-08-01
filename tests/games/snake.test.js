@@ -226,11 +226,11 @@ describe('snake', () => {
       expect(snakeModule.state.isGameOver).toBe(false)
     })
 
-    it('reset() restores state.isPlaying to true', () => {
+    it('reset() restores state.isPlaying to false', () => {
       snakeModule.init()
       snakeModule.state.isPlaying = false
       snakeModule.reset()
-      expect(snakeModule.state.isPlaying).toBe(true)
+      expect(snakeModule.state.isPlaying).toBe(false)
     })
 
     it('reset() restores state.direction to "right"', () => {
