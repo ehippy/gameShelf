@@ -454,6 +454,8 @@ describe('breakout', () => {
       expect(breakoutModule.state.paddle.x).toBe(before + 10)
     })
 
+    // ─── Auto-start fix: all three games correctly refuse to start without user input ───
+
     it('handleKeydown ArrowLeft clamps paddle left edge >= 0', () => {
       breakoutModule.init()
       breakoutModule.state.paddle.x = 0
