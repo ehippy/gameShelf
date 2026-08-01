@@ -224,7 +224,7 @@ export function render(canvas) {
   ctx.textAlign = 'left'
   ctx.fillText(`Score: ${state.score}`, 8, 20)
 
-  // ── Game Over overlay ──
+  // ── Game Over overlay (GAME OVER title rendered via shared helper) ──
   if (state.isGameOver) {
     renderGameOver(ctx, state, CANVAS_WIDTH, CANVAS_HEIGHT)
   }
