@@ -4,7 +4,7 @@ description: 'Uploads artifact and deploys to GitHub Pages with up to 3 attempts
 outputs:
   page_url:
     description: 'The URL of the deployed GitHub Pages site'
-    value: ${{ steps.deploy_3.outputs.page_url }}
+    value: ${{ steps.set_output.outputs.page_url }}
 
 runs:
   using: 'composite'
@@ -32,10 +32,25 @@ runs:
       with:
         attempt: 3
 
+    # ── Set the page_url output from whichever attempt succeeded ──
+    - name: Set page URL output
+      id: set_output
+      shell: bash
+      run: |
+        if [ -n "${{ steps.deploy_3.outputs.page_url }}" ]; then
+          echo "page_url=${{ steps.deploy_3.outputs.page_url }}" >> $GITHUB_OUTPUT
+        elif [ -n "${{ steps.deploy_2.outputs.page_url }}" ]; then
+          echo "page_url=${{ steps.deploy_2.outputs.page_url }}" >> $GITHUB_OUTPUT
+        elif [ -n "${{ steps.deploy_1.outputs.page_url }}" ]; then
+          echo "page_url=${{ steps.deploy_1.outputs.page_url }}" >> $GITHUB_OUTPUT
+        else
+          echo "page_url=" >> $GITHUB_OUTPUT
+        fi
+
     # ── Fail if all attempts exhausted ─────────────────────────
     - name: All retry attempts failed
       shell: bash
-      if: steps.deploy_3.outcome == 'failure'
+      if: steps.deploy_1.outcome == 'failure' && steps.deploy_2.outcome == 'failure' && steps.deploy_3.outcome == 'failure'
       run: |
         echo "ERROR: Deployment failed after all 3 retry attempts."
         echo "The last failure needs manual investigation."
