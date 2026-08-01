@@ -455,6 +455,7 @@ describe('breakout', () => {
 
     it('update() reduces lives when ball goes below canvas', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       breakoutModule.state.ball.y = breakoutModule.CANVAS_HEIGHT
       breakoutModule.update()
       expect(breakoutModule.state.lives).toBe(2)
