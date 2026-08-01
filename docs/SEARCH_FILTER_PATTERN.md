@@ -155,7 +155,7 @@ npm test   # runs Vitest, including tests/filtering.test.js
 The category options in `AppHeader.vue` are currently **hardcoded**:
 
 ```html
-<option value="All Categories">All Categories</option>
+<option value="">All Categories</option>
 <option value="Arcade">Arcade</option>
 <option value="Puzzle">Puzzle</option>
 <option value="Action">Action</option>
