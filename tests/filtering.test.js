@@ -68,7 +68,7 @@ describe('filtering behavior', () => {
   it('select "Arcade" category → shows Snake, Breakout, Flappy Bird', () => {
     const results = computeFilteredGames(gamesCatalog, '', 'Arcade')
     expect(results.length).toBe(3)
-    expect(results.map(g => g.slug).sort()).toEqual(['snake', 'breakout', 'flappy-bird'])
+    expect(results.map(g => g.slug).sort()).toEqual(['breakout', 'flappy-bird', 'snake'])
   })
 
   it('select "Puzzle" category → shows only Tetris', () => {
