@@ -246,6 +246,8 @@ export function reset() {
  *   - Not playing + not game over → start the game (isPlaying = true)
  *   - Game over → reset state and start playing (isPlaying = true)
  *   - Already playing → perform normal direction change
+ *
+ * @param {string} key - The key pressed (e.g. 'ArrowUp', 'ArrowDown').
  */
 export function handleKeydown(key) {
   if (!state) return
