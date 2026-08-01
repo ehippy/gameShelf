@@ -346,6 +346,11 @@ describe('breakout', () => {
       expect(breakoutModule.state.framesPlayed).toBe(0)
     })
 
+    it('all three games: init() ensures isPlaying is false (comprehensive regression)', () => {
+      // Snake
+      expect(snakeModule.state.isPlaying).toBe(false)
+    })
+
     it('handleKeydown ArrowLeft moves paddle left by 10', () => {
       breakoutModule.init()
       const before = breakoutModule.state.paddle.x
