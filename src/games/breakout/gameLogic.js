@@ -92,7 +92,6 @@ function buildBricks() {
  */
 export function init() {
   state = createInitialState()
-  state.isPlaying = true
   return state
 }
 
