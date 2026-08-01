@@ -320,6 +320,20 @@ describe('tetris', () => {
       expect(tetrisModule.state.isPlaying).toBe(true)
     })
 
+    it('init() preserves isPlaying: false (no auto-start)', () => {
+      if (!tetrisModule) return
+      tetrisModule.init()
+      expect(tetrisModule.state.isPlaying).toBe(false)
+    })
+
+    it('reset() preserves isPlaying: false (no auto-start)', () => {
+      if (!tetrisModule) return
+      tetrisModule.init()
+      tetrisModule.state.score = 500
+      tetrisModule.reset()
+      expect(tetrisModule.state.isPlaying).toBe(false)
+    })
+
     it('hard drop does not reduce score', () => {
       if (!tetrisModule) return
       tetrisModule.init()
