@@ -581,6 +581,7 @@ describe('breakout', () => {
 
     it('update() reverses dx on side collision with brick', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       // Use brick at col 2 to avoid wall interference
       const brick = breakoutModule.state.bricks[2]
       // Position ball to hit the left side of the brick
