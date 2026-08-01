@@ -23,5 +23,6 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      # Deploy ./dist/ to GitHub Pages with retry
       - uses: ./.github/actions/deploy-with-retry
         id: deployment
