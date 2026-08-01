@@ -385,6 +385,17 @@ describe('snake', () => {
       expect(snakeModule.state.direction).toBe('right')
     })
 
+    it('handleKeydown when game is over resets and starts playing (three-way logic)', () => {
+      snakeModule.init()
+      snakeModule.state.isGameOver = true
+      snakeModule.state.score = 99
+      expect(snakeModule.state.isPlaying).toBe(false)
+      snakeModule.handleKeydown('ArrowUp')
+      expect(snakeModule.state.isPlaying).toBe(true)
+      expect(snakeModule.state.isGameOver).toBe(false)
+      expect(snakeModule.state.score).toBe(0)
+    })
+
     // ─── update() movement tests ───
 
     it('update() increments framesPlayed each move frame', () => {
