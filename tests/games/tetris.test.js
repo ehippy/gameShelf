@@ -100,7 +100,7 @@ describe('tetris', () => {
     })
 
     it('handleKeydown handles space bar', () => {
-      expect(tetrisSrc).toContain("' '") || expect(tetrisSrc).toContain('" "') || expect(tetrisSrc).toContain('"Space"')
+      expect(tetrisSrc).toContain("' '")
     })
 
     it('has collision detection', () => {
