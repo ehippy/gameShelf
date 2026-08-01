@@ -910,41 +910,6 @@ function drawCursorHighlight(ctx) {
   ctx.stroke()
 }
 
-function renderGameOver(ctx) {
-  // Semi-transparent overlay
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'
-  ctx.fillRect(0, 0, CANVAS_W, CANVAS_H)
-
-  const centerY = CANVAS_H / 2
-
-  // Game Over title
-  ctx.fillStyle = '#ff4444'
-  ctx.font = 'bold 28px sans-serif'
-  ctx.textAlign = 'center'
-  ctx.fillText('GAME OVER', CANVAS_W / 2, centerY - 80)
-
-  // Score
-  ctx.fillStyle = '#ffffff'
-  ctx.font = '16px sans-serif'
-  ctx.fillText(`Score: ${state.score}`, CANVAS_W / 2, centerY - 40)
-
-  // High Score
-  const highScore = getHighScore()
-  ctx.fillStyle = '#ffd700'
-  ctx.font = 'bold 16px sans-serif'
-  ctx.fillText(`High Score: ${highScore}`, CANVAS_W / 2, centerY - 15)
-
-  // Highest Combo
-  ctx.fillStyle = '#ffffff'
-  ctx.font = '14px sans-serif'
-  ctx.fillText(`Highest Combo: x${state.highestCombo}`, CANVAS_W / 2, centerY + 15)
-
-  // Restart prompt
-  ctx.fillStyle = '#cccccc'
-  ctx.font = '12px sans-serif'
-  ctx.fillText('Press Space or B to restart', CANVAS_W / 2, centerY + 50)
-}
-
 /**
  * Reset the game to initial state for a new game.
  */
