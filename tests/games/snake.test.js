@@ -493,7 +493,7 @@ describe('snake', () => {
       expect(snakeModule.state.direction).toBe('up')
     })
 
-    // ─── update() wall collision tests ───
+    // ─── Additional movement direction tests ───
 
     it('update() triggers game over on right wall collision', () => {
       snakeModule.init()
