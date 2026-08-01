@@ -170,7 +170,8 @@ describe('catalog count matches game directories', () => {
 
 describe('AboutView', () => {
   it('has h1 About gameShelf', () => {
-    expect(aboutViewSrc).toContain('<h1>About gameShelf</h1>') || expect(aboutViewSrc).toContain('About gameShelf')
+    expect(aboutViewSrc).toContain('<h1>About gameShelf</h1>')
+    expect(aboutViewSrc).toContain('About gameShelf')
   })
 
   it('has paragraph about the project', () => {
