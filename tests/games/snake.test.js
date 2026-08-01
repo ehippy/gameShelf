@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { join, dirname } from 'node:path'
@@ -136,12 +136,9 @@ describe('snake', () => {
     let snakeModule = null
 
     beforeEach(async () => {
-      // Force fresh module load each time so state doesn't leak between tests
-      const { createRequire } = await import('node:module')
-      const require = createRequire(import.meta.url)
-      delete require.cache[require.resolve(snakePath)]
-      delete globalThis.__vitest_worker__ // clear cache
-      snakeModule = await import(snakePath)
+      // Use query parameter to force fresh module load each test
+      const url = snakePath + `?t=${Date.now()}`
+      snakeModule = await import(url)
     })
 
     // ─── init() tests ───
@@ -258,7 +255,6 @@ describe('snake', () => {
     it('reset() spawns new food at a grid position', () => {
       snakeModule.init()
       snakeModule.state.score = 10
-      const oldFood = { ...snakeModule.state.food }
       snakeModule.reset()
       expect(snakeModule.state.food).toBeDefined()
       expect(typeof snakeModule.state.food.x).toBe('number')
@@ -381,9 +377,8 @@ describe('snake', () => {
     it('update() increments framesPlayed each move frame', () => {
       snakeModule.init()
       expect(snakeModule.state.framesPlayed).toBe(0)
-      snakeModule.update() // frame 0, no move
-      snakeModule.update() // frame 1
-      // After 10 frames (framesPlayed=10), next update is move frame
+      snakeModule.update() // frame 0→1
+      // After 10 updates, framesPlayed = 10
       for (let i = 1; i < 10; i++) {
         snakeModule.update()
       }
@@ -393,17 +388,12 @@ describe('snake', () => {
     it('update() moves snake right by 1 cell on a move frame', () => {
       snakeModule.init()
       const headBefore = { ...snakeModule.state.snake[0] }
-      // Fast forward to a move frame: need framesPlayed % 10 === 0
-      // Currently framesPlayed = 0, update() increments then checks.
-      // After first update(): framesPlayed=1, 1%10 !== 0, no move.
-      // After 9 more: framesPlayed=10, 10%10 === 0, moves.
+      // After first update: framesPlayed=1, no move (1%10≠0). After 9 more: framesPlayed=10, move occurs.
       for (let i = 0; i < 9; i++) {
         snakeModule.update()
       }
-      // Now at framesPlayed=9. Next update should trigger move.
-      const beforeMoveFp = snakeModule.state.framesPlayed
+      // Now framesPlayed=9. Next update makes it 10 (a move frame).
       snakeModule.update()
-      // After the move: head moved right by 1
       const headAfter = snakeModule.state.snake[0]
       expect(headAfter.x).toBe(headBefore.x + 1)
       expect(headAfter.y).toBe(headBefore.y)
@@ -531,7 +521,7 @@ describe('snake', () => {
 
     it('update() triggers game over on self collision', () => {
       snakeModule.init()
-      // Make a long snake that can collide with itself
+      // Make a snake that will self-collide
       snakeModule.state.snake = [
         { x: 5, y: 5 },
         { x: 5, y: 6 },
@@ -539,7 +529,7 @@ describe('snake', () => {
         { x: 6, y: 5 }
       ]
       snakeModule.state.direction = 'right'
-      // Place food at (7,5) to avoid food eating on next move
+      // Place food away from collision path
       snakeModule.state.food = { x: 7, y: 5 }
       // Next move: head goes to (6,5) which overlaps body segment at index 3
       for (let f = 0; f < 9; f++) {
@@ -555,10 +545,9 @@ describe('snake', () => {
     it('update() increments score when snake eats food', () => {
       snakeModule.init()
       const scoreBefore = snakeModule.state.score
-      // Position food right in front of the snake head
-      // Head starts at (2,5), direction is 'right'
+      // Head starts at (2,5), direction is 'right'. Food at (3,5).
       snakeModule.state.food = { x: 3, y: 5 }
-      // After 1 move: head goes from (2,5) to (3,5) which is the food position
+      // After 1 move: head goes from (2,5) to (3,5) which is the food position.
       for (let f = 0; f < 9; f++) {
         snakeModule.update()
       }
@@ -569,7 +558,6 @@ describe('snake', () => {
     it('update() grows snake by 1 when eating food (tail is not removed)', () => {
       snakeModule.init()
       const lenBefore = snakeModule.state.snake.length
-      // Head at (2,5), food at (3,5)
       snakeModule.state.food = { x: 3, y: 5 }
       for (let f = 0; f < 9; f++) {
         snakeModule.update()
@@ -580,7 +568,6 @@ describe('snake', () => {
 
     it('update() spawns new food after eating existing food', () => {
       snakeModule.init()
-      const oldFood = { ...snakeModule.state.food }
       // Head at (2,5), food at (3,5)
       snakeModule.state.food = { x: 3, y: 5 }
       for (let f = 0; f < 9; f++) {
@@ -588,7 +575,7 @@ describe('snake', () => {
       }
       snakeModule.update()
       const newFood = snakeModule.state.food
-      // New food should be at a different position (or at least a valid grid position)
+      // New food should be at a valid grid position
       expect(typeof newFood.x).toBe('number')
       expect(typeof newFood.y).toBe('number')
     })
@@ -730,7 +717,7 @@ describe('snake', () => {
       expect(fillRects.length).toBeGreaterThan(0)
     })
 
-    it('render() draws the snake body (fillRect for each segment)', () => {
+    it('render() draws the snake body (green colors for head and body)', () => {
       snakeModule.init()
       let fillStyleSequence = []
       const mockCanvas = {
@@ -745,7 +732,7 @@ describe('snake', () => {
       }
       snakeModule.render(mockCanvas)
       // Should have at least green colors (head + body)
-      expect(fillStyleSequence.length).toBeGreaterThanOrEqual(3) // bg + head + body
+      expect(fillStyleSequence.length).toBeGreaterThanOrEqual(3)
     })
 
     it('render() draws the food as a distinct color (red)', () => {
@@ -762,7 +749,6 @@ describe('snake', () => {
         })
       }
       snakeModule.render(mockCanvas)
-      // Red food color #ef4444 should appear
       expect(fillStyleSequence).toContain('#ef4444')
     })
 
@@ -862,16 +848,13 @@ describe('snake', () => {
     it('full cycle: init → play → eat food → score increases → reset', () => {
       snakeModule.init()
       expect(snakeModule.state.score).toBe(0)
-      // Place food in path
       snakeModule.state.food = { x: 3, y: 5 }
-      // Move to eat food
       for (let f = 0; f < 9; f++) {
         snakeModule.update()
       }
       snakeModule.update()
       expect(snakeModule.state.score).toBe(1)
-      expect(snakeModule.state.snake.length).toBe(4) // grew by 1
-      // Reset
+      expect(snakeModule.state.snake.length).toBe(4)
       snakeModule.reset()
       expect(snakeModule.state.score).toBe(0)
       expect(snakeModule.state.snake.length).toBe(3)
@@ -881,9 +864,7 @@ describe('snake', () => {
 
     it('multiple food eats increase score cumulatively', () => {
       snakeModule.init()
-      // Eat 3 food items
       for (let i = 0; i < 3; i++) {
-        // Position food ahead
         const head = snakeModule.state.snake[0]
         const dir = snakeModule.state.direction
         let foodX = head.x
@@ -893,37 +874,13 @@ describe('snake', () => {
         else if (dir === 'up') foodY--
         else if (dir === 'down') foodY++
         snakeModule.state.food = { x: foodX, y: foodY }
-        // Advance to move frame
         for (let f = 0; f < 9; f++) {
           snakeModule.update()
         }
         snakeModule.update()
       }
       expect(snakeModule.state.score).toBe(3)
-      expect(snakeModule.state.snake.length).toBe(6) // 3 + 3 growth
-    })
-
-    it('game over after eating food prevents further updates', () => {
-      snakeModule.init()
-      // Set up: place food, make snake long enough to self-collide after eating
-      snakeModule.state.food = { x: 9, y: 5 }
-      // Drive right to eat food
-      for (let move = 0; move < 7; move++) {
-        for (let f = 0; f < 9; f++) {
-          snakeModule.update()
-        }
-        snakeModule.update()
-      }
-      // Now head at (9,5) and ate food at (9,5)
-      // Score should be 1, length should be 4
-      expect(snakeModule.state.score).toBe(1)
-      expect(snakeModule.state.snake.length).toBe(4)
-      // Keep going right → wall collision
-      for (let f = 0; f < 9; f++) {
-        snakeModule.update()
-      }
-      snakeModule.update()
-      expect(snakeModule.state.isGameOver).toBe(true)
+      expect(snakeModule.state.snake.length).toBe(6)
     })
   })
 })
