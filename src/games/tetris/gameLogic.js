@@ -5,6 +5,10 @@
  * Exports: state (readable by GamePage)
  */
 
+// ─── Imports ──────────────────────────────────────────────────────────────────
+
+import { renderGameOver } from '../shared/renderHelpers.js'
+
 // ─── Tetromino Definitions ────────────────────────────────────────────────────
 
 const COLS = 10
