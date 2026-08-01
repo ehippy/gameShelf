@@ -229,23 +229,23 @@ describe('GamePage', () => {
   })
 
   it('does NOT allow loading gameLogic for non-existent game directories', () => {
-    // The isValidSlug check must appear before any import('../games/' ... )
+    // The isValidSlug check must appear before import.meta.glob
     // to prevent module-not-found errors for non-existent gameLogic.js.
     const lines = gamePageSrc.split('\n')
     let guardFound = false
-    let importFound = false
+    let globFound = false
     for (const line of lines) {
       if (line.includes('isValidSlug') && !guardFound) {
         guardFound = true
       }
-      if (line.includes("import('../games/'")) {
+      if (line.includes('import.meta.glob')) {
         if (!guardFound) {
-          throw new Error('Dynamic import occurs before isValidSlug guard')
+          throw new Error('import.meta.glob occurs before isValidSlug guard')
         }
-        importFound = true
+        globFound = true
       }
     }
-    expect(importFound).toBe(true)
+    expect(globFound).toBe(true)
     expect(guardFound).toBe(true)
   })
 
