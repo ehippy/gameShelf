@@ -498,6 +498,7 @@ describe('breakout', () => {
 
     it('update() only loses one life per bottom event', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       breakoutModule.state.ball.y = breakoutModule.CANVAS_HEIGHT
       breakoutModule.update()
       expect(breakoutModule.state.lives).toBe(2)
