@@ -298,7 +298,8 @@ describe('GamePage', () => {
   })
 
   it('calls reset on Play Again', () => {
-    expect(gamePageSrc).toContain('gameLogic.reset') || expect(gamePageSrc).toContain('reset()')
+    expect(gamePageSrc).toContain('gameLogic.reset')
+    expect(gamePageSrc).toContain('reset()')
   })
 
   it('does NOT show old placeholder text', () => {
