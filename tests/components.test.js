@@ -106,7 +106,7 @@ describe('AppFooter', () => {
   })
 
   it('has router-link to /about', () => {
-    expect(appFooterSrc).toContain("to=\"/about\"") || expect(appFooterSrc).toContain("to='/about'")
+    expect(appFooterSrc).toContain('to="/about"')
   })
 })
 
