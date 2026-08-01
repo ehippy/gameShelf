@@ -129,9 +129,9 @@ describe('breakout', () => {
       expect(state.lives).toBe(3)
     })
 
-    it('init() sets state.isPlaying = true', () => {
+    it('init() sets state.isPlaying = false', () => {
       const state = breakoutModule.init()
-      expect(state.isPlaying).toBe(true)
+      expect(state.isPlaying).toBe(false)
     })
 
     it('init() sets state.isGameOver = false', () => {
