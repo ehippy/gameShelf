@@ -284,7 +284,7 @@ describe('.github/workflows/deploy.yml', () => {
   })
 
   it('has on trigger', () => {
-    expect(deployYml).toContain('on:') || expect(deployYml).toContain('on :')
+    expect(deployYml).toContain('on:')
   })
 
   it('triggers on main branch', () => {
