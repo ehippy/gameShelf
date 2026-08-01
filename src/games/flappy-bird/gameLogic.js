@@ -314,7 +314,6 @@ function drawBird(ctx, bird) {
 export function reset() {
   state = createInitialState()
   state.lastPipeDrop = state.framesPlayed
-  state.isPlaying = true
   return state
 }
 
