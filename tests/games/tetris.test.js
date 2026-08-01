@@ -353,7 +353,6 @@ describe('tetris', () => {
       tetrisModule.state.currentPiece.col = 3
       tetrisModule.state.lastDropTime = performance.now() - 2000
       const scoreBeforeLC = tetrisModule.state.score
-      const linesBeforeLC = tetrisModule.state.lines
       tetrisModule.update()
       tetrisModule.update()
       expect(tetrisModule.state.score > scoreBeforeLC).toBe(true)
