@@ -13,6 +13,7 @@
     "@vitejs/plugin-vue": "^5",
     "@vue/test-utils": "^2.4.11",
     "eslint": "^9",
+    "jsdom": "^30.0.1",
     "pinia": "^2",
     "vite": "^6",
     "vitest": "^3",
