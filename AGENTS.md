@@ -45,6 +45,52 @@ The project provides the following helpers in `src/stores/scoreStore.js`:
 - **Runtime 404s** — passing an invalid slug to a dynamic import (e.g. `import(\`../games/${slug}/App.vue\`)`) resolves against a non-existent module path, producing a bundle error or 404 at runtime.
 - **Security issues (localStorage key injection)** — using a malformed or user-supplied slug as a storage key (e.g. `` `gamescore_${injected_key}` ``) can corrupt existing entries, allow cross-game data pollution, or even inject arbitrary keys into localStorage.
 
+### Game Initialization
+
+Games must not auto-start on page load. This convention was learned from the Flappy Bird auto-start bug, where the game began running immediately when the page loaded, leaving the user with no agency to control when the game started. The game should instead wait for the user's first input before beginning.
+
+The convention has three rules:
+
+1. **`init()` must not set `isPlaying = true`** — The initial state from `createInitialState()` must have `isPlaying: false`. `init()` should simply call `createInitialState()` and return the state; it must not override `isPlaying` to `true`.
+
+2. **`reset()` must not set `isPlaying = true`** — `reset()` must also preserve the non-playing initial state (`isPlaying: false`), ensuring a reset puts the game back in a waiting state rather than auto-restarting.
+
+3. **`handleKeydown()` must use three-way logic** — All keyboard input handling must distinguish between three states:
+   - **Not playing, not game over**: A keypress starts the game (`isPlaying = true`).
+   - **Game over**: A keypress resets the state and starts playing.
+   - **Already playing**: The key performs its normal game action.
+
+```js
+/**
+ * Handle keyboard input. Exported for GamePage to wire up.
+ * Three-way logic:
+ *   - Not playing + not game over → start the game
+ *   - Game over → reset state and start playing
+ *   - Already playing → perform normal action
+ */
+export function handleKeydown(key) {
+  if (!state) return
+
+  if (key === 'ArrowUp' || key === ' ') {
+    if (state.isGameOver) {
+      // Restart: reset state and start playing
+      state = createInitialState()
+      state.isPlaying = true
+      // ... game-specific setup ...
+    } else if (!state.isPlaying) {
+      // Start game on first input
+      state.isPlaying = true
+      // ... game-specific setup ...
+    } else {
+      // Already playing — perform normal action
+      // ... game-specific action ...
+    }
+  }
+}
+```
+
+**Consequence of violation:** If `isPlaying` is `true` from initialization, the game starts running immediately on page load with no user control, making the game unplayable (the user has no agency to control when the game starts).
+
 ## Testing Conventions
 
 This project uses **two separate test frameworks** that coexist in the same codebase: **Vitest** for unit/component tests and **Playwright** for E2E browser tests.
