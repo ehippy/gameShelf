@@ -1,0 +1,72 @@
+name: 'Deploy to GitHub Pages with Retry'
+description: 'Uploads artifact and deploys to GitHub Pages with up to 3 attempts on transient failure'
+
+outputs:
+  page_url:
+    description: 'The URL of the deployed GitHub Pages site'
+    value: ${{ steps.deploy3.outputs.page_url || steps.deploy2.outputs.page_url || steps.deploy1.outputs.page_url }}
+
+runs:
+  using: 'composite'
+  steps:
+    # ── Attempt 1 ──────────────────────────────────────────────
+    - name: Upload artifact (attempt 1)
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: './dist/'
+      id: upload1
+
+    - name: Deploy to GitHub Pages (attempt 1)
+      id: deploy1
+      uses: actions/deploy-pages@v4
+      continue-on-error: true
+
+    # ── Attempt 2 ──────────────────────────────────────────────
+    - name: Check if retry needed (attempt 2)
+      shell: bash
+      id: check2
+      if: steps.deploy1.outcome == 'failure'
+      run: |
+        echo "Attempt 1 failed. Retrying..."
+
+    - name: Upload artifact (attempt 2)
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: './dist/'
+      id: upload2
+      if: steps.check2.outcome == 'success'
+
+    - name: Deploy to GitHub Pages (attempt 2)
+      id: deploy2
+      uses: actions/deploy-pages@v4
+      if: steps.check2.outcome == 'success'
+      continue-on-error: true
+
+    - name: Check if retry needed (attempt 3)
+      shell: bash
+      id: check3
+      if: steps.deploy2.outcome == 'failure'
+      run: |
+        echo "Attempt 2 failed. Final retry..."
+
+    # ── Attempt 3 ──────────────────────────────────────────────
+    - name: Upload artifact (attempt 3)
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: './dist/'
+      id: upload3
+      if: steps.check3.outcome == 'success'
+
+    - name: Deploy to GitHub Pages (attempt 3)
+      id: deploy3
+      uses: actions/deploy-pages@v4
+      if: steps.check3.outcome == 'success'
+      continue-on-error: true
+
+    # ── Final check ────────────────────────────────────────────
+    - name: Check final deployment status
+      shell: bash
+      if: steps.deploy3.outcome == 'failure' || (steps.deploy2.outcome == 'failure' && steps.check3.outcome != 'success') || (steps.deploy1.outcome == 'failure' && steps.check2.outcome != 'success')
+      run: |
+        echo "ERROR: Deployment failed after all retry attempts."
+        exit 1
