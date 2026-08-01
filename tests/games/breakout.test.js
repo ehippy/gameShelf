@@ -339,6 +339,13 @@ describe('breakout', () => {
       expect(breakoutModule.state.isPlaying).toBe(false)
     })
 
+    it('update() respects isPlaying: false as no-op after init', () => {
+      breakoutModule.init()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+      breakoutModule.update()
+      expect(breakoutModule.state.framesPlayed).toBe(0)
+    })
+
     it('handleKeydown ArrowLeft moves paddle left by 10', () => {
       breakoutModule.init()
       const before = breakoutModule.state.paddle.x
