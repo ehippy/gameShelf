@@ -299,6 +299,7 @@ describe('snake', () => {
 
     it('handleKeydown("ArrowLeft") changes direction to "left"', () => {
       snakeModule.init()
+      snakeModule.state.direction = 'up'
       snakeModule.handleKeydown('ArrowLeft')
       expect(snakeModule.state.direction).toBe('left')
     })
