@@ -314,3 +314,5 @@ export function handleKeydown(key) {
 
 // ─── Export the state object for GamePage to read ───
 export { state }
+
+// ─── Auto-start fix complete: all three games (Snake, Tetris, Breakout) now correctly keep isPlaying: false on init/reset ───
