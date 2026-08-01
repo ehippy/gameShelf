@@ -939,6 +939,7 @@ describe('breakout', () => {
 
     it('score increases when brick is destroyed', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       const scoreBefore = breakoutModule.state.score
       const brick = breakoutModule.state.bricks[0]
       breakoutModule.state.ball.x = brick.x + 2
