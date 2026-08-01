@@ -1,0 +1,35 @@
+name: 'Single Deploy Attempt'
+description: 'Uploads artifact and deploys to GitHub Pages for one attempt. Fails if anything goes wrong.'
+
+inputs:
+  attempt:
+    description: 'Which attempt number (1, 2, or 3)'
+    required: true
+
+outputs:
+  page_url:
+    description: 'The URL of the deployed GitHub Pages site'
+    value: ${{ steps.deploy.outputs.page_url }}
+
+runs:
+  using: 'composite'
+  steps:
+    # Sleep between retries (not before the first attempt)
+    - name: Wait before retry
+      shell: bash
+      if: inputs.attempt != '1'
+      run: |
+        echo "Waiting 30 seconds before retry attempt ${{ inputs.attempt }}/3..."
+        sleep 30
+
+    # Upload the artifact
+    - name: Upload artifact (attempt ${{ inputs.attempt }})
+      id: upload
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: './dist/'
+
+    # Deploy to GitHub Pages
+    - name: Deploy to GitHub Pages (attempt ${{ inputs.attempt }})
+      id: deploy
+      uses: actions/deploy-pages@v4
