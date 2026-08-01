@@ -508,6 +508,7 @@ describe('breakout', () => {
 
     it('update() detects ball-paddle collision and reverses ball.dy', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       // Position ball so its bottom overlaps paddle top and its x is within paddle
       breakoutModule.state.ball.x = breakoutModule.state.paddle.x + 5
       breakoutModule.state.ball.y = breakoutModule.state.paddle.y - breakoutModule.state.ball.size
