@@ -625,6 +625,7 @@ describe('breakout', () => {
 
     it('update() sets isGameOver=false and won=true when all bricks are destroyed', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       // Destroy all bricks by manipulating state
       for (const brick of breakoutModule.state.bricks) {
         brick.alive = false
