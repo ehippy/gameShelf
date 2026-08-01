@@ -616,19 +616,27 @@ describe('.github/actions/deploy-with-retry/action.yml', () => {
 
   it('runs attempt 3 only if previous attempt failed', () => {
     expect(actionYml).toMatch(/attempt:\s*3/)
+    expect(actionYml).toContain("steps.deploy_2.outcome == 'failure'")
   })
 
   it('fails the job if all 3 attempts exhausted', () => {
     expect(actionYml).toContain('exit 1')
     expect(actionYml).toMatch(/all.*3.*attempt/i)
+    expect(actionYml).toContain("steps.deploy_3.outcome == 'failure'")
+  })
+
+  it('forwards page_url from steps.deploy_3', () => {
+    expect(actionYml).toContain('steps.deploy_3.outputs.page_url')
+  })
+
+  it('has unique step IDs deploy_1, deploy_2, deploy_3', () => {
+    expect(actionYml).toContain('id: deploy_1')
+    expect(actionYml).toContain('id: deploy_2')
+    expect(actionYml).toContain('id: deploy_3')
   })
 
   it('has step logging with attempt numbers', () => {
     expect(actionYml).toMatch(/attempt\s*\d/i)
-  })
-
-  it('forwards the page_url output', () => {
-    expect(actionYml).toContain('page_url')
   })
 })
 
