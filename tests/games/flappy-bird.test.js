@@ -110,7 +110,7 @@ describe('flappy-bird', () => {
 
     // Yellow bird
     it('bird is yellow/gold', () => {
-      expect(flappySrc).toContain('FFD700') || expect(flappySrc).toContain('"FFD700"') || expect(flappySrc).toContain("'FFD700'")
+      expect(flappySrc).toContain('#FFD700')
     })
 
     // Handle keydown for ArrowUp and Space
