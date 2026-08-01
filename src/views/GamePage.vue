@@ -21,8 +21,8 @@
       <div class="canvas-wrapper" ref="canvasWrapper" tabindex="0">
         <canvas ref="gameCanvas" :width="canvasWidth" :height="canvasHeight"></canvas>
 
-        <div v-if="state && state.isGameOver" class="game-over-overlay">
-          <h2>Game Over</h2>
+        <div v-if="state && (state.isGameOver || state.won)" class="game-over-overlay">
+          <h2>{{ state.won ? 'You Won!' : 'Game Over' }}</h2>
           <p>Score: {{ state.score }}</p>
           <button @click="playAgain">Play Again</button>
         </div>
