@@ -346,18 +346,23 @@ describe('snake', () => {
       expect(snakeModule.state.direction).toBe(dirBefore)
     })
 
-    it('handleKeydown is a no-op when isGameOver is true', () => {
+    it('handleKeydown resets state and starts playing when isGameOver is true', () => {
       snakeModule.init()
       snakeModule.state.isGameOver = true
+      snakeModule.state.score = 99
       snakeModule.handleKeydown('ArrowUp')
-      expect(snakeModule.state.direction).toBe('right') // unchanged
+      expect(snakeModule.state.isGameOver).toBe(false)
+      expect(snakeModule.state.isPlaying).toBe(true)
+      expect(snakeModule.state.score).toBe(0)
+      expect(snakeModule.state.direction).toBe('up')
     })
 
-    it('handleKeydown is a no-op when isPlaying is false', () => {
+    it('handleKeydown starts playing and changes direction when isPlaying is false', () => {
       snakeModule.init()
       snakeModule.state.isPlaying = false
       snakeModule.handleKeydown('ArrowUp')
-      expect(snakeModule.state.direction).toBe('right') // unchanged
+      expect(snakeModule.state.isPlaying).toBe(true)
+      expect(snakeModule.state.direction).toBe('up')
     })
 
     it('handleKeydown allows valid direction changes (not 180°)', () => {
