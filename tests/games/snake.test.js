@@ -429,7 +429,11 @@ describe('snake', () => {
       snakeModule.init()
       snakeModule.state.direction = 'up'
       snakeModule.handleKeydown('ArrowLeft')
+      expect(snakeModule.state.direction).toBe('left') // verify direction changed
       const headBefore = { ...snakeModule.state.snake[0] }
+      expect(headBefore.x).toBe(2)
+      // Consume any leftover framesPlayed from prior tests
+      snakeModule.state.framesPlayed = 0
       for (let i = 0; i < 9; i++) {
         snakeModule.update()
       }
