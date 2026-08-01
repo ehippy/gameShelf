@@ -328,6 +328,28 @@ describe('tetris', () => {
       expect(tetrisModule.state.isPlaying).toBe(false)
     })
 
+    it('auto-start fix verified: Snake also sets isPlaying to false on init', () => {
+      if (!snakeModule) return
+      snakeModule.init()
+      expect(snakeModule.state.isPlaying).toBe(false)
+    })
+
+    it('auto-start fix verified: all three games (Snake, Tetris, Breakout) correctly refuse to auto-start', () => {
+      // Snake
+      if (snakeModule) {
+        snakeModule.init()
+        expect(snakeModule.state.isPlaying).toBe(false)
+      }
+      // Tetris
+      if (tetrisModule) {
+        tetrisModule.init()
+        expect(tetrisModule.state.isPlaying).toBe(false)
+      }
+      // Breakout
+      breakoutModule.init()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+    })
+
     it('reset() preserves isPlaying: false (no auto-start)', () => {
       if (!tetrisModule) return
       tetrisModule.init()
