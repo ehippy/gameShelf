@@ -465,6 +465,7 @@ describe('snake', () => {
 
     it('update() triggers game over on left wall collision', () => {
       snakeModule.init()
+      snakeModule.state.direction = 'up'
       snakeModule.handleKeydown('ArrowLeft')
       // Snake starts with head at (2,5). After 2 left moves, head at (0,5).
       for (let move = 0; move < 2; move++) {
