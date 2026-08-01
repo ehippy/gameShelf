@@ -106,5 +106,17 @@ describe('breakout', () => {
       breakoutModule.init()
       expect(() => breakoutModule.reset()).not.toThrow()
     })
+
+    it('handleKeydown is a function', () => {
+      if (!breakoutModule) return
+      expect(typeof breakoutModule.handleKeydown).toBe('function')
+    })
+
+    it('handleKeydown is a no-op', () => {
+      if (!breakoutModule) return
+      expect(() => breakoutModule.handleKeydown('ArrowLeft')).not.toThrow()
+      expect(() => breakoutModule.handleKeydown('ArrowRight')).not.toThrow()
+      expect(() => breakoutModule.handleKeydown(' ')).not.toThrow()
+    })
   })
 })
