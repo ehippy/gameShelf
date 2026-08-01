@@ -421,6 +421,13 @@ describe('breakout', () => {
       expect(breakoutModule.state.score).toBe(0)
     })
 
+    it('breakout: paddle clamps at right edge after starting', () => {
+      breakoutModule.init()
+      expect(breakoutModule.state.paddle.x).toBe(105)
+      breakoutModule.handleKeydown('ArrowRight')
+      expect(breakoutModule.state.paddle.x).toBe(115)
+    })
+
     it('handleKeydown ArrowRight moves paddle right by 10', () => {
       breakoutModule.init()
       const before = breakoutModule.state.paddle.x
