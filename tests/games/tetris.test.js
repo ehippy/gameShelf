@@ -373,7 +373,7 @@ describe('tetris', () => {
       tetrisModule.init()
       tetrisModule.state.isGameOver = true
       tetrisModule.state.score = 42
-      tetrisModule.handleKeydown(' ')
+      tetrisModule.handleKeydown('ArrowRight')
       expect(tetrisModule.state.isGameOver).toBe(false)
       expect(tetrisModule.state.isPlaying).toBe(true)
       expect(tetrisModule.state.score).toBe(0)
