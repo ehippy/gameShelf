@@ -4,38 +4,38 @@ description: 'Uploads artifact and deploys to GitHub Pages with up to 3 attempts
 outputs:
   page_url:
     description: 'The URL of the deployed GitHub Pages site'
-    value: ${{ steps.deploy.outputs.page_url }}
+    value: ${{ steps.deploy_3.outputs.page_url }}
 
 runs:
   using: 'composite'
   steps:
     # ── Attempt 1 ──────────────────────────────────────────────
     - name: Deploy (attempt 1)
-      id: deploy
+      id: deploy_1
       uses: ./.github/actions/deploy-with-retry/_attempt
       with:
         attempt: 1
 
     # ── Attempt 2 (only if attempt 1 failed) ──────────────────
     - name: Deploy (attempt 2)
-      id: deploy
+      id: deploy_2
       uses: ./.github/actions/deploy-with-retry/_attempt
-      if: steps.deploy.outcome == 'failure'
+      if: steps.deploy_1.outcome == 'failure'
       with:
         attempt: 2
 
     # ── Attempt 3 (only if attempt 2 failed) ──────────────────
     - name: Deploy (attempt 3)
-      id: deploy
+      id: deploy_3
       uses: ./.github/actions/deploy-with-retry/_attempt
-      if: steps.deploy.outcome == 'failure'
+      if: steps.deploy_2.outcome == 'failure'
       with:
         attempt: 3
 
     # ── Fail if all attempts exhausted ─────────────────────────
     - name: All retry attempts failed
       shell: bash
-      if: steps.deploy.outcome == 'failure'
+      if: steps.deploy_3.outcome == 'failure'
       run: |
         echo "ERROR: Deployment failed after all 3 retry attempts."
         echo "The last failure needs manual investigation."
