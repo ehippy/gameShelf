@@ -693,6 +693,7 @@ describe('breakout', () => {
 
     it('update() sets isGameOver=true and isPlaying=false when lives reach 0', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       breakoutModule.state.lives = 1
       breakoutModule.state.ball.y = breakoutModule.CANVAS_HEIGHT
       breakoutModule.update()
