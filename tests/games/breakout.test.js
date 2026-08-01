@@ -637,6 +637,7 @@ describe('breakout', () => {
 
     it('update() sets isPlaying=false on win', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       for (const brick of breakoutModule.state.bricks) {
         brick.alive = false
       }
