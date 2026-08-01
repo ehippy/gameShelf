@@ -156,7 +156,7 @@ describe('flappy-bird', () => {
     })
 
     it('bird state has row', () => {
-      expect(flappySrc).toContain('row:') || expect(flappySrc).toContain('"row"')
+      expect(flappySrc).toContain('row:')
     })
 
     it('bird state has col', () => {
