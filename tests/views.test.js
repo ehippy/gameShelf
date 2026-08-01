@@ -99,6 +99,65 @@ describe('HomeView', () => {
   })
 })
 
+// --- knownGameSlugs sync ---
+
+describe('knownGameSlugs matches catalog exactly', () => {
+  const catalog = readFileSync(join(root, 'src', 'data', 'gamesCatalog.js'), 'utf-8')
+  const gamePage = readFileSync(join(root, 'src', 'views', 'GamePage.vue'), 'utf-8')
+
+  const catalogSlugs = []
+  let m
+  const slugRe = /slug:\s*'([^']+)'/g
+  while ((m = slugRe.exec(catalog)) !== null) catalogSlugs.push(m[1])
+
+  const knownMatch = gamePage.match(/knownGameSlugs\s*=\s*\[([^\]]+)\]/)
+  const knownSlugsRaw = knownMatch ? knownMatch[1] : ''
+  const knownSlugs = knownSlugsRaw.split(',').map(s => s.trim().replace(/'/g, '').replace(/"/g, '')).filter(Boolean)
+
+  it('knownGameSlugs has exactly 5 entries', () => {
+    expect(knownSlugs.length).toBe(5)
+  })
+
+  it('knownGameSlugs matches catalog slugs exactly', () => {
+    expect(knownSlugs.sort()).toEqual(catalogSlugs.sort())
+  })
+
+  it('no catalog slug is missing from knownGameSlugs', () => {
+    for (const slug of catalogSlugs) {
+      expect(knownSlugs).toContain(slug)
+    }
+  })
+
+  it('no extra slug in knownGameSlugs', () => {
+    for (const slug of knownSlugs) {
+      expect(catalogSlugs).toContain(slug)
+    }
+  })
+})
+
+// --- catalog count matches game directories ---
+
+describe('catalog count matches game directories', () => {
+  const { readdirSync, existsSync } = require('fs')
+  const gamesDir = join(root, 'src', 'games')
+  const gameDirs = readdirSync(gamesDir).filter(d => existsSync(join(gamesDir, d, 'gameLogic.js')))
+  const catalog = readFileSync(join(root, 'src', 'data', 'gamesCatalog.js'), 'utf-8')
+  const catalogSlugs = []
+  let m2
+  const slugRe2 = /slug:\s*'([^']+)'/g
+  while ((m2 = slugRe2.exec(catalog)) !== null) catalogSlugs.push(m2[1])
+
+  it('catalog entry count equals game directory count', () => {
+    expect(catalogSlugs.length).toBe(gameDirs.length)
+  })
+
+  it('every game directory has a matching catalog slug', () => {
+    for (const dir of gameDirs) {
+      expect(catalogSlugs).toContain(dir)
+    }
+  })
+})
+
 // --- AboutView ---
 
 describe('AboutView', () => {
