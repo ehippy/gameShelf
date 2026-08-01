@@ -8,11 +8,11 @@
           <span class="info-label">Score</span>
           <span class="info-value">{{ state?.score ?? 0 }}</span>
         </div>
-        <div class="info-box">
+        <div class="info-box" v-if="state?.level !== undefined">
           <span class="info-label">Level</span>
           <span class="info-value">{{ state?.level ?? 1 }}</span>
         </div>
-        <div class="info-box">
+        <div class="info-box" v-if="state?.lines !== undefined">
           <span class="info-label">Lines</span>
           <span class="info-value">{{ state?.lines ?? 0 }}</span>
         </div>
