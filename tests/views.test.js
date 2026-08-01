@@ -195,57 +195,52 @@ describe('GamePage', () => {
     expect(gamePageMatch).not.toBeNull()
   })
 
-  it('checks for known game directories to prevent invalid imports', () => {
-    // GamePage should have a knownGameSlugs guard that checks
-    // the slug against a list of actual game directories before
-    // performing the dynamic import.
-    expect(gamePageSrc).toContain('knownGameSlugs')
-    expect(gamePageSrc).toContain('snake')
-    expect(gamePageSrc).toContain('tetris')
-    expect(gamePageSrc).toContain('breakout')
-    expect(gamePageSrc).toContain('flappy-bird')
-    expect(gamePageSrc).toContain('whack-a-mole')
+  it('imports isValidSlug for slug validation guard', () => {
+    // GamePage should import isValidSlug from scoreStore
+    // and use it to validate slugs before dynamic import.
+    expect(gamePageSrc).toContain('isValidSlug')
+    expect(gamePageSrc).toContain("from '../stores/scoreStore.js'")
   })
 
   it('redirects to /404 for any unknown game slug', () => {
-    // Any slug not in knownGameSlugs gets redirected to /404,
+    // Any slug not validated by isValidSlug gets redirected to /404,
     // preventing dynamic import errors for non-existent gameLogic.js.
     expect(gamePageSrc).toContain("router.replace('/404')")
-    // Verify the guard runs BEFORE the dynamic import for slugs not in known list
-    const guardMatch = gamePageSrc.match(/if\s*\(\s*!knownGameSlugs\.includes\(slug\)\s*\)\s*\{[\s\S]*?router\.replace\('\/404'\)/)
+    // Verify the guard runs BEFORE the dynamic import
+    const guardMatch = gamePageSrc.match(/if\s*\(\s*!isValidSlug\(slug\)\s*\)\s*\{[\s\S]*?router\.replace\('\/404'\)/)
     expect(guardMatch).not.toBeNull()
     // Verify the guard comes before the dynamic import
-    const guardIdx = gamePageSrc.indexOf('knownGameSlugs')
-    const importIdx = gamePageSrc.indexOf('import(\'../games/\'')
+    const guardIdx = gamePageSrc.indexOf('isValidSlug(slug)')
+    const importIdx = gamePageSrc.indexOf("import('../games/'")
     expect(guardIdx).toBeGreaterThan(-1)
     expect(importIdx).toBeGreaterThan(-1)
     expect(guardIdx).toBeLessThan(importIdx)
   })
 
-  it('blocks import for any slug not in knownGameSlugs', () => {
-    // The knownGameSlugs check prevents loading gameLogic for
+  it('blocks import for any slug not validated by isValidSlug', () => {
+    // The isValidSlug check prevents loading gameLogic for
     // slugs without actual game directories.
-    const guardMatch = gamePageSrc.match(/if\s*\(\s*!knownGameSlugs\.includes\(slug\)\s*\)\s*\{[\s\S]*?router\.replace\('\/404'\)/)
+    const guardMatch = gamePageSrc.match(/if\s*\(\s*!isValidSlug\(slug\)\s*\)\s*\{[\s\S]*?router\.replace\('\/404'\)/)
     expect(guardMatch).not.toBeNull()
     // Verify the guard comes before the dynamic import
-    const guardIdx = gamePageSrc.indexOf('knownGameSlugs')
-    const importIdx = gamePageSrc.indexOf('import(\'../games/\'')
+    const guardIdx = gamePageSrc.indexOf('isValidSlug(slug)')
+    const importIdx = gamePageSrc.indexOf("import('../games/'")
     expect(guardIdx).toBeLessThan(importIdx)
   })
 
   it('does NOT allow loading gameLogic for non-existent game directories', () => {
-    // The knownGameSlugs check must appear before any import('../games/' ... )
+    // The isValidSlug check must appear before any import('../games/' ... )
     // to prevent module-not-found errors for non-existent gameLogic.js.
     const lines = gamePageSrc.split('\n')
     let guardFound = false
     let importFound = false
     for (const line of lines) {
-      if (line.includes('knownGameSlugs') && !guardFound) {
+      if (line.includes('isValidSlug') && !guardFound) {
         guardFound = true
       }
       if (line.includes("import('../games/'")) {
         if (!guardFound) {
-          throw new Error('Dynamic import occurs before knownGameSlugs guard')
+          throw new Error('Dynamic import occurs before isValidSlug guard')
         }
         importFound = true
       }
