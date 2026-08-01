@@ -395,7 +395,6 @@ export function reset() {
   state.bag = fillBag()
   state.nextPiece = createPiece(getNextPieceType())
   spawnPiece()
-  state.isPlaying = true
   state.lastDropTime = performance.now()
   return state
 }
