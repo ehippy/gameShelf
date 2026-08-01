@@ -56,7 +56,7 @@ describe('filtering behavior', () => {
   it('search "classic" → shows Snake, Tetris, Breakout (all have "classic" in title/description)', () => {
     const results = computeFilteredGames(gamesCatalog, 'classic', '')
     expect(results.length).toBe(3)
-    expect(results.map(g => g.slug).sort()).toEqual(['snake', 'tetris', 'breakout'])
+    expect(results.map(g => g.slug).sort()).toEqual(['breakout', 'snake', 'tetris'])
   })
 
   it('search "bird" → shows Flappy Bird', () => {
