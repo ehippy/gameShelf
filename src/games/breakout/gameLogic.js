@@ -63,7 +63,8 @@ function createInitialState() {
       speed: PADDLE_SPEED
     },
     bricks: buildBricks(),
-    framesPlayed: 0
+    framesPlayed: 0,
+    won: false
   }
 }
 
