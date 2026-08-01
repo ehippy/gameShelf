@@ -269,3 +269,10 @@ If all 3 attempts fail:
 ### Goal
 
 Avoid the pattern where correct code bounces indefinitely between the Deployer and PM due to flaky CI infrastructure. The Deployer should absorb transient failures, retry, and only escalate with evidence — never reject approved work solely because of infrastructure hiccups.
+
+## Last Reviewed
+
+- **Reviewed:** 2025-07-09
+- **Scope:** ESLint/anti-pattern documentation — confirmed current, no updates required.
+- **Verified sections:** Short-circuit assertions (||) anti-pattern (lines 160–183), Vitest/Playwright namespace conflict workaround (lines 133–158), game initialization conventions (lines 48–94), catalog field naming (lines 9–27), route slug validation (lines 31–46), search/filter UI pattern (lines 185–244), deployment failure conventions (lines 246–271).
+- **Excluded:** ESLint `node/recommended` dependency fix — one-off workaround, not a recurring project practice.
