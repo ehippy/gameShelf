@@ -44,7 +44,7 @@ function createInitialState() {
   return {
     score: 0,
     isGameOver: false,
-    isPlaying: true,
+    isPlaying: false,
     direction: 'right',
     snake: snake,
     food: null, // will be set by spawnFood
