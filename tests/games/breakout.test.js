@@ -384,6 +384,7 @@ describe('breakout', () => {
 
     it('update() advances ball by velocity each frame', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       const startX = breakoutModule.state.ball.x
       const startY = breakoutModule.state.ball.y
       const dx = breakoutModule.state.ball.dx
