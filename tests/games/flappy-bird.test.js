@@ -419,6 +419,126 @@ describe('flappy-bird', () => {
       expect(() => flappyModule.handleKeydown(' ')).not.toThrow()
     })
 
+    // --- AC4: After game over, space/ArrowUp resets game and starts playing ---
+
+    it('handleKeydown space when isGameOver resets score to 0, sets isPlaying=true, sets velocity to FLAP_STRENGTH', () => {
+      if (!flappyModule) return
+      flappyModule.init()
+      // Play a few frames to get a non-zero score
+      flappyModule.state.isPlaying = true
+      for (let i = 0; i < 10; i++) {
+        flappyModule.update()
+        flappyModule.handleKeydown('ArrowUp')
+      }
+      // Force game over
+      flappyModule.state.bird.row = 6.6
+      flappyModule.update()
+      expect(flappyModule.state.isGameOver).toBe(true)
+      const scoreBefore = flappyModule.state.score
+      expect(scoreBefore).toBeGreaterThan(0)
+
+      // Reset via space
+      flappyModule.handleKeydown(' ')
+      expect(flappyModule.state.score).toBe(0)
+      expect(flappyModule.state.isGameOver).toBe(false)
+      expect(flappyModule.state.isPlaying).toBe(true)
+      expect(flappyModule.state.bird.velocity).toBe(-2.5)
+      expect(flappyModule.state.bird.row).toBe(3)
+      expect(flappyModule.state.pipes.length).toBe(0)
+    })
+
+    it('handleKeydown ArrowUp when isGameOver resets score to 0, sets isPlaying=true, sets velocity to FLAP_STRENGTH', () => {
+      if (!flappyModule) return
+      flappyModule.init()
+      flappyModule.state.isPlaying = true
+      for (let i = 0; i < 10; i++) {
+        flappyModule.update()
+        flappyModule.handleKeydown('ArrowUp')
+      }
+      // Force game over
+      flappyModule.state.bird.row = 6.6
+      flappyModule.update()
+      expect(flappyModule.state.isGameOver).toBe(true)
+      const scoreBefore = flappyModule.state.score
+      expect(scoreBefore).toBeGreaterThan(0)
+
+      flappyModule.handleKeydown('ArrowUp')
+      expect(flappyModule.state.score).toBe(0)
+      expect(flappyModule.state.isGameOver).toBe(false)
+      expect(flappyModule.state.isPlaying).toBe(true)
+      expect(flappyModule.state.bird.velocity).toBe(-2.5)
+      expect(flappyModule.state.bird.row).toBe(3)
+      expect(flappyModule.state.pipes.length).toBe(0)
+    })
+
+    // --- AC5: Already playing, handleKeydown just flaps ---
+
+    it('handleKeydown space when already playing just applies FLAP_STRENGTH (no reset)', () => {
+      if (!flappyModule) return
+      flappyModule.init()
+      flappyModule.handleKeydown('ArrowUp') // start playing
+      expect(flappyModule.state.isPlaying).toBe(true)
+      expect(flappyModule.state.bird.velocity).toBe(-2.5)
+      const scoreBefore = flappyModule.state.score
+      const pipesBefore = flappyModule.state.pipes.length
+      const rowBefore = flappyModule.state.bird.row
+
+      flappyModule.handleKeydown(' ')
+      expect(flappyModule.state.score).toBe(scoreBefore)
+      expect(flappyModule.state.pipes.length).toBe(pipesBefore)
+      expect(flappyModule.state.bird.row).toBe(rowBefore)
+      expect(flappyModule.state.isPlaying).toBe(true)
+      expect(flappyModule.state.bird.velocity).toBe(-2.5)
+    })
+
+    it('handleKeydown ArrowUp when already playing just applies FLAP_STRENGTH', () => {
+      if (!flappyModule) return
+      flappyModule.init()
+      flappyModule.handleKeydown('ArrowUp')
+      expect(flappyModule.state.isPlaying).toBe(true)
+      const scoreBefore = flappyModule.state.score
+      const rowBefore = flappyModule.state.bird.row
+
+      flappyModule.handleKeydown('ArrowUp')
+      expect(flappyModule.state.score).toBe(scoreBefore)
+      expect(flappyModule.state.bird.row).toBe(rowBefore)
+      expect(flappyModule.state.bird.velocity).toBe(-2.5)
+    })
+
+    // --- AC6: ArrowDown when not playing is ignored ---
+
+    it('handleKeydown ArrowDown when isPlaying=false does not start the game', () => {
+      if (!flappyModule) return
+      flappyModule.init()
+      expect(flappyModule.state.isPlaying).toBe(false)
+      flappyModule.handleKeydown('ArrowDown')
+      expect(flappyModule.state.isPlaying).toBe(false)
+    })
+
+    it('handleKeydown ArrowDown when isPlaying=false does not change bird velocity', () => {
+      if (!flappyModule) return
+      flappyModule.init()
+      expect(flappyModule.state.bird.velocity).toBe(0)
+      flappyModule.handleKeydown('ArrowDown')
+      expect(flappyModule.state.bird.velocity).toBe(0)
+    })
+
+    it('handleKeydown ArrowDown when isGameOver is true does not start the game', () => {
+      if (!flappyModule) return
+      flappyModule.init()
+      flappyModule.state.isPlaying = true
+      for (let i = 0; i < 10; i++) {
+        flappyModule.update()
+      }
+      flappyModule.state.bird.row = 6.6
+      flappyModule.update()
+      expect(flappyModule.state.isGameOver).toBe(true)
+
+      flappyModule.handleKeydown('ArrowDown')
+      expect(flappyModule.state.isPlaying).toBe(false)
+      expect(flappyModule.state.isGameOver).toBe(true)
+    })
+
     it('ceiling collision triggers game over', () => {
       if (!flappyModule) return
       flappyModule.init()
