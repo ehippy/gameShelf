@@ -496,7 +496,7 @@ describe('styles.css', () => {
   })
 
   it('uses var(-- tokens at least 3 times', () => {
-    expect((styles.match(/var\(--/g) || []).length >= 3).toBe(true)
+    expect(styles.match(/var\(--/g) || []).length).toBeGreaterThanOrEqual(3)
   })
 
   it('resets margin', () => {
