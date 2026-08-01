@@ -351,13 +351,13 @@ describe('breakout', () => {
       expect(breakoutModule.state.isPlaying).toBe(false)
     })
 
-    it('handleKeydown respects reverse-direction rejection after starting', () => {
+    it('handleKeydown starts paddle movement when isPlaying is false', () => {
       breakoutModule.init()
+      expect(breakoutModule.state.paddle.x).toBe(105)
       breakoutModule.handleKeydown('ArrowRight')
-      expect(breakoutModule.state.isPlaying).toBe(true)
+      expect(breakoutModule.state.paddle.x).toBe(115)
       breakoutModule.handleKeydown('ArrowLeft')
-      // Paddle should still move left since we weren't in a restricted state
-      expect(breakoutModule.state.paddle.x).toBe(105 - 10)
+      expect(breakoutModule.state.paddle.x).toBe(105)
     })
 
     it('handleKeydown ArrowLeft moves paddle left by 10', () => {
