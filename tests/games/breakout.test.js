@@ -332,7 +332,6 @@ describe('breakout', () => {
         breakoutModule.handleKeydown('ArrowRight')
       }
       const maxPaddleX = breakoutModule.CANVAS_WIDTH - breakoutModule.state.paddle.width
-      const before = breakoutModule.state.paddle.x
       breakoutModule.handleKeydown('ArrowRight')
       expect(breakoutModule.state.paddle.x).toBe(maxPaddleX)
       // Should not go past
@@ -749,7 +748,7 @@ describe('breakout', () => {
       let paddleDrawn = false
       const mockCanvas = {
         getContext: () => ({
-          fillRect: (x, y, w, h) => {
+          fillRect: (x, y, w) => {
             if (Math.abs(y - 228) < 1 && Math.abs(w - 40) < 1) {
               paddleDrawn = true
             }
@@ -776,7 +775,7 @@ describe('breakout', () => {
           fillRect: () => {},
           fillStyle: null,
           beginPath: () => {},
-          arc: (cx, cy, r, start, end) => { arcCalled = true },
+          arc: () => { arcCalled = true },
           fill: () => {},
           font: null,
           textAlign: null,

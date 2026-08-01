@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { join, dirname } from 'node:path'
@@ -114,11 +114,11 @@ describe('snake', () => {
     })
 
     it('checks wall collision', () => {
-      expect(snakeSrc).toContain('checkWallCollision') || expect(snakeSrc).toContain('WallCollision')
+      expect(snakeSrc).toContain('checkWallCollision')
     })
 
     it('checks self collision', () => {
-      expect(snakeSrc).toContain('checkSelfCollision') || expect(snakeSrc).toContain('SelfCollision')
+      expect(snakeSrc).toContain('checkSelfCollision')
     })
 
     it('renders with canvas context', () => {

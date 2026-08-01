@@ -48,31 +48,31 @@ describe('tetris', () => {
     })
 
     it('I tetromino is cyan (#00f0f0)', () => {
-      expect(tetrisSrc).toContain("color: '#00f0f0'") || expect(tetrisSrc).toContain('color: "#00f0f0"')
+      expect(tetrisSrc).toContain("color: '#00f0f0'")
     })
 
     it('O tetromino is yellow (#f0f000)', () => {
-      expect(tetrisSrc).toContain("color: '#f0f000'") || expect(tetrisSrc).toContain('color: "#f0f000"')
+      expect(tetrisSrc).toContain("color: '#f0f000'")
     })
 
     it('T tetromino is purple (#a000f0)', () => {
-      expect(tetrisSrc).toContain("color: '#a000f0'") || expect(tetrisSrc).toContain('color: "#a000f0"')
+      expect(tetrisSrc).toContain("color: '#a000f0'")
     })
 
     it('S tetromino is green (#00f000)', () => {
-      expect(tetrisSrc).toContain("color: '#00f000'") || expect(tetrisSrc).toContain('color: "#00f000"')
+      expect(tetrisSrc).toContain("color: '#00f000'")
     })
 
     it('Z tetromino is red (#f00000)', () => {
-      expect(tetrisSrc).toContain("color: '#f00000'") || expect(tetrisSrc).toContain('color: "#f00000"')
+      expect(tetrisSrc).toContain("color: '#f00000'")
     })
 
     it('J tetromino is blue (#0000f0)', () => {
-      expect(tetrisSrc).toContain("color: '#0000f0'") || expect(tetrisSrc).toContain('color: "#0000f0"')
+      expect(tetrisSrc).toContain("color: '#0000f0'")
     })
 
     it('L tetromino is orange (#f0a000)', () => {
-      expect(tetrisSrc).toContain("color: '#f0a000'") || expect(tetrisSrc).toContain('color: "#f0a000"')
+      expect(tetrisSrc).toContain("color: '#f0a000'")
     })
 
     it('Grid has 10 columns', () => {
@@ -100,43 +100,43 @@ describe('tetris', () => {
     })
 
     it('handleKeydown handles space bar', () => {
-      expect(tetrisSrc).toContain("' '") || expect(tetrisSrc).toContain('" "') || expect(tetrisSrc).toContain('"Space"')
+      expect(tetrisSrc).toContain("' '")
     })
 
     it('has collision detection', () => {
-      expect(tetrisSrc).toContain('isValidPosition') || expect(tetrisSrc).toContain('collision')
+      expect(tetrisSrc).toContain('isValidPosition')
     })
 
     it('State has score field', () => {
-      expect(tetrisSrc).toContain('score:') || expect(tetrisSrc).toContain('"score"')
+      expect(tetrisSrc).toContain('score:')
     })
 
     it('State has level field', () => {
-      expect(tetrisSrc).toContain('level:') || expect(tetrisSrc).toContain('"level"')
+      expect(tetrisSrc).toContain('level:')
     })
 
     it('State has lines field', () => {
-      expect(tetrisSrc).toContain('lines:') || expect(tetrisSrc).toContain('"lines"')
+      expect(tetrisSrc).toContain('lines:')
     })
 
     it('State has isGameOver field', () => {
-      expect(tetrisSrc).toContain('isGameOver:') || expect(tetrisSrc).toContain('"isGameOver"')
+      expect(tetrisSrc).toContain('isGameOver:')
     })
 
     it('State has nextPiece field', () => {
-      expect(tetrisSrc).toContain('nextPiece:') || expect(tetrisSrc).toContain('"nextPiece"')
+      expect(tetrisSrc).toContain('nextPiece:')
     })
 
     it('State has board field', () => {
-      expect(tetrisSrc).toContain('board:') || expect(tetrisSrc).toContain('"board"')
+      expect(tetrisSrc).toContain('board:')
     })
 
     it('has line clearing logic', () => {
-      expect(tetrisSrc).toContain('clearLines') || expect(tetrisSrc).toContain('splice')
+      expect(tetrisSrc).toContain('clearLines')
     })
 
     it('sets isGameOver true on game over', () => {
-      expect(tetrisSrc).toContain('isGameOver = true') || expect(tetrisSrc).toContain('isGameOver=true')
+      expect(tetrisSrc).toContain('isGameOver = true')
     })
   })
 
@@ -353,7 +353,6 @@ describe('tetris', () => {
       tetrisModule.state.currentPiece.col = 3
       tetrisModule.state.lastDropTime = performance.now() - 2000
       const scoreBeforeLC = tetrisModule.state.score
-      const linesBeforeLC = tetrisModule.state.lines
       tetrisModule.update()
       tetrisModule.update()
       expect(tetrisModule.state.score > scoreBeforeLC).toBe(true)

@@ -94,7 +94,7 @@ describe('flappy-bird', () => {
 
     // Green pipe color
     it('uses green pipe color #2ecc71', () => {
-      expect(flappySrc).toContain('2ecc71') || expect(flappySrc).toContain('#2ecc71')
+      expect(flappySrc).toContain('#2ecc71')
     })
 
     // Bird column
@@ -105,12 +105,12 @@ describe('flappy-bird', () => {
 
     // Sky-blue background
     it('sky-blue background #87CEEB', () => {
-      expect(flappySrc).toContain('87CEEB') || expect(flappySrc).toContain('"87CEEB"') || expect(flappySrc).toContain("'87CEEB'")
+      expect(flappySrc).toContain('#87CEEB')
     })
 
     // Yellow bird
     it('bird is yellow/gold', () => {
-      expect(flappySrc).toContain('FFD700') || expect(flappySrc).toContain('"FFD700"') || expect(flappySrc).toContain("'FFD700'")
+      expect(flappySrc).toContain('#FFD700')
     })
 
     // Handle keydown for ArrowUp and Space
@@ -124,19 +124,19 @@ describe('flappy-bird', () => {
 
     // State shape
     it('state has score', () => {
-      expect(flappySrc).toContain('score:') || expect(flappySrc).toContain('"score"')
+      expect(flappySrc).toContain('score:')
     })
 
     it('state has isGameOver', () => {
-      expect(flappySrc).toContain('isGameOver:') || expect(flappySrc).toContain('"isGameOver"')
+      expect(flappySrc).toContain('isGameOver:')
     })
 
     it('state has isPlaying', () => {
-      expect(flappySrc).toContain('isPlaying:') || expect(flappySrc).toContain('"isPlaying"')
+      expect(flappySrc).toContain('isPlaying:')
     })
 
     it('state has bird', () => {
-      expect(flappySrc).toContain('bird:') || expect(flappySrc).toContain('"bird"')
+      expect(flappySrc).toContain('bird:')
     })
 
     it('state has pipes', () => {
@@ -156,7 +156,7 @@ describe('flappy-bird', () => {
     })
 
     it('bird state has row', () => {
-      expect(flappySrc).toContain('row:') || expect(flappySrc).toContain('"row"')
+      expect(flappySrc).toContain('row:')
     })
 
     it('bird state has col', () => {

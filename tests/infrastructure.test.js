@@ -284,7 +284,7 @@ describe('.github/workflows/deploy.yml', () => {
   })
 
   it('has on trigger', () => {
-    expect(deployYml).toContain('on:') || expect(deployYml).toContain('on :')
+    expect(deployYml).toContain('on:')
   })
 
   it('triggers on main branch', () => {
@@ -739,6 +739,7 @@ describe('No deprecated field names in new/modified files', () => {
 describe('build test', () => {
   it('npm run build completes successfully', () => {
     execFileSync('npm', ['run', 'build'], { cwd: root, timeout: 120000, stdio: 'pipe' })
+    expect(existsSync(join(root, 'dist', 'index.html'))).toBe(true)
   })
 
   it('dist/404.html exists after build', () => {
