@@ -132,11 +132,11 @@ describe('tetris', () => {
     })
 
     it('has line clearing logic', () => {
-      expect(tetrisSrc).toContain('clearLines') || expect(tetrisSrc).toContain('splice')
+      expect(tetrisSrc).toContain('clearLines')
     })
 
     it('sets isGameOver true on game over', () => {
-      expect(tetrisSrc).toContain('isGameOver = true') || expect(tetrisSrc).toContain('isGameOver=true')
+      expect(tetrisSrc).toContain('isGameOver = true')
     })
   })
 
