@@ -52,7 +52,7 @@ describe('tetris', () => {
     })
 
     it('O tetromino is yellow (#f0f000)', () => {
-      expect(tetrisSrc).toContain("color: '#f0f000'") || expect(tetrisSrc).toContain('color: "#f0f000"')
+      expect(tetrisSrc).toContain("color: '#f0f000'")
     })
 
     it('T tetromino is purple (#a000f0)', () => {
