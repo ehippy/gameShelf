@@ -541,6 +541,7 @@ describe('snake', () => {
 
     it('update() triggers game over on self collision', () => {
       snakeModule.init()
+      snakeModule.handleKeydown('ArrowRight') // start the game
       // Make a snake that will self-collide
       snakeModule.state.snake = [
         { x: 5, y: 5 },
@@ -564,6 +565,7 @@ describe('snake', () => {
 
     it('update() increments score when snake eats food', () => {
       snakeModule.init()
+      snakeModule.handleKeydown('ArrowRight') // start the game
       const scoreBefore = snakeModule.state.score
       // Head starts at (2,5), direction is 'right'. Food at (3,5).
       snakeModule.state.food = { x: 3, y: 5 }
