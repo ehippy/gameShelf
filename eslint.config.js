@@ -16,6 +16,7 @@ export default [
     },
     rules: {
       ...eslintJs.configs.recommended.rules,
+      ...eslintJs.configs.node.rules ?? {},
     },
   },
   // 2. Tests (**/*.test.js): vitest plugin with recommended rules + specific rules
