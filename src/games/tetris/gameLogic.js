@@ -401,6 +401,11 @@ export function reset() {
 
 /**
  * Handle keyboard input. Exported for GamePage to wire up.
+ *
+ * Three-way logic:
+ *   - Not playing + not game over → start the game (isPlaying = true)
+ *   - Game over → reset state and start playing (isPlaying = true)
+ *   - Already playing → perform normal action (move/rotate/hard drop)
  */
 export function handleKeydown(key) {
   if (!state) return
