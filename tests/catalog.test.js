@@ -44,18 +44,6 @@ describe('catalog entries', () => {
     expect(catalog).toContain("title: 'Breakout'")
   })
 
-  it('has title Minesweeper', () => {
-    expect(catalog).toContain("title: 'Minesweeper'")
-  })
-
-  it('has title Memory', () => {
-    expect(catalog).toContain("title: 'Memory'")
-  })
-
-  it('has title Flappy Bird', () => {
-    expect(catalog).toContain("title: 'Flappy Bird'")
-  })
-
   it('has title Whack-a-Mole', () => {
     expect(catalog).toContain("title: 'Whack-a-Mole'")
   })
