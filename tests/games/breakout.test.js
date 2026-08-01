@@ -703,7 +703,7 @@ describe('breakout', () => {
       let fillStyleOrder = []
       const mockCanvas = {
         getContext: () => ({
-          fillRect: (x, y, w) => { fillRects.push({ x, y, w, h }) },
+          fillRect: (x, y, w, h) => { fillRects.push({ x, y, w, h }) },
           get fillStyle() { return fillStyleOrder[fillStyleOrder.length - 1] },
           set fillStyle(v) { fillStyleOrder.push(v) },
           beginPath: () => {},
