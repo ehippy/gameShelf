@@ -23,8 +23,55 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: './dist/'
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Deploy to GitHub Pages (with retry)
+        run: |
+          MAX_ATTEMPTS=3
+          ATTEMPT=0
+          DEPLOY_SUCCESS=false
+
+          while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+            ATTEMPT=$((ATTEMPT + 1))
+            echo "=== Attempt $ATTEMPT/$MAX_ATTEMPTS ==="
+
+            # Upload the artifact
+            echo "Uploading artifact..."
+            npx actions/upload-pages-artifact@v3 --path './dist/'
+            UPLOAD_EXIT=$?
+
+            if [ $UPLOAD_EXIT -ne 0 ]; then
+              echo "Artifact upload failed (exit code $UPLOAD_EXIT)"
+              if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
+                echo "Waiting 30 seconds before retry..."
+                sleep 30
+                continue
+              fi
+              echo "Artifact upload failed after $MAX_ATTEMPTS attempts."
+              exit 1
+            fi
+
+            # Deploy to GitHub Pages
+            echo "Deploying to GitHub Pages..."
+            npx actions/deploy-pages@v4
+            DEPLOY_EXIT=$?
+
+            if [ $DEPLOY_EXIT -ne 0 ]; then
+              echo "Deployment failed (exit code $DEPLOY_EXIT)"
+              if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
+                echo "Waiting 30 seconds before retry..."
+                sleep 30
+                continue
+              fi
+              echo "Deployment failed after $MAX_ATTEMPTS attempts."
+              exit 1
+            fi
+
+            DEPLOY_SUCCESS=true
+            echo "=== Deployment successful on attempt $ATTEMPT ==="
+            break
+          done
+
+          if [ "$DEPLOY_SUCCESS" != "true" ]; then
+            echo "Deployment failed after $MAX_ATTEMPTS attempts."
+            exit 1
+          fi
+        id: deployment
