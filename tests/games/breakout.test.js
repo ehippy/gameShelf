@@ -657,6 +657,7 @@ describe('breakout', () => {
 
     it('update() does NOT set won flag on loss (lives reach 0)', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       breakoutModule.state.lives = 1
       breakoutModule.state.ball.y = breakoutModule.CANVAS_HEIGHT
       breakoutModule.update()
