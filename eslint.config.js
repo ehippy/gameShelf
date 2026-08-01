@@ -28,7 +28,7 @@ export default [
     rules: {
       ...vitest.configs.recommended.rules,
       'vitest/expect-expect': ['error', { assertFunctionNames: ['expect', '**.expect'] }],
-      'vitest/no-only-tests': 'error',
+      'vitest/no-focused-tests': 'error',
     },
     languageOptions: {
       globals: {
