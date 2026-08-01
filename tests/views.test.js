@@ -183,7 +183,8 @@ describe('AboutView', () => {
 
 describe('GamePage', () => {
   it('reads route params', () => {
-    expect(gamePageSrc).toContain('route.params.id') || expect(gamePageSrc).toContain('useRoute()')
+    expect(gamePageSrc).toContain('route.params.id')
+    expect(gamePageSrc).toContain('useRoute()')
   })
 
   it('looks up game in store', () => {
