@@ -108,11 +108,7 @@ onMounted(async () => {
       gameLogic.update()
       gameLogic.render(canvas)
 
-      // Check for game over to submit score
-      if (state.isGameOver && lastSnapshotScore !== state.score && state.score > 0) {
-        lastSnapshotScore = state.score
-        scoreStore.submitScore(slug, state.score)
-      }
+      submitScoreIfGameOver()
     }
     animFrameId = requestAnimationFrame(gameLoop)
   }
