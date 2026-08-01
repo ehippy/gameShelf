@@ -182,6 +182,71 @@ Each condition gets its own `expect()` call — either on separate lines within 
 
 **This trap has appeared repeatedly across `tests/components.test.js`, `tests/games/flappy-bird.test.js`, `tests/games/tetris.test.js`, `tests/games/snake.test.js`, and `tests/infrastructure.test.js`. If you see `||` between `expect()` calls, rewrite each as an independent assertion.**
 
+## Search / Filter UI Pattern
+
+This section documents the established pattern for UI-driven list filtering in gameShelf. It covers state ownership, UI binding, computed filtering, and logic rules. Future agents working on the game shelf listing, search, or category filtering should follow this pattern.
+
+**### Search / Filter UI Pattern**
+
+This section documents the established pattern for UI-driven list filtering in gameShelf. It covers state ownership, UI binding, computed filtering, and logic rules. Future agents working on the game shelf listing, search, or category filtering should follow this pattern.
+
+**1. State ownership**
+The `gameStore` (defined in `src/stores/gameStore.js`) owns two reactive state properties:
+- `searchQuery` — string, default `''` — the text the user typed into the search
+- `selectedCategory` — string, default `''` — the category the user selected
+
+These are plain reactive fields on the Pinia store — no mutations or actions are needed to read or write them. Any component that calls `useGameStore()` gets direct access.
+
+**2. UI bindings in AppHeader.vue**
+The `AppHeader` component (`src/components/AppHeader.vue`) renders two input elements and binds them directly to the store properties:
+- **Search input** — two-way binding via `:value="gameStore.searchQuery"` and `@input="gameStore.searchQuery = $event.target.value"`
+- **Category select** — two-way binding via `:value="gameStore.selectedCategory"` and `@change="gameStore.selectedCategory = $event.target.value"`
+
+When the user types or selects, the store property is updated immediately. Because Pinia reactivity is reactive, `HomeView`'s computed property reacts automatically.
+
+**3. Computed filtering in HomeView.vue**
+The `HomeView` component (`src/views/HomeView.vue`) defines a `filteredGames` computed property that chains two filters: text search and category. It iterates over `gameStore.catalog`, applying each filter only when its corresponding store property is non-empty. The template renders `<GameCard v-for="game in filteredGames">`.
+
+**4. Case-insensitive matching**
+All comparisons are case-insensitive using `.toLowerCase()` on both sides of the comparison. The original value of `gameStore.searchQuery` is preserved in the store unchanged; lowercasing is done only at comparison time.
+
+**5. AND/OR logic**
+- **Within text search (OR):** A game matches the search query if *any* of title, description, or category contains the query (case-insensitive).
+- **Between filters (AND):** If both `searchQuery` and `selectedCategory` are non-empty, a game must satisfy *both* filters. Each filter is applied sequentially.
+
+**Reference documentation**
+A dedicated reference document at `docs/SEARCH_FILTER_PATTERN.md` contains full code snippets and a pipeline summary diagram showing the complete data flow: User input → AppHeader → gameStore → HomeView (computed) → GameCard.
+
+**Tests**
+The file `tests/filtering.test.js` is the executable specification of this pattern, containing 25 tests (19 unit tests for filtering logic + 6 integration tests that mount HomeView and AppHeader against a real Pinia store). Run with `npm test`.
+
+**Current state note**
+The category options in `AppHeader.vue` are currently hardcoded. The pattern is fully compatible with future dynamic category generation from `gameStore.catalog`.
+
+**Pipeline summary**
+```
+User types/selects
+        │
+        ▼
+  AppHeader.vue
+    :value="gameStore.searchQuery"
+    @input → store.searchQuery = ...
+    :value="gameStore.selectedCategory"
+    @change → store.selectedCategory = ...
+        │
+        ▼
+  gameStore (Pinia store)
+    searchQuery: string, default ''
+    selectedCategory: string, default ''
+        │
+        ▼
+  HomeView.vue  ← computed(() => { … })
+    filteredGames (computed property)
+        │
+        ▼
+  GameCard × N  ← v-for="game in filteredGames"
+```
+
 ## Deployment Failure Convention
 
 ### Transient failures
