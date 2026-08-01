@@ -185,7 +185,7 @@ describe('GamePage', () => {
       }
       if (line.includes("import('../games/'")) {
         if (!guardFound) {
-          fail('Dynamic import occurs before knownGameSlugs guard')
+          throw new Error('Dynamic import occurs before knownGameSlugs guard')
         }
         importFound = true
       }
