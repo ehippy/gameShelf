@@ -369,6 +369,7 @@ describe('tetris', () => {
     it('lines counter increases after clearing', () => {
       if (!tetrisModule) return
       tetrisModule.init()
+      tetrisModule.handleKeydown('ArrowDown')
       for (let r of [17, 18, 19]) {
         for (let c = 0; c < 10; c++) {
           tetrisModule.state.board[r][c] = '#ff0000'
