@@ -204,17 +204,17 @@ describe('GamePage', () => {
 
   it('redirects to /404 for any unknown game slug', () => {
     // Any slug not validated by isValidSlug gets redirected to /404,
-    // preventing dynamic import errors for non-existent gameLogic.js.
+    // preventing module-not-found errors for non-existent gameLogic.js.
     expect(gamePageSrc).toContain("router.replace('/404')")
-    // Verify the guard runs BEFORE the dynamic import
+    // Verify the guard runs BEFORE the glob map lookup
     const guardMatch = gamePageSrc.match(/if\s*\(\s*!isValidSlug\(slug\)\s*\)\s*\{[\s\S]*?router\.replace\('\/404'\)/)
     expect(guardMatch).not.toBeNull()
-    // Verify the guard comes before the dynamic import
+    // Verify the guard comes before the glob lookup
     const guardIdx = gamePageSrc.indexOf('isValidSlug(slug)')
-    const importIdx = gamePageSrc.indexOf("import('../games/'")
+    const globIdx = gamePageSrc.indexOf('import.meta.glob')
     expect(guardIdx).toBeGreaterThan(-1)
-    expect(importIdx).toBeGreaterThan(-1)
-    expect(guardIdx).toBeLessThan(importIdx)
+    expect(globIdx).toBeGreaterThan(-1)
+    expect(guardIdx).toBeLessThan(globIdx)
   })
 
   it('blocks import for any slug not validated by isValidSlug', () => {
