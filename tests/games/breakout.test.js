@@ -463,6 +463,7 @@ describe('breakout', () => {
 
     it('update() resets ball to start position after losing a life', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       breakoutModule.state.ball.y = breakoutModule.CANVAS_HEIGHT
       breakoutModule.update()
       expect(breakoutModule.state.ball.x).toBe(123)
