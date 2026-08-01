@@ -45,6 +45,54 @@ The project provides the following helpers in `src/stores/scoreStore.js`:
 - **Runtime 404s** — passing an invalid slug to a dynamic import (e.g. `import(\`../games/${slug}/App.vue\`)`) resolves against a non-existent module path, producing a bundle error or 404 at runtime.
 - **Security issues (localStorage key injection)** — using a malformed or user-supplied slug as a storage key (e.g. `` `gamescore_${injected_key}` ``) can corrupt existing entries, allow cross-game data pollution, or even inject arbitrary keys into localStorage.
 
+### Game Initialization
+
+Games must not auto-start on page load. This convention was learned from the Flappy Bird auto-start bug, where the game began running immediately when the page loaded, leaving the user with no agency to control when the game started. The game should instead wait for the user's first input before beginning.
+
+The convention has three rules:
+
+1. **`init()` must not set `isPlaying = true`** — The initial state from `createInitialState()` must have `isPlaying: false`. `init()` should simply call `createInitialState()` and return the state; it must not override `isPlaying` to `true`.
+
+2. **`reset()` must not set `isPlaying = true`** — `reset()` must also preserve the non-playing initial state (`isPlaying: false`), ensuring a reset puts the game back in a waiting state rather than auto-restarting.
+
+3. **`handleKeydown()` must use three-way logic** — All keyboard input handling must distinguish between three states:
+   - **Not playing, not game over**: A keypress starts the game (`isPlaying = true`).
+   - **Game over**: A keypress resets the state and starts playing.
+   - **Already playing**: The key performs its normal game action.
+
+```js
+/**
+ * Handle keyboard input. Exported for GamePage to wire up.
+ * Three-way logic:
+ *   - Not playing + not game over → start the game
+ *   - Game over → reset state and start playing
+ *   - Already playing → perform normal action
+ */
+export function handleKeydown(key) {
+  if (!state) return
+
+  if (key === 'ArrowUp' || key === ' ') {
+    if (state.isGameOver) {
+      // Restart: reset state and start playing
+      state = createInitialState()
+      state.isPlaying = true
+      // ... game-specific setup ...
+    } else if (!state.isPlaying) {
+      // Start game on first input
+      state.isPlaying = true
+      // ... game-specific setup ...
+    } else {
+      // Already playing — perform normal action
+      // ... game-specific action ...
+    }
+  }
+}
+```
+
+**Consequence of violation:** If `isPlaying` is `true` from initialization, the game starts running immediately on page load with no user control, making the game unplayable (the user has no agency to control when the game starts).
+
+> **Testing tip:** When writing unit tests for game logic, always verify that `state.isPlaying` is `false` immediately after calling `init()` or `reset()`. Asserting `expect(state.isPlaying).toBe(false)` after initialization is a quick regression check against accidental auto-start.
+
 ## Testing Conventions
 
 This project uses **two separate test frameworks** that coexist in the same codebase: **Vitest** for unit/component tests and **Playwright** for E2E browser tests.
@@ -134,6 +182,67 @@ Each condition gets its own `expect()` call — either on separate lines within 
 
 **This trap has appeared repeatedly across `tests/components.test.js`, `tests/games/flappy-bird.test.js`, `tests/games/tetris.test.js`, `tests/games/snake.test.js`, and `tests/infrastructure.test.js`. If you see `||` between `expect()` calls, rewrite each as an independent assertion.**
 
+## Search / Filter UI Pattern
+
+This section documents the established pattern for UI-driven list filtering in gameShelf. It covers state ownership, UI binding, computed filtering, and logic rules. Future agents working on the game shelf listing, search, or category filtering should follow this pattern.
+
+**1. State ownership**
+The `gameStore` (defined in `src/stores/gameStore.js`) owns two reactive state properties:
+- `searchQuery` — string, default `''` — the text the user typed into the search
+- `selectedCategory` — string, default `''` — the category the user selected
+
+These are plain reactive fields on the Pinia store — no mutations or actions are needed to read or write them. Any component that calls `useGameStore()` gets direct access.
+
+**2. UI bindings in AppHeader.vue**
+The `AppHeader` component (`src/components/AppHeader.vue`) renders two input elements and binds them directly to the store properties:
+- **Search input** — two-way binding via `:value="gameStore.searchQuery"` and `@input="gameStore.searchQuery = $event.target.value"`
+- **Category select** — two-way binding via `:value="gameStore.selectedCategory"` and `@change="gameStore.selectedCategory = $event.target.value"`
+
+When the user types or selects, the store property is updated immediately. Because Pinia reactivity is reactive, `HomeView`'s computed property reacts automatically.
+
+**3. Computed filtering in HomeView.vue**
+The `HomeView` component (`src/views/HomeView.vue`) defines a `filteredGames` computed property that chains two filters: text search and category. It iterates over `gameStore.catalog`, applying each filter only when its corresponding store property is non-empty. The template renders `<GameCard v-for="game in filteredGames">`.
+
+**4. Case-insensitive matching**
+All comparisons are case-insensitive using `.toLowerCase()` on both sides of the comparison. The original value of `gameStore.searchQuery` is preserved in the store unchanged; lowercasing is done only at comparison time.
+
+**5. AND/OR logic**
+- **Within text search (OR):** A game matches the search query if *any* of title, description, or category contains the query (case-insensitive).
+- **Between filters (AND):** If both `searchQuery` and `selectedCategory` are non-empty, a game must satisfy *both* filters. Each filter is applied sequentially.
+
+**Reference documentation**
+A dedicated reference document at `docs/SEARCH_FILTER_PATTERN.md` contains full code snippets and a pipeline summary diagram showing the complete data flow: User input → AppHeader → gameStore → HomeView (computed) → GameCard.
+
+**Tests**
+The file `tests/filtering.test.js` is the executable specification of this pattern, containing 25 tests (19 unit tests for filtering logic + 6 integration tests that mount HomeView and AppHeader against a real Pinia store). Run with `npm test`.
+
+**Current state note**
+The category options in `AppHeader.vue` are currently hardcoded. The pattern is fully compatible with future dynamic category generation from `gameStore.catalog`.
+
+**Pipeline summary**
+```
+User types/selects
+        │
+        ▼
+  AppHeader.vue
+    :value="gameStore.searchQuery"
+    @input → store.searchQuery = ...
+    :value="gameStore.selectedCategory"
+    @change → store.selectedCategory = ...
+        │
+        ▼
+  gameStore (Pinia store)
+    searchQuery: string, default ''
+    selectedCategory: string, default ''
+        │
+        ▼
+  HomeView.vue  ← computed(() => { … })
+    filteredGames (computed property)
+        │
+        ▼
+  GameCard × N  ← v-for="game in filteredGames"
+```
+
 ## Deployment Failure Convention
 
 ### Transient failures
@@ -160,3 +269,10 @@ If all 3 attempts fail:
 ### Goal
 
 Avoid the pattern where correct code bounces indefinitely between the Deployer and PM due to flaky CI infrastructure. The Deployer should absorb transient failures, retry, and only escalate with evidence — never reject approved work solely because of infrastructure hiccups.
+
+## Last Reviewed
+
+- **Reviewed:** 2025-07-09
+- **Scope:** ESLint/anti-pattern documentation — confirmed current, no updates required.
+- **Verified sections:** Short-circuit assertions (||) anti-pattern (lines 160–183), Vitest/Playwright namespace conflict workaround (lines 133–158), game initialization conventions (lines 48–94), catalog field naming (lines 9–27), route slug validation (lines 31–46), search/filter UI pattern (lines 185–244), deployment failure conventions (lines 246–271).
+- **Excluded:** ESLint `node/recommended` dependency fix — one-off workaround, not a recurring project practice.
