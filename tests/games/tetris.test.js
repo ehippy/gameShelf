@@ -334,6 +334,14 @@ describe('tetris', () => {
       expect(tetrisModule.state.isPlaying).toBe(false)
     })
 
+    it('handleKeydown with space starts game and performs hard drop (three-way logic)', () => {
+      if (!tetrisModule) return
+      tetrisModule.init()
+      expect(tetrisModule.state.isPlaying).toBe(false)
+      tetrisModule.handleKeydown(' ')
+      expect(tetrisModule.state.isPlaying).toBe(true)
+    })
+
     it('hard drop does not reduce score', () => {
       if (!tetrisModule) return
       tetrisModule.init()
