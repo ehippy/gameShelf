@@ -289,6 +289,107 @@ describe('GamePage', () => {
     expect(gamePageSrc).toContain('submitScore')
   })
 
+  it('defines a submitScoreIfGameOver helper function', () => {
+    // The duplicate score submission logic must be extracted into a shared helper
+    const helperMatch = gamePageSrc.match(/const\s+submitScoreIfGameOver\s*=\s*\(\)\s*=>\s*\{/)
+    expect(helperMatch).not.toBeNull()
+  })
+
+  it('submitScoreIfGameOver contains the correct guard condition', () => {
+    // Extract the helper body — \n  } matches the 2-space-indented closing brace
+    const helperMatch = gamePageSrc.match(/const\s+submitScoreIfGameOver\s*=\s*\(\)\s*=>\s*\{([\s\S]*?)\n  \}\n/)
+    expect(helperMatch).not.toBeNull()
+    const helperBody = helperMatch[1]
+    // Must contain the exact condition
+    expect(helperBody).toContain('state.isGameOver')
+    expect(helperBody).toContain('lastSnapshotScore !== state.score')
+    expect(helperBody).toContain('state.score > 0')
+  })
+
+  it('submitScoreIfGameOver updates lastSnapshotScore and calls submitScore', () => {
+    const helperMatch = gamePageSrc.match(/const\s+submitScoreIfGameOver\s*=\s*\(\)\s*=>\s*\{([\s\S]*?)\n  \}\n/)
+    expect(helperMatch).not.toBeNull()
+    const helperBody = helperMatch[1]
+    expect(helperBody).toContain('lastSnapshotScore = state.score')
+    expect(helperBody).toContain('scoreStore.submitScore(slug, state.score)')
+  })
+
+  it('onKeyDown calls submitScoreIfGameOver instead of inline logic', () => {
+    // Extract the onKeyDown function body — \n  } matches the 2-space-indented closing brace
+    const onKeyMatch = gamePageSrc.match(/const onKeyDown = \(e\)\s*=>\s*\{([\s\S]*?)\n  \}\n/)
+    expect(onKeyMatch).not.toBeNull()
+    const onKeyBody = onKeyMatch[1]
+    // Must contain a call to the helper
+    expect(onKeyBody).toContain('submitScoreIfGameOver()')
+    // Must NOT contain inline score submission logic
+    expect(onKeyBody).not.toContain('if (state.isGameOver && lastSnapshotScore !== state.score && state.score > 0)')
+  })
+
+  it('gameLoop calls submitScoreIfGameOver instead of inline logic', () => {
+    // Extract the gameLoop function body — \n  } matches the 2-space-indented closing brace
+    const loopMatch = gamePageSrc.match(/const gameLoop = \(\)\s*=>\s*\{([\s\S]*?)\n  \}\n/)
+    expect(loopMatch).not.toBeNull()
+    const loopBody = loopMatch[1]
+    // Must contain a call to the helper
+    expect(loopBody).toContain('submitScoreIfGameOver()')
+    // Must NOT contain inline score submission logic
+    expect(loopBody).not.toContain('if (state.isGameOver && lastSnapshotScore !== state.score && state.score > 0)')
+  })
+
+  it('no duplicate inline score submission blocks remain in onKeyDown', () => {
+    // The inline block from onKeyDown should not contain lastSnapshotScore assignment
+    const onKeyMatch = gamePageSrc.match(/const onKeyDown = \(e\)\s*=>\s*\{([\s\S]*?)\n  \}\n/)
+    expect(onKeyMatch).not.toBeNull()
+    const onKeyBody = onKeyMatch[1]
+    // lastSnapshotScore should only be assigned inside the helper, not in onKeyDown
+    expect(onKeyBody).not.toContain('lastSnapshotScore = state.score')
+  })
+
+  it('no duplicate inline score submission blocks remain in gameLoop', () => {
+    const loopMatch = gamePageSrc.match(/const gameLoop = \(\)\s*=>\s*\{([\s\S]*?)\n  \}\n/)
+    expect(loopMatch).not.toBeNull()
+    const loopBody = loopMatch[1]
+    expect(loopBody).not.toContain('lastSnapshotScore = state.score')
+  })
+
+  it('onKeyDown retains key-prevention logic', () => {
+    const onKeyMatch = gamePageSrc.match(/const onKeyDown = \(e\)\s*=>\s*\{([\s\S]*?)\n  \}\n/)
+    expect(onKeyMatch).not.toBeNull()
+    const onKeyBody = onKeyMatch[1]
+    expect(onKeyBody).toContain('e.preventDefault()')
+    // Must handle the known arrow keys and space
+    expect(onKeyBody).toContain('ArrowLeft')
+    expect(onKeyBody).toContain('ArrowRight')
+  })
+
+  it('onKeyDown retains gameLogic.handleKeydown call', () => {
+    const onKeyMatch = gamePageSrc.match(/const onKeyDown = \(e\)\s*=>\s*\{([\s\S]*?)\n  \}\n/)
+    expect(onKeyMatch).not.toBeNull()
+    const onKeyBody = onKeyMatch[1]
+    expect(onKeyBody).toContain('gameLogic.handleKeydown(key)')
+  })
+
+  it('gameLoop retains gameLogic.update call', () => {
+    const loopMatch = gamePageSrc.match(/const gameLoop = \(\)\s*=>\s*\{([\s\S]*?)\n  \}\n/)
+    expect(loopMatch).not.toBeNull()
+    const loopBody = loopMatch[1]
+    expect(loopBody).toContain('gameLogic.update()')
+  })
+
+  it('gameLoop retains gameLogic.render call', () => {
+    const loopMatch = gamePageSrc.match(/const gameLoop = \(\)\s*=>\s*\{([\s\S]*?)\n  \}\n/)
+    expect(loopMatch).not.toBeNull()
+    const loopBody = loopMatch[1]
+    expect(loopBody).toContain('gameLogic.render')
+  })
+
+  it('gameLoop retains requestAnimationFrame call', () => {
+    const loopMatch = gamePageSrc.match(/const gameLoop = \(\)\s*=>\s*\{([\s\S]*?)\n  \}\n/)
+    expect(loopMatch).not.toBeNull()
+    const loopBody = loopMatch[1]
+    expect(loopBody).toContain('requestAnimationFrame')
+  })
+
   it('removes keydown listener on unmount', () => {
     expect(gamePageSrc).toContain('removeEventListener')
   })
