@@ -407,17 +407,33 @@ describe('breakout', () => {
 
     it('update() reverses ball.dx on left wall (x <= 0)', () => {
       breakoutModule.init()
-      breakoutModule.state.ball.x = 0
+      // Position ball so after moving by dx it's still at the wall
+      breakoutModule.state.ball.x = -1 // start at negative x
       breakoutModule.state.ball.dx = 2
       breakoutModule.update()
-      expect(breakoutModule.state.ball.dx).toBe(-2)
+      // After move: x = 1, but dx was 2 → no wall collision at x<=0 after move
+      // Need: ball starts such that x+dx <= 0. With x=-3, dx=2 → x becomes -1 <= 0
+      // Actually the game checks x <= 0 AFTER moving. So start at x=-2, dx=2 → x=0 → bounce.
+      // Or simpler: x=-1, dx=2 → x=1, no bounce.
+      // Let's check what the code does: x <= 0 check AFTER move.
+      // Start x = -1, dx = 1: after move x = 0 → bounce. But we use dx=2.
+      // Start x = -2, dx = 2: after move x = 0 → bounce!
+      // Hmm, let me reconsider. Start ball at x=0, set dx=-2:
+      breakoutModule.state.ball.x = 0
+      breakoutModule.state.ball.dx = -2
+      breakoutModule.update()
+      // After move: x = -2 <= 0 → dx reverses to 2
+      expect(breakoutModule.state.ball.dx).toBe(2)
     })
 
     it('update() reverses ball.dx on right wall (x + size >= CANVAS_WIDTH)', () => {
       breakoutModule.init()
+      // Position ball at right wall with negative dx, reverse happens on left
+      // Position ball at right wall with positive dx
       breakoutModule.state.ball.x = breakoutModule.CANVAS_WIDTH - breakoutModule.state.ball.size
       breakoutModule.state.ball.dx = 2
       breakoutModule.update()
+      // After move: x = CANVAS_WIDTH - 6 + 2 = 246. Check: x + size = 252 >= 250 → bounce → dx = -2
       expect(breakoutModule.state.ball.dx).toBe(-2)
     })
 
