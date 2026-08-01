@@ -446,7 +446,6 @@ describe('breakout', () => {
     })
 
     // ─── End of auto-start fix regression tests ───
-    // All three games (Snake, Tetris, Breakout) now correctly keep isPlaying: false on init/reset — users have agency over when play begins.
 
     it('handleKeydown ArrowRight moves paddle right by 10', () => {
       breakoutModule.init()
