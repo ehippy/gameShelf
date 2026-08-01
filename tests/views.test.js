@@ -136,6 +136,64 @@ describe('GamePage', () => {
     expect(gamePageMatch).not.toBeNull()
   })
 
+  it('checks for known game directories to prevent invalid imports', () => {
+    // GamePage should have a knownGameSlugs guard that checks
+    // the slug against a list of actual game directories before
+    // performing the dynamic import.
+    expect(gamePageSrc).toContain('knownGameSlugs')
+    expect(gamePageSrc).toContain('snake')
+    expect(gamePageSrc).toContain('tetris')
+    expect(gamePageSrc).toContain('breakout')
+    expect(gamePageSrc).toContain('flappy-bird')
+    expect(gamePageSrc).toContain('whack-a-mole')
+  })
+
+  it('redirects to /404 for minesweeper (catalog entry without gameLogic.js)', () => {
+    // minesweeper is in the catalog but has no src/games/minesweeper/ directory.
+    // The knownGameSlugs guard must catch this and redirect to /404.
+    expect(gamePageSrc).toContain("router.replace('/404')")
+    // Verify the guard runs BEFORE the dynamic import for slugs not in known list
+    const guardMatch = gamePageSrc.match(/if\s*\(\s*!knownGameSlugs\.includes\(slug\)\s*\)\s*\{[\s\S]*?router\.replace\('\/404'\)/)
+    expect(guardMatch).not.toBeNull()
+    // Verify the guard comes before the dynamic import
+    const guardIdx = gamePageSrc.indexOf('knownGameSlugs')
+    const importIdx = gamePageSrc.indexOf('import(\'../games/\'')
+    expect(guardIdx).toBeGreaterThan(-1)
+    expect(importIdx).toBeGreaterThan(-1)
+    expect(guardIdx).toBeLessThan(importIdx)
+  })
+
+  it('redirects to /404 for memory (catalog entry without gameLogic.js)', () => {
+    // memory is in the catalog but has no src/games/memory/ directory.
+    const guardMatch = gamePageSrc.match(/if\s*\(\s*!knownGameSlugs\.includes\(slug\)\s*\)\s*\{[\s\S]*?router\.replace\('\/404'\)/)
+    expect(guardMatch).not.toBeNull()
+    // Verify the guard comes before the dynamic import
+    const guardIdx = gamePageSrc.indexOf('knownGameSlugs')
+    const importIdx = gamePageSrc.indexOf('import(\'../games/\'')
+    expect(guardIdx).toBeLessThan(importIdx)
+  })
+
+  it('does NOT allow loading gameLogic for non-existent game directories', () => {
+    // The knownGameSlugs check must appear before any import('../games/' ... )
+    // to prevent 404 module errors for catalog entries like minesweeper/memory
+    const lines = gamePageSrc.split('\n')
+    let guardFound = false
+    let importFound = false
+    for (const line of lines) {
+      if (line.includes('knownGameSlugs') && !guardFound) {
+        guardFound = true
+      }
+      if (line.includes("import('../games/'")) {
+        if (!guardFound) {
+          fail('Dynamic import occurs before knownGameSlugs guard')
+        }
+        importFound = true
+      }
+    }
+    expect(importFound).toBe(true)
+    expect(guardFound).toBe(true)
+  })
+
   it('has game canvas', () => {
     expect(gamePageSrc).toContain('<canvas')
   })
