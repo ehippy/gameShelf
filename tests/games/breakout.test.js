@@ -408,6 +408,7 @@ describe('breakout', () => {
 
     it('update() reverses ball.dx on left wall (x <= 0)', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       // Position ball so after moving by dx it's still at the wall
       breakoutModule.state.ball.x = -1 // start at negative x
       breakoutModule.state.ball.dx = 2
