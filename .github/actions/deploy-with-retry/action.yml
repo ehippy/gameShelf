@@ -1,0 +1,42 @@
+name: 'Deploy to GitHub Pages with Retry'
+description: 'Uploads artifact and deploys to GitHub Pages with up to 3 attempts on transient failure'
+
+outputs:
+  page_url:
+    description: 'The URL of the deployed GitHub Pages site'
+    value: ${{ steps.deploy.outputs.page_url }}
+
+runs:
+  using: 'composite'
+  steps:
+    # ── Attempt 1 ──────────────────────────────────────────────
+    - name: Deploy (attempt 1)
+      id: deploy
+      uses: ./.github/actions/deploy-with-retry/_attempt
+      with:
+        attempt: 1
+
+    # ── Attempt 2 (only if attempt 1 failed) ──────────────────
+    - name: Deploy (attempt 2)
+      id: deploy
+      uses: ./.github/actions/deploy-with-retry/_attempt
+      if: steps.deploy.outcome == 'failure'
+      with:
+        attempt: 2
+
+    # ── Attempt 3 (only if attempt 2 failed) ──────────────────
+    - name: Deploy (attempt 3)
+      id: deploy
+      uses: ./.github/actions/deploy-with-retry/_attempt
+      if: steps.deploy.outcome == 'failure'
+      with:
+        attempt: 3
+
+    # ── Fail if all attempts exhausted ─────────────────────────
+    - name: All retry attempts failed
+      shell: bash
+      if: steps.deploy.outcome == 'failure'
+      run: |
+        echo "ERROR: Deployment failed after all 3 retry attempts."
+        echo "The last failure needs manual investigation."
+        exit 1
