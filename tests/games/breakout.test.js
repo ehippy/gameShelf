@@ -727,7 +727,7 @@ describe('breakout', () => {
       const brickRects = []
       const mockCanvas = {
         getContext: () => ({
-          fillRect: (x, y, w) => { brickRects.push({ x, y, w, h }) },
+          fillRect: (x, y, w, h) => { brickRects.push({ x, y, w, h }) },
           fillStyle: null,
           beginPath: () => {},
           arc: () => {},
