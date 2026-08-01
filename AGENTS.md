@@ -186,10 +186,6 @@ Each condition gets its own `expect()` call — either on separate lines within 
 
 This section documents the established pattern for UI-driven list filtering in gameShelf. It covers state ownership, UI binding, computed filtering, and logic rules. Future agents working on the game shelf listing, search, or category filtering should follow this pattern.
 
-**### Search / Filter UI Pattern**
-
-This section documents the established pattern for UI-driven list filtering in gameShelf. It covers state ownership, UI binding, computed filtering, and logic rules. Future agents working on the game shelf listing, search, or category filtering should follow this pattern.
-
 **1. State ownership**
 The `gameStore` (defined in `src/stores/gameStore.js`) owns two reactive state properties:
 - `searchQuery` — string, default `''` — the text the user typed into the search
