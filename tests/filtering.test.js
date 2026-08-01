@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import gamesCatalog from '../src/data/gamesCatalog.js'
+import { mount } from '@vue/test-utils'
+import { createPinia } from 'pinia'
+import HomeView from '../src/views/HomeView.vue'
+import AppHeader from '../src/components/AppHeader.vue'
 
 /**
  * Replicate the filteredGames computed from HomeView.vue
