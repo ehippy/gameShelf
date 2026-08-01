@@ -321,6 +321,7 @@ describe('flappy-bird', () => {
     it('pipes spawn after interval frames', () => {
       if (!flappyModule) return
       flappyModule.init()
+      flappyModule.handleKeydown('ArrowUp')
       expect(flappyModule.state.pipes.length).toBe(0)
       for (let i = 0; i < 8; i++) {
         flappyModule.update()
@@ -331,6 +332,7 @@ describe('flappy-bird', () => {
     it('score doesn\'t decrease', () => {
       if (!flappyModule) return
       flappyModule.init()
+      flappyModule.handleKeydown('ArrowUp')
       flappyModule.state.bird.col = 3
       flappyModule.state.pipes = [
         { x: 2.5, gapStart: 2, scored: false }
