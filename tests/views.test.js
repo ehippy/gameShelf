@@ -296,8 +296,8 @@ describe('GamePage', () => {
   })
 
   it('submitScoreIfGameOver contains the correct guard condition', () => {
-    // Extract the helper body
-    const helperMatch = gamePageSrc.match(/const\s+submitScoreIfGameOver\s*=\s*\(\)\s*=>\s*\{([\s\S]*?)\n\s*\}/)
+    // Extract the helper body — \n  } matches the 2-space-indented closing brace
+    const helperMatch = gamePageSrc.match(/const\s+submitScoreIfGameOver\s*=\s*\(\)\s*=>\s*\{([\s\S]*?)\n  \}\n/)
     expect(helperMatch).not.toBeNull()
     const helperBody = helperMatch[1]
     // Must contain the exact condition
@@ -307,7 +307,7 @@ describe('GamePage', () => {
   })
 
   it('submitScoreIfGameOver updates lastSnapshotScore and calls submitScore', () => {
-    const helperMatch = gamePageSrc.match(/const\s+submitScoreIfGameOver\s*=\s*\(\)\s*=>\s*\{([\s\S]*?)\n\s*\}/)
+    const helperMatch = gamePageSrc.match(/const\s+submitScoreIfGameOver\s*=\s*\(\)\s*=>\s*\{([\s\S]*?)\n  \}\n/)
     expect(helperMatch).not.toBeNull()
     const helperBody = helperMatch[1]
     expect(helperBody).toContain('lastSnapshotScore = state.score')
