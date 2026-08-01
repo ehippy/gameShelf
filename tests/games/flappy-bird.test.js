@@ -94,7 +94,7 @@ describe('flappy-bird', () => {
 
     // Green pipe color
     it('uses green pipe color #2ecc71', () => {
-      expect(flappySrc).toContain('2ecc71') || expect(flappySrc).toContain('#2ecc71')
+      expect(flappySrc).toContain('#2ecc71')
     })
 
     // Bird column
