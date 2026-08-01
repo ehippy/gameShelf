@@ -611,7 +611,7 @@ describe('.github/actions/deploy-with-retry/action.yml', () => {
 
   it('runs attempt 2 only if previous attempt failed', () => {
     expect(actionYml).toMatch(/attempt:\s*2/)
-    expect(actionYml).toContain("steps.deploy.outcome == 'failure'")
+    expect(actionYml).toContain("steps.deploy_1.outcome == 'failure'")
   })
 
   it('runs attempt 3 only if previous attempt failed', () => {
