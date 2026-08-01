@@ -362,6 +362,25 @@ describe('breakout', () => {
 
     // ─── Auto-start regression tests ───
 
+    it('init() ensures isPlaying is false for Snake', () => {
+      snakeModule.init()
+      expect(snakeModule.state.isPlaying).toBe(false)
+    })
+
+    it('reset() ensures isPlaying is false for Snake', () => {
+      snakeModule.init()
+      snakeModule.state.score = 100
+      snakeModule.reset()
+      expect(snakeModule.state.isPlaying).toBe(false)
+    })
+
+    it('handleKeydown starts Snake game when isPlaying is false', () => {
+      snakeModule.init()
+      expect(snakeModule.state.isPlaying).toBe(false)
+      snakeModule.handleKeydown('ArrowRight')
+      expect(snakeModule.state.isPlaying).toBe(true)
+    })
+
     it('handleKeydown ArrowLeft moves paddle left by 10', () => {
       breakoutModule.init()
       const before = breakoutModule.state.paddle.x
