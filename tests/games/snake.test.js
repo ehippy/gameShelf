@@ -460,6 +460,7 @@ describe('snake', () => {
 
     it('update() triggers game over on right wall collision', () => {
       snakeModule.init()
+      snakeModule.handleKeydown('ArrowRight') // start the game
       snakeModule.state.direction = 'right'
       // Move snake to position head at x=9 (last valid column)
       // Snake starts with head at (2,5). After 7 move-right moves, head is at (9,5).
