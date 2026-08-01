@@ -102,7 +102,8 @@ describe('HomeView', () => {
   })
 
   it('has tagline element', () => {
-    expect(homeViewSrc).toContain('class="tagline"') || expect(homeViewSrc).toContain('"tagline"')
+    expect(homeViewSrc).toContain('class="tagline"')
+    expect(homeViewSrc).toContain('"tagline"')
   })
 })
 
