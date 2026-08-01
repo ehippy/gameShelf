@@ -608,6 +608,7 @@ describe('breakout', () => {
 
     it('update() only destroys one brick per frame', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       // Destroy first brick
       const brick = breakoutModule.state.bricks[0]
       breakoutModule.state.ball.x = brick.x + 2
