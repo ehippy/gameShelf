@@ -288,21 +288,23 @@ describe('flappy-bird', () => {
       if (!flappyModule) return
       flappyModule.init()
       flappyModule.handleKeydown('ArrowUp')
-      expect(flappyModule.state.bird.velocity < 0).toBe(true)
+      expect(flappyModule.state.isPlaying).toBe(true)
+      expect(flappyModule.state.bird.velocity).toBe(-2.5)
     })
 
     it('flap velocity is ~-2.5', () => {
       if (!flappyModule) return
       flappyModule.init()
       flappyModule.handleKeydown('ArrowUp')
-      expect(flappyModule.state.bird.velocity <= -2.5).toBe(true)
+      expect(flappyModule.state.bird.velocity).toBe(-2.5)
     })
 
     it('space bar triggers flap', () => {
       if (!flappyModule) return
       flappyModule.init()
       flappyModule.handleKeydown(' ')
-      expect(flappyModule.state.bird.velocity < 0).toBe(true)
+      expect(flappyModule.state.isPlaying).toBe(true)
+      expect(flappyModule.state.bird.velocity).toBe(-2.5)
     })
 
     it('gravity pulls bird down over time', () => {
