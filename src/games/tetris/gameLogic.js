@@ -403,7 +403,20 @@ export function reset() {
  * Handle keyboard input. Exported for GamePage to wire up.
  */
 export function handleKeydown(key) {
-  if (!state || state.isGameOver || !state.isPlaying) return
+  if (!state) return
+
+  if (state.isGameOver) {
+    // Game over: reset and start playing
+    state = createInitialState()
+    state.bag = fillBag()
+    state.nextPiece = createPiece(getNextPieceType())
+    spawnPiece()
+    state.lastDropTime = performance.now()
+    state.isPlaying = true
+  } else if (!state.isPlaying) {
+    // Not playing: start playing
+    state.isPlaying = true
+  }
 
   switch (key) {
     case 'ArrowLeft':
