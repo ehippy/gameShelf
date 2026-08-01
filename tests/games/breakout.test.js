@@ -595,6 +595,7 @@ describe('breakout', () => {
 
     it('update() reverses dy on top/bottom collision with brick', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       const brick = breakoutModule.state.bricks[0]
       // Position ball to hit top of brick
       breakoutModule.state.ball.x = brick.x + 10
