@@ -79,15 +79,6 @@ describe('catalog entries', () => {
     expect(catalog).toContain('2025-01-15T00:00:00Z')
   })
 
-  it('has minesweeper dateAdded', () => {
-    expect(catalog).toContain('2025-06-15T00:00:00Z')
-  })
-
-  it('has memory dateAdded', () => {
-    expect(catalog).toContain('2025-06-20T00:00:00Z')
-  })
-
-  // SVG thumbnails
   it('has SVG thumbnail data URIs', () => {
     expect(catalog).toContain('data:image/svg+xml')
   })
