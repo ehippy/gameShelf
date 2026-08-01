@@ -233,6 +233,10 @@ function playAgain() {
   font-size: 1.5rem;
 }
 
+.game-over-overlay.won h2 {
+  color: #2ecc71;
+}
+
 .game-over-overlay p {
   color: #ffffff;
   font-size: 1.1rem;
