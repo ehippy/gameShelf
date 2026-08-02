@@ -203,7 +203,7 @@ function findDuples(records) {
 
         let foundValid = false
         for (const run of runs) {
-          if (run.length < 3) continue
+          if (run.length < 2) continue
           const assertionText = scopeRecords[run[0]].assertion
           const filePath = scopeRecords[run[0]].filePath
           const testNames = run.map(idx => scopeRecords[idx].testName)
@@ -225,12 +225,8 @@ function findDuples(records) {
             }
           }
 
-          // After deduplication, we need at least 3 records from different tests
-          // (two consecutive it() blocks sharing an assertion is always a
-          // legitimate coincidence — e.g. "init sets isPlaying=false" and
-          // "reset sets isPlaying=false" are different tests verifying the
-          // same invariant.)
-          if (dedupedRun.length < 3) continue
+          // After deduplication, we need at least 2 records from different tests
+          if (dedupedRun.length < 2) continue
 
           findings.push({
             filePath,
