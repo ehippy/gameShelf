@@ -2,5 +2,5 @@ FROM node:22-alpine
 RUN apk add --no-cache bash
 WORKDIR /workspace
 COPY package.json package-lock.json ./
-RUN npm ci --no-audit --no-fund --production=false
+RUN npm install --no-audit --no-fund
 COPY . .
