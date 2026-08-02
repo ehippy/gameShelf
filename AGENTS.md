@@ -305,8 +305,43 @@ Avoid the pattern where correct code bounces indefinitely between the Deployer a
 
 Card-level postmortems should only include friction/struggles details **when friction actually occurred** — during development, review, or deployment.
 
-- If a card completed cleanly (no revisions, no retries, no dead ends), **omit the struggles/friction section entirely** rather than writing boilerplate like "struggles: Nothing notable" or "friction: None."
-- When friction *did* occur, note the specific friction briefly — what went wrong, what you learned, and what to watch for next time.
+### No-friction cards
+
+When a card completed cleanly (no revisions, no retries, no dead ends), the postmortem **MUST NOT** include a struggles/friction section of any kind. This is a hard rule, not a suggestion.
+
+> **If the card completed cleanly, the postmortem ends after the summary line — no struggles section at all.**
+
+**Forbidden phrases:** The following boilerplate must never appear in a clean postmortem:
+- "Nothing notable"
+- "None"
+- "N/A"
+- "No friction"
+- "Clean card"
+- "No struggles"
+- Any variation of the above
+
+If you see any of these in a generated postmortem, strip the entire line. The struggles section should be entirely absent — not replaced with a placeholder of any kind.
+
+**Correct — clean card (no struggles section at all):**
+```
+Summary: Updated the game catalog slug field for all entries from the deprecated `id` field to `slug`. Refactored the game store to use `slug` consistently and updated all component bindings in HomeView and GameCard. All 25 filtering tests pass.
+```
+
+*(That's the entire postmortem. Nothing after the summary line.)*
+
+**Correct — friction occurred (struggles section present):**
+```
+Summary: Refactored the Flappy Bird game logic to fix the gravity inconsistency. Replaced the hardcoded acceleration value with a configurable constant.
+
+Struggles: The gravity value was inconsistent between init() and the game loop — init() used 0.5 but the loop used 0.6. Spent a cycle tracing this through the state transitions before noticing the mismatch. Added a pre-commit check that verifies gravity is referenced from a single constant.
+```
+
+*(When friction *did* occur, include a `Struggles:` section that briefly describes what went wrong, what was learned, and what to watch for next time.)*
+
+### When friction *did* occur
+
+When friction *did* occur (revisions, retries, dead ends), note the specific friction briefly — what went wrong, what you learned, and what to watch for next time.
+
 - This convention keeps postmortems concise and meaningful: friction is documented when it exists, omitted when it doesn't.
 
 ## Last Reviewed
