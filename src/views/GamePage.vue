@@ -42,7 +42,7 @@ const router = useRouter()
 const gameStore = useGameStore()
 const scoreStore = useScoreStore()
 
-const game = computed(() => gameStore.getGameBySlug(route.params.id))
+const game = computed(() => gameStore.getGameBySlug(route.params.slug))
 
 const gameCanvas = ref(null)
 const canvasWrapper = ref(null)
