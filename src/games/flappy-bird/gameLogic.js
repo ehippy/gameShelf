@@ -141,9 +141,7 @@ export function init() {
  * Update the Flappy Bird game state. Called ~60fps.
  */
 export function update() {
-  if (!state || state.isGameOver || !state.isPlaying) {
-    return
-  }
+  if (shouldSkipUpdate(state)) return
 
   state.framesPlayed++
 
