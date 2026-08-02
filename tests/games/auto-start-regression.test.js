@@ -172,4 +172,68 @@ describe('Auto-start regression: all three games', () => {
     breakoutModule.handleKeydown('ArrowRight')
     expect(breakoutModule.state.isPlaying).toBe(true)
   })
+
+  it('Snake init → game over → reset → play cycle works end-to-end', () => {
+    snakeModule.init()
+    expect(snakeModule.state.isPlaying).toBe(false)
+    expect(snakeModule.state.isGameOver).toBe(false)
+    expect(snakeModule.state.score).toBe(0)
+
+    // Start playing
+    snakeModule.handleKeydown('ArrowRight')
+    expect(snakeModule.state.isPlaying).toBe(true)
+
+    // Simulate game over
+    snakeModule.state.isGameOver = true
+    snakeModule.state.score = 42
+
+    // Reset via keypress
+    snakeModule.handleKeydown('ArrowUp')
+    expect(snakeModule.state.isPlaying).toBe(true)
+    expect(snakeModule.state.isGameOver).toBe(false)
+    expect(snakeModule.state.score).toBe(0)
+    expect(snakeModule.state.direction).toBe('up')
+  })
+
+  it('Tetris init → game over → reset → play cycle works end-to-end', () => {
+    tetrisModule.init()
+    expect(tetrisModule.state.isPlaying).toBe(false)
+    expect(tetrisModule.state.isGameOver).toBe(false)
+    expect(tetrisModule.state.score).toBe(0)
+
+    // Start playing
+    tetrisModule.handleKeydown('ArrowLeft')
+    expect(tetrisModule.state.isPlaying).toBe(true)
+
+    // Simulate game over
+    tetrisModule.state.isGameOver = true
+    tetrisModule.state.score = 777
+
+    // Reset via keypress
+    tetrisModule.handleKeydown('ArrowDown')
+    expect(tetrisModule.state.isPlaying).toBe(true)
+    expect(tetrisModule.state.isGameOver).toBe(false)
+    expect(tetrisModule.state.score).toBe(0)
+  })
+
+  it('Breakout init → game over → reset → play cycle works end-to-end', () => {
+    breakoutModule.init()
+    expect(breakoutModule.state.isPlaying).toBe(false)
+    expect(breakoutModule.state.isGameOver).toBe(false)
+    expect(breakoutModule.state.score).toBe(0)
+
+    // Start playing
+    breakoutModule.handleKeydown('ArrowRight')
+    expect(breakoutModule.state.isPlaying).toBe(true)
+
+    // Simulate game over
+    breakoutModule.state.isGameOver = true
+    breakoutModule.state.score = 333
+
+    // Reset via keypress
+    breakoutModule.handleKeydown('ArrowLeft')
+    expect(breakoutModule.state.isPlaying).toBe(true)
+    expect(breakoutModule.state.isGameOver).toBe(false)
+    expect(breakoutModule.state.score).toBe(0)
+  })
 })
