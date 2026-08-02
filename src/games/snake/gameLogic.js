@@ -253,13 +253,20 @@ export function reset() {
 export function handleKeydown(key) {
   if (!state) return
 
+  const oppositeDirections = {
+    'up': 'down', 'down': 'up', 'left': 'right', 'right': 'left'
+  }
+
+  // Valid game keys that should start the game
+  const validKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']
+
   if (state.isGameOver) {
     // Game over: reset and start playing
     state = createInitialState()
     spawnFood()
-    state.isPlaying = true
-  } else if (!state.isPlaying) {
-    // Not playing yet: start playing
+    // Fall through to handle direction change
+  } else if (!state.isPlaying && validKeys.includes(key)) {
+    // Not playing yet with a valid key: start playing
     state.isPlaying = true
   }
 
