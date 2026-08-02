@@ -23,6 +23,9 @@ import { join, dirname } from 'node:path'
 // Snake: createInitialState isPlaying:false, init/reset no override, three-way handleKeydown
 // Tetris: init/reset no override (createInitialState already false), three-way handleKeydown
 // Breakout: createInitialState isPlaying:false, init/reset no override, three-way handleKeydown
+//
+// Implementation scope: snake/gameLogic.js, tetris/gameLogic.js, breakout/gameLogic.js
+// Test scope: tests/games/auto-start-regression.test.js, tests/games/snake.test.js
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = join(__dirname, '..', '..')
 
