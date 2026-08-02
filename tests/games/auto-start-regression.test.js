@@ -145,6 +145,12 @@ describe('Auto-start regression: all three games', () => {
     expect(snakeModule.state.isPlaying).toBe(false)
   })
 
+  it('Snake handleKeydown ignores Tab key without starting', () => {
+    snakeModule.init()
+    snakeModule.handleKeydown('Tab')
+    expect(snakeModule.state.isPlaying).toBe(false)
+  })
+
   it('Breakout handleKeydown ignores non-arrow keys without starting', () => {
     breakoutModule.init()
     breakoutModule.handleKeydown('Enter')
