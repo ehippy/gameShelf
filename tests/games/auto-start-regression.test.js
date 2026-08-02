@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import { join, dirname } from 'node:path'
 
-const root = import.meta.url
-  ? new URL('.', import.meta.url).pathname
-  : ''
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const root = join(__dirname, '..', '..')
 
 // --- Cross-game auto-start regression tests ---
 // Ensures Snake, Tetris, and Breakout all comply with the
@@ -15,13 +17,9 @@ describe('Auto-start regression: all three games', () => {
   let breakoutModule = null
 
   beforeEach(async () => {
-    const snakePath = new URL('../src/games/snake/gameLogic.js', root).pathname
-    const tetrisPath = new URL('../src/games/tetris/gameLogic.js', root).pathname
-    const breakoutPath = new URL('../src/games/breakout/gameLogic.js', root).pathname
-
-    snakeModule = await import(snakePath)
-    tetrisModule = await import(tetrisPath)
-    breakoutModule = await import(breakoutPath)
+    snakeModule = await import(join(root, 'src', 'games', 'snake', 'gameLogic.js'))
+    tetrisModule = await import(join(root, 'src', 'games', 'tetris', 'gameLogic.js'))
+    breakoutModule = await import(join(root, 'src', 'games', 'breakout', 'gameLogic.js'))
   })
 
   // --- init() auto-start checks ---
