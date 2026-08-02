@@ -59,7 +59,7 @@ let lastSnapshotScore = null
 let resizeObserver = null
 
 onMounted(async () => {
-  const slug = route.params.id
+  const slug = route.params.slug
   const game = gameStore.getGameBySlug(slug)
   if (!game) {
     router.replace('/404')
