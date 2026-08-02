@@ -123,12 +123,12 @@ describe('GamePage slug guard uses isValidSlug', () => {
     expect(guardMatch).not.toBeNull()
   })
 
-  it('isValidSlug guard runs before dynamic import', () => {
+  it('isValidSlug guard runs before import.meta.glob lookup', () => {
     const guardIdx = gamePageSrc.indexOf('isValidSlug(slug)')
-    const importIdx = gamePageSrc.indexOf("import('../games/'")
+    const lookupIdx = gamePageSrc.indexOf('gameModules[')
     expect(guardIdx).toBeGreaterThan(-1)
-    expect(importIdx).toBeGreaterThan(-1)
-    expect(guardIdx).toBeLessThan(importIdx)
+    expect(lookupIdx).toBeGreaterThan(-1)
+    expect(guardIdx).toBeLessThan(lookupIdx)
   })
 })
 
@@ -204,17 +204,17 @@ describe('GamePage', () => {
 
   it('redirects to /404 for any unknown game slug', () => {
     // Any slug not validated by isValidSlug gets redirected to /404,
-    // preventing dynamic import errors for non-existent gameLogic.js.
+    // preventing module-not-found errors for non-existent gameLogic.js.
     expect(gamePageSrc).toContain("router.replace('/404')")
-    // Verify the guard runs BEFORE the dynamic import
+    // Verify the guard runs BEFORE the glob map lookup
     const guardMatch = gamePageSrc.match(/if\s*\(\s*!isValidSlug\(slug\)\s*\)\s*\{[\s\S]*?router\.replace\('\/404'\)/)
     expect(guardMatch).not.toBeNull()
-    // Verify the guard comes before the dynamic import
+    // Verify the guard comes before the glob lookup
     const guardIdx = gamePageSrc.indexOf('isValidSlug(slug)')
-    const importIdx = gamePageSrc.indexOf("import('../games/'")
+    const lookupIdx = gamePageSrc.indexOf('gameModules[')
     expect(guardIdx).toBeGreaterThan(-1)
-    expect(importIdx).toBeGreaterThan(-1)
-    expect(guardIdx).toBeLessThan(importIdx)
+    expect(lookupIdx).toBeGreaterThan(-1)
+    expect(guardIdx).toBeLessThan(lookupIdx)
   })
 
   it('blocks import for any slug not validated by isValidSlug', () => {
@@ -222,31 +222,64 @@ describe('GamePage', () => {
     // slugs without actual game directories.
     const guardMatch = gamePageSrc.match(/if\s*\(\s*!isValidSlug\(slug\)\s*\)\s*\{[\s\S]*?router\.replace\('\/404'\)/)
     expect(guardMatch).not.toBeNull()
-    // Verify the guard comes before the dynamic import
+    // Verify the guard comes before the glob lookup
     const guardIdx = gamePageSrc.indexOf('isValidSlug(slug)')
-    const importIdx = gamePageSrc.indexOf("import('../games/'")
-    expect(guardIdx).toBeLessThan(importIdx)
+    const lookupIdx = gamePageSrc.indexOf('gameModules[')
+    expect(guardIdx).toBeLessThan(lookupIdx)
   })
 
   it('does NOT allow loading gameLogic for non-existent game directories', () => {
-    // The isValidSlug check must appear before any import('../games/' ... )
+    // The isValidSlug check must appear before import.meta.glob
     // to prevent module-not-found errors for non-existent gameLogic.js.
     const lines = gamePageSrc.split('\n')
     let guardFound = false
-    let importFound = false
+    let globFound = false
     for (const line of lines) {
       if (line.includes('isValidSlug') && !guardFound) {
         guardFound = true
       }
-      if (line.includes("import('../games/'")) {
+      if (line.includes('import.meta.glob')) {
         if (!guardFound) {
-          throw new Error('Dynamic import occurs before isValidSlug guard')
+          throw new Error('import.meta.glob occurs before isValidSlug guard')
         }
-        importFound = true
+        globFound = true
       }
     }
-    expect(importFound).toBe(true)
+    expect(globFound).toBe(true)
     expect(guardFound).toBe(true)
+  })
+
+  it('glob pattern resolves to src/games relative to project root', () => {
+    // The glob pattern is './src/games/*/gameLogic.js' — Vite resolves
+    // glob patterns relative to the project root. Vite docs explicitly
+    // state: "Glob patterns are resolved relative to the project root."
+    // The pattern must start with './' or '/' to be valid.
+    const globMatch = gamePageSrc.match(/import\.meta\.glob\('([^']+)'/)
+    expect(globMatch).not.toBeNull()
+    const pattern = globMatch[1]
+    expect(pattern).toContain('./src/games/')
+    expect(pattern).toContain('gameLogic.js')
+  })
+
+  it('does NOT contain string-concatenated dynamic import pattern', () => {
+    // The old broken pattern 'import(\'../games/\' + slug + \'/gameLogic.js\')'
+    // must not remain anywhere in the file.
+    expect(gamePageSrc).not.toMatch(/import\s*\(\s*['"`]\.\.\/games\//)
+    expect(gamePageSrc).not.toMatch(/\+\s*slug\s*\+\s*['"`]\//)
+  })
+
+  it('modulePath lookup key matches glob key format', () => {
+    // The modulePath used for lookup must match the glob's key format.
+    // The glob pattern is './src/games/*/gameLogic.js' — resolved relative to
+    // the project root, as Vite expects. The lookup key must use the same path.
+    const globMatch = gamePageSrc.match(/import\.meta\.glob\('([^']+)'/)
+    expect(globMatch).not.toBeNull()
+    const globPattern = globMatch[1]
+    const modulePathMatch = gamePageSrc.match(/`(\.\/src\/games\/\$\{slug\}\/gameLogic\.js)`/)
+    expect(modulePathMatch).not.toBeNull()
+    const modulePath = modulePathMatch[1]
+    // The modulePath key must start with './src/games/'
+    expect(modulePath).toMatch(/^\.\/src\/games\//)
   })
 
   it('has game canvas', () => {
