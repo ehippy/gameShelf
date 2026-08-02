@@ -172,7 +172,7 @@ describe('AboutView', () => {
 
 describe('GamePage', () => {
   it('reads route params', () => {
-    expect(gamePageSrc).toContain('route.params.id')
+    expect(gamePageSrc).toContain('route.params.slug')
     expect(gamePageSrc).toContain('useRoute()')
   })
 
