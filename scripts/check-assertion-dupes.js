@@ -99,20 +99,24 @@ function parseFile(filePath) {
       }
       if (/\bexpect\s*\(.*?\)\s*\.toBe\s*\(/.test(line)) {
         // Extract the expect() subject (everything between expect( and ).toBe)
-        // This is what matters for detecting copy-paste: the same subject
-        // duplicated with a stale expected value.
+        // and the full trimmed line for reporting.
         const subjectMatch = line.match(/expect\s*\((.*?)\)\s*\.toBe\s*\(/)
         if (subjectMatch) {
           const subject = subjectMatch[1].trim()
+          // Extract the expected value (everything between .toBe( and the
+          // closing paren + any trailing whitespace).  This captures
+          // hardcoded literals like 0, false, 'Easy' — and also expressions
+          // like before + 10 or scoreBefore.
+          const valueMatch = line.match(/\.toBe\s*\(([\s\S]*?)\)\s*$/)
+          const expectedValue = valueMatch ? valueMatch[1].trim() : ''
           records.push({
             filePath,
             describeScope: [...describeStack],
             testName: currentItName,
-            // Use {subject} as the key — two tests that independently
-            // check different subjects with the same .toBe() value are
-            // a legitimate coincidence, not a copy-paste error.
-            dupeKey: subject,
-            // Also store the full trimmed line for reporting.
+            // A copy-paste dupe is when two consecutive it() blocks share the
+            // same expect-subject AND the same hardcoded expected value.
+            // If either differs, it's not a copy-paste error.
+            dupeKey: subject + '|||' + expectedValue,
             assertion: trimmed,
           })
         }
