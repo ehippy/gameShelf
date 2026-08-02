@@ -132,7 +132,8 @@ function parseFile(filePath) {
 
 /**
  * Group records by describe scope within a file, then scan for consecutive
- * it blocks that share identical assertions.
+ * it blocks that share identical expect subjects (copy-pasted assertions
+ * with stale expected values).
  */
 function findDuples(records) {
   const findings = []
@@ -149,10 +150,10 @@ function findDuples(records) {
     let i = 0
     while (i < scopeRecords.length) {
       const currentRec = scopeRecords[i]
-      // Look ahead for consecutive records with matching assertions
+      // Look ahead for consecutive records with matching dupeKey
       const matchedIndices = [i]
       for (let j = i + 1; j < scopeRecords.length; j++) {
-        if (scopeRecords[j].assertion === currentRec.assertion) {
+        if (scopeRecords[j].dupeKey === currentRec.dupeKey) {
           matchedIndices.push(j)
         } else {
           break // only consecutive matches
@@ -160,9 +161,9 @@ function findDuples(records) {
       }
 
       if (matchedIndices.length >= 2) {
-        // Collect all runs of consecutive identical assertions
-        // matchedIndices are all positions with the same assertion
-        // They may not be contiguous due to different assertion lines in between
+        // Collect all runs of consecutive identical dupeKeys
+        // matchedIndices are all positions with the same dupeKey
+        // They may not be contiguous due to different dupeKey lines in between
         // We want runs that are truly consecutive (no gaps)
         const runs = [[matchedIndices[0]]]
         for (let m = 1; m < matchedIndices.length; m++) {
