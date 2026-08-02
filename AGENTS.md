@@ -309,8 +309,7 @@ Card-level postmortems should only include friction/struggles details **when fri
 
 ## Last Reviewed
 
-
 - **Reviewed:** 2026-01-04
 - **Scope:** Game Initialization convention — confirmed accurate following auto-start fix across Snake, Tetris, and Breakout.
 - **Verified sections:** Short-circuit assertions (||) anti-pattern (lines 183-206), game initialization conventions (lines 71-117).
-- **Excluded:** None.- **Last Reviewed Update:** Confirmed per 2026-01-04 card request.. (card request 2026-01-04)
+- **Excluded:** None.
