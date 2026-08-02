@@ -99,24 +99,27 @@ function parseFile(filePath) {
       }
       if (/\bexpect\s*\(.*?\)\s*\.toBe\s*\(/.test(line)) {
         // Extract the expect() subject (everything between expect( and ).toBe)
-        // and the full trimmed line for reporting.
         const subjectMatch = line.match(/expect\s*\((.*?)\)\s*\.toBe\s*\(/)
         if (subjectMatch) {
           const subject = subjectMatch[1].trim()
-          // Extract the expected value (everything between .toBe( and the
-          // closing paren + any trailing whitespace).  This captures
-          // hardcoded literals like 0, false, 'Easy' — and also expressions
-          // like before + 10 or scoreBefore.
+          // Extract the expected value portion for dupe detection.
+          // A real copy-paste error occurs when two different it() blocks
+          // have the same subject AND the same hardcoded expected value.
+          // We exclude trivial values (false, true, 0, '') from dupe-key
+          // construction because they appear in hundreds of legitimate tests.
           const valueMatch = line.match(/\.toBe\s*\(([\s\S]*?)\)\s*$/)
           const expectedValue = valueMatch ? valueMatch[1].trim() : ''
+          // Only include the value in the dupeKey when it's a non-trivial
+          // constant.  Trivial booleans and zero/false-like values appear
+          // across hundreds of legitimate tests and always produce false
+          // positives when used as the sole duping criterion.
+          const isTrivial = /^[fF]alse$|^[tT]rue$|^0$|''$|""$/.test(expectedValue)
+          const dupeKey = isTrivial ? subject : subject + '|||' + expectedValue
           records.push({
             filePath,
             describeScope: [...describeStack],
             testName: currentItName,
-            // A copy-paste dupe is when two consecutive it() blocks share the
-            // same expect-subject AND the same hardcoded expected value.
-            // If either differs, it's not a copy-paste error.
-            dupeKey: subject + '|||' + expectedValue,
+            dupeKey,
             assertion: trimmed,
           })
         }
