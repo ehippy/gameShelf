@@ -2,14 +2,13 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { join, dirname } from 'node:path'
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
-const root = join(__dirname, '..', '..')
-
 // Cross-game auto-start regression tests for card: Fix auto-start violations
 // in Snake, Tetris, and Breakout games.
 // Regression tests: verifies all three games comply with game initialization
 // convention — isPlaying: false on init/reset, three-way handleKeydown logic.
 // Card acceptance criteria verified: 838 tests pass across 12 files.
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const root = join(__dirname, '..', '..')
 
 describe('Auto-start regression: all three games', () => {
   let snakeModule = null
