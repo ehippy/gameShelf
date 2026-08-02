@@ -1,4 +1,5 @@
 FROM node:22-alpine
+# Last reviewed 2026-01-04 — AGENTS.md Last Reviewed updated
 RUN apk add --no-cache bash
 WORKDIR /workspace
 COPY package.json package-lock.json ./
