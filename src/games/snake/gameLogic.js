@@ -285,5 +285,4 @@ export function handleKeydown(key) {
 
 // ─── Export the state object for GamePage to read ───
 // Auto-start fix: isPlaying stays false until user input via handleKeydown()
-// Verified by tests/games/auto-start-regression.test.js — auto-start fix verified
 export { state }
