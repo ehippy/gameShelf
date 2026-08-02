@@ -216,8 +216,8 @@ describe('router/index.js', () => {
     expect(router).toContain("path: '/about'")
   })
 
-  it('has /game/:id route', () => {
-    expect(router).toContain("path: '/game/:id'")
+  it('has /game/:slug route', () => {
+    expect(router).toContain("path: '/game/:slug'")
   })
 
   it('has /highscores route', () => {
