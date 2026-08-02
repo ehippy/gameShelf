@@ -9,9 +9,6 @@ const root = join(__dirname, '..', '..')
 // in Snake, Tetris, and Breakout games.
 // Verifies all three games correctly refuse to auto-start on init/reset
 // and use three-way handleKeydown logic to start on user input.
-//
-// Regression tests added as part of the auto-start fix to ensure
-// games respect player agency — no game starts running immediately on page load.
 
 describe('Auto-start regression: all three games', () => {
   let snakeModule = null
