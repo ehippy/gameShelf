@@ -106,9 +106,7 @@ export function init() {
  * Update the Snake game state. Called ~60fps.
  */
 export function update() {
-  if (!state || state.isGameOver || !state.isPlaying) {
-    return
-  }
+  if (shouldSkipUpdate(state)) return
 
   state.framesPlayed++
 
