@@ -253,10 +253,6 @@ export function reset() {
 export function handleKeydown(key) {
   if (!state) return
 
-  const oppositeDirections = {
-    'up': 'down', 'down': 'up', 'left': 'right', 'right': 'left'
-  }
-
   // Valid game keys that should start the game / trigger game-over reset
   const validKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']
 
@@ -270,6 +266,7 @@ export function handleKeydown(key) {
     state.isPlaying = true
   }
 
+  // Normal direction change (also executed after game-over reset)
   switch (key) {
     case 'ArrowUp':
       if (state.direction !== 'down') state.direction = 'up'
