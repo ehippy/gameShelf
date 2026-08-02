@@ -180,18 +180,6 @@ function createInitialState(preserveDifficulty) {
   return initial
 }
 
-function getHighScore() {
-  try {
-    const raw = localStorage.getItem('gamescore_whack-a-mole')
-    if (!raw) return 0
-    const scores = JSON.parse(raw)
-    if (!Array.isArray(scores) || scores.length === 0) return 0
-    return Math.max(...scores.map(s => s.score))
-  } catch {
-    return 0
-  }
-}
-
 // ─── Grid Helpers ─────────────────────────────────────────────────────────────
 
 function cellCenter(col, row) {
