@@ -327,4 +327,4 @@ Struggles: The gravity value was inconsistent between init() and the game loop �
 
 - **Reviewed:** 2026-08-02
 - **Scope:** Card-Level Postmortems section restructuring — removed tool-specific instructions, eliminated redundant subsection, reframed forbidden phrases as human writing convention.
-- **Verified sections:** Card-Level Postmortems section (lines 304–326, post-cleanup).
+- **Verified sections:** Card-Level Postmortems section (lines 304–324, post-cleanup).
