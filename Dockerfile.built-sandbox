@@ -2,5 +2,5 @@ FROM node:22-alpine
 RUN apk add --no-cache bash
 WORKDIR /workspace
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm install --silent 2>&1 | tail -1
 COPY . .
