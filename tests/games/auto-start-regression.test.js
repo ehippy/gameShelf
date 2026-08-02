@@ -6,9 +6,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = join(__dirname, '..', '..')
 
 // Cross-game auto-start regression tests for card: Fix auto-start violations
-// in Snake, Tetris, and Breakout games.
-// Verifies all three games correctly refuse to auto-start on init/reset
-// and use three-way handleKeydown logic to start on user input.
+// in Snake, Tetris, and Breakout games. Verifies no game auto-starts on init/reset.
 
 describe('Auto-start regression: all three games', () => {
   let snakeModule = null
