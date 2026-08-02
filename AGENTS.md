@@ -300,6 +300,8 @@ If all 3 attempts fail:
 Avoid the pattern where correct code bounces indefinitely between the Deployer and PM due to flaky CI infrastructure. The Deployer should absorb transient failures, retry, and only escalate with evidence — never reject approved work solely because of infrastructure hiccups.
 ^$
 ## Card-Level Postmortems
+
+Card-level postmortems should only include friction
 ^$
 Card-level postmortems should only include friction/struggles details **when friction actually occurred** — during development, review, or deployment.
 ^$
