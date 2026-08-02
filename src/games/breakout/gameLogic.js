@@ -320,4 +320,5 @@ export function handleKeydown(key) {
 // Tetris: arrow keys + space start game
 // Breakout: only arrow keys start game
 // Regression verified by tests/games/auto-start-regression.test.js
+//
 export { state }
