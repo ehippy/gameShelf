@@ -1134,5 +1134,29 @@ describe('breakout', () => {
       expect(breakoutModule.CANVAS_WIDTH).toBe(250)
       expect(breakoutModule.CANVAS_HEIGHT).toBe(250)
     })
+
+    it('all three games: update() is no-op after init (before any keypress)', () => {
+      const snakeMod = await import(join(root, 'src', 'games', 'snake', 'gameLogic.js'))
+      const tetrisMod = await import(join(root, 'src', 'games', 'tetris', 'gameLogic.js'))
+
+      // Snake: framesPlayed should stay 0
+      snakeMod.init()
+      snakeMod.update()
+      snakeMod.update()
+      expect(snakeMod.state.framesPlayed).toBe(0)
+      expect(snakeMod.state.isPlaying).toBe(false)
+
+      // Tetris: lastDropTime was set but isPlaying is false so update is a no-op
+      tetrisMod.init()
+      const dropTime = tetrisMod.state.lastDropTime
+      tetrisMod.update()
+      tetrisMod.update()
+      expect(tetrisMod.state.lastDropTime).toBe(dropTime)
+      expect(tetrisMod.state.isPlaying).toBe(false)
+
+      // Breakout: framesPlayed should stay 0
+      expect(breakoutModule.state.framesPlayed).toBe(0)
+      expect(breakoutModule.state.isPlaying).toBe(false)
+    })
   })
 })
