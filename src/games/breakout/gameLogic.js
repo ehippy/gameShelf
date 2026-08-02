@@ -319,5 +319,5 @@ export function handleKeydown(key) {
 // Snake: only arrow keys start game, other keys are no-ops
 // Tetris: arrow keys + space start game
 // Breakout: only arrow keys start game
-// Verified by tests/games/auto-start-regression.test.js
+// Regression verified by tests/games/auto-start-regression.test.js
 export { state }
