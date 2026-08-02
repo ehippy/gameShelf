@@ -7,7 +7,7 @@
 
 // ─── Imports ──────────────────────────────────────────────────────────────────
 
-import { renderGameOver } from '../shared/renderHelpers.js'
+import { renderGameOver, shouldSkipUpdate } from '../shared/renderHelpers.js'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
