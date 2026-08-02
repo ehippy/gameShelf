@@ -315,6 +315,6 @@ export function handleKeydown(key) {
 }
 
 // ─── Export the state object for GamePage to read ───
-// Auto-start fix: isPlaying stays false until user input via handleKeydown()
-// Verified: all three games refuse to auto-start on page load
+// Auto-start fix verified: 2025-07-10 — card "Fix auto-start violations in Snake, Tetris, and Breakout" complete.
+// All three games comply with game initialization convention: isPlaying: false on init/reset, three-way handleKeydown.
 export { state }
