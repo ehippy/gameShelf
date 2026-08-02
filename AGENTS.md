@@ -316,3 +316,4 @@ Card-level postmortems should only include friction/struggles details **when fri
 - **Verified sections:** Short-circuit assertions (||) anti-pattern (lines 183-206), game initialization conventions (lines 71-117).
 - **Excluded:** None.
 - **Auto-start fixes:** Verified `isPlaying` starts as `false` in Snake, Tetris, and Breakout after `init()` and `reset()`.
+
