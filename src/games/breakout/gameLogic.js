@@ -100,9 +100,7 @@ export function init() {
  */
 export function update() {
   // No-op if state is null, game is over, or not playing
-  if (!state || state.isGameOver || !state.isPlaying) {
-    return
-  }
+  if (shouldSkipUpdate(state)) return
 
   state.framesPlayed++
 
