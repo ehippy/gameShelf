@@ -98,33 +98,40 @@ function parseFile(filePath) {
         continue // skip .not.* assertions
       }
       if (/\bexpect\s*\(.*?\)\s*\.toBe\s*\(/.test(line)) {
-        // Extract the expect() subject (everything between expect( and ).toBe)
+        // Extract the expected value portion for dupe detection.
+        // A real copy-paste error occurs when two different it() blocks
+        // have the *exact same expect-subject* AND the *exact same
+        // hardcoded expected value*.  We treat these conditions
+        // independently — the subject key only uses the subject portion
+        // (not the value), while the value key only applies to
+        // non-trivial constants.
         const subjectMatch = line.match(/expect\s*\((.*?)\)\s*\.toBe\s*\(/)
         if (subjectMatch) {
           const subject = subjectMatch[1].trim()
-          // Extract the expected value portion for dupe detection.
-          // A real copy-paste error occurs when two different it() blocks
-          // have the same subject AND the same hardcoded expected value.
           const valueMatch = line.match(/\.toBe\s*\(([\s\S]*?)\)\s*$/)
           const expectedValue = valueMatch ? valueMatch[1].trim() : ''
-          // Normalize reference-like values: variables ending in "Before",
-          // "before", "start", or "end" that appear in "before X" expressions
-          // are treated as dynamic (not copy-paste errors).  Also treat
-          // expressions like "before - 10" or "before + 10" as dynamic.
+          // Normalize dynamic / reference-like values to null so they
+          // never produce a false-positive dupe match.
           let keyExpectedValue = expectedValue
-          // Normalize "nameBefore" patterns (e.g. scoreBefore, dyBefore)
+          // Variables ending in "Before" or "before" (e.g. scoreBefore)
           if (/^(.+)(Before|before)$/.test(keyExpectedValue)) {
             keyExpectedValue = null
           }
-          // Normalize "before + N" / "before - N" patterns
+          // Expressions like "before + 10" / "before - 1"
           if (/^before[ \t]*([+\-][ \t]*[\d.]+)$/.test(keyExpectedValue)) {
             keyExpectedValue = null
           }
-          // Exclude trivial booleans and zero from dupe-key construction
-          if (keyExpectedValue !== null && /^(fF)alse$|^(tT)rue$|^0$/.test(keyExpectedValue)) {
+          // Trivial literals that appear in hundreds of legitimate tests
+          if (keyExpectedValue !== null && /^[fF]alse$|^0$|^[tT]rue$/.test(keyExpectedValue)) {
             keyExpectedValue = null
           }
-          const dupeKey = keyExpectedValue === null ? subject : subject + '|||' + keyExpectedValue
+          // Only include value in the dupe-key when it's a non-trivial
+          // constant (string literal, number, expression) — this catches
+          // the classic copy-paste mistake of duplicating an entire
+          // expect()-line with a stale expected value.
+          const dupeKey = keyExpectedValue !== null
+            ? subject + '|||' + keyExpectedValue
+            : subject
           records.push({
             filePath,
             describeScope: [...describeStack],
