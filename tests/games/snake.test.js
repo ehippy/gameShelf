@@ -355,6 +355,13 @@ describe('snake', () => {
       expect(snakeModule.state.direction).toBe('up')
     })
 
+    it('handleKeydown ArrowLeft is rejected when facing right (reverse direction)', () => {
+      snakeModule.init()
+      expect(snakeModule.state.direction).toBe('right')
+      snakeModule.handleKeydown('ArrowLeft')
+      expect(snakeModule.state.direction).toBe('right')
+    })
+
     it('handleKeydown resets state and starts playing when isGameOver is true', () => {
       snakeModule.init()
       snakeModule.state.isGameOver = true
