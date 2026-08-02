@@ -305,10 +305,6 @@ Avoid the pattern where correct code bounces indefinitely between the Deployer a
 
 Card-level postmortems should only include friction/struggles details **when friction actually occurred** — during development, review, or deployment.
 
-### No-friction cards
-
-When a card completed cleanly (no revisions, no retries, no dead ends), the postmortem simply ends after the summary line — no struggles/friction section at all. Avoid padding the postmortem with boilerplate substitutes: "Nothing notable", "None", "N/A", "No friction", "Clean card", "No struggles", or any variation of the above. The struggles section should be entirely absent — not replaced with a placeholder of any kind.
-
 **Correct — clean card (no struggles section at all):**
 ```
 Summary: Updated the game catalog slug field for all entries from the deprecated `id` field to `slug`. Refactored the game store to use `slug` consistently and updated all component bindings in HomeView and GameCard. All 25 filtering tests pass.
@@ -330,4 +326,3 @@ Struggles: The gravity value was inconsistent between init() and the game loop �
 - **Reviewed:** 2026-08-02
 - **Scope:** Card-Level Postmortems section restructuring — removed tool-specific instructions, eliminated redundant subsection, reframed forbidden phrases as human writing convention.
 - **Verified sections:** Card-Level Postmortems section (lines 304–326, post-cleanup).
-- **Excluded:** ESLint `node/recommended` dependency fix — one-off workaround, not a recurring project practice.
