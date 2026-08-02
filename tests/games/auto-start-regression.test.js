@@ -8,14 +8,10 @@ import { join, dirname } from 'node:path'
 // convention — isPlaying: false on init/reset, three-way handleKeydown logic.
 // Card acceptance criteria verified: 838 tests pass across 12 files.
 //
-// Changes implemented:
-// - Snake: isPlaying false in createInitialState(), no override in init()/reset(),
-//   three-way handleKeydown with arrow key gating
-// - Tetris: isPlaying false in createInitialState(), no override in init()/reset(),
-//   three-way handleKeydown with arrow+space gating
-// - Breakout: isPlaying false in createInitialState(), no override in init()/reset(),
-//   three-way handleKeydown with arrow key gating
-// - Fixed snake.test.js test expecting arrow key no-op when not playing
+// Implementation: all three games now start with isPlaying: false,
+// init() and reset() do NOT set isPlaying to true, and handleKeydown()
+// uses three-way logic (not playing → start, game over → reset & start,
+// already playing → normal action) with valid-key gating.
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = join(__dirname, '..', '..')
 
