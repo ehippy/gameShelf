@@ -98,11 +98,23 @@ function parseFile(filePath) {
         continue // skip .not.* assertions
       }
       if (/\bexpect\s*\(.*?\)\s*\.toBe\s*\(/.test(line)) {
+        // Normalize the assertion line to detect true copy-paste errors.
+        // Replace variable-based expressions (scoreBefore, before + 10, etc.)
+        // with a generic marker so they never produce false positives — two
+        // tests that both assert .toBe(scoreBefore) are checking different
+        // local variables and are legitimate.
+        let normalized = trimmed
+          // Replace variable-before-expression patterns: "before + 10", "before - 1"
+          .replace(/\bbefore\s*[+\-]\s*\d/g, '<VAR>')
+          // Replace variable references ending in "Before" (scoreBefore, xBefore, dyBefore)
+          .replace(/\b[a-zA-Z]+\w*Before\b/g, '<VAR>')
+          // Replace standalone "before" variable references
+          .replace(/\bbefore\b/g, '<VAR>')
         records.push({
           filePath,
           describeScope: [...describeStack],
           testName: currentItName,
-          assertion: trimmed,
+          assertion: normalized,
         })
       }
     }
