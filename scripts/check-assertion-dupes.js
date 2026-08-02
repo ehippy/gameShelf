@@ -105,16 +105,26 @@ function parseFile(filePath) {
           // Extract the expected value portion for dupe detection.
           // A real copy-paste error occurs when two different it() blocks
           // have the same subject AND the same hardcoded expected value.
-          // We exclude trivial values (false, true, 0, '') from dupe-key
-          // construction because they appear in hundreds of legitimate tests.
           const valueMatch = line.match(/\.toBe\s*\(([\s\S]*?)\)\s*$/)
           const expectedValue = valueMatch ? valueMatch[1].trim() : ''
-          // Only include the value in the dupeKey when it's a non-trivial
-          // constant.  Trivial booleans and zero/false-like values appear
-          // across hundreds of legitimate tests and always produce false
-          // positives when used as the sole duping criterion.
-          const isTrivial = /^[fF]alse$|^[tT]rue$|^0$|''$|""$/.test(expectedValue)
-          const dupeKey = isTrivial ? subject : subject + '|||' + expectedValue
+          // Normalize reference-like values: variables ending in "Before",
+          // "before", "start", or "end" that appear in "before X" expressions
+          // are treated as dynamic (not copy-paste errors).  Also treat
+          // expressions like "before - 10" or "before + 10" as dynamic.
+          let keyExpectedValue = expectedValue
+          // Normalize "nameBefore" patterns (e.g. scoreBefore, dyBefore)
+          if (/^(.+)(Before|before)$/.test(keyExpectedValue)) {
+            keyExpectedValue = null
+          }
+          // Normalize "before + N" / "before - N" patterns
+          if (/^before[ \t]*([+\-][ \t]*[\d.]+)$/.test(keyExpectedValue)) {
+            keyExpectedValue = null
+          }
+          // Exclude trivial booleans and zero from dupe-key construction
+          if (keyExpectedValue !== null && /^(fF)alse$|^(tT)rue$|^0$/.test(keyExpectedValue)) {
+            keyExpectedValue = null
+          }
+          const dupeKey = keyExpectedValue === null ? subject : subject + '|||' + keyExpectedValue
           records.push({
             filePath,
             describeScope: [...describeStack],
