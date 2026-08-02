@@ -1135,7 +1135,7 @@ describe('breakout', () => {
       expect(breakoutModule.CANVAS_HEIGHT).toBe(250)
     })
 
-    it('all three games: update() is no-op after init (before any keypress)', () => {
+    it('all three games: update() is no-op after init (before any keypress)', async () => {
       const snakeMod = await import(join(root, 'src', 'games', 'snake', 'gameLogic.js'))
       const tetrisMod = await import(join(root, 'src', 'games', 'tetris', 'gameLogic.js'))
 
