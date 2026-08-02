@@ -262,5 +262,5 @@ if (deduped.length > 0) {
   }
 }
 
-// Always exit 0 - this is a warning, not a blocker
-process.exit(0)
+// Exit non-zero on dupes to block the commit
+process.exit(deduped.length > 0 ? 1 : 0)
