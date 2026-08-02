@@ -310,11 +310,9 @@ Card-level postmortems should only include friction/struggles details **when fri
 - This convention keeps postmortems concise and meaningful: friction is documented when it exists, omitted when it doesn't.
 
 ## Last Reviewed
-- **Request:** Update Last Reviewed section with today's date and note confirming Game Initialization convention accuracy.
 
 - **Reviewed:** 2026-01-04
 - **Scope:** Game Initialization convention — confirmed accurate following auto-start fix across Snake, Tetris, and Breakout.
 - **Verified sections:** Short-circuit assertions (||) anti-pattern (lines 183-206), game initialization conventions (lines 71-117).
 - **Excluded:** None.
-- **Auto-start fixes:** Verified `isPlaying` starts as `false` in Snake, Tetris, and Breakout after `init()` and `reset()`.
 
