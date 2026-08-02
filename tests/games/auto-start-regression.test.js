@@ -7,15 +7,6 @@ import { join, dirname } from 'node:path'
 // Regression tests: verifies all three games comply with game initialization
 // convention — isPlaying: false on init/reset, three-way handleKeydown logic.
 // Card acceptance criteria verified: 838 tests pass across 12 files.
-//
-// Implementation summary:
-// - Snake: isPlaying false in createInitialState(), init()/reset() no override,
-//   three-way handleKeydown with arrow key gating
-// - Tetris: isPlaying false in createInitialState(), init()/reset() no override,
-//   three-way handleKeydown with arrow+space gating
-// - Breakout: isPlaying false in createInitialState(), init()/reset() no override,
-//   three-way handleKeydown with arrow key gating
-// - Fixed broken snake.test.js test for reverse-direction rejection
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = join(__dirname, '..', '..')
 
