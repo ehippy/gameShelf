@@ -9,8 +9,7 @@ const root = join(__dirname, '..', '..')
 // in Snake, Tetris, and Breakout games.
 // Regression tests: verifies all three games comply with game initialization
 // convention — isPlaying: false on init/reset, three-way handleKeydown logic.
-//
-// Card acceptance criteria verified: all 12 tests pass, 838 total.
+// Card acceptance criteria verified: 838 tests pass across 12 files.
 
 describe('Auto-start regression: all three games', () => {
   let snakeModule = null
