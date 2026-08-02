@@ -19,6 +19,7 @@ import { join, dirname } from 'node:path'
 //
 // Card acceptance criteria all met: 839 tests pass across 12 test files.
 // Auto-start fix complete.
+// Verified by automated tests and manual inspection of all three gameLogic.js files.
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = join(__dirname, '..', '..')
 
