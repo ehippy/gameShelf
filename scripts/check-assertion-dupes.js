@@ -175,9 +175,25 @@ function findDuples(records) {
           // (two identical assertions within the same it() block is legitimate)
           if (new Set(testNames).size < 2) continue
 
+          // Additionally, ensure that the run does not contain two records from
+          // the same it() block — those are same-block dupes, not cross-test dupes.
+          // We collect one record per unique it() block, preserving order.
+          const seenTests = new Set()
+          const dedupedRun = []
+          for (const idx of run) {
+            const tName = scopeRecords[idx].testName
+            if (!seenTests.has(tName)) {
+              seenTests.add(tName)
+              dedupedRun.push(idx)
+            }
+          }
+
+          // After deduplication, we need at least 2 records from different tests
+          if (dedupedRun.length < 2) continue
+
           findings.push({
             filePath,
-            testNames,
+            testNames: dedupedRun.map(idx => scopeRecords[idx].testName),
             assertion: assertionText,
           })
 
