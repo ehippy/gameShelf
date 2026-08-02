@@ -660,6 +660,7 @@ function renderMenu(ctx) {
   ctx.font = '12px sans-serif'
   ctx.fillText('Click/tap a difficulty to start', CANVAS_W / 2, btnY + btnH + 20)
   ctx.fillText('Use mouse, touch, or gamepad', CANVAS_W / 2, btnY + btnH + 40)
+  ctx.fillText('Arrow keys to navigate, Space to play', CANVAS_W / 2, btnY + btnH + 60)
 
   // Draw gamepad hint if connected
   if (state.gamepadConnected) {
