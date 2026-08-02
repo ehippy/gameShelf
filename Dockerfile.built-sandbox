@@ -2,5 +2,5 @@ FROM node:22-alpine
 RUN apk add --no-cache bash
 WORKDIR /workspace
 COPY . .
-RUN npm install
+RUN npm install 2>&1
 ENV PATH="/workspace/node_modules/.bin:${PATH}"
