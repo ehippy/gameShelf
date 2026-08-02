@@ -10,6 +10,10 @@
 import { renderGameOver } from '../shared/renderHelpers.js'
 import { useScoreStore } from '../../stores/scoreStore.js'
 
+// ─── Store Instance ───────────────────────────────────────────────────────────
+
+const scoreStore = useScoreStore()
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const COLS = 4
