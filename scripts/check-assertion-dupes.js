@@ -63,8 +63,10 @@ function parseFile(filePath) {
     const describeMatch = trimmed.match(
       /describe\s*\(\s*['"](.+?)['"]/
     )
+    // Detect it() blocks - handle names with nested quotes by matching
+    // the last quote before the closing paren + args
     const itMatch = trimmed.match(
-      /it\s*\(\s*['"](.+?)['"]/
+      /it\s*\(\s*['"]([\s\S]*?)['"]\s*,/
     )
 
     if (describeMatch && !inItBlock) {
