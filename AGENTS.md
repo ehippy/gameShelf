@@ -293,6 +293,14 @@ If all 3 attempts fail:
 
 Avoid the pattern where correct code bounces indefinitely between the Deployer and PM due to flaky CI infrastructure. The Deployer should absorb transient failures, retry, and only escalate with evidence — never reject approved work solely because of infrastructure hiccups.
 
+## Card-Level Postmortems
+
+Card-level postmortems should only include friction/struggles details **when friction actually occurred** — during development, review, or deployment.
+
+- If a card completed cleanly (no revisions, no retries, no dead ends), **omit the struggles/friction section entirely** rather than writing boilerplate like "struggles: Nothing notable" or "friction: None."
+- When friction *did* occur, note the specific friction briefly — what went wrong, what you learned, and what to watch for next time.
+- This convention keeps postmortems concise and meaningful: friction is documented when it exists, omitted when it doesn't.
+
 ## Last Reviewed
 
 - **Reviewed:** 2025-07-15
