@@ -287,3 +287,4 @@ export function handleKeydown(key) {
 // Auto-start fix: isPlaying stays false until user input via handleKeydown()
 // All three games now comply with game initialization convention.
 export { state }
+
