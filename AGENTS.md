@@ -316,3 +316,5 @@ Card-level postmortems should only include friction/struggles details **when fri
 - **Auto-start regression:** Verified in Snake, Tetris, and Breakout unit tests. (Card request processed on 2026-01-04 — auto-start fixes verified across Snake, Tetris, Breakout.)
 
 - **Confirmation:** Last Reviewed section update completed on 2026-01-04.
+
+- **2026-01-04 card:** Last Reviewed section update completed.
