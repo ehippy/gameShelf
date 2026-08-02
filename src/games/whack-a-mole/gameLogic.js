@@ -539,12 +539,16 @@ export function render(canvas) {
       scoreY: CANVAS_H / 2 - 40,
       showRestartPrompt: false,
       lines: [
-        {
-          text: `High Score: ${getHighScore()}`,
-          color: '#ffd700',
-          font: 'bold 16px sans-serif',
-          y: CANVAS_H / 2 - 15
-        },
+        (() => {
+          const scores = scoreStore.getScores('whack-a-mole')
+          const highScore = scores.length > 0 ? Math.max(...scores.map(s => s.score)) : 0
+          return {
+            text: `High Score: ${highScore}`,
+            color: '#ffd700',
+            font: 'bold 16px sans-serif',
+            y: CANVAS_H / 2 - 15
+          }
+        })(),
         {
           text: `Highest Combo: x${state.highestCombo}`,
           color: '#ffffff',
