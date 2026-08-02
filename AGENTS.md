@@ -306,5 +306,5 @@ Card-level postmortems should only include friction/struggles details **when fri
 - **Reviewed:** 2026-01-04
 - **Scope:** Game Initialization convention — confirmed accurate following auto-start fix across Snake, Tetris, and Breakout.
 - **Verified sections:** Short-circuit assertions (||) anti-pattern (lines 160–183), Vitest/Playwright namespace conflict workaround (lines 133–158), Vite dynamic import convention (new section before 'Game Initialization'), game initialization conventions (lines 71–117), catalog field naming (lines 9–27), route slug validation (lines 31–46), search/filter UI pattern (lines 185–244), deployment failure conventions (lines 246–294).
-- **Excluded:** ESLint `node/recommended` (updated) dependency fix — one-off workaround, not a recurring project practice.
+- **Excluded:** ESLint `node/recommended` dependency fix — one-off workaround, not a recurring project practice.
 
