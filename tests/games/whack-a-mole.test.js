@@ -443,9 +443,9 @@ describe('whack-a-mole', () => {
       whackModule.update()
       expect(whackModule.state.isGameOver).toBe(true)
       whackModule.handleKeydown('ArrowDown')
-      expect(whackModule.state.cursorRow).toBe(1)
+      expect(whackModule.state.cursorRow).toBe(2)
       whackModule.handleKeydown('ArrowUp')
-      expect(whackModule.state.cursorRow).toBe(0)
+      expect(whackModule.state.cursorRow).toBe(1)
     })
 
     // ─── AC6: Space in gameplay calls whackCell(cursorCol, cursorRow) ───
