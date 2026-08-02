@@ -13,7 +13,7 @@ import path from 'node:path'
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
-/** Expand a glob-like `tests/**/*.test.js` pattern into file paths. */
+/** Expand a glob-like tests/**/*.test.js pattern into file paths. */
 function findTestFiles(rootDir) {
   const results = []
   const patternBase = path.join(rootDir, 'tests')
