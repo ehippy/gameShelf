@@ -316,8 +316,4 @@ export function handleKeydown(key) {
 
 // ─── Export the state object for GamePage to read ───
 // Auto-start fix: isPlaying stays false until user input via handleKeydown()
-// Snake: only arrow keys start game, other keys are no-ops
-// Tetris: arrow keys + space start game
-// Breakout: only arrow keys start game
-// Verified by tests/games/auto-start-regression.test.js
 export { state }
