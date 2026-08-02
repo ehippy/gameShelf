@@ -530,6 +530,8 @@ export function render(canvas) {
     renderGameplay(ctx)
   } else if (state.isGameOver) {
     renderGameplay(ctx)
+    const scores = scoreStore.getScores('whack-a-mole')
+    const highScore = scores.length > 0 ? Math.max(...scores.map(s => s.score)) : 0
     renderGameOver(ctx, state, CANVAS_W, CANVAS_H, {
       overlayColor: 'rgba(0, 0, 0, 0.7)',
       titleY: CANVAS_H / 2 - 80,
