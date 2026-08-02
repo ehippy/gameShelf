@@ -7,7 +7,7 @@
 
 // ─── Imports ──────────────────────────────────────────────────────────────────
 
-import { renderGameOver } from '../shared/renderHelpers.js'
+import { renderGameOver, shouldSkipUpdate } from '../shared/renderHelpers.js'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -99,10 +99,7 @@ export function init() {
  * Update the Breakout game state. Called ~60fps.
  */
 export function update() {
-  // No-op if state is null, game is over, or not playing
-  if (!state || state.isGameOver || !state.isPlaying) {
-    return
-  }
+  if (shouldSkipUpdate(state)) return
 
   state.framesPlayed++
 

@@ -504,12 +504,11 @@ describe('breakout', () => {
 
     // --- update() no-op tests ---
 
-    it('update() is a no-op when state is null (verified by source code)', () => {
-      // Since state is an ESM binding, we can't set breakoutModule.state = null
-      // to affect the internal variable after init has been called.
-      // Instead, verify the guard exists in source and test via the isPlaying=false path.
+    it('update() is a no-op when state is null (verified by shared guard)', () => {
+      // The guard is now centralized in shouldSkipUpdate() in renderHelpers.js.
+      // The functional no-op behavior is tested via isPlaying=false and isGameOver=true below.
       const src = readFileSync(breakoutPath, 'utf-8')
-      expect(src).toContain('!state')
+      expect(src).toContain('shouldSkipUpdate')
     })
 
     it('update() is a no-op when isGameOver is true', () => {
