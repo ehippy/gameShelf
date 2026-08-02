@@ -8,6 +8,7 @@
 // ─── Imports ──────────────────────────────────────────────────────────────────
 
 import { renderGameOver } from '../shared/renderHelpers.js'
+import { useScoreStore } from '../../stores/scoreStore.js'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
