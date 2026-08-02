@@ -1,0 +1,178 @@
+import { describe, it, expect, beforeEach } from 'vitest'
+
+const root = import.meta.url
+  ? new URL('.', import.meta.url).pathname
+  : ''
+
+// --- Cross-game auto-start regression tests ---
+// Ensures Snake, Tetris, and Breakout all comply with the
+// game initialization convention: isPlaying must be false on init/reset,
+// and handleKeydown must use three-way logic to start the game.
+
+describe('Auto-start regression: all three games', () => {
+  let snakeModule = null
+  let tetrisModule = null
+  let breakoutModule = null
+
+  beforeEach(async () => {
+    const snakePath = new URL('../src/games/snake/gameLogic.js', root).pathname
+    const tetrisPath = new URL('../src/games/tetris/gameLogic.js', root).pathname
+    const breakoutPath = new URL('../src/games/breakout/gameLogic.js', root).pathname
+
+    snakeModule = await import(snakePath)
+    tetrisModule = await import(tetrisPath)
+    breakoutModule = await import(breakoutPath)
+  })
+
+  // --- init() auto-start checks ---
+
+  it('Snake init() does not auto-start: isPlaying is false', () => {
+    snakeModule.init()
+    expect(snakeModule.state.isPlaying).toBe(false)
+    expect(snakeModule.state.isGameOver).toBe(false)
+  })
+
+  it('Tetris init() does not auto-start: isPlaying is false', () => {
+    tetrisModule.init()
+    expect(tetrisModule.state.isPlaying).toBe(false)
+    expect(tetrisModule.state.isGameOver).toBe(false)
+  })
+
+  it('Breakout init() does not auto-start: isPlaying is false', () => {
+    breakoutModule.init()
+    expect(breakoutModule.state.isPlaying).toBe(false)
+    expect(breakoutModule.state.isGameOver).toBe(false)
+  })
+
+  // --- reset() auto-start checks ---
+
+  it('Snake reset() does not auto-start: isPlaying is false', () => {
+    snakeModule.init()
+    snakeModule.state.score = 42
+    snakeModule.state.isPlaying = true
+    snakeModule.reset()
+    expect(snakeModule.state.isPlaying).toBe(false)
+    expect(snakeModule.state.isGameOver).toBe(false)
+  })
+
+  it('Tetris reset() does not auto-start: isPlaying is false', () => {
+    tetrisModule.init()
+    tetrisModule.state.score = 42
+    tetrisModule.state.isPlaying = true
+    tetrisModule.reset()
+    expect(tetrisModule.state.isPlaying).toBe(false)
+    expect(tetrisModule.state.isGameOver).toBe(false)
+  })
+
+  it('Breakout reset() does not auto-start: isPlaying is false', () => {
+    breakoutModule.init()
+    breakoutModule.state.score = 42
+    breakoutModule.state.isPlaying = true
+    breakoutModule.reset()
+    expect(breakoutModule.state.isPlaying).toBe(false)
+    expect(breakoutModule.state.isGameOver).toBe(false)
+  })
+
+  // --- handleKeydown three-way logic checks ---
+
+  it('Snake handleKeydown starts game when isPlaying is false (three-way)', () => {
+    snakeModule.init()
+    expect(snakeModule.state.isPlaying).toBe(false)
+    snakeModule.handleKeydown('ArrowRight')
+    expect(snakeModule.state.isPlaying).toBe(true)
+    expect(snakeModule.state.direction).toBe('right')
+  })
+
+  it('Tetris handleKeydown starts game when isPlaying is false (three-way)', () => {
+    tetrisModule.init()
+    expect(tetrisModule.state.isPlaying).toBe(false)
+    tetrisModule.handleKeydown('ArrowLeft')
+    expect(tetrisModule.state.isPlaying).toBe(true)
+  })
+
+  it('Breakout handleKeydown starts game when isPlaying is false (three-way)', () => {
+    breakoutModule.init()
+    expect(breakoutModule.state.isPlaying).toBe(false)
+    breakoutModule.handleKeydown('ArrowRight')
+    expect(breakoutModule.state.isPlaying).toBe(true)
+    expect(breakoutModule.state.paddle.x).toBe(115)
+  })
+
+  // --- Game-over reset checks ---
+
+  it('Snake handleKeydown resets and starts when game over (three-way)', () => {
+    snakeModule.init()
+    snakeModule.state.isGameOver = true
+    snakeModule.state.score = 99
+    expect(snakeModule.state.isPlaying).toBe(false)
+    snakeModule.handleKeydown('ArrowUp')
+    expect(snakeModule.state.isPlaying).toBe(true)
+    expect(snakeModule.state.isGameOver).toBe(false)
+    expect(snakeModule.state.score).toBe(0)
+    expect(snakeModule.state.direction).toBe('up')
+  })
+
+  it('Tetris handleKeydown resets and starts when game over (three-way)', () => {
+    tetrisModule.init()
+    tetrisModule.state.isGameOver = true
+    tetrisModule.state.score = 999
+    expect(tetrisModule.state.isPlaying).toBe(false)
+    tetrisModule.handleKeydown('ArrowLeft')
+    expect(tetrisModule.state.isPlaying).toBe(true)
+    expect(tetrisModule.state.isGameOver).toBe(false)
+    expect(tetrisModule.state.score).toBe(0)
+  })
+
+  it('Breakout handleKeydown resets and starts when game over (three-way)', () => {
+    breakoutModule.init()
+    breakoutModule.state.isGameOver = true
+    breakoutModule.state.score = 999
+    expect(breakoutModule.state.isPlaying).toBe(false)
+    breakoutModule.handleKeydown('ArrowRight')
+    expect(breakoutModule.state.isPlaying).toBe(true)
+    expect(breakoutModule.state.isGameOver).toBe(false)
+    expect(breakoutModule.state.score).toBe(0)
+    expect(breakoutModule.state.paddle.x).toBe(115)
+  })
+
+  // --- No-op checks for non-arrow keys ---
+
+  it('Snake handleKeydown ignores non-arrow keys without starting', () => {
+    snakeModule.init()
+    snakeModule.handleKeydown('Enter')
+    snakeModule.handleKeydown(' ')
+    expect(snakeModule.state.isPlaying).toBe(false)
+  })
+
+  it('Breakout handleKeydown ignores non-arrow keys without starting', () => {
+    breakoutModule.init()
+    breakoutModule.handleKeydown('Enter')
+    breakoutModule.handleKeydown(' ')
+    expect(breakoutModule.state.isPlaying).toBe(false)
+  })
+
+  // --- Comprehensive: all three games together ---
+
+  it('all three games refuse to auto-start on init', () => {
+    snakeModule.init()
+    tetrisModule.init()
+    breakoutModule.init()
+    expect(snakeModule.state.isPlaying).toBe(false)
+    expect(tetrisModule.state.isPlaying).toBe(false)
+    expect(breakoutModule.state.isPlaying).toBe(false)
+  })
+
+  it('all three games: handleKeydown starts all of them', () => {
+    snakeModule.init()
+    snakeModule.handleKeydown('ArrowRight')
+    expect(snakeModule.state.isPlaying).toBe(true)
+
+    tetrisModule.init()
+    tetrisModule.handleKeydown('ArrowLeft')
+    expect(tetrisModule.state.isPlaying).toBe(true)
+
+    breakoutModule.init()
+    breakoutModule.handleKeydown('ArrowRight')
+    expect(breakoutModule.state.isPlaying).toBe(true)
+  })
+})
