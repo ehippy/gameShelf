@@ -11,6 +11,7 @@ import { join, dirname } from 'node:path'
 // Card: Fix auto-start violations in Snake, Tetris, and Breakout games
 // Auto-start fix verified: all three games comply with game initialization convention.
 // Implementation: isPlaying: false on init, three-way handleKeydown with valid-key gating.
+// Snake: arrow keys only. Tetris: arrow keys + space. Breakout: arrow keys only.
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = join(__dirname, '..', '..')
 
