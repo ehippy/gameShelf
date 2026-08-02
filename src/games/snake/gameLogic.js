@@ -284,6 +284,6 @@ export function handleKeydown(key) {
 }
 
 // ─── Export the state object for GamePage to read ───
-// Auto-start fix: isPlaying stays false until user input via handleKeydown()
+// Auto-start fix: isPlaying false on init; handleKeydown starts playing
 // All three games now comply with game initialization convention.
 export { state }
