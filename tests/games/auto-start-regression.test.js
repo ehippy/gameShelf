@@ -15,7 +15,7 @@ import { join, dirname } from 'node:path'
 //
 // Auto-start violations: Snake, Tetris, and Breakout all violated the game
 // initialization convention by having `isPlaying: true` on init and `handleKeydown()`
-// returning early when not playing. Fixed with three-way logic.
+// returning early when not playing. Fixed with three-way logic as documented in AGENTS.md.
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = join(__dirname, '..', '..')
 
