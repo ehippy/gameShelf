@@ -7,8 +7,8 @@ const root = join(__dirname, '..', '..')
 
 // Cross-game auto-start regression tests for card: Fix auto-start violations
 // in Snake, Tetris, and Breakout games.
-// Ensures all three games correctly refuse to auto-start on init/reset
-// and use three-way handleKeydown logic.
+// Verifies all three games correctly refuse to auto-start on init/reset
+// and use three-way handleKeydown logic to start on user input.
 
 describe('Auto-start regression: all three games', () => {
   let snakeModule = null
