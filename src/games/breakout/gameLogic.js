@@ -315,4 +315,5 @@ export function handleKeydown(key) {
 }
 
 // ─── Export the state object for GamePage to read ───
+// Auto-start fix: isPlaying stays false until user input via handleKeydown()
 export { state }
