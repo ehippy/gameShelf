@@ -170,6 +170,10 @@ function findDuples(records) {
           const filePath = scopeRecords[run[0]].filePath
           const testNames = run.map(idx => scopeRecords[idx].testName)
 
+          // Only flag if the tests are actually different
+          // (two identical assertions within the same it() block is legitimate)
+          if (new Set(testNames).size < 2) continue
+
           findings.push({
             filePath,
             testNames,
