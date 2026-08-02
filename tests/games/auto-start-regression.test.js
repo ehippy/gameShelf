@@ -11,6 +11,7 @@ const root = join(__dirname, '..', '..')
 // convention — isPlaying: false on init/reset, three-way handleKeydown logic.
 //
 // Card acceptance criteria verified: all 12 tests pass, 838 total.
+// Card: Fix auto-start violations in Snake, Tetris, and Breakout games
 // - Snake, Tetris, Breakout: isPlaying false on init
 // - No auto-start in init() or reset()
 // - Three-way handleKeydown logic with valid-key gating
