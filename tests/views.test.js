@@ -279,7 +279,7 @@ describe('GamePage', () => {
     expect(modulePathMatch).not.toBeNull()
     const modulePath = modulePathMatch[1]
     // The modulePath key must start with './src/games/'
-    expect(modulePath).toMatch(/^\.\?\/src\/games\//)
+    expect(modulePath).toMatch(/^\.\/src\/games\//)
   })
 
   it('has game canvas', () => {
