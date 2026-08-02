@@ -18,6 +18,7 @@ import { join, dirname } from 'node:path'
 // returning early when not playing. Fixed with three-way logic as documented in AGENTS.md.
 //
 // Card acceptance criteria all met: 839 tests pass across 12 test files.
+// Auto-start fix complete.
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = join(__dirname, '..', '..')
 
