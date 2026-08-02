@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * Pre-commit hook helper: detects copy-pasted test assertions with identical
  * expected values.  Scans all test files for sequences where
