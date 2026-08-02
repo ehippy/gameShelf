@@ -187,7 +187,6 @@ function findDuples(records) {
       if (matchedIndices.length >= 2) {
         // Collect all runs of consecutive identical dupeKeys
         // matchedIndices are all positions with the same dupeKey
-        // They may not be contiguous due to different dupeKey lines in between
         // We want runs that are truly consecutive (no gaps)
         const runs = [[matchedIndices[0]]]
         for (let m = 1; m < matchedIndices.length; m++) {
@@ -204,7 +203,7 @@ function findDuples(records) {
 
         let foundValid = false
         for (const run of runs) {
-          if (run.length < 2) continue
+          if (run.length < 3) continue
           const assertionText = scopeRecords[run[0]].assertion
           const filePath = scopeRecords[run[0]].filePath
           const testNames = run.map(idx => scopeRecords[idx].testName)
@@ -226,8 +225,12 @@ function findDuples(records) {
             }
           }
 
-          // After deduplication, we need at least 2 records from different tests
-          if (dedupedRun.length < 2) continue
+          // After deduplication, we need at least 3 records from different tests
+          // (two consecutive it() blocks sharing an assertion is always a
+          // legitimate coincidence — e.g. "init sets isPlaying=false" and
+          // "reset sets isPlaying=false" are different tests verifying the
+          // same invariant.)
+          if (dedupedRun.length < 3) continue
 
           findings.push({
             filePath,
