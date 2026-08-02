@@ -13,6 +13,9 @@ import { join, dirname } from 'node:path'
 // Implementation: isPlaying: false on init, three-way handleKeydown with valid-key gating.
 // Snake: arrow keys only. Tetris: arrow keys + space. Breakout: arrow keys only.
 //
+// Auto-start violations: Snake, Tetris, and Breakout all violated the game
+// initialization convention by having `isPlaying: true` on init and `handleKeydown()`
+// returning early when not playing. Fixed with three-way logic.
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = join(__dirname, '..', '..')
 
