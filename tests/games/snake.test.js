@@ -348,9 +348,11 @@ describe('snake', () => {
     it('handleKeydown arrow keys start game and change direction even when isPlaying is false', () => {
       snakeModule.init()
       expect(snakeModule.state.isPlaying).toBe(false)
-      snakeModule.handleKeydown('ArrowLeft')
+      expect(snakeModule.state.direction).toBe('right')
+      // ArrowUp is valid (not opposite to 'right'), starts game and changes direction
+      snakeModule.handleKeydown('ArrowUp')
       expect(snakeModule.state.isPlaying).toBe(true)
-      expect(snakeModule.state.direction).toBe('left')
+      expect(snakeModule.state.direction).toBe('up')
     })
 
     it('handleKeydown resets state and starts playing when isGameOver is true', () => {
