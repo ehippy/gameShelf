@@ -317,3 +317,5 @@ Card-level postmortems should only include friction/struggles details **when fri
 - **Excluded:** None.
 - **Verified:** Auto-start fixes confirmed working in Snake, Tetris, and Breakout.
 
+
+- **Verified:** Auto-start fixes confirmed working in Snake, Tetris, and Breakout.
