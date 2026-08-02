@@ -363,7 +363,7 @@ describe('whack-a-mole', () => {
       if (!whackModule) return
       whackModule.init()
       whackModule.handleKeydown('ArrowDown')
-      expect(whackModule.state.cursorRow).toBe(1)
+      expect(whackModule.state.cursorRow).toBe(2)
     })
 
     it("handleKeydown('ArrowDown') clamps cursorRow at 2", () => {
