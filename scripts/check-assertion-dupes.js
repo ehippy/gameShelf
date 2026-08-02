@@ -98,13 +98,8 @@ function parseFile(filePath) {
         continue // skip .not.* assertions
       }
       if (/\bexpect\s*\(.*?\)\s*\.toBe\s*\(/.test(line)) {
-        // Extract the expected value portion for dupe detection.
-        // A real copy-paste error occurs when two different it() blocks
-        // have the *exact same expect-subject* AND the *exact same
-        // hardcoded expected value*.  We treat these conditions
-        // independently — the subject key only uses the subject portion
-        // (not the value), while the value key only applies to
-        // non-trivial constants.
+        // Extract the expect() subject (everything between expect( and ).toBe)
+        // and the expected value for dupe detection.
         const subjectMatch = line.match(/expect\s*\((.*?)\)\s*\.toBe\s*\(/)
         if (subjectMatch) {
           const subject = subjectMatch[1].trim()
@@ -113,7 +108,7 @@ function parseFile(filePath) {
           // Normalize dynamic / reference-like values to null so they
           // never produce a false-positive dupe match.
           let keyExpectedValue = expectedValue
-          // Variables ending in "Before" or "before" (e.g. scoreBefore)
+          // Variables ending in "Before" or "before" (e.g. scoreBefore, xBefore)
           if (/^(.+)(Before|before)$/.test(keyExpectedValue)) {
             keyExpectedValue = null
           }
@@ -121,14 +116,16 @@ function parseFile(filePath) {
           if (/^before[ \t]*([+\-][ \t]*[\d.]+)$/.test(keyExpectedValue)) {
             keyExpectedValue = null
           }
-          // Trivial literals that appear in hundreds of legitimate tests
-          if (keyExpectedValue !== null && /^[fF]alse$|^0$|^[tT]rue$/.test(keyExpectedValue)) {
+          // Trivial literals that appear across hundreds of legitimate tests
+          // and are never useful as a copy-paste signal:
+          //   false, true, 0, ''
+          if (keyExpectedValue !== null && /^(fF)alse$|^0$|^(tT)rue$|^(\'\'|\"\"|'\"')$/.test(keyExpectedValue)) {
             keyExpectedValue = null
           }
-          // Only include value in the dupe-key when it's a non-trivial
-          // constant (string literal, number, expression) — this catches
-          // the classic copy-paste mistake of duplicating an entire
-          // expect()-line with a stale expected value.
+          // Build the dupe-key: if the value is non-trivial (a meaningful
+          // constant), use subject + value so only exact copy-paste errors
+          // match.  If the value is trivial, use subject only — trivial
+          // values like false/true/0 appear in legitimate tests everywhere.
           const dupeKey = keyExpectedValue !== null
             ? subject + '|||' + keyExpectedValue
             : subject
