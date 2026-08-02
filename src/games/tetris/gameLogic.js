@@ -7,7 +7,7 @@
 
 // ─── Imports ──────────────────────────────────────────────────────────────────
 
-import { renderGameOver } from '../shared/renderHelpers.js'
+import { renderGameOver, shouldSkipUpdate } from '../shared/renderHelpers.js'
 
 // ─── Tetromino Definitions ────────────────────────────────────────────────────
 
@@ -254,9 +254,7 @@ export function init() {
  * Update the Tetris game state. Called ~60fps.
  */
 export function update() {
-  if (!state || state.isGameOver || !state.isPlaying) {
-    return
-  }
+  if (shouldSkipUpdate(state)) return
 
   const now = performance.now()
   if (now - state.lastDropTime >= state.dropInterval) {

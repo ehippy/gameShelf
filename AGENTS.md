@@ -205,6 +205,12 @@ Each condition gets its own `expect()` call — either on separate lines within 
 
 **This trap has appeared repeatedly across `tests/components.test.js`, `tests/games/flappy-bird.test.js`, `tests/games/tetris.test.js`, `tests/games/snake.test.js`, and `tests/infrastructure.test.js`. If you see `||` between `expect()` calls, rewrite each as an independent assertion.**
 
+### Verifying Assertion Values Against Implementation
+
+Test assertions are only as good as the values they compare against — a passing test with incorrect expected values proves nothing. This came up in the Whack-a-Mole keyboard input cycle, where tests contained incorrect hardcoded expected values (e.g. wrong `cursorRow` values after state transitions) while the implementation was correct, causing multiple review/fix rounds before the mismatch was noticed.
+
+After writing or updating tests, manually trace through the expected behavior to ensure assertion values match reality, rather than assuming hardcoded numbers are correct.
+
 ## Search / Filter UI Pattern
 
 This section documents the established pattern for UI-driven list filtering in gameShelf. It covers state ownership, UI binding, computed filtering, and logic rules. Future agents working on the game shelf listing, search, or category filtering should follow this pattern.
