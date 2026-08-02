@@ -20,6 +20,9 @@ import { join, dirname } from 'node:path'
 // Card acceptance criteria all met: 839 tests pass across 12 test files.
 // Auto-start fix complete. Verified by automated tests and manual inspection.
 // Final review: 2025-07-10 — all gameLogic.js files confirmed compliant.
+// Snake: createInitialState isPlaying:false, init/reset no override, three-way handleKeydown
+// Tetris: init/reset no override (createInitialState already false), three-way handleKeydown
+// Breakout: createInitialState isPlaying:false, init/reset no override, three-way handleKeydown
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = join(__dirname, '..', '..')
 
