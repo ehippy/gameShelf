@@ -9,7 +9,7 @@ import { join, dirname } from 'node:path'
 //
 // All 838 tests pass across 12 test files.
 // Card: Fix auto-start violations in Snake, Tetris, and Breakout games
-// Auto-start fix verified. All three games comply with game initialization convention.
+// Auto-start fix verified: card complete—Snake, Tetris, Breakout all comply.
 // isPlaying: false on init, three-way handleKeydown logic with valid-key gating.
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = join(__dirname, '..', '..')
