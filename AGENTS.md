@@ -305,6 +305,8 @@ Avoid the pattern where correct code bounces indefinitely between the Deployer a
 
 Card-level postmortems should only include friction/struggles details **when friction actually occurred** — during development, review, or deployment.
 
+When a card completed cleanly, do not pad the postmortem with boilerplate substitutes like "Nothing notable", "None", "N/A", "No friction", "Clean card", "No struggles", or any variation of these. If there is nothing to report, the postmortem is simply the summary line — no struggle subsection at all, not even an empty one.
+
 **Correct — clean card (no struggles section at all):**
 ```
 Summary: Updated the game catalog slug field for all entries from the deprecated `id` field to `slug`. Refactored the game store to use `slug` consistently and updated all component bindings in HomeView and GameCard. All 25 filtering tests pass.
