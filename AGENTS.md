@@ -303,7 +303,7 @@ Card-level postmortems should only include friction/struggles details **when fri
 
 ## Last Reviewed
 
-- **Reviewed:** 2025-07-15
+- **Reviewed:** 2026-01-04
 - **Scope:** ESLint/anti-pattern documentation — confirmed current, no updates required.
 - **Verified sections:** Short-circuit assertions (||) anti-pattern (lines 160–183), Vitest/Playwright namespace conflict workaround (lines 133–158), Vite dynamic import convention (new section before 'Game Initialization'), game initialization conventions (lines 71–117), catalog field naming (lines 9–27), route slug validation (lines 31–46), search/filter UI pattern (lines 185–244), deployment failure conventions (lines 246–294).
 - **Excluded:** ESLint `node/recommended` dependency fix — one-off workaround, not a recurring project practice.
