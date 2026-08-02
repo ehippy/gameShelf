@@ -246,7 +246,7 @@ describe('breakout', () => {
       expect(breakoutModule.state.lives).toBe(3)
     })
 
-    it('reset() produces isPlaying = false', () => {
+    it('reset() produces isPlaying = false (no auto-start regression)', () => {
       breakoutModule.init()
       breakoutModule.reset()
       expect(breakoutModule.state.isPlaying).toBe(false)
