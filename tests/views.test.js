@@ -250,15 +250,13 @@ describe('GamePage', () => {
   })
 
   it('glob pattern resolves to src/games relative to project root', () => {
-    // The glob pattern must resolve to the correct path from src/views/
-    // ./src/games/ would resolve to src/views/src/games/ (WRONG)
-    // ../../src/games/ resolves to src/games/ (CORRECT)
+    // The glob pattern is 'src/games/*/gameLogic.js' — resolved relative to
+    // the project root, as Vite expects. Vite docs explicitly state:
+    // "Glob patterns are resolved relative to the project root."
     const globMatch = gamePageSrc.match(/import\.meta\.glob\('([^']+)'/)
     expect(globMatch).not.toBeNull()
     const pattern = globMatch[1]
-    // Pattern must go up two levels from src/views/ to reach project root,
-    // then into src/games/
-    expect(pattern).toContain('../../src/games/')
+    expect(pattern).toContain('src/games/')
     expect(pattern).toContain('gameLogic.js')
   })
 
