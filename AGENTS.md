@@ -2,7 +2,10 @@
 
 ## Project Goal
 
-Updated: 2026-01-04 card request — auto-start fixes verified in Snake, Tetris, and Breakout.
+Updated: 2026-01-04 card request processed.
+
+- **Reviewed:** 2026-01-04
+- **Scope:** Game Initialization convention — confirmed accurate following auto-start fix across Snake, Tetris, and Breakout.
 
 We're going to make a bunch of game reimplementations and tie them together with some nice landing page in the style of crazygames.
 
