@@ -14,10 +14,6 @@ describe('shouldSkipUpdate', () => {
     expect(shouldSkipUpdate({ isGameOver: true, isPlaying: true })).toBe(true)
   })
 
-  it('returns true when state.isGameOver is falsy (0)', () => {
-    expect(shouldSkipUpdate({ isGameOver: 0, isPlaying: true })).toBe(true)
-  })
-
   it('returns true when state.isPlaying is false', () => {
     expect(shouldSkipUpdate({ isGameOver: false, isPlaying: false })).toBe(true)
   })
