@@ -45,6 +45,29 @@ The project provides the following helpers in `src/stores/scoreStore.js`:
 - **Runtime 404s** — passing an invalid slug to a dynamic import (e.g. `import(\`../games/${slug}/App.vue\`)`) resolves against a non-existent module path, producing a bundle error or 404 at runtime.
 - **Security issues (localStorage key injection)** — using a malformed or user-supplied slug as a storage key (e.g. `` `gamescore_${injected_key}` ``) can corrupt existing entries, allow cross-game data pollution, or even inject arbitrary keys into localStorage.
 
+### Vite Dynamic Import Convention
+
+Never use string-concatenated dynamic imports for loading game modules. The pattern `import(\`../games/${slug}/gameLogic.js\`)` fails on the live site because Vite cannot statically analyze the import path during build time — the glob is not expanded to included modules, so the target module is never bundled.
+
+**Correct approach:** Use `import.meta.glob()` to pre-collect all gameLogic.js modules into a static map at module evaluation time, then look up the appropriate module by slug at runtime:
+
+```js
+// Pre-collect all gameLogic.js modules into a static map
+const gameModules = import.meta.glob('./src/games/*/gameLogic.js', { eager: false })
+
+// Later, look up by slug at runtime:
+const modulePath = `./src/games/${slug}/gameLogic.js`
+const importedModule = gameModules[modulePath]
+if (!importedModule) {
+  // handle missing module
+  router.replace('/404')
+  return
+}
+gameLogic = await importedModule()
+```
+
+**Consequences of violation:** Runtime 404s and broken game loading on the live site because Vite's build-time glob analysis cannot resolve string-concatenated paths — the module is never included in the bundle.
+
 ### Game Initialization
 
 Games must not auto-start on page load. This convention was learned from the Flappy Bird auto-start bug, where the game began running immediately when the page loaded, leaving the user with no agency to control when the game started. The game should instead wait for the user's first input before beginning.
