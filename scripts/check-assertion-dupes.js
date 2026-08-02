@@ -98,50 +98,12 @@ function parseFile(filePath) {
         continue // skip .not.* assertions
       }
       if (/\bexpect\s*\(.*?\)\s*\.toBe\s*\(/.test(line)) {
-        // Extract the expect() subject (everything between expect( and ).toBe)
-        // and the expected value for dupe detection.
-        const subjectMatch = line.match(/expect\s*\((.*?)\)\s*\.toBe\s*\(/)
-        if (subjectMatch) {
-          const subject = subjectMatch[1].trim()
-          const valueMatch = line.match(/\.toBe\s*\(([\s\S]*?)\)\s*$/)
-          const expectedValue = valueMatch ? valueMatch[1].trim() : ''
-          // Normalize dynamic / reference-like values to a generic marker so
-          // they never produce a false-positive dupe match.  Variables like
-          // scoreBefore, xBefore, ballBefore are per-test locals — comparing
-          // their values across tests is meaningless.
-          let keyExpectedValue = expectedValue
-          // Variables ending in "Before" or "before" (e.g. scoreBefore, xBefore)
-          if (/^(.+)(Before|before)$/.test(keyExpectedValue)) {
-            keyExpectedValue = null
-          }
-          // Expressions like "before + 10" / "before - 1"
-          if (/^before[ \t]*([+\-][ \t]*[\d.]+)$/.test(keyExpectedValue)) {
-            keyExpectedValue = null
-          }
-          // Trivial literals that appear in hundreds of legitimate tests.
-          // When the value is one of these, don't include it in the dupe-key
-          // — it would drown out real errors.  But we STILL include the
-          // subject in the key, so two tests checking different subjects
-          // with .toBe(false) won't match.
-          if (keyExpectedValue !== null && /^(fF)alse$|^0$|^(tT)rue$|^(\'\'|\"\"|\'\"\'|\"\')$/.test(keyExpectedValue)) {
-            // Trivial value: only use subject for matching
-            keyExpectedValue = null
-          }
-          // Build the dupe-key.  When the value is non-trivial (a meaningful
-          // constant like 'Easy', 2, -2.5, 1), include it so only exact
-          // copy-paste errors match.  When the value is trivial or null,
-          // use subject-only matching.
-          const dupeKey = keyExpectedValue !== null
-            ? subject + '|||' + keyExpectedValue
-            : subject
-          records.push({
-            filePath,
-            describeScope: [...describeStack],
-            testName: currentItName,
-            dupeKey,
-            assertion: trimmed,
-          })
-        }
+        records.push({
+          filePath,
+          describeScope: [...describeStack],
+          testName: currentItName,
+          assertion: trimmed,
+        })
       }
     }
 
