@@ -289,11 +289,14 @@ export function reset() {
 export function handleKeydown(key) {
   if (!state) return
 
-  if (state.isGameOver) {
+  // Valid game keys that should start the game / trigger game-over reset
+  const validKeys = ['ArrowLeft', 'ArrowRight']
+
+  if (state.isGameOver && validKeys.includes(key)) {
     // Game over: reset and start playing
     state = createInitialState()
     state.isPlaying = true
-  } else if (!state.isPlaying) {
+  } else if (!state.isPlaying && validKeys.includes(key)) {
     // Not playing: start playing
     state.isPlaying = true
   }
