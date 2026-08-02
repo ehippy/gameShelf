@@ -209,7 +209,9 @@ Each condition gets its own `expect()` call — either on separate lines within 
 
 Test assertions are only as good as the values they compare against — a passing test with incorrect expected values proves nothing. This came up in the Whack-a-Mole keyboard input cycle, where tests contained incorrect hardcoded expected values (e.g. wrong `cursorRow` values after state transitions) while the implementation was correct, causing multiple review/fix rounds before the mismatch was noticed.
 
-After writing or updating tests, manually trace through the expected behavior to ensure assertion values match reality, rather than assuming hardcoded numbers are correct.
+The pre-commit hook (`scripts/check-assertion-dupes.js`, run via `.husky/pre-commit`) serves as the first line of defense, surfacing copy-pasted assertion patterns before manual tracing is needed. When the hook flags identical `expect(...).toBe(X)` lines across consecutive `it()` blocks in the same `describe` scope, review whether the expected value was updated for each distinct test scenario.
+
+After manual tracing through the expected behavior, ensure assertion values match reality, rather than assuming hardcoded numbers are correct.
 
 ## Search / Filter UI Pattern
 
