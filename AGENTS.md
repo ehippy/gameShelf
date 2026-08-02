@@ -305,22 +305,7 @@ Avoid the pattern where correct code bounces indefinitely between the Deployer a
 
 Card-level postmortems should only include friction/struggles details **when friction actually occurred** — during development, review, or deployment.
 
-### No-friction cards
-
-When a card completed cleanly (no revisions, no retries, no dead ends), the postmortem **MUST NOT** include a struggles/friction section of any kind. This is a hard rule, not a suggestion.
-
-> **If the card completed cleanly, the postmortem ends after the summary line — no struggles section at all.**
-
-**Forbidden phrases:** The following boilerplate must never appear in a clean postmortem:
-- "Nothing notable"
-- "None"
-- "N/A"
-- "No friction"
-- "Clean card"
-- "No struggles"
-- Any variation of the above
-
-If you see any of these in a generated postmortem, strip the entire line. The struggles section should be entirely absent — not replaced with a placeholder of any kind.
+When a card completed cleanly, do not pad the postmortem with boilerplate substitutes like "Nothing notable", "None", "N/A", "No friction", "Clean card", "No struggles", or any variation of these. If there is nothing to report, the postmortem is simply the summary line — no struggle subsection at all, not even an empty one.
 
 **Correct — clean card (no struggles section at all):**
 ```
@@ -338,14 +323,8 @@ Struggles: The gravity value was inconsistent between init() and the game loop �
 
 *(When friction *did* occur, include a `Struggles:` section that briefly describes what went wrong, what was learned, and what to watch for next time.)*
 
-### When friction *did* occur
-
-When friction *did* occur (revisions, retries, dead ends), note the specific friction briefly — what went wrong, what you learned, and what to watch for next time.
-
-- This convention keeps postmortems concise and meaningful: friction is documented when it exists, omitted when it doesn't.
-
 ## Last Reviewed
 
-- **Reviewed:** 2025-07-15
-- **Scope:** Verifying assertion values section updated with pre-commit hook documentation.
-- **Verified sections:** Short-circuit assertions (||) anti-pattern (lines 160–183), Vitest/Playwright namespace conflict workaround (lines 133–158), Vite dynamic import convention (new section before 'Game Initialization'), game initialization conventions (lines 71–117), catalog field naming (lines 9–27), route slug validation (lines 31–46), search/filter UI pattern (lines 185–244), deployment failure conventions (lines 246–294), verifying assertion values section updated with pre-commit hook mention.
+- **Reviewed:** 2026-08-02
+- **Scope:** Card-Level Postmortems section restructuring — removed tool-specific instructions, eliminated redundant subsection, reframed forbidden phrases as human writing convention.
+- **Verified sections:** Card-Level Postmortems section (lines 304–324, post-cleanup).
