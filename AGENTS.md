@@ -327,7 +327,7 @@ Struggles: The gravity value was inconsistent between init() and the game loop �
 
 ## Last Reviewed
 
-- **Reviewed:** 2025-07-15
-- **Scope:** ESLint/anti-pattern documentation — confirmed current, no updates required.
-- **Verified sections:** Short-circuit assertions (||) anti-pattern (lines 160–183), Vitest/Playwright namespace conflict workaround (lines 133–158), Vite dynamic import convention (new section before 'Game Initialization'), game initialization conventions (lines 71–117), catalog field naming (lines 9–27), route slug validation (lines 31–46), search/filter UI pattern (lines 185–244), deployment failure conventions (lines 246–294), verifying assertion values section updated with pre-commit hook mention.
+- **Reviewed:** 2026-08-02
+- **Scope:** Card-Level Postmortems section restructuring — removed tool-specific instructions, eliminated redundant subsection, reframed forbidden phrases as human writing convention.
+- **Verified sections:** Card-Level Postmortems section (lines 304–326, post-cleanup).
 - **Excluded:** ESLint `node/recommended` dependency fix — one-off workaround, not a recurring project practice.
