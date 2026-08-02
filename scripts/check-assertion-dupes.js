@@ -1,12 +1,11 @@
-#!/usr/bin/env node
 /**
  * Pre-commit hook helper: detects copy-pasted test assertions with identical
- * expected values.  Scans all `tests/**/*.test.js` files for sequences where
- * two or more consecutive `it()` blocks within the same `describe` block
- * share the exact same `expect(...).toBe(X)` line.
+ * expected values.  Scans all test files for sequences where
+ * two or more consecutive it() blocks within the same describe block
+ * share the exact same expect(...).toBe(X) line.
  *
- * This is a warning-only check — always exits 0 — so developers can review
- * flagged patterns and decide if they're real copy-paste bugs.
+ * This is a warning-only check - always exits 0 - so developers can review
+ * flagged patterns and decide if they are real copy-paste bugs.
  */
 import fs from 'node:fs'
 import path from 'node:path'
