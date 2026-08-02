@@ -209,8 +209,8 @@ describe('Auto-start regression: all three games', () => {
     tetrisModule.state.isGameOver = true
     tetrisModule.state.score = 777
 
-    // Reset via keypress
-    tetrisModule.handleKeydown('ArrowDown')
+    // Reset via keypress (ArrowLeft doesn't add soft drop bonus)
+    tetrisModule.handleKeydown('ArrowLeft')
     expect(tetrisModule.state.isPlaying).toBe(true)
     expect(tetrisModule.state.isGameOver).toBe(false)
     expect(tetrisModule.state.score).toBe(0)
