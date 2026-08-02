@@ -320,3 +320,5 @@ Card-level postmortems should only include friction/struggles details **when fri
 - **2026-01-04 review:** Game Initialization convention confirmed accurate.
 
 - **2026-01-04 card request:** Last Reviewed section update completed.
+
+- **2026-01-04:** Card request processed. Reviewed date updated to 2026-01-04. Scope confirms Game Initialization convention accuracy after auto-start fixes in Snake, Tetris, and Breakout.
