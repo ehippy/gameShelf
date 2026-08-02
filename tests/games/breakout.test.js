@@ -266,6 +266,16 @@ describe('breakout', () => {
       expect(breakoutModule.state.paddle.y).toBe(paddleBefore.y)
     })
 
+    it('reset() produces identical ball position and velocity to init', () => {
+      breakoutModule.init()
+      const ballBefore = { ...breakoutModule.state.ball }
+      breakoutModule.reset()
+      expect(breakoutModule.state.ball.x).toBe(ballBefore.x)
+      expect(breakoutModule.state.ball.y).toBe(ballBefore.y)
+      expect(breakoutModule.state.ball.dx).toBe(ballBefore.dx)
+      expect(breakoutModule.state.ball.dy).toBe(ballBefore.dy)
+    })
+
     it('reset() produces identical ball position to init', () => {
       breakoutModule.init()
       breakoutModule.state.ball.x = 200
