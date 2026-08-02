@@ -2,11 +2,6 @@
 
 ## Project Goal
 
-Updated: 2026-01-04 card request processed.
-
-- **Reviewed:** 2026-01-04
-- **Scope:** Game Initialization convention — confirmed accurate following auto-start fix across Snake, Tetris, and Breakout.
-
 We're going to make a bunch of game reimplementations and tie them together with some nice landing page in the style of crazygames.
 
 ## Catalog & Routing Conventions
@@ -316,5 +311,5 @@ Card-level postmortems should only include friction/struggles details **when fri
 
 - **Reviewed:** 2026-01-04
 - **Scope:** Game Initialization convention — confirmed accurate following auto-start fix across Snake, Tetris, and Breakout.
-- **Verified sections:** Short-circuit assertions (||) anti-pattern (lines 183–206), game initialization conventions (lines 71–117).
+- **Verified sections:** Short-circuit assertions (||) anti-pattern (lines 183-206), game initialization conventions (lines 71-117).
 - **Excluded:** None.
