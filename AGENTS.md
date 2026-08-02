@@ -1,5 +1,3 @@
-// Reviewed: 2026-01-04
-# gameShelf — Project Conventions
 
 ## Project Goal
 
