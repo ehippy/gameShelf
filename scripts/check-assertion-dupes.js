@@ -164,6 +164,7 @@ function findDuples(records) {
           }
         }
 
+        let foundValid = false
         for (const run of runs) {
           if (run.length < 2) continue
           const assertionText = scopeRecords[run[0]].assertion
@@ -182,8 +183,10 @@ function findDuples(records) {
 
           // Skip past this run
           i = matchedIndices[matchedIndices.length - 1] + 1
+          foundValid = true
           break // break from the runs loop to continue outer while
         }
+        if (!foundValid) i++
         continue
       }
 
