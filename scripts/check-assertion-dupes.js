@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Pre-commit hook helper: detects copy-pasted test assertions with identical
- * expected values.  Scans all test files for sequences where
+ * expected values.  Scans test files for sequences where
  * two or more consecutive it() blocks within the same describe block
  * share the exact same expect(...).toBe(X) line.
  *
@@ -11,9 +11,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
+// ---- Helpers ----
 
-/** Expand a glob-like tests/**/*.test.js pattern into file paths. */
 function findTestFiles(rootDir) {
   const results = []
   const patternBase = path.join(rootDir, 'tests')
@@ -43,30 +42,21 @@ function findTestFiles(rootDir) {
  *   filePath: string,
  *   describeScope: string[],        // names of enclosing describe blocks
  *   testName: string,
- *   assertions: string[]            // exact lines with expect(...).toBe(...)
+ *   assertion: string               // exact line with expect(...).toBe(...)
  * }
  */
 function parseFile(filePath) {
   const lines = fs.readFileSync(filePath, 'utf-8').split('\n')
   const records = []
-
-  // describeStack holds describe block names at each nesting level
   const describeStack = []
-
-  // Current it block tracking
   let currentItName = null
-  let currentItScope = []
-  let currentItDepth = 0
   let inItBlock = false
   let braceDepth = 0
-  const itBraceTarget = 0 // depth at which we opened the it body
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]
     const trimmed = line.trim()
 
-    // Track describe blocks (push on {, pop on })
-    // We detect describe boundaries by matching the opening pattern
     const describeMatch = trimmed.match(
       /describe\s*\(\s*['"](.+?)['"]/
     )
@@ -80,33 +70,27 @@ function parseFile(filePath) {
 
     if (itMatch && !inItBlock) {
       currentItName = itMatch[1]
-      currentItScope = [...describeStack]
       inItBlock = true
-      // The it block body will start after this line's opening `{`
     }
 
     // Count braces to track when we exit an it block
     if (inItBlock) {
-      // Count braces in this line
       const openBraces = (line.match(/{/g) || []).length
       const closeBraces = (line.match(/}/g) || []).length
       braceDepth += openBraces - closeBraces
 
       if (braceDepth <= 0 && i > 0) {
-        // We've exited the it block body
         inItBlock = false
         braceDepth = 0
       }
     }
 
-    // Capture assertions — look for expect(...).toBe(...) lines
+    // Capture assertions - look for expect(...).toBe(...) lines
     // Skip .not.toBe() patterns (legitimate to repeat)
     if (inItBlock && /\bexpect\s*\(/.test(line)) {
-      // Check if this is a .not.toBe() or .not.toContain()
       if (/\bexpect\s*\(.*?\)\s*\.not\s*\./.test(line)) {
         continue // skip .not.* assertions
       }
-      // Check if it's an expect(...).toBe(...) pattern
       if (/\bexpect\s*\(.*?\)\s*\.toBe\s*\(/.test(line)) {
         records.push({
           filePath,
@@ -117,12 +101,9 @@ function parseFile(filePath) {
       }
     }
 
-    // Also track describe closing via } at start of line (simplified)
+    // Track describe closing via } at start of line
     if (describeStack.length > 0) {
-      // Very simplified: if we see a line that's mostly closing braces
-      // and it's not inside an it block, pop the describe stack
-      const pureClosingLines = /^[\s}]*$/.test(line) && line.trim() === '}'
-      if (pureClosingLines && !inItBlock) {
+      if (line.trim() === '}' && !inItBlock) {
         describeStack.pop()
       }
     }
@@ -141,14 +122,12 @@ function findDuples(records) {
   // Group by (filePath + describeScope)
   const byScope = new Map()
   for (const rec of records) {
-    const key = `${rec.filePath}|||${rec.describeScope.join(' > ')}`
+    const key = rec.filePath + '|||' + rec.describeScope.join(' > ')
     if (!byScope.has(key)) byScope.set(key, [])
     byScope.get(key).push(rec)
   }
 
   for (const [scopeKey, scopeRecords] of byScope) {
-    // scopeRecords is ordered as they appear in the file
-    // Find consecutive it blocks with identical assertions
     let i = 0
     while (i < scopeRecords.length) {
       const currentRec = scopeRecords[i]
@@ -163,18 +142,20 @@ function findDuples(records) {
       }
 
       if (matchedIndices.length >= 2) {
-        // Group consecutive indices into sub-ranges (in case some differ in between)
-        // We want maximal consecutive runs of the same assertion
-        const runs = []
-        let runStart = 0
-        for (let r = 1; r <= matchedIndices.length; r++) {
-          if (r === matchedIndices.length ||
-              scopeRecords[matchedIndices[r]].testName !==
-              scopeRecords[matchedIndices[r - 1]].testName ||
-              scopeRecords[matchedIndices[r]].filePath !==
-              scopeRecords[matchedIndices[r - 1]].filePath) {
-            runs.push(matchedIndices.slice(runStart, r))
-            runStart = r
+        // Collect all runs of consecutive identical assertions
+        // matchedIndices are all positions with the same assertion
+        // They may not be contiguous due to different assertion lines in between
+        // We want runs that are truly consecutive (no gaps)
+        const runs = [[matchedIndices[0]]]
+        for (let m = 1; m < matchedIndices.length; m++) {
+          const prev = matchedIndices[m - 1]
+          const curr = matchedIndices[m]
+          // Check if this index is immediately after the previous one
+          // (consecutive in the scopeRecords array)
+          if (curr === prev + 1) {
+            runs[runs.length - 1].push(curr)
+          } else {
+            runs.push([curr])
           }
         }
 
@@ -191,9 +172,10 @@ function findDuples(records) {
           })
 
           // Skip past this run
-          i = matchedIndices[run.length - 1] + 1
-          continue
+          i = matchedIndices[matchedIndices.length - 1] + 1
+          break // break from the runs loop to continue outer while
         }
+        continue
       }
 
       i++
@@ -211,7 +193,7 @@ function deduplicateFindings(findings) {
   const seen = new Set()
   const result = []
   for (const f of findings) {
-    const key = `${f.filePath}|||${f.testNames.join(', ')}|||${f.assertion}`
+    const key = f.filePath + '|||' + f.testNames.join(', ') + '|||' + f.assertion
     if (!seen.has(key)) {
       seen.add(key)
       result.push(f)
@@ -220,7 +202,7 @@ function deduplicateFindings(findings) {
   return result
 }
 
-// ─── Main ───────────────────────────────────────────────────────────────────
+// ---- Main ----
 
 const repoRoot = path.resolve(__dirname, '..')
 const testFiles = findTestFiles(repoRoot)
@@ -236,20 +218,20 @@ const deduped = deduplicateFindings(findings)
 
 if (deduped.length > 0) {
   console.error(
-    `\n⚠️  Possible copy-pasted assertion detected in ${deduped.length} location(s):\n`
+    '\nPossible copy-pasted assertion detected in ' + deduped.length + ' location(s):\n'
   )
   for (let i = 0; i < deduped.length; i++) {
     const f = deduped[i]
     const relPath = path.relative(repoRoot, f.filePath)
-    console.error(`  ${i + 1}. File: ${relPath}`)
+    console.error('  ' + (i + 1) + '. File: ' + relPath)
     console.error('     Tests:')
     for (const name of f.testNames) {
-      console.error(`       - "${name}"`)
+      console.error('       - "' + name + '"')
     }
-    console.error(`     Duped assertion: ${f.assertion}`)
+    console.error('     Duped assertion: ' + f.assertion)
     console.error('     (Review: ensure each test verifies the correct expected value)\n')
   }
 }
 
-// Always exit 0 — this is a warning, not a blocker
+// Always exit 0 - this is a warning, not a blocker
 process.exit(0)
