@@ -99,7 +99,6 @@ export function init() {
  * Update the Breakout game state. Called ~60fps.
  */
 export function update() {
-  // No-op if state is null, game is over, or not playing
   if (shouldSkipUpdate(state)) return
 
   state.framesPlayed++
