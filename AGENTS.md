@@ -1,7 +1,6 @@
 # gameShelf — Project Conventions
 
 ## Project Goal
-# Updated: 2026-01-04 card review - auto-start fixes verified in Snake, Tetris, and Breakout.
 
 We're going to make a bunch of game reimplementations and tie them together with some nice landing page in the style of crazygames.
 
@@ -312,14 +311,5 @@ Card-level postmortems should only include friction/struggles details **when fri
 
 - **Reviewed:** 2026-01-04
 - **Scope:** Game Initialization convention — confirmed accurate following auto-start fix across Snake, Tetris, and Breakout.
-- **Verified sections:** Short-circuit assertions (||) anti-pattern (lines 183-206), game initialization conventions (lines 71-117), auto-start regression fixes confirmed in Snake, Tetris, and Breakout.
-
-- **2026-01-04 card:** Last Reviewed section update.
-- **Reviewed:** 2026-01-04
-- **Scope:** Game Initialization convention confirmed accurate after auto-start fix across Snake, Tetris, and Breakout.
-
-- **2026-01-04 review:** Game Initialization convention confirmed accurate.
-
-- **2026-01-04 card request:** Last Reviewed section update completed.
-
-- **2026-01-04:** Card request processed. Reviewed date updated to 2026-01-04. Scope confirms Game Initialization convention accuracy after auto-start fixes in Snake, Tetris, and Breakout.
+- **Verified sections:** Short-circuit assertions (||) anti-pattern (lines 183-206), game initialization conventions (lines 71-117).
+- **Excluded:** None.
