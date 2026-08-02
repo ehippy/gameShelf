@@ -263,3 +263,4 @@ describe('Auto-start regression: all three games', () => {
     expect(breakoutModule.state.score).toBe(0)
   })
 })
+
