@@ -307,16 +307,7 @@ Card-level postmortems should only include friction/struggles details **when fri
 
 ### No-friction cards
 
-**Forbidden phrases:** The following boilerplate must never appear in a clean postmortem:
-- "Nothing notable"
-- "None"
-- "N/A"
-- "No friction"
-- "Clean card"
-- "No struggles"
-- Any variation of the above
-
-If you see any of these in a generated postmortem, strip the entire line. The struggles section should be entirely absent — not replaced with a placeholder of any kind.
+When a card completed cleanly (no revisions, no retries, no dead ends), the postmortem simply ends after the summary line — no struggles/friction section at all. Avoid padding the postmortem with boilerplate substitutes: "Nothing notable", "None", "N/A", "No friction", "Clean card", "No struggles", or any variation of the above. The struggles section should be entirely absent — not replaced with a placeholder of any kind.
 
 **Correct — clean card (no struggles section at all):**
 ```
@@ -333,12 +324,6 @@ Struggles: The gravity value was inconsistent between init() and the game loop �
 ```
 
 *(When friction *did* occur, include a `Struggles:` section that briefly describes what went wrong, what was learned, and what to watch for next time.)*
-
-### When friction *did* occur
-
-When friction *did* occur (revisions, retries, dead ends), note the specific friction briefly — what went wrong, what you learned, and what to watch for next time.
-
-- This convention keeps postmortems concise and meaningful: friction is documented when it exists, omitted when it doesn't.
 
 ## Last Reviewed
 
