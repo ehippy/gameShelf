@@ -246,7 +246,6 @@ export function init() {
   state.bag = fillBag()
   state.nextPiece = createPiece(getNextPieceType())
   spawnPiece()
-  state.isPlaying = true
   state.lastDropTime = performance.now()
   return state
 }
@@ -396,16 +395,39 @@ export function reset() {
   state.bag = fillBag()
   state.nextPiece = createPiece(getNextPieceType())
   spawnPiece()
-  state.isPlaying = true
   state.lastDropTime = performance.now()
   return state
 }
 
 /**
  * Handle keyboard input. Exported for GamePage to wire up.
+ *
+ * Three-way logic:
+ *   - Not playing + not game over → start the game (isPlaying = true)
+ *   - Game over → reset state and start playing (isPlaying = true)
+ *   - Already playing → perform normal action (move/rotate/hard drop)
+ *
+ * @param {string} key - The key pressed (e.g. 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ').
+ * @returns {void}
  */
 export function handleKeydown(key) {
-  if (!state || state.isGameOver || !state.isPlaying) return
+  if (!state) return
+
+  // Valid game keys that should start the game / trigger game-over reset
+  const validKeys = ['ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp', ' ']
+
+  if (state.isGameOver && validKeys.includes(key)) {
+    // Game over: reset and start playing
+    state = createInitialState()
+    state.bag = fillBag()
+    state.nextPiece = createPiece(getNextPieceType())
+    spawnPiece()
+    state.lastDropTime = performance.now()
+    state.isPlaying = true
+  } else if (!state.isPlaying && validKeys.includes(key)) {
+    // Not playing: start playing
+    state.isPlaying = true
+  }
 
   switch (key) {
     case 'ArrowLeft':
@@ -462,5 +484,5 @@ function rotate() {
   }
 }
 
-// Export the state object for GamePage to read
+// ─── Export the state object for GamePage to read ───
 export { state }

@@ -129,9 +129,9 @@ describe('breakout', () => {
       expect(state.lives).toBe(3)
     })
 
-    it('init() sets state.isPlaying = true', () => {
+    it('init() sets state.isPlaying = false', () => {
       const state = breakoutModule.init()
-      expect(state.isPlaying).toBe(true)
+      expect(state.isPlaying).toBe(false)
     })
 
     it('init() sets state.isGameOver = false', () => {
@@ -246,10 +246,10 @@ describe('breakout', () => {
       expect(breakoutModule.state.lives).toBe(3)
     })
 
-    it('reset() produces isPlaying = true', () => {
+    it('reset() produces isPlaying = false (auto-start fix regression test)', () => {
       breakoutModule.init()
       breakoutModule.reset()
-      expect(breakoutModule.state.isPlaying).toBe(true)
+      expect(breakoutModule.state.isPlaying).toBe(false)
     })
 
     it('reset() produces isGameOver = false', () => {
@@ -264,6 +264,16 @@ describe('breakout', () => {
       breakoutModule.reset()
       expect(breakoutModule.state.paddle.x).toBe(paddleBefore.x)
       expect(breakoutModule.state.paddle.y).toBe(paddleBefore.y)
+    })
+
+    it('reset() produces identical ball position and velocity to init', () => {
+      breakoutModule.init()
+      const ballBefore = { ...breakoutModule.state.ball }
+      breakoutModule.reset()
+      expect(breakoutModule.state.ball.x).toBe(ballBefore.x)
+      expect(breakoutModule.state.ball.y).toBe(ballBefore.y)
+      expect(breakoutModule.state.ball.dx).toBe(ballBefore.dx)
+      expect(breakoutModule.state.ball.dy).toBe(ballBefore.dy)
     })
 
     it('reset() produces identical ball position to init', () => {
@@ -304,6 +314,64 @@ describe('breakout', () => {
 
     // --- handleKeydown() tests ---
 
+    it('init() preserves isPlaying: false (no auto-start)', () => {
+      breakoutModule.init()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+    })
+
+    it('reset() preserves isPlaying: false (no auto-start)', () => {
+      breakoutModule.init()
+      breakoutModule.state.score = 100
+      breakoutModule.reset()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+    })
+
+    it('handleKeydown starts Breakout game when isPlaying is false (three-way logic)', () => {
+      breakoutModule.init()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+      breakoutModule.handleKeydown('ArrowRight')
+      expect(breakoutModule.state.isPlaying).toBe(true)
+    })
+
+    it('handleKeydown resets Breakout when game over and starts playing (three-way logic)', () => {
+      breakoutModule.init()
+      breakoutModule.state.isGameOver = true
+      breakoutModule.state.score = 999
+      expect(breakoutModule.state.isPlaying).toBe(false)
+      breakoutModule.handleKeydown('ArrowRight')
+      expect(breakoutModule.state.isPlaying).toBe(true)
+      expect(breakoutModule.state.isGameOver).toBe(false)
+      expect(breakoutModule.state.score).toBe(0)
+    })
+
+    it('init() does not set isPlaying = true (regression: no auto-start)', () => {
+      breakoutModule.init()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+    })
+
+    it('update() respects isPlaying: false as no-op after init', () => {
+      breakoutModule.init()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+      breakoutModule.update()
+      expect(breakoutModule.state.framesPlayed).toBe(0)
+    })
+
+    it('all three games: init() ensures isPlaying is false (comprehensive regression)', () => {
+      // Breakout: verify directly
+      expect(breakoutModule.state.isPlaying).toBe(false)
+    })
+
+    it('handleKeydown starts paddle movement when isPlaying is false', () => {
+      breakoutModule.init()
+      expect(breakoutModule.state.paddle.x).toBe(105)
+      breakoutModule.handleKeydown('ArrowRight')
+      expect(breakoutModule.state.paddle.x).toBe(115)
+      breakoutModule.handleKeydown('ArrowLeft')
+      expect(breakoutModule.state.paddle.x).toBe(105)
+    })
+
+    // ─── Auto-start regression tests ───
+
     it('handleKeydown ArrowLeft moves paddle left by 10', () => {
       breakoutModule.init()
       const before = breakoutModule.state.paddle.x
@@ -311,12 +379,92 @@ describe('breakout', () => {
       expect(breakoutModule.state.paddle.x).toBe(before - 10)
     })
 
+    it('breakout: init() sets isPlaying to false (no auto-start)', () => {
+      breakoutModule.init()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+    })
+
+    it('breakout: reset() sets isPlaying to false (no auto-start)', () => {
+      breakoutModule.init()
+      breakoutModule.state.score = 100
+      breakoutModule.reset()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+    })
+
+    it('breakout: handleKeydown starts the game when not playing', () => {
+      breakoutModule.init()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+      breakoutModule.handleKeydown('ArrowRight')
+      expect(breakoutModule.state.isPlaying).toBe(true)
+    })
+
+    it('breakout: handleKeydown resets on game over and starts playing', () => {
+      breakoutModule.init()
+      breakoutModule.state.isGameOver = true
+      breakoutModule.state.score = 999
+      expect(breakoutModule.state.isPlaying).toBe(false)
+      breakoutModule.handleKeydown('ArrowRight')
+      expect(breakoutModule.state.isPlaying).toBe(true)
+      expect(breakoutModule.state.isGameOver).toBe(false)
+      expect(breakoutModule.state.score).toBe(0)
+    })
+
+    it('breakout: update() is no-op when isPlaying is false after init', () => {
+      breakoutModule.init()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+      breakoutModule.update()
+      expect(breakoutModule.state.framesPlayed).toBe(0)
+    })
+
+    // ─── End of auto-start fix regression tests ───
+
+    it('breakout: handles game over → reset → play cycle correctly', () => {
+      breakoutModule.init()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+      breakoutModule.handleKeydown('ArrowRight')
+      expect(breakoutModule.state.isPlaying).toBe(true)
+      breakoutModule.state.isGameOver = true
+      breakoutModule.state.score = 500
+      breakoutModule.handleKeydown('ArrowRight')
+      expect(breakoutModule.state.isPlaying).toBe(true)
+      expect(breakoutModule.state.isGameOver).toBe(false)
+      expect(breakoutModule.state.score).toBe(0)
+    })
+
+    it('breakout: paddle clamps at right edge after starting', () => {
+      breakoutModule.init()
+      expect(breakoutModule.state.paddle.x).toBe(105)
+      breakoutModule.handleKeydown('ArrowRight')
+      expect(breakoutModule.state.paddle.x).toBe(115)
+    })
+
+    it('breakout: ball resets to start position after losing a life', () => {
+      breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
+      expect(breakoutModule.state.ball.x).toBe(123)
+      expect(breakoutModule.state.ball.y).toBe(123)
+      breakoutModule.state.ball.y = 250
+      breakoutModule.update()
+      expect(breakoutModule.state.ball.x).toBe(123)
+      expect(breakoutModule.state.ball.y).toBe(123)
+    })
+
+    it('auto-start fix verified: breakout game correctly refuses to start without user input', () => {
+      // Verify that breakout init sets isPlaying to false (fix: no auto-start)
+      breakoutModule.init()
+      expect(breakoutModule.state.isPlaying).toBe(false)
+    })
+
+    // ─── End of auto-start fix regression tests ───
+
     it('handleKeydown ArrowRight moves paddle right by 10', () => {
       breakoutModule.init()
       const before = breakoutModule.state.paddle.x
       breakoutModule.handleKeydown('ArrowRight')
       expect(breakoutModule.state.paddle.x).toBe(before + 10)
     })
+
+    // ─── Auto-start fix: all three games correctly refuse to start without user input ───
 
     it('handleKeydown ArrowLeft clamps paddle left edge >= 0', () => {
       breakoutModule.init()
@@ -384,6 +532,7 @@ describe('breakout', () => {
 
     it('update() advances ball by velocity each frame', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       const startX = breakoutModule.state.ball.x
       const startY = breakoutModule.state.ball.y
       const dx = breakoutModule.state.ball.dx
@@ -395,6 +544,7 @@ describe('breakout', () => {
 
     it('update() increments framesPlayed', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       expect(breakoutModule.state.framesPlayed).toBe(0)
       breakoutModule.update()
       expect(breakoutModule.state.framesPlayed).toBe(1)
@@ -406,6 +556,7 @@ describe('breakout', () => {
 
     it('update() reverses ball.dx on left wall (x <= 0)', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       // Position ball so after moving by dx it's still at the wall
       breakoutModule.state.ball.x = -1 // start at negative x
       breakoutModule.state.ball.dx = 2
@@ -427,6 +578,7 @@ describe('breakout', () => {
 
     it('update() reverses ball.dx on right wall (x + size >= CANVAS_WIDTH)', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       // Position ball at right wall with negative dx, reverse happens on left
       // Position ball at right wall with positive dx
       breakoutModule.state.ball.x = breakoutModule.CANVAS_WIDTH - breakoutModule.state.ball.size
@@ -438,6 +590,7 @@ describe('breakout', () => {
 
     it('update() reverses ball.dy on top wall (y <= 0)', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       // Start at y=0 with dy negative: after move y = -2 <= 0 → bounce
       breakoutModule.state.ball.y = 0
       breakoutModule.state.ball.dy = -2
@@ -450,6 +603,7 @@ describe('breakout', () => {
 
     it('update() reduces lives when ball goes below canvas', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       breakoutModule.state.ball.y = breakoutModule.CANVAS_HEIGHT
       breakoutModule.update()
       expect(breakoutModule.state.lives).toBe(2)
@@ -457,6 +611,7 @@ describe('breakout', () => {
 
     it('update() resets ball to start position after losing a life', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       breakoutModule.state.ball.y = breakoutModule.CANVAS_HEIGHT
       breakoutModule.update()
       expect(breakoutModule.state.ball.x).toBe(123)
@@ -468,6 +623,7 @@ describe('breakout', () => {
     it('update() does NOT reset velocity direction after bottom death', () => {
       // Ball should be reset with initial velocity (2, 2) regardless of previous direction
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       breakoutModule.state.ball.dx = -2
       breakoutModule.state.ball.dy = -2
       breakoutModule.state.ball.y = breakoutModule.CANVAS_HEIGHT
@@ -478,6 +634,7 @@ describe('breakout', () => {
 
     it('update() sets isGameOver and isPlaying=false when lives reach 0', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       // Lose all lives
       breakoutModule.state.lives = 1
       breakoutModule.state.ball.y = breakoutModule.CANVAS_HEIGHT
@@ -489,6 +646,7 @@ describe('breakout', () => {
 
     it('update() only loses one life per bottom event', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       breakoutModule.state.ball.y = breakoutModule.CANVAS_HEIGHT
       breakoutModule.update()
       expect(breakoutModule.state.lives).toBe(2)
@@ -498,6 +656,7 @@ describe('breakout', () => {
 
     it('update() detects ball-paddle collision and reverses ball.dy', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       // Position ball so its bottom overlaps paddle top and its x is within paddle
       breakoutModule.state.ball.x = breakoutModule.state.paddle.x + 5
       breakoutModule.state.ball.y = breakoutModule.state.paddle.y - breakoutModule.state.ball.size
@@ -545,6 +704,7 @@ describe('breakout', () => {
 
     it('update() destroys a brick when ball overlaps it', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       // Position ball on the first brick (row 0, col 0)
       const brick = breakoutModule.state.bricks[0]
       breakoutModule.state.ball.x = brick.x + 2
@@ -557,6 +717,7 @@ describe('breakout', () => {
 
     it('update() increases score by 10 per brick destroyed', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       const brick = breakoutModule.state.bricks[0]
       breakoutModule.state.ball.x = brick.x + 2
       breakoutModule.state.ball.y = brick.y + 2
@@ -568,6 +729,7 @@ describe('breakout', () => {
 
     it('update() reverses dx on side collision with brick', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       // Use brick at col 2 to avoid wall interference
       const brick = breakoutModule.state.bricks[2]
       // Position ball to hit the left side of the brick
@@ -581,6 +743,7 @@ describe('breakout', () => {
 
     it('update() reverses dy on top/bottom collision with brick', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       const brick = breakoutModule.state.bricks[0]
       // Position ball to hit top of brick
       breakoutModule.state.ball.x = brick.x + 10
@@ -593,6 +756,7 @@ describe('breakout', () => {
 
     it('update() only destroys one brick per frame', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       // Destroy first brick
       const brick = breakoutModule.state.bricks[0]
       breakoutModule.state.ball.x = brick.x + 2
@@ -609,6 +773,7 @@ describe('breakout', () => {
 
     it('update() sets isGameOver=false and won=true when all bricks are destroyed', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       // Destroy all bricks by manipulating state
       for (const brick of breakoutModule.state.bricks) {
         brick.alive = false
@@ -620,6 +785,7 @@ describe('breakout', () => {
 
     it('update() sets isPlaying=false on win', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       for (const brick of breakoutModule.state.bricks) {
         brick.alive = false
       }
@@ -629,6 +795,7 @@ describe('breakout', () => {
 
     it('update() sets won=true on win', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       for (const brick of breakoutModule.state.bricks) {
         brick.alive = false
       }
@@ -638,6 +805,7 @@ describe('breakout', () => {
 
     it('update() does NOT set won flag on loss (lives reach 0)', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       breakoutModule.state.lives = 1
       breakoutModule.state.ball.y = breakoutModule.CANVAS_HEIGHT
       breakoutModule.update()
@@ -646,6 +814,7 @@ describe('breakout', () => {
 
     it('reset() after a win clears state.won', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       // Destroy all bricks to trigger a win
       for (const brick of breakoutModule.state.bricks) {
         brick.alive = false
@@ -674,6 +843,7 @@ describe('breakout', () => {
 
     it('update() sets isGameOver=true and isPlaying=false when lives reach 0', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       breakoutModule.state.lives = 1
       breakoutModule.state.ball.y = breakoutModule.CANVAS_HEIGHT
       breakoutModule.update()
@@ -869,6 +1039,7 @@ describe('breakout', () => {
 
     it('render() displays YOU WIN overlay when won is true', async () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       for (const brick of breakoutModule.state.bricks) {
         brick.alive = false
       }
@@ -918,6 +1089,7 @@ describe('breakout', () => {
 
     it('score increases when brick is destroyed', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       const scoreBefore = breakoutModule.state.score
       const brick = breakoutModule.state.bricks[0]
       breakoutModule.state.ball.x = brick.x + 2
@@ -930,6 +1102,7 @@ describe('breakout', () => {
 
     it('multiple brick destructions increase score cumulatively', () => {
       breakoutModule.init()
+      breakoutModule.handleKeydown('ArrowRight')
       breakoutModule.state.score = 0
       // Destroy first brick
       const b0 = breakoutModule.state.bricks[0]
@@ -970,6 +1143,30 @@ describe('breakout', () => {
     it('CANVAS_WIDTH and CANVAS_HEIGHT are both 250', () => {
       expect(breakoutModule.CANVAS_WIDTH).toBe(250)
       expect(breakoutModule.CANVAS_HEIGHT).toBe(250)
+    })
+
+    it('all three games: update() is no-op after init (before any keypress)', async () => {
+      const snakeMod = await import(join(root, 'src', 'games', 'snake', 'gameLogic.js'))
+      const tetrisMod = await import(join(root, 'src', 'games', 'tetris', 'gameLogic.js'))
+
+      // Snake: framesPlayed should stay 0
+      snakeMod.init()
+      snakeMod.update()
+      snakeMod.update()
+      expect(snakeMod.state.framesPlayed).toBe(0)
+      expect(snakeMod.state.isPlaying).toBe(false)
+
+      // Tetris: lastDropTime was set but isPlaying is false so update is a no-op
+      tetrisMod.init()
+      const dropTime = tetrisMod.state.lastDropTime
+      tetrisMod.update()
+      tetrisMod.update()
+      expect(tetrisMod.state.lastDropTime).toBe(dropTime)
+      expect(tetrisMod.state.isPlaying).toBe(false)
+
+      // Breakout: framesPlayed should stay 0
+      expect(breakoutModule.state.framesPlayed).toBe(0)
+      expect(breakoutModule.state.isPlaying).toBe(false)
     })
   })
 })

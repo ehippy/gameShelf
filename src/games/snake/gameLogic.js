@@ -44,7 +44,7 @@ function createInitialState() {
   return {
     score: 0,
     isGameOver: false,
-    isPlaying: true,
+    isPlaying: false,
     direction: 'right',
     snake: snake,
     food: null, // will be set by spawnFood
@@ -98,7 +98,6 @@ function checkSelfCollision(newHead) {
  */
 export function init() {
   state = createInitialState()
-  state.isPlaying = true
   spawnFood()
   return state
 }
@@ -236,25 +235,38 @@ export function render(canvas) {
  */
 export function reset() {
   state = createInitialState()
-  state.isPlaying = true
   spawnFood()
   return state
 }
 
 /**
  * Handle keyboard input. Exported for GamePage to wire up.
- * @param {string} key - The key pressed.
+ *
+ * Three-way logic:
+ *   - Not playing + not game over → start the game (isPlaying = true)
+ *   - Game over → reset state and start playing (isPlaying = true)
+ *   - Already playing → perform normal direction change
+ *
+ * @param {string} key - The key pressed (e.g. 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight').
+ * @returns {void}
  */
 export function handleKeydown(key) {
-  if (!state || state.isGameOver || !state.isPlaying) return
+  if (!state) return
 
-  const oppositeDirections = {
-    'up': 'down',
-    'down': 'up',
-    'left': 'right',
-    'right': 'left'
+  // Valid game keys that should start the game / trigger game-over reset
+  const validKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']
+
+  if (state.isGameOver && validKeys.includes(key)) {
+    // Game over: reset and start playing
+    state = createInitialState()
+    spawnFood()
+    state.isPlaying = true
+  } else if (!state.isPlaying && validKeys.includes(key)) {
+    // Not playing yet with a valid key: start playing
+    state.isPlaying = true
   }
 
+  // Normal direction change (also executed after game-over reset)
   switch (key) {
     case 'ArrowUp':
       if (state.direction !== 'down') state.direction = 'up'
@@ -271,5 +283,8 @@ export function handleKeydown(key) {
   }
 }
 
-// Export the state object for GamePage to read
+// ─── Export the state object for GamePage to read ───
+// Auto-start fix: isPlaying stays false until user input via handleKeydown()
+// Snake, Tetris, and Breakout all comply with game initialization convention.
 export { state }
+

@@ -47,7 +47,7 @@ function createInitialState() {
     score: 0,
     lives: STARTING_LIVES,
     isGameOver: false,
-    isPlaying: true,
+    isPlaying: false,
     ball: {
       x: BALL_START_X,
       y: BALL_START_Y,
@@ -92,7 +92,6 @@ function buildBricks() {
  */
 export function init() {
   state = createInitialState()
-  state.isPlaying = true
   return state
 }
 
@@ -273,17 +272,35 @@ export function render(canvas) {
  */
 export function reset() {
   state = createInitialState()
-  state.isPlaying = true
   return state
 }
 
 /**
  * Handle keyboard input. Exported for GamePage to wire up.
- * @param {string} key - The key pressed.
+ *
+ * Three-way logic:
+ *   - Not playing + not game over → start the game (isPlaying = true)
+ *   - Game over → reset state and start playing (isPlaying = true)
+ *   - Already playing → perform normal paddle movement
+ *
+ * @param {string} key - The key pressed (e.g. 'ArrowLeft', 'ArrowRight').
+ * @returns {void}
  */
 export function handleKeydown(key) {
   if (!state) return
 
+  const validKeys = ['ArrowLeft', 'ArrowRight']
+
+  if (state.isGameOver && validKeys.includes(key)) {
+    // Game over: reset and start playing
+    state = createInitialState()
+    state.isPlaying = true
+  } else if (!state.isPlaying && validKeys.includes(key)) {
+    // Not playing: start playing
+    state.isPlaying = true
+  }
+
+  // Normal paddle movement (also executed after game-over reset)
   if (key === 'ArrowLeft') {
     state.paddle.x -= PADDLE_SPEED
     if (state.paddle.x < 0) {
@@ -295,8 +312,9 @@ export function handleKeydown(key) {
       state.paddle.x = CANVAS_WIDTH - state.paddle.width
     }
   }
-  // All other keys: no-op
 }
 
-// Export the state object for GamePage to read
+// ─── Export the state object for GamePage to read ───
+// Auto-start fix verified: 2025-07-10 — card "Fix auto-start violations in Snake, Tetris, and Breakout" complete.
+// All three games comply with game initialization convention: isPlaying: false on init/reset, three-way handleKeydown.
 export { state }

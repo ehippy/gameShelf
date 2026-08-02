@@ -292,16 +292,108 @@ describe('tetris', () => {
       expect(() => tetrisModule.update()).not.toThrow()
     })
 
-    it('handleKeydown does not throw when game is over', () => {
+    it('handleKeydown resets state and starts playing when game is over', () => {
       if (!tetrisModule) return
       tetrisModule.init()
       tetrisModule.state.isGameOver = true
-      expect(() => {
-        tetrisModule.handleKeydown('ArrowLeft')
-        tetrisModule.handleKeydown('ArrowRight')
-        tetrisModule.handleKeydown('ArrowUp')
-        tetrisModule.handleKeydown(' ')
-      }).not.toThrow()
+      tetrisModule.handleKeydown('ArrowLeft')
+      expect(tetrisModule.state.isGameOver).toBe(false)
+      expect(tetrisModule.state.isPlaying).toBe(true)
+    })
+
+    it('handleKeydown starts playing and performs action when not playing', () => {
+      if (!tetrisModule) return
+      tetrisModule.init()
+      const scoreBefore = tetrisModule.state.score
+      tetrisModule.state.isPlaying = false
+      tetrisModule.handleKeydown('ArrowLeft')
+      expect(tetrisModule.state.isPlaying).toBe(true)
+      // Score should not have changed (just a left move without soft drop)
+      expect(tetrisModule.state.score).toBe(scoreBefore)
+    })
+
+    // ─── Three-way handleKeydown logic tests ───
+
+    it('handleKeydown when isPlaying is false starts the game (three-way logic)', () => {
+      if (!tetrisModule) return
+      tetrisModule.init()
+      expect(tetrisModule.state.isPlaying).toBe(false)
+      tetrisModule.handleKeydown('ArrowDown')
+      expect(tetrisModule.state.isPlaying).toBe(true)
+    })
+
+    it('init() preserves isPlaying: false (no auto-start)', () => {
+      if (!tetrisModule) return
+      tetrisModule.init()
+      expect(tetrisModule.state.isPlaying).toBe(false)
+    })
+
+    it('reset() preserves isPlaying: false (no auto-start)', () => {
+      if (!tetrisModule) return
+      tetrisModule.init()
+      tetrisModule.state.score = 500
+      tetrisModule.reset()
+      expect(tetrisModule.state.isPlaying).toBe(false)
+    })
+
+    it('handleKeydown with space starts game and performs hard drop (three-way logic)', () => {
+      if (!tetrisModule) return
+      tetrisModule.init()
+      expect(tetrisModule.state.isPlaying).toBe(false)
+      tetrisModule.handleKeydown(' ')
+      expect(tetrisModule.state.isPlaying).toBe(true)
+    })
+
+    it('handleKeydown when game over resets state and starts playing (three-way logic)', () => {
+      if (!tetrisModule) return
+      tetrisModule.init()
+      tetrisModule.state.isGameOver = true
+      tetrisModule.state.score = 999
+      expect(tetrisModule.state.isPlaying).toBe(false)
+      tetrisModule.handleKeydown('ArrowRight')
+      expect(tetrisModule.state.isPlaying).toBe(true)
+      expect(tetrisModule.state.isGameOver).toBe(false)
+      expect(tetrisModule.state.score).toBe(0)
+    })
+
+    it('init() does not auto-start the game (isPlaying stays false)', () => {
+      if (!tetrisModule) return
+      tetrisModule.init()
+      expect(tetrisModule.state.isPlaying).toBe(false)
+    })
+
+    it('auto-start fix verified: init sets isPlaying to false', () => {
+      if (!tetrisModule) return
+      tetrisModule.init()
+      expect(tetrisModule.state.isPlaying).toBe(false)
+    })
+
+    it('handleKeydown resets state on game over for Tetris (three-way logic)', () => {
+      if (!tetrisModule) return
+      tetrisModule.init()
+      tetrisModule.state.isGameOver = true
+      tetrisModule.state.score = 42
+      tetrisModule.handleKeydown('ArrowRight')
+      expect(tetrisModule.state.isGameOver).toBe(false)
+      expect(tetrisModule.state.isPlaying).toBe(true)
+      expect(tetrisModule.state.score).toBe(0)
+    })
+
+    it('three-way logic: not playing → start playing, game over → reset & play, already playing → normal action', () => {
+      if (!tetrisModule) return
+      tetrisModule.init()
+      expect(tetrisModule.state.isPlaying).toBe(false)
+      tetrisModule.handleKeydown('ArrowLeft')
+      expect(tetrisModule.state.isPlaying).toBe(true)
+      const colBefore = tetrisModule.state.currentPiece.col
+      tetrisModule.handleKeydown('ArrowDown')
+      expect(tetrisModule.state.isPlaying).toBe(true)
+      tetrisModule.state.isGameOver = true
+      tetrisModule.state.score = 999
+      tetrisModule.handleKeydown('ArrowLeft')
+      expect(tetrisModule.state.isPlaying).toBe(true)
+      expect(tetrisModule.state.isGameOver).toBe(false)
+      expect(tetrisModule.state.score).toBe(0)
     })
 
     it('hard drop does not reduce score', () => {
@@ -343,6 +435,7 @@ describe('tetris', () => {
     it('line clearing increases score', () => {
       if (!tetrisModule) return
       tetrisModule.init()
+      tetrisModule.handleKeydown('ArrowDown')
       for (let r of [17, 18, 19]) {
         for (let c = 0; c < 10; c++) {
           tetrisModule.state.board[r][c] = '#ff0000'
@@ -360,6 +453,7 @@ describe('tetris', () => {
     it('lines counter increases after clearing', () => {
       if (!tetrisModule) return
       tetrisModule.init()
+      tetrisModule.handleKeydown('ArrowDown')
       for (let r of [17, 18, 19]) {
         for (let c = 0; c < 10; c++) {
           tetrisModule.state.board[r][c] = '#ff0000'
@@ -374,22 +468,24 @@ describe('tetris', () => {
       expect(tetrisModule.state.lines > linesBeforeLC).toBe(true)
     })
 
-    it('input rejected when game is over', () => {
+    it('input accepted when game is over (three-way logic)', () => {
       if (!tetrisModule) return
       tetrisModule.init()
       tetrisModule.state.isGameOver = true
-      const scoreAtGo = tetrisModule.state.score
+      tetrisModule.state.score = 999
       tetrisModule.handleKeydown('ArrowLeft')
-      tetrisModule.handleKeydown(' ')
-      expect(tetrisModule.state.score).toBe(scoreAtGo)
+      // After reset, score is back to 0, game is playing
+      expect(tetrisModule.state.isGameOver).toBe(false)
+      expect(tetrisModule.state.isPlaying).toBe(true)
+      expect(tetrisModule.state.score).toBe(0)
     })
 
-    it('game-over state persists', () => {
+    it('game-over state is cleared by pressing a key (three-way logic)', () => {
       if (!tetrisModule) return
       tetrisModule.init()
       tetrisModule.state.isGameOver = true
       tetrisModule.handleKeydown('ArrowLeft')
-      expect(tetrisModule.state.isGameOver).toBe(true)
+      expect(tetrisModule.state.isGameOver).toBe(false)
     })
 
     it('level formula: floor(lines / 10) + 1 works for 10 → 2', () => {

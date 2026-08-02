@@ -159,10 +159,10 @@ describe('snake', () => {
       expect(state.isGameOver).toBe(false)
     })
 
-    it('init() sets state.isPlaying to true', () => {
+    it('init() sets state.isPlaying to false', () => {
       const state = snakeModule.init()
       expect(typeof state.isPlaying).toBe('boolean')
-      expect(state.isPlaying).toBe(true)
+      expect(state.isPlaying).toBe(false)
     })
 
     it('init() sets state.direction to "right"', () => {
@@ -226,11 +226,11 @@ describe('snake', () => {
       expect(snakeModule.state.isGameOver).toBe(false)
     })
 
-    it('reset() restores state.isPlaying to true', () => {
+    it('reset() restores state.isPlaying to false', () => {
       snakeModule.init()
       snakeModule.state.isPlaying = false
       snakeModule.reset()
-      expect(snakeModule.state.isPlaying).toBe(true)
+      expect(snakeModule.state.isPlaying).toBe(false)
     })
 
     it('reset() restores state.direction to "right"', () => {
@@ -342,22 +342,43 @@ describe('snake', () => {
       const dirBefore = snakeModule.state.direction
       snakeModule.handleKeydown(' ')
       snakeModule.handleKeydown('Enter')
-      snakeModule.handleKeydown('ArrowLeft')
       expect(snakeModule.state.direction).toBe(dirBefore)
     })
 
-    it('handleKeydown is a no-op when isGameOver is true', () => {
+    it('handleKeydown arrow keys start game and change direction even when isPlaying is false', () => {
       snakeModule.init()
-      snakeModule.state.isGameOver = true
+      expect(snakeModule.state.isPlaying).toBe(false)
+      expect(snakeModule.state.direction).toBe('right')
+      // ArrowUp is valid (not opposite to 'right'), starts game and changes direction
       snakeModule.handleKeydown('ArrowUp')
-      expect(snakeModule.state.direction).toBe('right') // unchanged
+      expect(snakeModule.state.isPlaying).toBe(true)
+      expect(snakeModule.state.direction).toBe('up')
     })
 
-    it('handleKeydown is a no-op when isPlaying is false', () => {
+    it('handleKeydown ArrowLeft is rejected when facing right (reverse direction)', () => {
+      snakeModule.init()
+      expect(snakeModule.state.direction).toBe('right')
+      snakeModule.handleKeydown('ArrowLeft')
+      expect(snakeModule.state.direction).toBe('right')
+    })
+
+    it('handleKeydown resets state and starts playing when isGameOver is true', () => {
+      snakeModule.init()
+      snakeModule.state.isGameOver = true
+      snakeModule.state.score = 99
+      snakeModule.handleKeydown('ArrowUp')
+      expect(snakeModule.state.isGameOver).toBe(false)
+      expect(snakeModule.state.isPlaying).toBe(true)
+      expect(snakeModule.state.score).toBe(0)
+      expect(snakeModule.state.direction).toBe('up')
+    })
+
+    it('handleKeydown starts playing and changes direction when isPlaying is false', () => {
       snakeModule.init()
       snakeModule.state.isPlaying = false
       snakeModule.handleKeydown('ArrowUp')
-      expect(snakeModule.state.direction).toBe('right') // unchanged
+      expect(snakeModule.state.isPlaying).toBe(true)
+      expect(snakeModule.state.direction).toBe('up')
     })
 
     it('handleKeydown allows valid direction changes (not 180°)', () => {
@@ -372,14 +393,33 @@ describe('snake', () => {
       expect(snakeModule.state.direction).toBe('right')
     })
 
+    it('handleKeydown starts the game when isPlaying is false (three-way logic)', () => {
+      snakeModule.init()
+      expect(snakeModule.state.isPlaying).toBe(false)
+      snakeModule.handleKeydown('ArrowRight')
+      expect(snakeModule.state.isPlaying).toBe(true)
+      expect(snakeModule.state.direction).toBe('right')
+    })
+
+    it('handleKeydown when game is over resets and starts playing (three-way logic)', () => {
+      snakeModule.init()
+      snakeModule.state.isGameOver = true
+      snakeModule.state.score = 99
+      expect(snakeModule.state.isPlaying).toBe(false)
+      snakeModule.handleKeydown('ArrowUp')
+      expect(snakeModule.state.isPlaying).toBe(true)
+      expect(snakeModule.state.isGameOver).toBe(false)
+      expect(snakeModule.state.score).toBe(0)
+    })
+
     // ─── update() movement tests ───
 
     it('update() increments framesPlayed each move frame', () => {
       snakeModule.init()
+      snakeModule.handleKeydown('ArrowRight') // start the game
       expect(snakeModule.state.framesPlayed).toBe(0)
-      snakeModule.update() // frame 0→1
       // After 10 updates, framesPlayed = 10
-      for (let i = 1; i < 10; i++) {
+      for (let i = 0; i < 10; i++) {
         snakeModule.update()
       }
       expect(snakeModule.state.framesPlayed).toBe(10)
@@ -387,6 +427,7 @@ describe('snake', () => {
 
     it('update() moves snake right by 1 cell on a move frame', () => {
       snakeModule.init()
+      snakeModule.handleKeydown('ArrowRight') // start the game
       const headBefore = { ...snakeModule.state.snake[0] }
       // After first update: framesPlayed=1, no move (1%10≠0). After 9 more: framesPlayed=10, move occurs.
       for (let i = 0; i < 9; i++) {
@@ -450,10 +491,29 @@ describe('snake', () => {
       expect(headAfter.y).toBe(headBefore.y)
     })
 
-    // ─── update() wall collision tests ───
+    it('three-way logic: init → no playing, keypress → starts, game over → reset & plays', () => {
+      snakeModule.init()
+      expect(snakeModule.state.isPlaying).toBe(false)
+      expect(snakeModule.state.isGameOver).toBe(false)
+      snakeModule.handleKeydown('ArrowRight')
+      expect(snakeModule.state.isPlaying).toBe(true)
+      // Simulate game over (in real game, update() would set this)
+      snakeModule.state.isGameOver = true
+      snakeModule.state.score = 99
+      snakeModule.handleKeydown('ArrowUp')
+      // After game-over reset: isPlaying should be true, game over should be false, score reset
+      expect(snakeModule.state.isPlaying).toBe(true)
+      expect(snakeModule.state.isGameOver).toBe(false)
+      expect(snakeModule.state.score).toBe(0)
+      // Direction should be 'up' (the key we pressed)
+      expect(snakeModule.state.direction).toBe('up')
+    })
+
+    // ─── Additional movement direction tests ───
 
     it('update() triggers game over on right wall collision', () => {
       snakeModule.init()
+      snakeModule.handleKeydown('ArrowRight') // start the game
       snakeModule.state.direction = 'right'
       // Move snake to position head at x=9 (last valid column)
       // Snake starts with head at (2,5). After 7 move-right moves, head is at (9,5).
@@ -534,6 +594,7 @@ describe('snake', () => {
 
     it('update() triggers game over on self collision', () => {
       snakeModule.init()
+      snakeModule.handleKeydown('ArrowRight') // start the game
       // Make a snake that will self-collide
       snakeModule.state.snake = [
         { x: 5, y: 5 },
@@ -557,6 +618,7 @@ describe('snake', () => {
 
     it('update() increments score when snake eats food', () => {
       snakeModule.init()
+      snakeModule.handleKeydown('ArrowRight') // start the game
       const scoreBefore = snakeModule.state.score
       // Head starts at (2,5), direction is 'right'. Food at (3,5).
       snakeModule.state.food = { x: 3, y: 5 }
@@ -570,6 +632,7 @@ describe('snake', () => {
 
     it('update() grows snake by 1 when eating food (tail is not removed)', () => {
       snakeModule.init()
+      snakeModule.handleKeydown('ArrowRight') // start the game
       const lenBefore = snakeModule.state.snake.length
       snakeModule.state.food = { x: 3, y: 5 }
       for (let f = 0; f < 9; f++) {
@@ -611,6 +674,7 @@ describe('snake', () => {
 
     it('update() moves snake correctly (head added, tail removed) when no food eaten', () => {
       snakeModule.init()
+      snakeModule.handleKeydown('ArrowRight')
       const lenBefore = snakeModule.state.snake.length
       const headBefore = { ...snakeModule.state.snake[0] }
       const tailBefore = { ...snakeModule.state.snake[lenBefore - 1] } // save old tail BEFORE update
@@ -861,6 +925,7 @@ describe('snake', () => {
 
     it('full cycle: init → play → eat food → score increases → reset', () => {
       snakeModule.init()
+      snakeModule.handleKeydown('ArrowRight')
       expect(snakeModule.state.score).toBe(0)
       snakeModule.state.food = { x: 3, y: 5 }
       for (let f = 0; f < 9; f++) {
@@ -878,6 +943,7 @@ describe('snake', () => {
 
     it('multiple food eats increase score cumulatively', () => {
       snakeModule.init()
+      snakeModule.handleKeydown('ArrowRight')
       for (let i = 0; i < 3; i++) {
         const head = snakeModule.state.snake[0]
         const dir = snakeModule.state.direction
