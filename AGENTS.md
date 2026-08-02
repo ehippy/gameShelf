@@ -1,5 +1,7 @@
 # gameShelf — Project Conventions
 
+Last Reviewed update: 2026-01-04 card request — auto-start fixes verified in Snake, Tetris, and Breakout.
+
 ## Project Goal
 
 We're going to make a bunch of game reimplementations and tie them together with some nice landing page in the style of crazygames.
