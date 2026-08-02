@@ -9,6 +9,11 @@ const root = join(__dirname, '..', '..')
 // in Snake, Tetris, and Breakout games.
 // Regression tests: verifies all three games comply with game initialization
 // convention — isPlaying: false on init/reset, three-way handleKeydown logic.
+//
+// Card acceptance criteria:
+// - Snake, Tetris, Breakout: isPlaying false on init
+// - No auto-start in init() or reset()
+// - Three-way handleKeydown logic with valid-key gating
 
 describe('Auto-start regression: all three games', () => {
   let snakeModule = null
