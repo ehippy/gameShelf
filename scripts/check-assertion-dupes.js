@@ -5,8 +5,9 @@
  * two or more consecutive it() blocks within the same describe block
  * share the exact same expect(...).toBe(X) line.
  *
- * This is a warning-only check - always exits 0 - so developers can review
- * flagged patterns and decide if they are real copy-paste bugs.
+ * This is a blocking pre-commit guard that detects copy-pasted test
+ * assertions with identical expected values.  Exits non-zero when dupes
+ * are found, preventing the commit from being created.
  */
 import fs from 'node:fs'
 import path from 'node:path'
@@ -261,5 +262,5 @@ if (deduped.length > 0) {
   }
 }
 
-// Always exit 0 - this is a warning, not a blocker
-process.exit(0)
+// Exit non-zero on dupes to block the commit
+process.exit(deduped.length > 0 ? 1 : 0)
