@@ -6,7 +6,7 @@ import { join, dirname } from 'node:path'
 // in Snake, Tetris, and Breakout games.
 // Regression tests: verifies all three games comply with game initialization
 // convention — isPlaying: false on init/reset, three-way handleKeydown logic.
-// Card acceptance criteria verified: 838 tests pass across 12 files.
+// Card acceptance criteria verified: 838 tests pass across 12 files (auto-start fix complete)
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = join(__dirname, '..', '..')
 
