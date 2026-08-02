@@ -333,5 +333,188 @@ describe('whack-a-mole', () => {
       expect(whackModule.state.isPlaying).toBe(true)
       expect(whackModule.state.isGameOver).toBe(false)
     })
+
+    // ─── AC1: ArrowUp decrements cursorRow, clamped to 0 ───
+
+    it("handleKeydown('ArrowUp') decrements cursorRow", () => {
+      if (!whackModule) return
+      whackModule.init()
+      whackModule.handleKeydown('ArrowUp')
+      expect(whackModule.state.cursorRow).toBe(0)
+    })
+
+    it("handleKeydown('ArrowUp') clamps cursorRow at 0", () => {
+      if (!whackModule) return
+      whackModule.init()
+      whackModule.handleKeydown('ArrowDown')
+      whackModule.handleKeydown('ArrowDown')
+      expect(whackModule.state.cursorRow).toBe(2)
+      whackModule.handleKeydown('ArrowUp')
+      expect(whackModule.state.cursorRow).toBe(1)
+      whackModule.handleKeydown('ArrowUp')
+      expect(whackModule.state.cursorRow).toBe(0)
+      whackModule.handleKeydown('ArrowUp')
+      expect(whackModule.state.cursorRow).toBe(0)
+    })
+
+    // ─── AC2: ArrowDown increments cursorRow, clamped to 2 ───
+
+    it("handleKeydown('ArrowDown') increments cursorRow", () => {
+      if (!whackModule) return
+      whackModule.init()
+      whackModule.handleKeydown('ArrowDown')
+      expect(whackModule.state.cursorRow).toBe(2)
+    })
+
+    it("handleKeydown('ArrowDown') clamps cursorRow at 2", () => {
+      if (!whackModule) return
+      whackModule.init()
+      whackModule.handleKeydown('ArrowDown')
+      whackModule.handleKeydown('ArrowDown')
+      expect(whackModule.state.cursorRow).toBe(2)
+      whackModule.handleKeydown('ArrowDown')
+      expect(whackModule.state.cursorRow).toBe(2)
+    })
+
+    // ─── AC3: ArrowLeft decrements cursorCol, clamped to 0 ───
+
+    it("handleKeydown('ArrowLeft') decrements cursorCol", () => {
+      if (!whackModule) return
+      whackModule.init()
+      whackModule.handleKeydown('ArrowLeft')
+      expect(whackModule.state.cursorCol).toBe(0)
+    })
+
+    it("handleKeydown('ArrowLeft') clamps cursorCol at 0", () => {
+      if (!whackModule) return
+      whackModule.init()
+      whackModule.handleKeydown('ArrowLeft')
+      expect(whackModule.state.cursorCol).toBe(0)
+      whackModule.handleKeydown('ArrowLeft')
+      expect(whackModule.state.cursorCol).toBe(0)
+    })
+
+    // ─── AC4: ArrowRight increments cursorCol, clamped to 3 ───
+
+    it("handleKeydown('ArrowRight') increments cursorCol", () => {
+      if (!whackModule) return
+      whackModule.init()
+      whackModule.handleKeydown('ArrowRight')
+      expect(whackModule.state.cursorCol).toBe(2)
+    })
+
+    it("handleKeydown('ArrowRight') clamps cursorCol at 3", () => {
+      if (!whackModule) return
+      whackModule.init()
+      for (let i = 0; i < 5; i++) {
+        whackModule.handleKeydown('ArrowRight')
+      }
+      expect(whackModule.state.cursorCol).toBe(3)
+      whackModule.handleKeydown('ArrowRight')
+      expect(whackModule.state.cursorCol).toBe(3)
+    })
+
+    // ─── AC5: Arrow keys work in all states ───
+
+    it("handleKeydown('ArrowUp') works in menu state", () => {
+      if (!whackModule) return
+      whackModule.init()
+      whackModule.handleKeydown('ArrowDown')
+      expect(whackModule.state.cursorRow).toBe(1)
+      whackModule.handleKeydown('ArrowUp')
+      expect(whackModule.state.cursorRow).toBe(0)
+    })
+
+    it("handleKeydown('ArrowUp') works in gameplay state", () => {
+      if (!whackModule) return
+      whackModule.init()
+      whackModule.handleKeydown(' ')
+      whackModule.handleKeydown('ArrowDown')
+      expect(whackModule.state.cursorRow).toBe(2)
+      whackModule.handleKeydown('ArrowUp')
+      expect(whackModule.state.cursorRow).toBe(1)
+    })
+
+    it("handleKeydown('ArrowUp') works in game over state", () => {
+      if (!whackModule) return
+      whackModule.init()
+      whackModule.handleKeydown(' ')
+      whackModule.state.timer = 0
+      whackModule.update()
+      expect(whackModule.state.isGameOver).toBe(true)
+      whackModule.handleKeydown('ArrowDown')
+      expect(whackModule.state.cursorRow).toBe(2)
+      whackModule.handleKeydown('ArrowUp')
+      expect(whackModule.state.cursorRow).toBe(1)
+    })
+
+    // ─── AC6: Space in gameplay calls whackCell(cursorCol, cursorRow) ───
+
+    it("handleKeydown(' ') in gameplay calls whackCell at cursor position", () => {
+      if (!whackModule) return
+      whackModule.init()
+      whackModule.handleKeydown(' ')
+      // Move cursor to col 2, row 1
+      whackModule.handleKeydown('ArrowRight')
+      whackModule.handleKeydown('ArrowRight')
+      whackModule.handleKeydown('ArrowDown')
+      expect(whackModule.state.cursorCol).toBe(2)
+      expect(whackModule.state.cursorRow).toBe(1)
+      // Place a mole at cursor position
+      whackModule.state.activeMoles = [{ col: 2, row: 1, isBomb: false, phase: 50 }]
+      whackModule.state.score = 0
+      // Whack via space
+      whackModule.handleKeydown(' ')
+      expect(whackModule.state.activeMoles.length).toBe(0)
+      expect(whackModule.state.score).toBe(10)
+    })
+
+    // ─── AC7: Space in game over calls reset() then startGame() ───
+
+    it("handleKeydown(' ') in game over calls reset and starts game", () => {
+      if (!whackModule) return
+      whackModule.init('Medium')
+      whackModule.handleKeydown(' ')
+      whackModule.state.score = 999
+      whackModule.state.timer = 0
+      whackModule.update()
+      expect(whackModule.state.isGameOver).toBe(true)
+      expect(whackModule.state.score).toBe(999)
+      whackModule.handleKeydown(' ')
+      expect(whackModule.state.isPlaying).toBe(true)
+      expect(whackModule.state.isGameOver).toBe(false)
+      expect(whackModule.state.score).toBe(0)
+      expect(whackModule.state.difficulty).toBe('Medium')
+    })
+
+    // ─── AC8: drawCursorHighlight has no gamepadConnected guard ───
+
+    function findClosingBrace(src, openIdx) {
+      let depth = 0
+      for (let i = openIdx; i < src.length; i++) {
+        if (src[i] === '{') depth++
+        else if (src[i] === '}') {
+          depth--
+          if (depth === 0) return i
+        }
+      }
+      return src.length - 1
+    }
+
+    it("drawCursorHighlight does not check state.gamepadConnected", () => {
+      const whackSrc = readFileSync(whackPath, 'utf-8')
+      const drawCursorIdx = whackSrc.indexOf('function drawCursorHighlight(ctx)')
+      const bodyEndIndex = findClosingBrace(whackSrc, drawCursorIdx)
+      const body = whackSrc.slice(drawCursorIdx, bodyEndIndex + 1)
+      expect(body).not.toContain('gamepadConnected')
+    })
+
+    // ─── AC9: Menu render text includes keyboard hint ───
+
+    it("renderMenu includes keyboard hint text about arrow keys and space", () => {
+      const whackSrc = readFileSync(whackPath, 'utf-8')
+      expect(whackSrc).toMatch(/Arrow keys.*navigate/i)
+      expect(whackSrc).toMatch(/Space.*play/i)
+    })
   })
 })
