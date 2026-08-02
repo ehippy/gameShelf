@@ -1,7 +1,18 @@
 /**
  * Shared game-over overlay rendering utilities for gameShelf games.
- * Export: renderGameOver(ctx, state, canvasWidth, canvasHeight, options)
+ * Export: renderGameOver(ctx, state, canvasWidth, canvasHeight, options), shouldSkipUpdate(state)
  */
+
+/**
+ * Determine whether the game's update() loop should skip a frame.
+ *
+ * @param {object | null | undefined} state - The current game state.
+ * @returns {boolean} `true` if `state` is null/undefined, or `state.isGameOver` is truthy,
+ *                    or `state.isPlaying` is falsy; `false` otherwise.
+ */
+export function shouldSkipUpdate(state) {
+  return !state || state.isGameOver || !state.isPlaying
+}
 
 /**
  * Render a game-over overlay on the canvas.
