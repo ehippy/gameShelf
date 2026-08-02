@@ -8,6 +8,11 @@
 // ─── Imports ──────────────────────────────────────────────────────────────────
 
 import { renderGameOver } from '../shared/renderHelpers.js'
+import { useScoreStore } from '../../stores/scoreStore.js'
+
+// ─── Store Instance ───────────────────────────────────────────────────────────
+
+const scoreStore = useScoreStore()
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -173,18 +178,6 @@ function createInitialState(preserveDifficulty) {
     initial.difficulty = state.difficulty
   }
   return initial
-}
-
-function getHighScore() {
-  try {
-    const raw = localStorage.getItem('gamescore_whack-a-mole')
-    if (!raw) return 0
-    const scores = JSON.parse(raw)
-    if (!Array.isArray(scores) || scores.length === 0) return 0
-    return Math.max(...scores.map(s => s.score))
-  } catch {
-    return 0
-  }
 }
 
 // ─── Grid Helpers ─────────────────────────────────────────────────────────────
@@ -525,6 +518,8 @@ export function render(canvas) {
     renderGameplay(ctx)
   } else if (state.isGameOver) {
     renderGameplay(ctx)
+    const scores = scoreStore.getScores('whack-a-mole')
+    const highScore = scores.length > 0 ? Math.max(...scores.map(s => s.score)) : 0
     renderGameOver(ctx, state, CANVAS_W, CANVAS_H, {
       overlayColor: 'rgba(0, 0, 0, 0.7)',
       titleY: CANVAS_H / 2 - 80,
@@ -535,7 +530,7 @@ export function render(canvas) {
       showRestartPrompt: false,
       lines: [
         {
-          text: `High Score: ${getHighScore()}`,
+          text: `High Score: ${highScore}`,
           color: '#ffd700',
           font: 'bold 16px sans-serif',
           y: CANVAS_H / 2 - 15
