@@ -885,8 +885,6 @@ function drawWhackEffect(ctx, effect) {
 }
 
 function drawCursorHighlight(ctx) {
-  if (!state.gamepadConnected) return
-
   const center = cellCenter(state.cursorCol, state.cursorRow)
   const pulsePhase = Math.sin(state.framesPlayed * 0.1) * 0.3 + 0.7
 
