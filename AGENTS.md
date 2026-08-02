@@ -307,10 +307,6 @@ Card-level postmortems should only include friction/struggles details **when fri
 
 ### No-friction cards
 
-When a card completed cleanly (no revisions, no retries, no dead ends), the postmortem **MUST NOT** include a struggles/friction section of any kind. This is a hard rule, not a suggestion.
-
-> **If the card completed cleanly, the postmortem ends after the summary line — no struggles section at all.**
-
 **Forbidden phrases:** The following boilerplate must never appear in a clean postmortem:
 - "Nothing notable"
 - "None"
