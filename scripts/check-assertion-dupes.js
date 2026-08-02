@@ -105,8 +105,10 @@ function parseFile(filePath) {
           const subject = subjectMatch[1].trim()
           const valueMatch = line.match(/\.toBe\s*\(([\s\S]*?)\)\s*$/)
           const expectedValue = valueMatch ? valueMatch[1].trim() : ''
-          // Normalize dynamic / reference-like values to null so they
-          // never produce a false-positive dupe match.
+          // Normalize dynamic / reference-like values to a generic marker so
+          // they never produce a false-positive dupe match.  Variables like
+          // scoreBefore, xBefore, ballBefore are per-test locals — comparing
+          // their values across tests is meaningless.
           let keyExpectedValue = expectedValue
           // Variables ending in "Before" or "before" (e.g. scoreBefore, xBefore)
           if (/^(.+)(Before|before)$/.test(keyExpectedValue)) {
@@ -116,16 +118,19 @@ function parseFile(filePath) {
           if (/^before[ \t]*([+\-][ \t]*[\d.]+)$/.test(keyExpectedValue)) {
             keyExpectedValue = null
           }
-          // Trivial literals that appear across hundreds of legitimate tests
-          // and are never useful as a copy-paste signal:
-          //   false, true, 0, ''
-          if (keyExpectedValue !== null && /^(fF)alse$|^0$|^(tT)rue$|^(\'\'|\"\"|'\"')$/.test(keyExpectedValue)) {
+          // Trivial literals that appear in hundreds of legitimate tests.
+          // When the value is one of these, don't include it in the dupe-key
+          // — it would drown out real errors.  But we STILL include the
+          // subject in the key, so two tests checking different subjects
+          // with .toBe(false) won't match.
+          if (keyExpectedValue !== null && /^(fF)alse$|^0$|^(tT)rue$|^(\'\'|\"\"|\'\"\'|\"\')$/.test(keyExpectedValue)) {
+            // Trivial value: only use subject for matching
             keyExpectedValue = null
           }
-          // Build the dupe-key: if the value is non-trivial (a meaningful
-          // constant), use subject + value so only exact copy-paste errors
-          // match.  If the value is trivial, use subject only — trivial
-          // values like false/true/0 appear in legitimate tests everywhere.
+          // Build the dupe-key.  When the value is non-trivial (a meaningful
+          // constant like 'Easy', 2, -2.5, 1), include it so only exact
+          // copy-paste errors match.  When the value is trivial or null,
+          // use subject-only matching.
           const dupeKey = keyExpectedValue !== null
             ? subject + '|||' + keyExpectedValue
             : subject
