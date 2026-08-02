@@ -300,7 +300,6 @@ Card-level postmortems should only include friction/struggles details **when fri
 - If a card completed cleanly (no revisions, no retries, no dead ends), **omit the struggles/friction section entirely** rather than writing boilerplate like "struggles: Nothing notable" or "friction: None."
 - When friction *did* occur, note the specific friction briefly — what went wrong, what you learned, and what to watch for next time.
 - This convention keeps postmortems concise and meaningful: friction is documented when it exists, omitted when it doesn't.
-
 ## Last Reviewed
 
 - **Reviewed:** 2026-01-04
