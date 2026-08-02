@@ -236,8 +236,8 @@ describe('router/index.js', () => {
     expect(router).toContain("path: '/about', component:")
   })
 
-  it('maps path /game/:id to GamePage', () => {
-    expect(router).toContain("path: '/game/:id', component:")
+  it('maps path /game/:slug to GamePage', () => {
+    expect(router).toContain("path: '/game/:slug', component:")
   })
 
   it('maps path /highscores to HighScoresView', () => {
