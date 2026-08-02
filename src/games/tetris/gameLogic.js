@@ -413,6 +413,9 @@ export function reset() {
 export function handleKeydown(key) {
   if (!state) return
 
+  // Valid game keys that should start the game
+  const validKeys = ['ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp', ' ']
+
   if (state.isGameOver) {
     // Game over: reset and start playing
     state = createInitialState()
@@ -420,8 +423,8 @@ export function handleKeydown(key) {
     state.nextPiece = createPiece(getNextPieceType())
     spawnPiece()
     state.lastDropTime = performance.now()
-    state.isPlaying = true
-  } else if (!state.isPlaying) {
+    // Fall through to handle action
+  } else if (!state.isPlaying && validKeys.includes(key)) {
     // Not playing: start playing
     state.isPlaying = true
   }
