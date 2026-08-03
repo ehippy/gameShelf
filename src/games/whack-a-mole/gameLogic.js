@@ -888,7 +888,7 @@ export function reset() {
 }
 
 const transition = handleKeydownTransition(() => {
-  reset()
+  Object.assign(state, createInitialState(true))
 })
 
 /**
