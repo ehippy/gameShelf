@@ -402,7 +402,7 @@ export function reset() {
 }
 
 const transition = handleKeydownTransition(() => {
-  state = createInitialState()
+  Object.assign(state, createInitialState())
   state.bag = fillBag()
   state.nextPiece = createPiece(getNextPieceType())
   spawnPiece()
