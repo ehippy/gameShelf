@@ -79,11 +79,6 @@ async function main() {
   process.exit(1)
 }
 
-function pathToFileURL(filePath) {
-  const urlPath = filePath.replace(/\\/g, '/')
-  return new URL(`${urlPath}`)
-}
-
 function formatBytes(bytes) {
   return `${bytes} byte${bytes === 1 ? '' : 's'}`
 }
