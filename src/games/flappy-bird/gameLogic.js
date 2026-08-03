@@ -326,8 +326,12 @@ export function handleKeydown(key) {
   const validKeys = ['ArrowUp', ' ']
 
   // For ArrowUp/Space: transition + flapping
+  // actionFn handles "already playing", onTransition handles "game over" and "not playing"
   transition(state, key, validKeys, () => {
     // Already playing — flap
+    state.bird.velocity = FLAP_STRENGTH
+  }, () => {
+    // On transition (game over or not playing) — also flap
     state.bird.velocity = FLAP_STRENGTH
   })
 
