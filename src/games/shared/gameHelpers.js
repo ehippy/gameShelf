@@ -11,20 +11,23 @@
  * @param {() => void} resetFn — Game-specific reset callback. Called when
  *   the game is over and a valid key is pressed. The callback must:
  *   (a) reset state to initial conditions,
- *   (b) set state.isPlaying = true.
+ *   (b) NOT set state.isPlaying — the helper handles that.
  *
  * @returns {(state, key, validKeys, actionFn) => void}
  *   A state-transition function. Each game's handleKeydown calls this
  *   for state transitions, then performs its game-specific action.
  *
  *   Parameters:
- *     - state: the current game state object (read/write)
+ *     - state: the current game state object (read/write). If resetFn
+ *       reassigns the module-level state variable, the helper re-reads
+ *       via the game's state getter to get the new object.
  *     - key: the key that was pressed
  *     - validKeys: array of key strings that trigger state transitions
  *     - actionFn(key): callback for the "already playing" game-specific action
  *
  *   Behavior (three-way logic):
- *     1. if state.isGameOver && validKeys.includes(key) → resetFn(), state.isPlaying = true
+ *     1. if state.isGameOver && validKeys.includes(key) → resetFn(),
+ *        then re-read state, then set isPlaying = true
  *     2. if !state.isPlaying && validKeys.includes(key) → state.isPlaying = true
  *     3. if state.isPlaying && !state.isGameOver → actionFn(key)
  *     4. key not in validKeys and no transition → no-op (do nothing)
