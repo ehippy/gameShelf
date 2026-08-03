@@ -903,6 +903,7 @@ export function handleKeydown(key) {
   const validKeys = [' ']
 
   // Space bar: transition (start/restart/whack)
+  // resetFn handles both game-over reset and menu start
   transition(state, key, validKeys, () => {
     // Already playing — whack the mole under the cursor
     whackCell(state.cursorCol, state.cursorRow)
