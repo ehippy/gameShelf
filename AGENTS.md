@@ -431,7 +431,7 @@ The script checks for two things:
 
 Both must exist for the game to be considered fully implemented.
 
-## Writing Conventions
+## Last Reviewed
 
 This document (AGENTS.md) is a living guide for humans — including LLMs acting in a human role — working on the gameShelf project. It captures conventions learned from real work, not theoretical rules. Treat it the way a senior developer would treat a well-maintained runbook: practical, grounded in experience, and focused on helping people do the right thing without overthinking it.
 
