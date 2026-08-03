@@ -401,6 +401,14 @@ export function reset() {
   return state
 }
 
+const transition = handleKeydownTransition(() => {
+  state = createInitialState()
+  state.bag = fillBag()
+  state.nextPiece = createPiece(getNextPieceType())
+  spawnPiece()
+  state.lastDropTime = performance.now()
+})
+
 /**
  * Handle keyboard input. Exported for GamePage to wire up.
  *
@@ -415,21 +423,12 @@ export function reset() {
 export function handleKeydown(key) {
   if (!state) return
 
-  // Valid game keys that should start the game / trigger game-over reset
   const validKeys = ['ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp', ' ']
 
-  if (state.isGameOver && validKeys.includes(key)) {
-    // Game over: reset and start playing
-    state = createInitialState()
-    state.bag = fillBag()
-    state.nextPiece = createPiece(getNextPieceType())
-    spawnPiece()
-    state.lastDropTime = performance.now()
-    state.isPlaying = true
-  } else if (!state.isPlaying && validKeys.includes(key)) {
-    // Not playing: start playing
-    state.isPlaying = true
-  }
+  // State transition
+  transition(state, key, validKeys, () => {
+    // Already playing — action handled below
+  })
 
   switch (key) {
     case 'ArrowLeft':
