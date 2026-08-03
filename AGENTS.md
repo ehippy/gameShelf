@@ -490,6 +490,17 @@ Conclusion: [One-line summary of what was found or decided.]
 
 This keeps the backlog tidy and auditable. Future agents reviewing closed cards will see a clear record of why no code was produced, rather than wondering whether the work was missed or the spec was incomplete.
 
+## Game Addition Checklist
+
+Quick reference for onboarding a new game to the project:
+
+1. **`gameLogic.js` exports** — Create `src/games/<slug>/gameLogic.js` exporting `init()`, `update()`, `render(canvas)`, `reset()`, `handleKeydown(key)`, a mutable `state` object, and `CANVAS_WIDTH` / `CANVAS_HEIGHT` constants. See [Catalog & Routing Conventions](#catalog--routing-conventions) for project conventions.
+2. **Catalog entry** — Add an entry to `src/data/gamesCatalog.js` with `slug` (kebab-case), `title`, `description`, `thumbnail`, and `category` fields. Do NOT use the deprecated `id`, `name`, or `genre` fields. See [Catalog field naming](#catalog-field-naming).
+3. **Glob import** — Confirm the module is discoverable via `import.meta.glob('./src/games/*/gameLogic.js')` so Vite can statically analyze the import at build time. See [Vite Dynamic Import Convention](#vite-dynamic-import-convention).
+4. **No auto-start** — Ensure `init()` does not set `isPlaying = true`; the initial state must have `isPlaying: false`. The same applies to `reset()`. Game starts on first input via `handleKeydown()` using three-way logic. See [Game Initialization](#game-initialization).
+5. **Initial tests** — Create `tests/games/<slug>.test.js` with Vitest tests covering required exports exist, `init()` returns correct initial state (`score=0`, `isGameOver=false`, `isPlaying=false`), `reset()` restores initial state, `handleKeydown()` triggers three-way logic, and `update()`/`render()` don't crash. See [Testing Conventions](#testing-conventions).
+6. **Verify** — Run `node scripts/verify-game-exists.js <slug>` to confirm both the game code directory and test file exist before considering the game added. See [Pre-implementation Verification](#pre-implementation-verification).
+
 ## Last Reviewed
 
 - **Reviewed:** 2026-08-04
