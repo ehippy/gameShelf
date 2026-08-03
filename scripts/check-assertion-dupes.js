@@ -46,7 +46,8 @@ function findTestFiles(rootDir) {
  *   filePath: string,
  *   describeScope: string[],        // names of enclosing describe blocks
  *   testName: string,
- *   assertion: string               // exact line with expect(...).toBe(...)
+ *   assertion: string,              // normalized line with expect(...).toBe(...)
+ *   dupeKey: string                 // subject + value for matching
  * }
  */
 function parseFile(filePath) {
@@ -98,22 +99,38 @@ function parseFile(filePath) {
         continue // skip .not.* assertions
       }
       if (/\bexpect\s*\(.*?\)\s*\.toBe\s*\(/.test(line)) {
-        // Normalize the assertion to filter out false positives from
-        // variable-based expressions.  Two tests that both assert
-        // .toBe(scoreBefore) are checking different local variables
-        // and are always legitimate — never a copy-paste error.
+        // Extract the expect() subject and expected value for dupe detection.
+        // A real copy-paste error occurs when two different it() blocks
+        // have the exact same assertion line.  Variable-based expressions
+        // (scoreBefore, before + 10, etc.) are normalized to <VAR> since
+        // two tests checking different locals with .toBe(scoreBefore)
+        // are always legitimate.
         let normalized = trimmed
-        // Replace variable references ending in "Before" (scoreBefore, xBefore, dyBefore)
         normalized = normalized.replace(/\b\w*Before\b/g, '<VAR>')
-        // Replace expressions like "before + 10", "before - 1"
         normalized = normalized.replace(/\bbefore[ \t]*[+\-][ \t]*\d/g, '<VAR>')
-        // Replace standalone "before" variable references
         normalized = normalized.replace(/\bbefore\b/g, '<VAR>')
+
+        // Extract subject (everything between expect( and ).toBe)
+        const subjectMatch = normalized.match(/expect\s*\((.*?)\)\s*\.toBe\s*\(/)
+        const subject = subjectMatch ? subjectMatch[1].trim() : ''
+
+        // Extract expected value for the dupe-key
+        const valueMatch = normalized.match(/\.toBe\s*\(([\s\S]*?)\)\s*$/)
+        const expectedValue = valueMatch ? valueMatch[1].trim() : ''
+
+        // Only include the value in the key when it's non-trivial.
+        // Trivial values like false/true/0 appear in hundreds of
+        // legitimate tests; the subject alone is sufficient to
+        // detect the common copy-paste error.
+        const isTrivial = /^(fF)alse$|^(tT)rue$|^0$|^(\'\'|\"\"|\'\"\'|\"\')$/.test(expectedValue)
+        const dupeKey = isTrivial ? subject : subject + '|||' + expectedValue
+
         records.push({
           filePath,
           describeScope: [...describeStack],
           testName: currentItName,
           assertion: normalized,
+          dupeKey,
         })
       }
     }
@@ -131,7 +148,7 @@ function parseFile(filePath) {
 
 /**
  * Group records by describe scope within a file, then scan for consecutive
- * it blocks that share identical assertions.
+ * it blocks that share identical dupeKeys.
  */
 function findDuples(records) {
   const findings = []
@@ -148,10 +165,10 @@ function findDuples(records) {
     let i = 0
     while (i < scopeRecords.length) {
       const currentRec = scopeRecords[i]
-      // Look ahead for consecutive records with matching assertions
+      // Look ahead for consecutive records with matching dupeKey
       const matchedIndices = [i]
       for (let j = i + 1; j < scopeRecords.length; j++) {
-        if (scopeRecords[j].assertion === currentRec.assertion) {
+        if (scopeRecords[j].dupeKey === currentRec.dupeKey) {
           matchedIndices.push(j)
         } else {
           break // only consecutive matches
@@ -159,15 +176,11 @@ function findDuples(records) {
       }
 
       if (matchedIndices.length >= 2) {
-        // Collect all runs of consecutive identical assertions
-        // matchedIndices are all positions with the same assertion
-        // We want runs that are truly consecutive (no gaps)
+        // Collect all runs of consecutive identical dupeKeys
         const runs = [[matchedIndices[0]]]
         for (let m = 1; m < matchedIndices.length; m++) {
           const prev = matchedIndices[m - 1]
           const curr = matchedIndices[m]
-          // Check if this index is immediately after the previous one
-          // (consecutive in the scopeRecords array)
           if (curr === prev + 1) {
             runs[runs.length - 1].push(curr)
           } else {
@@ -177,20 +190,15 @@ function findDuples(records) {
 
         let foundValid = false
         for (const run of runs) {
-          // Require at least 2 consecutive records from different tests
-          // to flag a potential copy-paste error.
           if (run.length < 2) continue
           const assertionText = scopeRecords[run[0]].assertion
           const filePath = scopeRecords[run[0]].filePath
           const testNames = run.map(idx => scopeRecords[idx].testName)
 
           // Only flag if the tests are actually different
-          // (two identical assertions within the same it() block is legitimate)
           if (new Set(testNames).size < 2) continue
 
-          // Additionally, ensure that the run does not contain two records from
-          // the same it() block — those are same-block dupes, not cross-test dupes.
-          // We collect one record per unique it() block, preserving order.
+          // Deduplicate: one record per unique it() block
           const seenTests = new Set()
           const dedupedRun = []
           for (const idx of run) {
@@ -201,7 +209,6 @@ function findDuples(records) {
             }
           }
 
-          // After deduplication, we need at least 2 records from different tests
           if (dedupedRun.length < 2) continue
 
           findings.push({
@@ -213,7 +220,7 @@ function findDuples(records) {
           // Skip past this run
           i = matchedIndices[matchedIndices.length - 1] + 1
           foundValid = true
-          break // break from the runs loop to continue outer while
+          break
         }
         if (!foundValid) i++
         continue
