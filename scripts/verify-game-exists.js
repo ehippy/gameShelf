@@ -80,7 +80,7 @@ async function main() {
 }
 
 function formatBytes(bytes) {
-  return `${bytes} byte${bytes === 1 ? '' : 's'}`
+  return `${bytes} byte${bytes !== 1 ? 's' : ''}`
 }
 
 function getDirSize(dir) {
