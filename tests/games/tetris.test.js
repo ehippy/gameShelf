@@ -599,8 +599,10 @@ describe('tetris', () => {
       }
       tetrisModule.state.lastDropTime = performance.now() - 2000
       const scoreBefore = tetrisModule.state.score
-      // update 1: row 13→14. update 2: row 14→15 (hits collision at shape row 1 → board[16] filled), locks.
+      // update 1: drops row 13→14, resets lastDropTime. We force time again for next drop.
       tetrisModule.update()
+      tetrisModule.state.lastDropTime = performance.now() - 2000
+      // update 2: drops row 14→15 (hits collision at shape row 1 → board[16] filled), locks, clears 4 lines.
       tetrisModule.update()
       expect(tetrisModule.state.lines).toBe(4)
       expect(tetrisModule.state.score - scoreBefore).toBe(800)
