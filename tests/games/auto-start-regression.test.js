@@ -125,6 +125,14 @@ describe('Auto-start regression: all games', () => {
     expect(breakoutModule.state.paddle.x).toBe(115)
   })
 
+  it('Flappy Bird handleKeydown starts game when isPlaying is false (three-way)', () => {
+    flappyModule.init()
+    expect(flappyModule.state.isPlaying).toBe(false)
+    flappyModule.handleKeydown(' ')
+    expect(flappyModule.state.isPlaying).toBe(true)
+    expect(flappyModule.state.bird.velocity).toBe(-2.5)
+  })
+
   // --- Game-over reset checks ---
 
   it('Snake handleKeydown resets and starts when game over (three-way)', () => {
