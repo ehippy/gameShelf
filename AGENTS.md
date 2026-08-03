@@ -655,6 +655,12 @@ Follow the same principle when writing the acknowledgment note to `docs/cards/<n
 
 This keeps the backlog tidy and auditable. Future agents reviewing closed cards will see a clear record of why no code was produced, rather than wondering whether the work was missed or the spec was incomplete.
 
+## Backlog Triage & Scope Discipline
+
+Before creating a card to update AGENTS.md or document a process improvement, check whether it addresses real friction observed during implementation, review, or deployment. The project practice is clear: no meta-documentation cards unless they prevent a real bug from recurring. Conventions should be codified only after they've been tested in the field and proven useful — not before. Several cards for boilerplate prevention guidelines, scope discipline text, and similar process conventions flowed through the full PM → Developer → Tester → Reviewer → Deployer pipeline only to be closed as out-of-scope, wasting agent turns that could have gone to actual work. This shouldn't happen.
+
+Cards that document a pattern *only* after it caused real friction belong in AGENTS.md — the CI pipeline ordering convention stuck because a deploy failed, the Vite dynamic import convention was accepted because it caused runtime 404s, and the no-auto-start rule was born from a game that launched uninvited. Cards that are purely about codifying conventions no implementation has yet encountered a problem with do not. Generic scope discipline text, boilerplate prevention guidelines, and similar process improvements without a concrete, recurring bug behind them should be rejected by the PM before any spec is written. When a pattern is real, it will leave evidence in the wreckage.
+
 ## Game Addition Checklist
 
 Quick reference for onboarding a new game to the project:
