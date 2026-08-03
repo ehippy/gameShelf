@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
@@ -59,7 +57,7 @@ async function main() {
     // Exit 0 — fully implemented
     console.log(`✅ Game "${game.title}" (${slug}) is fully implemented.`)
     console.log(`   src/games/${slug}/`)
-    for (const f of listFiles(gameDir)) {
+    for (const f of listFiles(gameDir, slug)) {
       console.log(`   ${f}`)
     }
     console.log(`   tests/games/${slug}.test.js (${formatBytes(fs.statSync(testFile).size)})`)
@@ -85,14 +83,14 @@ function formatBytes(bytes) {
  * Recursively list files in a directory, returning their relative paths and sizes.
  * Paths are relative to src/games/<slug>/ (e.g. "gameLogic.js" or "utils/helper.js").
  */
-function listFiles(dir) {
+function listFiles(dir, slug) {
   const lines = []
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const fullPath = path.join(dir, entry.name)
     if (entry.isDirectory()) {
-      lines.push(...listFiles(fullPath))
+      lines.push(...listFiles(fullPath, slug))
     } else {
-      const rel = path.relative(dir, fullPath)
+      const rel = path.relative(path.join(gamesDir, slug), fullPath)
       lines.push(`${rel} (${formatBytes(fs.statSync(fullPath).size)})`)
     }
   }
