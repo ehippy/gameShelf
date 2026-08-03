@@ -330,7 +330,7 @@ Struggles: The gravity value was inconsistent between init() and the game loop �
 - **Verified sections:** Card-Level Postmortems section (lines 304–324, post-cleanup).
 
 - **Reviewed:** 2026-08-04
-- **Scope:** Playwright E2E config and smoke test file — added `tests/e2e/smoke.spec.js` and Playwright config (`playwright.config.js`).
+- **Scope:** Playwright E2E config and smoke test file — added `tests/e2e/smoke.spec.js` and Playwright config (`playwright.config.js`). Sandbox disk space blocked browser installation; the test file and config are structurally correct but not yet runnable.
 - **Verified sections:** Last Reviewed section (lines 326–335, post-entry addition).
 
 ## Writing Conventions
