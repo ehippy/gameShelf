@@ -581,57 +581,31 @@ describe('tetris', () => {
       tetrisModule.init()
       tetrisModule.state.isPlaying = true
       tetrisModule.state.level = 1
-      tetrisModule.state.lines = 0
-      // Fill rows 15, 16, 17, 18 fully. Row 19 is empty.
-      // Place an O piece (2×2) at col 8, row 16. It can't drop to 17 (row 17 filled).
-      // lockPiece places shape[0] at board[17][8,9], shape[1] at board[18][8,9].
-      // Row 17 already full → no change. Row 18 already full → no change.
-      // Only 3 lines (15, 16, 17) clear. Need a different approach.
-      // Instead: fill rows 16, 17, 18 fully. Row 15 is empty. Row 19 is empty.
-      // O piece at col 8, row 14. Drops: row 15 OK (empty), row 16 filled → locks at row 15.
-      // lockPiece places shape[0] at board[16][8,9] (already filled), shape[1] at board[17][8,9] (already filled).
-      // No new lines cleared. Still 3 lines.
-      // Simpler approach: use hardDrop on an O piece with rows 16,17,18 filled and col 9 of row 19 empty.
-      // O piece at col 8, hard drop from top: drops to row 18 (row 19, col 8,9 empty for shape[1]).
-      // lockPiece: shape[0]→board[19][8,9], shape[1] would be at board[20] out of bounds, so only shape[0] placed.
-      // Row 19 now has 2 cells filled, not full. Not 4 lines.
-      // Cleanest: fill rows 15, 16, 17, 18. Place I piece at col 0, row 0. Hard drop.
-      // I shape at row 0: [0,0,0,0]→board[0], [1,1,1,1]→board[1], [0,0,0,0]→board[2], [0,0,0,0]→board[3]
-      // Drops to row 14: [1,1,1,1]→board[15] which is filled → collision! locks at 14.
-      // lockPiece: shape[1]→board[15][0-3] (already filled). No new lines.
-      // Let me use a different strategy. Fill rows 14,15,16 fully. Row 17 partial (9/10).
-      // I-piece at col 7, row 12. Drops to row 13 (shape[1] at board[14] filled).
-      // Locks at 13: shape[1] at board[14][7-10] out of bounds for cols 9,10. Wait shape has 4 cols: 7,8,9,10. Col 10 is out of bounds.
-      // Hmm. Col 7 with I shape: shape[1] fills board[14][7,8,9,10]. Col 10 is out of bounds → collision?
-      // No: isValidPosition checks newC < COLS (10). Col 10 >= 10 → collision.
-      // So I-piece locks one row above: row 12. shape[1]→board[13][7,8,9,10] → col 10 OOB → collision at row 13 too.
-      // Locks at row 11. shape[1]→board[12][7,8,9,10] → col 10 OOB → collision.
-      // This is getting complex. Let me use a T-piece instead, which is 3-wide.
-      // T-piece: shape[[0,1,0],[1,1,1],[0,0,0]], at col 6, row 14.
-      // Drops: shape[0] at board[15][7] empty, shape[1] at board[16][6,7,8] filled → collision at row 16.
-      // So locks at 15? No, row 15 is filled too. Row 14 is filled (shape[1] at board[15]).
-      // Wait row 14 is empty in this setup. Let me re-check.
-      // I said fill 14,15,16. So row 14 is filled. Can't place piece there.
-      // OK, truly simplest approach: set up board to have 4 full rows at rows 16,17,18,19.
-      // Use hardDrop on any piece, then use update() to trigger one more line clear via piece drop.
-      // Or just directly test the clearLines scoring by setting up state manually.
-      // Final approach: fill rows 16,17,18,19. Place any small piece (J at col 6, row 0).
-      // Hard drop it → locks somewhere near bottom but doesn't complete any row.
-      // Then manually set lines=0 and use update() to clear the 4 filled rows.
-      // Actually: just fill rows 16,17,18,19 and then call update() when a piece is about to lock.
-      // The update will call lockPiece() which calls clearLines(), which should find all 4 rows full.
+      // Fill rows 16, 17, 18, 19 completely. The I-piece at top will drop
+      // and lock at row 14 (blocked by filled rows). lockPiece places piece
+      // at rows 14-15, then clearLines finds rows 16-19 all full → 4 lines.
       for (let c = 0; c < 10; c++) {
         tetrisModule.state.board[16][c] = '#ff0000'
         tetrisModule.state.board[17][c] = '#ff0000'
         tetrisModule.state.board[18][c] = '#ff0000'
         tetrisModule.state.board[19][c] = '#ff0000'
       }
-      // Use hardDrop to place and lock a piece so that update() calls lockPiece → clearLines
-      tetrisModule.handleKeydown(' ')
-      // After hardDrop: piece locked, new piece spawned. update() will auto-drop and lock new piece → triggers clearLines
+      // Place a standard I-piece at the top. Its shape[1] row fills 4 cells horizontally.
+      // We need cols 0-3 for the I piece so it doesn't go out of bounds.
+      tetrisModule.state.currentPiece = {
+        type: 'I',
+        shape: [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
+        color: '#00f0f0',
+        row: 13,
+        col: 0
+      }
       tetrisModule.state.lastDropTime = performance.now() - 2000
+      const scoreBefore = tetrisModule.state.score
+      // update() drops piece to row 14 (blocked by filled rows 16-19 at shape level)
+      // lockPiece places piece blocks, then clearLines finds 4 full rows (16-19)
       tetrisModule.update()
       tetrisModule.update()
+      expect(tetrisModule.state.lines).toBe(4)
       expect(tetrisModule.state.score - scoreBefore).toBe(800)
     })
 
