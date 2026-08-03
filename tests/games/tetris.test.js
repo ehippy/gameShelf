@@ -581,41 +581,42 @@ describe('tetris', () => {
       tetrisModule.init()
       tetrisModule.state.isPlaying = true
       tetrisModule.state.level = 1
-      // Fill rows 15, 16, 17, 18 completely (leaving 19 empty).
-      // Place an I piece (horizontal: [1,1,1,1] at shape row 1) at col 0, row 14.
-      // Its shape fills row 15 cols 0-3. But row 15 is already filled.
-      // Instead, fill rows 16, 17, 18, 19 and put the piece to complete row 15.
+      tetrisModule.state.lines = 0
+      // Fill rows 16, 17, 18 fully. Row 19 has cols 0-9 filled except col 9.
+      // Place an O piece (2×2) at col 8, row 17. It locks at row 17 (can't go further due to full rows below).
+      // lockPiece places blocks at board[18][8,9] and board[19][8,9].
+      // Now rows 16, 17, 18 are full, row 19 has 10 filled blocks (9 original + 2 from O piece → col 9 now filled too).
+      // Actually O piece at row 17, col 8: shape[0]→board[18][8,9], shape[1]→board[19][8,9].
+      // But rows 16-18 are already full, so can't drop to 17. Need to find valid drop position.
+      // Simpler: fill rows 15, 16, 17 fully. Place piece so it locks and completes row 18.
       for (let c = 0; c < 10; c++) {
         tetrisModule.state.board[15][c] = '#ff0000'
         tetrisModule.state.board[16][c] = '#ff0000'
         tetrisModule.state.board[17][c] = '#ff0000'
-        tetrisModule.state.board[18][c] = '#ff0000'
       }
-      // Place I-piece at col 0, row 13. Shape row 1 fills row 14 cols 0-3.
-      // Then update() drops it: row 13→14→15. At row 14 it hits filled row 15 → locks.
-      // lockPiece places blocks at row 14. That makes row 14 full → only 1 line, not 4.
-      // Better approach: use rows 16-19 as the filled rows, piece fills row 15.
-      for (let c = 0; c < 10; c++) {
-        tetrisModule.state.board[16][c] = '#ff0000'
-        tetrisModule.state.board[17][c] = '#ff0000'
-        tetrisModule.state.board[18][c] = '#ff0000'
-        tetrisModule.state.board[19][c] = '#ff0000'
-      }
-      // Row 15 has cols 0-5 filled, cols 6-9 empty. I-piece at col 6, row 14,
-      // drops to row 15 (col 6, shape[1] = [1,1,1,1] fills cols 6-9 of row 15).
-      // Now rows 15, 16, 17, 18 are all full = 4 lines.
+      // Row 18 has 9 filled, col 9 empty. I-piece at col 9, row 13.
+      // shape[1] at board[14][9] → empty. shape[2] at board[15][9] → filled! Collision.
+      // So I-piece locks at row 13, placing block at board[14][9]. Row 14 is NOT full.
+      // Instead: I-piece at col 9, row 14. shape[1] at board[15][9] → filled! Collision.
+      // Locks at row 14, places block at board[15][9] → row 15 was already full, redundant.
+      // Need: place piece that fills board[18][9] to complete row 18.
+      // O piece at col 8, row 16. Try to drop: shape[1] at board[18][8,9] → empty (col 9 empty).
+      // shape[2] doesn't exist (O is 2×2). Try row 17: shape[1] at board[19][8,9] → null, OK.
+      // Try row 18: shape[1] at board[20] → out of bounds. Lock at row 17.
+      // lockPiece: shape[0]→board[18][8,9], shape[1]→board[19][8,9].
+      // Row 18: now cols 0-8 filled from before + col 9 from piece = full! Row 19: col 8,9 filled but not full.
+      // Lines cleared: rows 15, 16, 17, 18 = 4 lines.
       tetrisModule.state.currentPiece = {
-        type: 'I',
-        shape: [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
-        color: '#00f0f0',
-        row: 14,
-        col: 6
+        type: 'O',
+        shape: [[1, 1], [1, 1]],
+        color: '#f0f000',
+        row: 16,
+        col: 8
       }
       tetrisModule.state.lastDropTime = performance.now() - 2000
       const scoreBefore = tetrisModule.state.score
       tetrisModule.update()
       tetrisModule.update()
-      // Should have cleared exactly 4 lines (rows 15, 16, 17, 18)
       expect(tetrisModule.state.lines).toBe(4)
       expect(tetrisModule.state.score - scoreBefore).toBe(800)
     })
