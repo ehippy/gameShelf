@@ -289,6 +289,48 @@ The same manual-tracing habit extends beyond functional correctness to dead code
 
 **False-positive calibration:** The pre-commit script (`scripts/check-assertion-dupes.js`) requires 5 or more unique `it()` blocks sharing the exact same assertion line before it flags a problem. Two to four consecutive tests with the same assertion is always a legitimate coincidence — each test independently verifies an invariant (for example, both `init()` and `reset()` having `isPlaying` set to `false`). Don't second-guess the tool when it actually flags 5+ blocks, and don't dismiss it as unreliable when 2–4 blocks happen to share an assertion.
 
+### Deterministic seeding for tests using randomness
+
+Pseudo-random number generators like `Math.random()` produce non-deterministic outcomes that cause flaky tests and spurious CI failures. A test that depends on randomness will produce different results on each run — sometimes passing, sometimes failing — making the test suite unreliable and impossible to debug consistently.
+
+When a test or game logic depends on randomness, always use a seeded PRNG so you can reproduce the same random sequence across runs. This way a test that passes today will pass tomorrow, and a failure is immediately reproducible.
+
+A simple approach is to bundle a lightweight seeded PRNG (like mulberry32) and inject it into the code under test. Here's a minimal mulberry32 implementation you can drop into a test helper:
+
+```js
+// A tiny seeded PRNG — mulberry32
+function mulberry32(seed) {
+  return function () {
+    seed |= 0
+    seed = seed + 0x6d2b79f5 | 0
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed)
+    t = t + Math.imul(t ^ (t >>> 7), 61 | t) ^ t
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+```
+
+Use it in a test to drive deterministic randomness:
+
+```js
+const rand = mulberry32(42) // fixed seed → deterministic sequence
+
+// When the game logic accepts a PRNG function:
+const state = gameLogic.init({ rand })
+
+// Or, when it calls Math.random() internally, stub it in the test:
+const rand = mulberry32(42)
+Object.defineProperty(Math, 'random', {
+  value: rand,
+  configurable: true
+})
+// ... now any Math.random() call within the test returns the seeded sequence
+```
+
+The key is picking one seed per test scenario and sticking with it. If a test needs a *different* random path, use a different seed — don't change the code between runs.
+
+> **Testing tip:** Treat PRNG seeding the same way you treat fixture data — pick your seed once, write the test around the deterministic sequence it produces, and never change the seed to "make the test pass." The seed *is* the fixture.
+
 ## Search / Filter UI Pattern
 
 This section documents the established pattern for UI-driven list filtering in gameShelf. It covers state ownership, UI binding, computed filtering, and logic rules. Future agents working on the game shelf listing, search, or category filtering should follow this pattern.
