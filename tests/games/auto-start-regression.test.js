@@ -102,6 +102,15 @@ describe('Auto-start regression: all games', () => {
     expect(flappyModule.state.isGameOver).toBe(false)
   })
 
+  it('Whack-a-Mole reset() does not auto-start: isPlaying is false', () => {
+    whackModule.init()
+    whackModule.state.score = 42
+    whackModule.state.isPlaying = true
+    whackModule.reset()
+    expect(whackModule.state.isPlaying).toBe(false)
+    expect(whackModule.state.isGameOver).toBe(false)
+  })
+
   // --- handleKeydown three-way logic checks ---
 
   it('Snake handleKeydown starts game when isPlaying is false (three-way)', () => {
