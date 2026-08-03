@@ -3,7 +3,7 @@ description: 'Uploads artifact and deploys to GitHub Pages for one attempt. Fail
 
 inputs:
   attempt:
-    description: 'Which attempt number (1, 2, or 3)'
+    description: 'Which attempt number (1 through 5)'
     required: true
   artifact_path:
     description: 'Path to the artifact directory'
