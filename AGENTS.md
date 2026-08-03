@@ -465,6 +465,42 @@ The script checks for two things:
 
 Both must exist for the game to be considered fully implemented.
 
+## Non-Feature Card Acknowledgment
+
+Not every card in the backlog represents a feature to build. Some cards are system error notifications, placeholder test requests, invalid feature proposals, or pre-existing game confirmations — things that are valid work items but produce no code changes.
+
+When you close such a card, write a brief acknowledgment note into a file under `docs/cards/` (e.g. `docs/cards/close-invalid-slug-card.md`). The note should state the card's title, the reason it's being closed without an implementation spec, and a one-line summary of any conclusion reached.
+
+**Example scenarios:**
+
+- **Invalid slug card** — a card asks to implement a game with a slug that doesn't exist in the catalog, or contains a typo in the slug. Close the card, note that the slug is invalid, and confirm whether a correct catalog entry needs to be added separately.
+- **Pre-existing game card** — a card asks to implement a game that's already done. Confirm via `verify-game-exists.js`, then note the confirmation and close the card.
+- **CI notification card** — a card documenting a transient CI failure or infrastructure flake. Note the root cause and whether a fix was applied.
+- **Placeholder test request** — a card that was only meant to flag a future test improvement. Close with a note about whether the test was already added or what the next action should be.
+
+**Template:**
+
+```
+Card: [Card title or reference]
+
+Reason: [One sentence explaining why this card doesn't require implementation work — e.g. "Invalid slug in catalog", "Game already implemented", "CI flake, not a code issue"]
+
+Conclusion: [One-line summary of what was found or decided.]
+```
+
+This keeps the backlog tidy and auditable. Future agents reviewing closed cards will see a clear record of why no code was produced, rather than wondering whether the work was missed or the spec was incomplete.
+
+## Game Addition Checklist
+
+Quick reference for onboarding a new game to the project:
+
+1. **`gameLogic.js` exports** — Create `src/games/<slug>/gameLogic.js` exporting `init()`, `update()`, `render(canvas)`, `reset()`, `handleKeydown(key)`, a mutable `state` object, and `CANVAS_WIDTH` / `CANVAS_HEIGHT` constants. See [Catalog & Routing Conventions](#catalog--routing-conventions) for project conventions.
+2. **Catalog entry** — Add an entry to `src/data/gamesCatalog.js` with `slug` (kebab-case), `title`, `description`, `thumbnail`, and `category` fields. Do NOT use the deprecated `id`, `name`, or `genre` fields. See [Catalog field naming](#catalog-field-naming).
+3. **Glob import** — Confirm the module is discoverable via `import.meta.glob('./src/games/*/gameLogic.js')` so Vite can statically analyze the import at build time. See [Vite Dynamic Import Convention](#vite-dynamic-import-convention).
+4. **No auto-start** — Ensure `init()` does not set `isPlaying = true`; the initial state must have `isPlaying: false`. The same applies to `reset()`. Game starts on first input via `handleKeydown()` using three-way logic. See [Game Initialization](#game-initialization).
+5. **Initial tests** — Create `tests/games/<slug>.test.js` with Vitest tests covering required exports exist, `init()` returns correct initial state (`score=0`, `isGameOver=false`, `isPlaying=false`), `reset()` restores initial state, `handleKeydown()` triggers three-way logic, and `update()`/`render()` don't crash. See [Testing Conventions](#testing-conventions).
+6. **Verify** — Run `node scripts/verify-game-exists.js <slug>` to confirm both the game code directory and test file exist before considering the game added. See [Pre-implementation Verification](#pre-implementation-verification).
+
 ## Last Reviewed
 
 - **Reviewed:** 2026-08-04
