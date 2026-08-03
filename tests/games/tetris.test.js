@@ -581,17 +581,22 @@ describe('tetris', () => {
       tetrisModule.init()
       tetrisModule.state.isPlaying = true
       tetrisModule.state.level = 1
-      for (let r of [16, 17, 18, 19]) {
+      // Fill rows 15, 16, 17, 18 (4 consecutive rows). Piece at row 11 will lock at row 14,
+      // and the locked piece fills row 15 along with the existing filled rows.
+      // Then clearLines clears rows 15, 16, 17, 18 → 4 lines.
+      for (let r of [15, 16, 17, 18]) {
         for (let c = 0; c < 10; c++) {
           tetrisModule.state.board[r][c] = '#ff0000'
         }
       }
-      tetrisModule.state.currentPiece.row = 12
+      tetrisModule.state.currentPiece.row = 11
       tetrisModule.state.currentPiece.col = 0
       tetrisModule.state.lastDropTime = performance.now() - 2000
       const scoreBefore = tetrisModule.state.score
       tetrisModule.update()
       tetrisModule.update()
+      // Piece locks at row 14 (can't go further). lockPiece places blocks at row 15.
+      // clearLines detects 4 full rows (15-18).
       expect(tetrisModule.state.score - scoreBefore).toBe(800)
     })
 
