@@ -581,22 +581,30 @@ describe('tetris', () => {
       tetrisModule.init()
       tetrisModule.state.isPlaying = true
       tetrisModule.state.level = 1
-      // Fill rows 15, 16, 17, 18 (4 consecutive rows). Piece at row 11 will lock at row 14,
-      // and the locked piece fills row 15 along with the existing filled rows.
-      // Then clearLines clears rows 15, 16, 17, 18 → 4 lines.
-      for (let r of [15, 16, 17, 18]) {
-        for (let c = 0; c < 10; c++) {
-          tetrisModule.state.board[r][c] = '#ff0000'
-        }
+      // Fill rows 16, 17, 18, 19 completely. Also fill row 15, cols 0-5 with a color.
+      // Place an I piece at col 6, row 14. Its shape row 1 [1,1,1,1] fills cols 6-9 of row 15.
+      // Then rows 15, 16, 17, 18 are all full → clearLines detects 4 lines.
+      for (let c = 0; c < 10; c++) {
+        tetrisModule.state.board[16][c] = '#ff0000'
+        tetrisModule.state.board[17][c] = '#ff0000'
+        tetrisModule.state.board[18][c] = '#ff0000'
+        tetrisModule.state.board[19][c] = '#ff0000'
       }
-      tetrisModule.state.currentPiece.row = 11
-      tetrisModule.state.currentPiece.col = 0
+      for (let c = 0; c < 6; c++) {
+        tetrisModule.state.board[15][c] = '#ff0000'
+      }
+      // Use an I-piece (horizontal shape: [1,1,1,1] at row index 1) placed so it fills row 15 cols 6-9
+      tetrisModule.state.currentPiece = {
+        type: 'I',
+        shape: [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
+        color: '#00f0f0',
+        row: 14,
+        col: 6
+      }
       tetrisModule.state.lastDropTime = performance.now() - 2000
       const scoreBefore = tetrisModule.state.score
       tetrisModule.update()
       tetrisModule.update()
-      // Piece locks at row 14 (can't go further). lockPiece places blocks at row 15.
-      // clearLines detects 4 full rows (15-18).
       expect(tetrisModule.state.score - scoreBefore).toBe(800)
     })
 
