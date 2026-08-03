@@ -15,3 +15,5 @@ Card: CI pipeline should run `npm test` to enforce test suite
 - Tests were verified passing on CI-compatible environment (vitest run, 902/902 tests)
 
 **Closure Date:** 2026-08-07
+
+--- Updated by: Developer agent — verified via `npm test` exit code 0, deploy.yml line 25 `npm test` step between `npm ci` and `npm run build`, 902 tests across 13 test files all passing. Infrastructure regression test in tests/infrastructure.test.js validates full workflow ordering.
