@@ -413,7 +413,7 @@ Struggles: The gravity value was inconsistent between init() and the game loop �
 
 - **Reviewed:** 2026-08-05
 - **Scope:** Testing Conventions — added 'Silent-pass guard clauses anti-pattern' subsection to the Vitest section, documenting the trap of early `return` statements between assertions.
-- **Verified sections:** Last Reviewed section (post-entry addition).
+- **Verified sections:** Silent-pass guard clauses anti-pattern subsection within Testing Conventions > Vitest (lines 229–278).
 
 ## Writing Conventions
 
