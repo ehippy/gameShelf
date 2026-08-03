@@ -599,6 +599,10 @@ Quick reference for onboarding a new game to the project:
 - **Scope:** Non-Feature Card Acknowledgment — added 'No AGENTS.md update needed cards' subsection under `## Non-Feature Card Acknowledgment`, documenting the rarity principle, verification-vs-implementation distinction, recursive loop warning, and specific closing note requirements. Restored the section's closing paragraph ("This keeps the backlog tidy and auditable...") which was accidentally deleted when the subsection was inserted.
 - **Verified sections:** Non-Feature Card Acknowledgment section (new subsection at lines 523–539, closing paragraph restored at line 539), Last Reviewed section (post-entry addition).
 
+- **Reviewed:** 2026-08-07
+- **Scope:** Non-Feature Card Acknowledgment — restored the second sentence of the closing paragraph ("Future agents reviewing closed cards will see a clear record of why no code was produced, rather than wondering whether the work was missed or the spec was incomplete.") that was truncated in the previous edit.
+- **Verified sections:** Non-Feature Card Acknowledgment section (closing paragraph at line 539, both sentences present).
+
 ## Writing Conventions
 
 This document (AGENTS.md) is a living guide for humans — including LLMs acting in a human role — working on the gameShelf project. It captures conventions learned from real work, not theoretical rules. Treat it the way a senior developer would treat a well-maintained runbook: practical, grounded in experience, and focused on helping people do the right thing without overthinking it.
