@@ -86,7 +86,7 @@ function formatBytes(bytes) {
  * Paths are relative to the game directory (e.g. "gameLogic.js").
  * Returns an array of strings like "filename.ext (123 bytes)".
  */
-function walkDir(dir, slug, prefix) {
+function walkDir(dir, prefix) {
   prefix = prefix || ''
   const lines = []
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
