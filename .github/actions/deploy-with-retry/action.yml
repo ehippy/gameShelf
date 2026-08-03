@@ -53,7 +53,11 @@ runs:
       id: set_output
       shell: bash
       run: |
-        if [ -n "${{ steps.deploy_3.outputs.page_url }}" ]; then
+        if [ -n "${{ steps.deploy_5.outputs.page_url }}" ]; then
+          echo "page_url=${{ steps.deploy_5.outputs.page_url }}" >> $GITHUB_OUTPUT
+        elif [ -n "${{ steps.deploy_4.outputs.page_url }}" ]; then
+          echo "page_url=${{ steps.deploy_4.outputs.page_url }}" >> $GITHUB_OUTPUT
+        elif [ -n "${{ steps.deploy_3.outputs.page_url }}" ]; then
           echo "page_url=${{ steps.deploy_3.outputs.page_url }}" >> $GITHUB_OUTPUT
         elif [ -n "${{ steps.deploy_2.outputs.page_url }}" ]; then
           echo "page_url=${{ steps.deploy_2.outputs.page_url }}" >> $GITHUB_OUTPUT
