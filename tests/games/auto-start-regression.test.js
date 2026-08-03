@@ -28,6 +28,7 @@ describe('Auto-start regression: all games', () => {
   let tetrisModule = null
   let breakoutModule = null
   let flappyModule = null
+  let whackModule = null
 
   beforeEach(async () => {
     snakeModule = await import(join(root, 'src', 'games', 'snake', 'gameLogic.js'))
