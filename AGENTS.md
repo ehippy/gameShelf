@@ -598,6 +598,12 @@ Struggles: The gravity value was inconsistent between init() and the game loop �
 
 *(When friction *did* occur, include a `Struggles:` section that briefly describes what went wrong, what was learned, and what to watch for next time.)*
 
+### Automated enforcement
+
+The pre-commit hook `scripts/check-postmortems.js` enforces the no-boilerplate-struggles convention by scanning AGENTS.md's `## Last Reviewed` section for boilerplate `**Struggles:**` lines. It flags entries where the struggles content reads like filler — "Nothing notable", "None", "N/A", "No friction", "Clean card", "No struggles" (case-insensitive, trimmed), or empty/whitespace-only — and exits with code 1 to block the commit. When violations are found, it prints details to stderr including the line number, date, and the offending content so you can locate and fix the problem quickly.
+
+The hook runs automatically via `.husky/pre-commit` alongside `check-assertion-dupes.js`. If the hook fails and prints a violation, fix the affected Last Reviewed entries by either removing the boilerplate `**Struggles:**` line entirely (for clean cards) or replacing it with genuine friction/struggles detail (for cards where actual difficulty occurred). Do not suppress the hook — address the root cause: the struggles content itself.
+
 ## Pre-implementation Verification
 
 Before writing any code for a game implementation card, always verify the game hasn't already been implemented. With only a handful of games built out of the full catalog, it's easy for cards to arrive for work that's already done — forcing the developer to fabricate changes just to satisfy the system's requirement of "a real diff." This step prevents that entirely.
