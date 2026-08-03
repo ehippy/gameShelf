@@ -8,6 +8,7 @@
 // ─── Imports ──────────────────────────────────────────────────────────────────
 
 import { renderGameOver, shouldSkipUpdate } from '../shared/renderHelpers.js'
+import { handleKeydownTransition } from '../shared/gameHelpers.js'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
