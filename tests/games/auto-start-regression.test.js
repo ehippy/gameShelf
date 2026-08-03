@@ -255,10 +255,12 @@ describe('Auto-start regression: all games', () => {
     tetrisModule.init()
     breakoutModule.init()
     flappyModule.init()
+    whackModule.init()
     expect(snakeModule.state.isPlaying).toBe(false)
     expect(tetrisModule.state.isPlaying).toBe(false)
     expect(breakoutModule.state.isPlaying).toBe(false)
     expect(flappyModule.state.isPlaying).toBe(false)
+    expect(whackModule.state.isPlaying).toBe(false)
   })
 
   it('all games: handleKeydown starts all of them', () => {
@@ -277,6 +279,10 @@ describe('Auto-start regression: all games', () => {
     flappyModule.init()
     flappyModule.handleKeydown(' ')
     expect(flappyModule.state.isPlaying).toBe(true)
+
+    whackModule.init()
+    whackModule.handleKeydown(' ')
+    expect(whackModule.state.isPlaying).toBe(true)
   })
 
   // Cross-game card verification: all games comply with init convention
