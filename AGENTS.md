@@ -415,28 +415,4 @@ Struggles: The gravity value was inconsistent between init() and the game loop �
 - **Scope:** Testing Conventions — added 'Silent-pass guard clauses anti-pattern' subsection to the Vitest section, documenting the trap of early `return` statements between assertions.
 - **Verified sections:** Silent-pass guard clauses anti-pattern subsection within Testing Conventions > Vitest (lines 229–278).
 
-## Pre-implementation Verification
-
-Before writing any code for a game implementation card, always verify the game hasn't already been implemented. With only a handful of games built out of the full catalog, it's easy for cards to arrive for work that's already done — forcing the developer to fabricate changes just to satisfy the system's requirement of "a real diff." This step prevents that entirely.
-
-1. **Look up the game's slug** from the card (the kebab-case identifier used in the catalog).
-2. **Run `node scripts/verify-game-exists.js <slug>`** to check whether the game is already implemented.
-3. **If the script reports the game exists** (exit 0), close the card immediately with a verification comment noting the game is already implemented — no code changes needed.
-4. **If the script reports files are missing** (exit 1), proceed with implementation.
-5. **If the script reports an invalid slug** (exit 2), check the card for typos or missing catalog entry before proceeding.
-
-The script checks for two things:
-- `src/games/<slug>/` directory (the game's code)
-- `tests/games/<slug>.test.js` file (the game's tests)
-
-Both must exist for the game to be considered fully implemented.
-
 ## Last Reviewed
-
-This document (AGENTS.md) is a living guide for humans — including LLMs acting in a human role — working on the gameShelf project. It captures conventions learned from real work, not theoretical rules. Treat it the way a senior developer would treat a well-maintained runbook: practical, grounded in experience, and focused on helping people do the right thing without overthinking it.
-
-**Write human-readable conventions, not tool instructions.** Avoid language that reads like a spec for a parser or a directive to an AI agent. Phrases like "strip the entire line", "the system should remove", or block-quoted commands telling a tool what to do belong in engineering documentation, not in project conventions written for people. Frame everything as guidance a human would follow — "When you see X, do Y" rather than "The linter will remove X."
-
-**Avoid redundant intermediate subsections.** Don't split content into multiple sub-headers that say the same thing in slightly different words. The Card-Level Postmortems cleanup is the canonical example: the original section had separate "### No-friction cards" and "### When friction *did* occur" subsections, both covering the same postmortem structure. Consolidate into a single, clear section with examples. Each subsection should cover genuinely distinct content — if two headers are just rephrasing the same rule, merge them.
-
-**Reframe do/don't patterns as human writing conventions.** When documenting anti-patterns and best practices, describe how to write things well rather than describing what a tool should check or prevent. Instead of "Remove the struggles section when empty," write "Omit the struggles section entirely for clean cards" — it's the same guidance, but the latter reads like advice from a colleague and carries the same instruction without invoking a tool metaphor. This applies everywhere in the document: describe the right way to write code, tests, or documentation, not the mechanical steps a system takes to enforce it.
