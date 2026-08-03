@@ -152,7 +152,7 @@ describe('HomeView integration', () => {
     const wrapper = mount(HomeView, {
       global: { plugins: [pinia] }
     })
-    const gameCards = wrapper.findAllComponents({ name: 'GameCard' })
+    const gameCards = wrapper.find('.games-grid').findAllComponents({ name: 'GameCard' })
     expect(gameCards.length).toBe(5)
   })
 
@@ -165,7 +165,7 @@ describe('HomeView integration', () => {
     const store = useGameStore(pinia)
     store.searchQuery = 'snake'
     await wrapper.vm.$nextTick()
-    const gameCards = wrapper.findAllComponents({ name: 'GameCard' })
+    const gameCards = wrapper.find('.games-grid').findAllComponents({ name: 'GameCard' })
     expect(gameCards.length).toBe(1)
   })
 
@@ -178,7 +178,7 @@ describe('HomeView integration', () => {
     const store = useGameStore(pinia)
     store.selectedCategory = 'Puzzle'
     await wrapper.vm.$nextTick()
-    const gameCards = wrapper.findAllComponents({ name: 'GameCard' })
+    const gameCards = wrapper.find('.games-grid').findAllComponents({ name: 'GameCard' })
     expect(gameCards.length).toBe(1)
   })
 
@@ -192,7 +192,7 @@ describe('HomeView integration', () => {
     store.searchQuery = 'classic'
     store.selectedCategory = 'Arcade'
     await wrapper.vm.$nextTick()
-    const gameCards = wrapper.findAllComponents({ name: 'GameCard' })
+    const gameCards = wrapper.find('.games-grid').findAllComponents({ name: 'GameCard' })
     expect(gameCards.length).toBe(2)
   })
 
