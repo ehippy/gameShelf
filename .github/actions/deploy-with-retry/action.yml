@@ -32,6 +32,22 @@ runs:
       with:
         attempt: 3
 
+    # ── Attempt 4 (only if attempt 3 failed) ──────────────────
+    - name: Deploy (attempt 4)
+      id: deploy_4
+      uses: ./.github/actions/deploy-with-retry/_attempt
+      if: steps.deploy_3.outcome == 'failure'
+      with:
+        attempt: 4
+
+    # ── Attempt 5 (only if attempt 4 failed) ──────────────────
+    - name: Deploy (attempt 5)
+      id: deploy_5
+      uses: ./.github/actions/deploy-with-retry/_attempt
+      if: steps.deploy_4.outcome == 'failure'
+      with:
+        attempt: 5
+
     # ── Set the page_url output from whichever attempt succeeded ──
     - name: Set page URL output
       id: set_output
