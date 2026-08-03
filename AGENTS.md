@@ -536,7 +536,7 @@ Instead, briefly note *why* no update was needed in specific, meaningful terms. 
 
 Follow the same principle when writing the acknowledgment note to `docs/cards/<name>.md`. The note should state *what* was verified and *why* no new convention was introduced, in concrete terms.
 
-This keeps the backlog tidy and auditable.
+This keeps the backlog tidy and auditable. Future agents reviewing closed cards will see a clear record of why no code was produced, rather than wondering whether the work was missed or the spec was incomplete.
 
 ## Game Addition Checklist
 
