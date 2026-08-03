@@ -183,6 +183,31 @@ export function handleKeydown(key) {
 3. **Already playing + valid key** → calls `actionFn(key)` for the game-specific action (e.g. direction change).
 4. **Key not in validKeys** → no-op; the helper skips the transition and `handleKeydown` proceeds to any game-specific action logic below the transition call.
 
+**Exception: single keypress transitions state and performs an action (Flappy Bird)**
+
+Some games need a single keypress to both transition state *and* perform an immediate action — for example, Flappy Bird's flap on every Space or ArrowUp press, regardless of whether the game was just started or was already running. The helper's `actionFn` only fires for the "already playing" case (case 3), not for the "not playing → playing" transition (case 2) or the "game over → playing" transition (case 1). To handle this, capture `wasPlaying` before the transition call, then check if the transition flipped `isPlaying` from `false` to `true` afterwards and perform the action in that case too.
+
+```js
+const wasPlaying = state.isPlaying
+transition(state, key, validKeys, () => {
+  // Already playing — do the action (e.g. flap)
+  state.bird.velocity = FLAP_STRENGTH
+})
+
+// Not playing → just started playing → also perform the action
+if (!wasPlaying && state.isPlaying) {
+  state.bird.velocity = FLAP_STRENGTH
+}
+```
+
+Here's why this works across the three scenarios:
+
+1. **Already playing** → `wasPlaying` is `true`, `!wasPlaying && state.isPlaying` evaluates to `false` — the helper calls `actionFn`, the action executes once. Correct.
+2. **Not playing → playing** → `wasPlaying` is `false`, `!wasPlaying && state.isPlaying` evaluates to `true` after the transition — `actionFn` is not called by the helper (the helper skips it for case 2), so the `if` block fires and performs the action once. Correct.
+3. **Game over → playing** → same as case 2, `wasPlaying` is `false`, `!wasPlaying && state.isPlaying` evaluates to `true` after the transition — the helper returns early after setting `isPlaying = true` (case 1), so the `if` block fires and performs the action once. Correct.
+
+Use this pattern only when a single keypress must both transition state and perform an immediate action. It is an exception to the normal pattern, not the recommended approach.
+
 **ResetFn contract:** The `resetFn` callback **must NOT set `state.isPlaying = true`** — the helper handles that automatically. Its job is to restore game-specific state (score, grid, pieces, etc.) back to initial conditions. The game's own `reset()` function must also preserve `isPlaying: false` to comply with the no-auto-start rule.
 
 **Concrete example (snake-style):**
@@ -643,7 +668,11 @@ Quick reference for onboarding a new game to the project:
 
 ## Last Reviewed
 
-- **Reviewed:** 2026-08-04
+- **Reviewed:** 2026-08-08
+- **Scope:** Game Initialization — added 'Exception: single keypress transitions state and performs an action (Flappy Bird)' subsection under 'Three-way state transitions with handleKeydownTransition' documenting the `wasPlaying` capture pattern as an exception to the shared helper, where a single keypress must both transition state and perform an immediate action.
+- **Verified sections:** Last Reviewed section (post-entry addition), Game Initialization section (new subsection at lines 186–209).
+
+- **Reviewed:** 2026-08-07
 - **Scope:** Card-Level Postmortems section restructuring — removed tool-specific instructions, eliminated redundant subsection, reframed forbidden phrases as human writing convention.
 - **Verified sections:** Card-Level Postmortems section (lines 380–402, post-cleanup).
 
