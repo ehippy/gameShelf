@@ -668,7 +668,11 @@ Quick reference for onboarding a new game to the project:
 
 ## Last Reviewed
 
-- **Reviewed:** 2026-08-04
+- **Reviewed:** 2026-08-08
+- **Scope:** Game Initialization — added 'Exception: single keypress transitions state and performs an action (Flappy Bird)' subsection under 'Three-way state transitions with handleKeydownTransition' documenting the `wasPlaying` capture pattern as an exception to the shared helper, where a single keypress must both transition state and perform an immediate action.
+- **Verified sections:** Last Reviewed section (post-entry addition), Game Initialization section (new subsection at lines 186–209).
+
+- **Reviewed:** 2026-08-07
 - **Scope:** Card-Level Postmortems section restructuring — removed tool-specific instructions, eliminated redundant subsection, reframed forbidden phrases as human writing convention.
 - **Verified sections:** Card-Level Postmortems section (lines 380–402, post-cleanup).
 
