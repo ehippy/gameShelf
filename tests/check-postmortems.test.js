@@ -261,8 +261,8 @@ describe('scripts/check-postmortems.js', () => {
       '- **Verified sections:** Test section.\n' +
       '- **Struggles:** NONE\n'
 
-    const splitIdx = content.indexOf('\n## Writing Conventions')
-    const testContent = content.slice(0, splitIdx) + injection + content.slice(splitIdx)
+    const splitIdx = originalContent.indexOf('\n## Writing Conventions')
+    const testContent = originalContent.slice(0, splitIdx) + injection + originalContent.slice(splitIdx)
     writeFileSync(agentsPath, testContent)
 
     try {
