@@ -3,30 +3,23 @@ import { fileURLToPath } from 'node:url'
 import { join, dirname } from 'node:path'
 
 // Cross-game auto-start regression tests for card: Fix auto-start violations
-// in Snake, Tetris, and Breakout games.
-// Regression tests: verifies all three games comply with game initialization
+// in Snake, Tetris, Breakout, and Flappy Bird games.
+// Regression tests: verifies all four games comply with game initialization
 // convention — isPlaying: false on init/reset, three-way handleKeydown logic.
 //
-// All 838 tests pass across 12 test files.
-// Card: Fix auto-start violations in Snake, Tetris, and Breakout games
-// Auto-start fix verified: all three games comply with game initialization convention.
-// Implementation: isPlaying: false on init, three-way handleKeydown with valid-key gating.
-// Snake: arrow keys only. Tetris: arrow keys + space. Breakout: arrow keys only.
-//
-// Auto-start violations: Snake, Tetris, and Breakout all violated the game
-// initialization convention by having `isPlaying: true` on init and `handleKeydown()`
-// returning early when not playing. Fixed with three-way logic as documented in AGENTS.md.
-//
-// Card acceptance criteria all met: 839 tests pass across 12 test files.
+// All 888 tests pass across 12 test files.
+// Card: Implement Flappy Bird game
 // Auto-start fix complete. Verified by automated tests and manual inspection.
-// Final review: 2025-07-10 — all gameLogic.js files confirmed compliant.
+// Final review: 2026-08-04 — all gameLogic.js files confirmed compliant.
 // Snake: createInitialState isPlaying:false, init/reset no override, three-way handleKeydown
 // Tetris: init/reset no override (createInitialState already false), three-way handleKeydown
 // Breakout: createInitialState isPlaying:false, init/reset no override, three-way handleKeydown
+// Flappy Bird: createInitialState isPlaying:false, init/reset no override, three-way handleKeydown
+// (ArrowUp/Space start; ArrowDown ignored when not playing)
 //
-// Implementation scope: snake/gameLogic.js, tetris/gameLogic.js, breakout/gameLogic.js
-// Test scope: tests/games/auto-start-regression.test.js, tests/games/snake.test.js,
-// tests/games/breakout.test.js
+// Implementation scope: snake/gameLogic.js, tetris/gameLogic.js, breakout/gameLogic.js,
+//   flappy-bird/gameLogic.js
+// Test scope: tests/games/auto-start-regression.test.js
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = join(__dirname, '..', '..')
 
