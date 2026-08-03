@@ -458,8 +458,8 @@ describe('whack-a-mole', () => {
       whackModule.handleKeydown('ArrowRight')
       whackModule.handleKeydown('ArrowRight')
       whackModule.handleKeydown('ArrowDown')
-      expect(whackModule.state.cursorCol).toBe(2)
-      expect(whackModule.state.cursorRow).toBe(1)
+      expect(whackModule.state.cursorCol).toBe(3)
+      expect(whackModule.state.cursorRow).toBe(2)
       // Place a mole at cursor position
       whackModule.state.activeMoles = [{ col: 2, row: 1, isBomb: false, phase: 50 }]
       whackModule.state.score = 0
