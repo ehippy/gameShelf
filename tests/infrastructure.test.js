@@ -271,6 +271,17 @@ describe('.github/workflows/deploy.yml', () => {
     expect(deployYml).toContain('npm run build')
   })
 
+  it('runs npm test before build', () => {
+    const ciIndex = deployYml.indexOf('npm ci')
+    const testIndex = deployYml.indexOf('npm test')
+    const buildIndex = deployYml.indexOf('npm run build')
+    expect(ciIndex).toBeGreaterThan(-1)
+    expect(testIndex).toBeGreaterThan(-1)
+    expect(buildIndex).toBeGreaterThan(-1)
+    expect(testIndex).toBeGreaterThan(ciIndex)
+    expect(testIndex).toBeLessThan(buildIndex)
+  })
+
   it('uploads ./dist/', () => {
     expect(deployYml).toContain('./dist/')
   })
@@ -563,21 +574,39 @@ describe('AGENTS.md — Deployment Failure Convention', () => {
     expect(agentsMd).toContain('Deployment Failure Convention')
   })
 
-  it('mentions HTTP 408 as a transient failure', () => {
-    expect(agentsMd).toContain('408')
+  it('describes transient failures broadly (not HTTP 408 specific)', () => {
+    expect(agentsMd).not.toContain('HTTP 408')
+    expect(agentsMd).toContain('transient deployment failures')
+    expect(agentsMd).toContain('infrastructure hiccups')
   })
 
   it('mentions network errors as a transient failure', () => {
     expect(agentsMd).toContain('network error')
   })
 
-  it('specifies up to 2 additional retries (3 total attempts)', () => {
-    expect(agentsMd).toContain('2 additional')
-    expect(agentsMd).toContain('3 total')
+  it('specifies up to 4 additional retries (5 total attempts)', () => {
+    expect(agentsMd).toContain('4 additional')
+    expect(agentsMd).toContain('5 total')
   })
 
-  it('specifies approximately 30 seconds between retries', () => {
-    expect(agentsMd).toContain('30 seconds')
+  it('specifies exponential backoff delays', () => {
+    expect(agentsMd).toContain('30-second delay')
+    expect(agentsMd).toContain('60-second delay')
+    expect(agentsMd).toContain('120-second delay')
+    expect(agentsMd).toContain('180-second delay')
+  })
+
+  it('includes GitHub API reachability pre-check', () => {
+    expect(agentsMd).toContain('GitHub API reachability')
+    expect(agentsMd).toContain('200 or 403')
+  })
+
+  it('logs attempts as Attempt 1/5 through Attempt 5/5', () => {
+    expect(agentsMd).toContain('Attempt 1/5')
+    expect(agentsMd).toContain('Attempt 2/5')
+    expect(agentsMd).toContain('Attempt 3/5')
+    expect(agentsMd).toContain('Attempt 4/5')
+    expect(agentsMd).toContain('Attempt 5/5')
   })
 
   it('specifies escalation to PM with "approved but blocked by infrastructure"', () => {
@@ -597,6 +626,11 @@ describe('AGENTS.md — Deployment Failure Convention', () => {
   it('mentions setting card status to reflect approved/blocked', () => {
     expect(agentsMd.toLowerCase()).toContain('card status')
     expect(agentsMd.toLowerCase()).toMatch(/approv.*block/i)
+  })
+
+  it('escalates after all 5 attempts fail', () => {
+    const section = agentsMd.slice(agentsMd.indexOf('Deployment Failure Convention'))
+    expect(section).toMatch(/all.*5.*attempt/i)
   })
 })
 
@@ -623,20 +657,22 @@ describe('.github/actions/deploy-with-retry/action.yml', () => {
     expect(actionYml).toContain("steps.deploy_2.outcome == 'failure'")
   })
 
-  it('fails the job if all 3 attempts exhausted', () => {
+  it('fails the job if all 5 attempts exhausted', () => {
     expect(actionYml).toContain('exit 1')
-    expect(actionYml).toMatch(/all.*3.*attempt/i)
-    expect(actionYml).toContain("steps.deploy_3.outcome == 'failure'")
+    expect(actionYml).toMatch(/all.*5.*attempt/i)
+    expect(actionYml).toContain("steps.deploy_5.outcome == 'failure'")
   })
 
-  it('forwards page_url from steps.deploy_3', () => {
-    expect(actionYml).toContain('steps.deploy_3.outputs.page_url')
+  it('forwards page_url from steps.deploy_5', () => {
+    expect(actionYml).toContain('steps.deploy_5.outputs.page_url')
   })
 
-  it('has unique step IDs deploy_1, deploy_2, deploy_3', () => {
+  it('has unique step IDs deploy_1 through deploy_5', () => {
     expect(actionYml).toContain('id: deploy_1')
     expect(actionYml).toContain('id: deploy_2')
     expect(actionYml).toContain('id: deploy_3')
+    expect(actionYml).toContain('id: deploy_4')
+    expect(actionYml).toContain('id: deploy_5')
   })
 
   it('has step logging with attempt numbers', () => {
