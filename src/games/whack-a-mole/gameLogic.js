@@ -5,6 +5,8 @@
  * Exports: state (readable by GamePage)
  */
 
+import { handleKeydownTransition } from '../shared/gameHelpers.js'
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const COLS = 4
