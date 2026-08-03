@@ -281,7 +281,7 @@ Assert first, then return early if needed — but don't put a guard between asse
 
 Test assertions are only as good as the values they compare against — a passing test with incorrect expected values proves nothing. This came up in the Whack-a-Mole keyboard input cycle, where tests contained incorrect hardcoded expected values (e.g. wrong `cursorRow` values after state transitions) while the implementation was correct, causing multiple review/fix rounds before the mismatch was noticed.
 
-The pre-commit hook (`scripts/check-assertion-dupes.js`, run via `.husky/pre-commit`) serves as the first line of defense, surfacing copy-pasted assertion patterns before manual tracing is needed. When the hook flags identical `expect(...).toBe(X)` lines across consecutive `it()` blocks in the same `describe` scope, review whether the expected value was updated for each distinct test scenario.
+The pre-commit hook (`scripts/check-assertion-dupes.js`, run via `.husky/pre-commit`) is a hard commit block — it exits non-zero and prevents `git commit` from succeeding. When the hook flags identical `expect(...).toBe(X)` lines across consecutive `it()` blocks in the same `describe` scope, review whether the expected value was updated for each distinct test scenario. When the hook blocks your commit, that's expected — review the flagged assertions and fix any copy-paste errors before trying again.
 
 After manual tracing through the expected behavior, ensure assertion values match reality, rather than assuming hardcoded numbers are correct.
 
