@@ -259,12 +259,9 @@ export function handleKeydown(key) {
 
   const validKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']
 
-  // State transition (if needed)
-  // actionFn handles "already playing", onTransition handles "game over" and "not playing"
-  transition(() => state, key, validKeys, () => {
-    // Already playing — direction change handled below via actionFn
-  }, () => {
-    // On transition — set direction (also covers already playing via actionFn path)
+  // State transition
+  transition(state, key, validKeys, () => {
+    // Already playing — direction change handled below
   })
 
   // Game-specific action (always runs for arrow keys, after transition handles state)
