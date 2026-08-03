@@ -354,19 +354,25 @@ User types/selects
 
 ### Transient failures
 
-Watch for **HTTP 408 request timeout** and **network errors** that can occur during push or deploy steps (e.g. `actions/upload-pages-artifact`, `actions/deploy-pages`, or `git push` operations). These are infrastructure-level flakiness — not a reflection of the code quality.
+Watch for **transient deployment failures** like timeouts, network errors, and infrastructure hiccups that can occur during push or deploy steps (e.g. `actions/upload-pages-artifact`, `actions/deploy-pages`, or `git push` operations). These are infrastructure-level flakiness — not a reflection of the code quality.
 
 ### Retry protocol
 
 On encountering a transient failure:
 
-1. Retry the deployment step up to **2 additional times** (3 total attempts).
-2. Wait approximately **30 seconds** between retries to allow the transient issue to resolve.
-3. Log each attempt clearly (e.g. "Attempt 1/3", "Attempt 2/3", "Attempt 3/3") so the history is visible in CI output.
+1. Retry the deployment step up to **4 additional times** (5 total attempts) using exponential backoff.
+2. Wait progressively longer between retries to give GitHub Pages infrastructure time to recover:
+   - **Attempt 1:** First attempt, no wait
+   - **Attempt 2:** 30-second delay
+   - **Attempt 3:** 60-second delay
+   - **Attempt 4:** 120-second delay (2 minutes)
+   - **Attempt 5:** 180-second delay (3 minutes)
+3. Before each attempt, a pre-check verifies GitHub API reachability. If the endpoint is completely unreachable (not returning 200 or 403), the deployment fails fast without wasting retries.
+4. Log each attempt clearly (e.g. "Attempt 1/5", "Attempt 2/5", "Attempt 3/5", "Attempt 4/5", "Attempt 5/5") so the history is visible in CI output.
 
 ### Escalation
 
-If all 3 attempts fail:
+If all 5 attempts fail:
 
 - **Do not bounce the card back** to the developer or PM.
 - Escalate the card to the PM with a note that **the work is approved but blocked by infrastructure**.
