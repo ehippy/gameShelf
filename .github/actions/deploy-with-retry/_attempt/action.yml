@@ -18,13 +18,30 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    # Sleep between retries (not before the first attempt)
+    - name: Pre-check GitHub API reachability
+      shell: bash
+      run: |
+        echo "Pre-checking GitHub API reachability..."
+        HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+          --max-time 10 \
+          "https://api.github.com/repos/${{ github.repository }}")
+        if [ "$HTTP_CODE" != "200" ] && [ "$HTTP_CODE" != "403" ]; then
+          echo "ERROR: GitHub API endpoint is not reachable (HTTP $HTTP_CODE)."
+          echo "The endpoint may be completely down — not wasting retries."
+          exit 1
+        fi
+        echo "GitHub API is reachable (HTTP $HTTP_CODE). Proceeding with deployment."
+
     - name: Wait before retry
       shell: bash
       if: inputs.attempt != '1'
       run: |
-        echo "Waiting 30 seconds before retry attempt ${{ inputs.attempt }}/3..."
-        sleep 30
+        case ${{ inputs.attempt }} in
+          2) echo "Waiting 30 seconds before retry attempt 2/5..."; sleep 30 ;;
+          3) echo "Waiting 60 seconds before retry attempt 3/5..."; sleep 60 ;;
+          4) echo "Waiting 120 seconds before retry attempt 4/5..."; sleep 120 ;;
+          5) echo "Waiting 180 seconds before retry attempt 5/5..."; sleep 180 ;;
+        esac
 
     # Upload the artifact
     - name: Upload artifact (attempt ${{ inputs.attempt }})
