@@ -426,7 +426,7 @@ export function handleKeydown(key) {
   const validKeys = ['ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp', ' ']
 
   // State transition
-  transition(() => state, key, validKeys, () => {
+  transition(state, key, validKeys, () => {
     // Already playing — action handled below
   })
 
