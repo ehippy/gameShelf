@@ -666,7 +666,21 @@ Quick reference for onboarding a new game to the project:
 5. **Initial tests** — Create `tests/games/<slug>.test.js` with Vitest tests covering required exports exist, `init()` returns correct initial state (`score=0`, `isGameOver=false`, `isPlaying=false`), `reset()` restores initial state, `handleKeydown()` triggers three-way logic, and `update()`/`render()` don't crash. See [Testing Conventions](#testing-conventions).
 6. **Verify** — Run `node scripts/verify-game-exists.js <slug>` to confirm both the game code directory and test file exist before considering the game added. See [Pre-implementation Verification](#pre-implementation-verification).
 
+## Scope Discipline
+
+When the card's spec is fully implemented and all acceptance criteria are met, submit the card. Do not continue making unrequested changes beyond what the card asked for, even if they seem related, helpful, or obviously worthwhile improvements.
+
+The instinct to fix things "while I'm at it" is natural — you spot a typo, refactor a confusing bit of code, or clean up a test. That impulse is good in general. Inside the discipline of a card, though, it's counterproductive. Each card is a focused unit of work with a defined spec and acceptance criteria. Adding unrelated changes expands the scope, which means longer reviews, more eyes on things nobody asked you to touch, and more chances for a reviewer to flag something irrelevant to the actual task.
+
+When you uncover an unrelated issue during implementation, note it for a separate card rather than fixing it in the current one. Create a brief note in the card comments or the backlog so someone can pick it up later with its own scope.
+
+**Consequences of violation:** Scope creep on cards leads to longer review cycles, more revision rounds, and ultimately more time spent discussing unrequested changes than would have been spent writing a separate card. Correct, spec-compliant code gets bounced back through multiple revision cycles because reviewers have to evaluate the unrequested changes, creating delay and frustration for everyone involved. The right fix for the issue you noticed will happen — on its own card, with its own focused review — rather than getting lost in a larger diff.
+
 ## Last Reviewed
+
+- **Reviewed:** 2026-08-08
+- **Scope:** Scope Discipline — added new `## Scope Discipline` section between Game Addition Checklist and Last Reviewed, documenting the convention to submit immediately when card specs are satisfied without adding unrequested changes. Covers the anti-pattern, the rule, handling unrelated issues, and consequences of violation.
+- **Verified sections:** Last Reviewed section (post-entry addition), Scope Discipline section (lines 669–677).
 
 - **Reviewed:** 2026-08-08
 - **Scope:** Game Initialization — added 'Exception: single keypress transitions state and performs an action (Flappy Bird)' subsection under 'Three-way state transitions with handleKeydownTransition' documenting the `wasPlaying` capture pattern as an exception to the shared helper, where a single keypress must both transition state and perform an immediate action.
