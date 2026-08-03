@@ -105,6 +105,60 @@ describe('HomeView', () => {
     expect(homeViewSrc).toContain('class="tagline"')
     expect(homeViewSrc).toContain('"tagline"')
   })
+
+  // --- New component wiring ---
+
+  it('imports WhatsNew component', () => {
+    expect(homeViewSrc).toContain("import WhatsNew from '../components/WhatsNew.vue'")
+  })
+
+  it('imports MostPlayedCarousel component', () => {
+    expect(homeViewSrc).toContain("import MostPlayedCarousel from '../components/MostPlayedCarousel.vue'")
+  })
+
+  it('imports RandomGameBtn component', () => {
+    expect(homeViewSrc).toContain("import RandomGameBtn from '../components/RandomGameBtn.vue'")
+  })
+
+  it('imports useScoreStore from scoreStore', () => {
+    expect(homeViewSrc).toContain("import { useScoreStore } from '../stores/scoreStore.js'")
+  })
+
+  it('renders <WhatsNew /> in template', () => {
+    expect(homeViewSrc).toContain('<WhatsNew />')
+  })
+
+  it('renders <MostPlayedCarousel /> in template', () => {
+    expect(homeViewSrc).toContain('<MostPlayedCarousel')
+  })
+
+  it('renders <RandomGameBtn /> in template', () => {
+    expect(homeViewSrc).toContain('<RandomGameBtn />')
+  })
+
+  it('passes mostPlayedGames as prop to MostPlayedCarousel', () => {
+    expect(homeViewSrc).toContain(':games="mostPlayedGames"')
+  })
+
+  it('defines mostPlayedGames computed property', () => {
+    expect(homeViewSrc).toContain('mostPlayedGames = computed')
+  })
+
+  it('mostPlayedGames iterates scoreStore.scores', () => {
+    expect(homeViewSrc).toContain('scoreStore.scores')
+  })
+
+  it('mostPlayedGames filters out zero-score games', () => {
+    expect(homeViewSrc).toContain('scores.length === 0')
+  })
+
+  it('mostPlayedGames validates slugs against catalog', () => {
+    expect(homeViewSrc).toContain('gameStore.getGameBySlug')
+  })
+
+  it('mostPlayedGames sorts by count descending', () => {
+    expect(homeViewSrc).toContain('b.count - a.count')
+  })
 })
 
 // --- GamePage slug guard uses isValidSlug ---
