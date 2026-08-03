@@ -411,6 +411,10 @@ Struggles: The gravity value was inconsistent between init() and the game loop �
 - **Scope:** Route param naming convention — added 'Route param naming' subsection under 'Catalog & Routing Conventions' documenting that Vue Router route parameters must use `:slug`, not `:id`, for identifying games.
 - **Verified sections:** Last Reviewed section (post-entry addition).
 
+- **Reviewed:** 2026-08-05
+- **Scope:** Testing Conventions — added 'Silent-pass guard clauses anti-pattern' subsection to the Vitest section, documenting the trap of early `return` statements between assertions.
+- **Verified sections:** Last Reviewed section (post-entry addition).
+
 ## Writing Conventions
 
 This document (AGENTS.md) is a living guide for humans — including LLMs acting in a human role — working on the gameShelf project. It captures conventions learned from real work, not theoretical rules. Treat it the way a senior developer would treat a well-maintained runbook: practical, grounded in experience, and focused on helping people do the right thing without overthinking it.
