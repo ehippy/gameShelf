@@ -887,6 +887,11 @@ export function reset() {
   return state
 }
 
+const transition = handleKeydownTransition(() => {
+  reset()
+  startGame(state.difficulty)
+})
+
 /**
  * Handle keyboard input. Exported for GamePage to wire up.
  * @param {string} key - The key pressed.
@@ -894,7 +899,15 @@ export function reset() {
 export function handleKeydown(key) {
   if (!state) return
 
-  // Arrow key navigation (works in all states)
+  const validKeys = [' ']
+
+  // Space bar: transition (start/restart/whack)
+  transition(state, key, validKeys, () => {
+    // Already playing — whack the mole under the cursor
+    whackCell(state.cursorCol, state.cursorRow)
+  })
+
+  // Arrow keys: cursor movement (always, regardless of state)
   if (key === 'ArrowUp') {
     state.cursorRow = Math.max(0, state.cursorRow - 1)
   } else if (key === 'ArrowDown') {
@@ -903,18 +916,6 @@ export function handleKeydown(key) {
     state.cursorCol = Math.max(0, state.cursorCol - 1)
   } else if (key === 'ArrowRight') {
     state.cursorCol = Math.min(COLS - 1, state.cursorCol + 1)
-  } else if (key === ' ') {
-    if (state.isGameOver) {
-      reset()
-      startGame(state.difficulty)
-    } else if (!state.isPlaying) {
-      // Menu - start the game
-      ensureAudioCtx()
-      startGame(state.difficulty)
-    } else {
-      // Gameplay - whack the mole under the cursor
-      whackCell(state.cursorCol, state.cursorRow)
-    }
   }
 }
 
