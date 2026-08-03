@@ -901,12 +901,12 @@ export function handleKeydown(key) {
   const validKeys = [' ']
 
   // Space bar: transition (start/restart/whack)
-  // resetFn handles game-over reset, onTransition handles menu start too
+  // resetFn handles game-over reset, onTransition handles game start for both paths
   transition(() => state, key, validKeys, () => {
     // Already playing — whack the mole under the cursor
     whackCell(state.cursorCol, state.cursorRow)
   }, () => {
-    // On transition (game over or menu start) — start the game
+    // On transition (game over or menu start) — ensure audio and start game
     ensureAudioCtx()
     startGame(state.difficulty)
   })
