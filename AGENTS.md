@@ -540,15 +540,7 @@ Quick reference for onboarding a new game to the project:
 - **Verified sections:** Pre-implementation Verification section (AGENTS.md line 452), scripts/verify-game-exists.js (file exists), test suite (901 tests pass).
 
 - **Reviewed:** 2026-08-07
-- **Scope:** CI pipeline card — verified `npm test` step exists at correct position in `.github/workflows/deploy.yml` between `npm ci` and `npm run build`; all 13 test files (902 tests) pass; infrastructure regression test in `tests/infrastructure.test.js` validates full workflow ordering (checkout → setup-node → npm ci → npm test → npm run build → deploy-with-retry).
-- **Verified sections:** `.github/workflows/deploy.yml` (lines 24–28), `tests/infrastructure.test.js` (CI workflow ordering tests at lines 263–331), test suite (902 tests pass).
-
-- **Reviewed:** 2026-08-07
 - **Scope:** CI pipeline card — final verification: `npm test` step confirmed at correct position in deploy.yml between `npm ci` and `npm run build`; all 13 test files (902 tests) pass; infrastructure regression test validates full workflow step ordering (checkout → setup-node → npm ci → npm test → npm run build → deploy-with-retry).
-- **Verified sections:** `.github/workflows/deploy.yml` (lines 24–28), `tests/infrastructure.test.js` (CI workflow ordering tests at lines 263–331), test suite (902 tests pass).
-
-- **Reviewed:** 2026-08-07
-- **Scope:** CI pipeline card — verified `npm test` step exists at correct position in `.github/workflows/deploy.yml` between `npm ci` and `npm run build`; all 13 test files (902 tests) pass; infrastructure regression test in `tests/infrastructure.test.js` validates full workflow ordering (checkout → setup-node → npm ci → npm test → npm run build → deploy-with-retry).
 - **Verified sections:** `.github/workflows/deploy.yml` (lines 24–28), `tests/infrastructure.test.js` (CI workflow ordering tests at lines 263–331), test suite (902 tests pass).
 
 ## Writing Conventions
