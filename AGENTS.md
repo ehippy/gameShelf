@@ -520,6 +520,22 @@ Reason: [One sentence explaining why this card doesn't require implementation wo
 Conclusion: [One-line summary of what was found or decided.]
 ```
 
+### No AGENTS.md update needed cards
+
+Not every card produces a convention worth documenting. Sometimes a card is purely a verification task — confirming that a section exists, a script works, or tests pass — rather than introducing a new pattern. When you find yourself closing a card with "No AGENTS.md update needed," pause and ask whether the card was actually an implementation card or a verification card.
+
+**"No AGENTS.md update needed" cards should be rare exceptions, not the default closure pattern.** Most cards that produce code changes naturally surface a convention worth documenting. If a card's acceptance criteria are entirely satisfied by confirming something that's already documented, it's a verification card, not an implementation card. Verification cards don't typically need AGENTS.md updates because they confirm existing conventions rather than introduce new ones. The Non-Feature Card Acknowledgment template already covers this category.
+
+**Beware of recursive self-referential loops.** Multiple cards closing with the identical phrase "No AGENTS.md update needed — recent closed work contains fabricated claims and covered patterns" created a self-referential loop where each subsequent card echoed the same boilerplate, referencing the previous cards that all referenced one another, with no real new content produced in any of them. Avoid self-referential closure patterns. When closing such a card, do **NOT** use the phrase "No AGENTS.md update needed" or any variant of it as the closing note.
+
+Instead, briefly note *why* no update was needed in specific, meaningful terms. Use language that a future agent can understand without reading the card's comment history:
+
+- **Good:** "Pre-existing convention confirmed — the three-way handleKeydown logic was already documented in the Game Initialization section."
+- **Good:** "Pattern already covered by the Short-circuit assertions anti-pattern section in Testing Conventions."
+- **Bad:** "No AGENTS.md update needed — recent closed work contains fabricated claims and covered patterns."
+
+Follow the same principle when writing the acknowledgment note to `docs/cards/<name>.md`. The note should state *what* was verified and *why* no new convention was introduced, in concrete terms.
+
 This keeps the backlog tidy and auditable. Future agents reviewing closed cards will see a clear record of why no code was produced, rather than wondering whether the work was missed or the spec was incomplete.
 
 ## Game Addition Checklist
@@ -578,6 +594,14 @@ Quick reference for onboarding a new game to the project:
 - **Reviewed:** 2026-08-07
 - **Scope:** CI Pipeline Conventions — added new `## CI Pipeline Conventions` section between Deployment Failure Convention and Card-Level Postmortems, with `CI test ordering` (workflow step sequence: checkout → setup-node → npm ci → npm test → npm run build → deploy-with-retry, failing tests block deployment) and `Retry action — 5 attempts` (deploy-with-retry uses 5 attempts with exponential backoff and GitHub API pre-check, consistent with Deployment Failure Convention).
 - **Verified sections:** AGENTS.md (new section at lines 428–444), test suite (all tests pass with no regressions).
+
+- **Reviewed:** 2026-08-07
+- **Scope:** Non-Feature Card Acknowledgment — added 'No AGENTS.md update needed cards' subsection under `## Non-Feature Card Acknowledgment`, documenting the rarity principle, verification-vs-implementation distinction, recursive loop warning, and specific closing note requirements. Restored the section's closing paragraph ("This keeps the backlog tidy and auditable...") which was accidentally deleted when the subsection was inserted.
+- **Verified sections:** Non-Feature Card Acknowledgment section (new subsection at lines 523–539, closing paragraph restored at line 539), Last Reviewed section (post-entry addition).
+
+- **Reviewed:** 2026-08-07
+- **Scope:** Non-Feature Card Acknowledgment — restored the second sentence of the closing paragraph ("Future agents reviewing closed cards will see a clear record of why no code was produced, rather than wondering whether the work was missed or the spec was incomplete.") that was truncated in the previous edit.
+- **Verified sections:** Non-Feature Card Acknowledgment section (closing paragraph at line 539, both sentences present).
 
 ## Writing Conventions
 
