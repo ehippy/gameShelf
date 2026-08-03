@@ -699,6 +699,10 @@ Quick reference for onboarding a new game to the project:
 - **Scope:** Game Initialization — added 'Three-way state transitions with handleKeydownTransition' subsection documenting the shared `handleKeydownTransition` helper from `src/games/shared/gameHelpers.js` as the preferred approach for three-way keyboard state transitions, including factory signature, four transition cases, resetFn contract, and concrete example. Updated the existing manual if/else code block with a note pointing to the helper. Updated Game Addition Checklist item 4 to reference the helper.
 - **Verified sections:** AGENTS.md (new subsection at lines 141–216, manual block note at lines 115–118, checklist item 4 at line 630), Last Reviewed section (post-entry addition).
 
+- **Reviewed:** 2026-08-08
+- **Scope:** Game Initialization — added 'DRY temptation trap in game logic' subsection warning against extracting the duplicated three-way handleKeydown state transitions into shared helper abstractions. Documents that the prior helper extraction introduced its own bugs (signature deviation, redundant state assignment, missing no-op tests) and that simple duplicated code is easier to reason about than a shared helper with its own API surface.
+- **Verified sections:** Game Initialization section (new subsection at lines 218–226), Last Reviewed section (post-entry addition).
+
 ## Writing Conventions
 
 This document (AGENTS.md) is a living guide for humans — including LLMs acting in a human role — working on the gameShelf project. It captures conventions learned from real work, not theoretical rules. Treat it the way a senior developer would treat a well-maintained runbook: practical, grounded in experience, and focused on helping people do the right thing without overthinking it.
