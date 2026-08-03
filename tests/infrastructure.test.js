@@ -271,6 +271,17 @@ describe('.github/workflows/deploy.yml', () => {
     expect(deployYml).toContain('npm run build')
   })
 
+  it('runs npm test before build', () => {
+    const ciIndex = deployYml.indexOf('npm ci')
+    const testIndex = deployYml.indexOf('npm test')
+    const buildIndex = deployYml.indexOf('npm run build')
+    expect(ciIndex).toBeGreaterThan(-1)
+    expect(testIndex).toBeGreaterThan(-1)
+    expect(buildIndex).toBeGreaterThan(-1)
+    expect(testIndex).toBeGreaterThan(ciIndex)
+    expect(testIndex).toBeLessThan(buildIndex)
+  })
+
   it('uploads ./dist/', () => {
     expect(deployYml).toContain('./dist/')
   })
