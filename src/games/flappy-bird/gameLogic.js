@@ -315,6 +315,7 @@ export function reset() {
 const transition = handleKeydownTransition(() => {
   state = createInitialState()
   state.lastPipeDrop = state.framesPlayed
+  state.bird.velocity = FLAP_STRENGTH
 })
 
 /**
@@ -326,14 +327,16 @@ export function handleKeydown(key) {
   const validKeys = ['ArrowUp', ' ']
 
   // For ArrowUp/Space: transition + flapping
-  // actionFn handles "already playing", onTransition handles "game over" and "not playing"
-  transition(() => state, key, validKeys, () => {
+  const wasPlaying = state.isPlaying
+  transition(state, key, validKeys, () => {
     // Already playing — flap
     state.bird.velocity = FLAP_STRENGTH
-  }, () => {
-    // On transition (game over or not playing) — also flap
-    state.bird.velocity = FLAP_STRENGTH
   })
+
+  // Not playing → just started playing → also flap
+  if (!wasPlaying && state.isPlaying) {
+    state.bird.velocity = FLAP_STRENGTH
+  }
 
   // ArrowDown: accelerate fall (not in validKeys, handled separately)
   if (key === 'ArrowDown') {
