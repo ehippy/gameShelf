@@ -244,15 +244,17 @@ describe('Auto-start regression: all games', () => {
     expect(flappyModule.state.isPlaying).toBe(true)
   })
 
-  // Cross-game card verification: snake + tetris + breakout all comply with init convention
-  it('card verified: all three games handleKeydown starts all of them (regression)', () => {
+  // Cross-game card verification: all games comply with init convention
+  it('card verified: all games handleKeydown starts all of them (regression)', () => {
     const s = { init: () => { snakeModule.init(); return snakeModule } }
     const t = { init: () => { tetrisModule.init(); return tetrisModule } }
     const b = { init: () => { breakoutModule.init(); return breakoutModule } }
+    const f = { init: () => { flappyModule.init(); return flappyModule } }
 
     expect(s.init().state.isPlaying).toBe(false)
     expect(t.init().state.isPlaying).toBe(false)
     expect(b.init().state.isPlaying).toBe(false)
+    expect(f.init().state.isPlaying).toBe(false)
   })
 
   it('Snake init → game over → reset → play cycle works end-to-end', () => {
