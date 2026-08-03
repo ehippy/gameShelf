@@ -440,30 +440,30 @@ describe('tetris', () => {
     it('bag refills when empty during gameplay', () => {
       tetrisModule.init()
       tetrisModule.state.isPlaying = true
-      // After init: bag has 3 remaining pieces (2 consumed during init/spawn).
-      // Each hard-drop consumes 1 via spawnPiece.
-      // After 3 hard-drops: bag empty. 4th drop refills.
-      tetrisModule.handleKeydown(' ')
-      tetrisModule.handleKeydown(' ')
-      tetrisModule.handleKeydown(' ')
+      // After init: bag has 5 pieces (2 consumed: 1 for nextPiece, 1 for currentPiece in spawnPiece).
+      // Each hard-drop consumes 1 from bag via spawnPiece.
+      // After 5 hard-drops: bag = 0. 6th hard-drop triggers refill.
+      for (let i = 0; i < 5; i++) {
+        tetrisModule.handleKeydown(' ')
+      }
       expect(tetrisModule.state.bag.length).toBe(0)
-      // 4th hard-drop should trigger refill
+      // 6th hard-drop should trigger refill (fillBag creates 7, getNextPieceType pops 1 = 6)
       tetrisModule.handleKeydown(' ')
-      expect(tetrisModule.state.bag.length).toBe(7)
+      expect(tetrisModule.state.bag.length).toBe(6)
     })
 
     it('7-bag ensures all 7 types appear in a full bag', () => {
       tetrisModule.init()
       tetrisModule.state.isPlaying = true
-      // Collect all piece types across multiple spawns.
-      // After init: bag has 3 pieces left. Each hard-drop spawns 1 piece and consumes 1 from bag.
-      // After 3 drops: bag empty. 4th drop refills with 7 new pieces.
-      // So after 7 drops total, we should have seen pieces from at least one full refill.
+      // After init: bag has 5 pieces (2 consumed during init).
+      // 7 hard-drops total: 5 from existing bag, then refill at drop 6, then 1 more from refill.
+      // This gives us at least one full refill's worth of 7 types to check.
       const collected = new Set()
       for (let i = 0; i < 7; i++) {
         tetrisModule.handleKeydown(' ')
         collected.add(tetrisModule.state.currentPiece.type)
       }
+      // 7 consecutive spawns guarantee at least one full refill, so all 7 types must appear.
       expect(collected.size).toBe(7)
       expect(collected.has('I')).toBe(true)
       expect(collected.has('O')).toBe(true)
