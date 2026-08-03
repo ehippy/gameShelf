@@ -100,17 +100,4 @@ function getDirInfo(dir) {
   return { fileCount, totalSize }
 }
 
-function getDirSize(dir) {
-  let total = 0
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const fullPath = path.join(dir, entry.name)
-    if (entry.isDirectory()) {
-      total += getDirSize(fullPath)
-    } else {
-      total += fs.statSync(fullPath).size
-    }
-  }
-  return total
-}
-
 main()
