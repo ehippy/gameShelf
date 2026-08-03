@@ -59,8 +59,8 @@ async function main() {
     // Exit 0 — fully implemented
     console.log(`✅ Game "${game.title}" (${slug}) is fully implemented.`)
     console.log(`   src/games/${slug}/`)
-    for (const f of walkDir(gameDir, slug)) {
-      console.log(`     ${f}`)
+    for (const f of listFiles(gameDir)) {
+      console.log(`   ${f}`)
     }
     console.log(`   tests/games/${slug}.test.js (${formatBytes(fs.statSync(testFile).size)})`)
     process.exit(0)
@@ -82,21 +82,19 @@ function formatBytes(bytes) {
 }
 
 /**
- * Recursively walk a directory and return relative file paths with sizes.
- * Paths are relative to the game directory (e.g. "gameLogic.js").
- * Returns an array of strings like "filename.ext (123 bytes)".
+ * Recursively list files in a directory, returning their relative paths and sizes.
+ * Paths are relative to src/games/<slug>/ (e.g. "gameLogic.js" or "utils/helper.js").
  */
-function walkDir(dir, prefix) {
+function listFiles(dir, prefix) {
   prefix = prefix || ''
   const lines = []
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const fullPath = path.join(dir, entry.name)
     const rel = prefix + entry.name
     if (entry.isDirectory()) {
-      lines.push(`  ${rel}/`)
-      lines.push(...walkDir(fullPath, slug, rel + '/'))
+      lines.push(...listFiles(fullPath, rel + '/'))
     } else {
-      lines.push(`  ${rel} (${formatBytes(fs.statSync(fullPath).size)})`)
+      lines.push(`${rel} (${formatBytes(fs.statSync(fullPath).size)})`)
     }
   }
   return lines
