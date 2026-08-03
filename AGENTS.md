@@ -425,6 +425,24 @@ If all 5 attempts fail:
 
 Avoid the pattern where correct code bounces indefinitely between the Deployer and PM due to flaky CI infrastructure. The Deployer should absorb transient failures, retry, and only escalate with evidence — never reject approved work solely because of infrastructure hiccups.
 
+## CI Pipeline Conventions
+
+### CI test ordering
+
+The GitHub Actions deploy workflow (`deploy.yml`) must maintain this step ordering:
+
+1. **`npm ci`** — install dependencies (clean install)
+2. **`npm test`** — run the full test suite (Vitest + build test)
+3. **`npm run build`** — produce the production build
+
+`npm test` must always run **after** `npm ci` (so tests execute against freshly installed dependencies) and **before** `npm run build` (so the test suite acts as a gate — failing tests block deployment). If the tests fail, the pipeline stops; it should never proceed to build or deploy.
+
+The full workflow order is: checkout → setup-node → npm ci → npm test → npm run build → deploy-with-retry.
+
+### Retry action — 5 attempts
+
+The `deploy-with-retry` composite action (`./.github/actions/deploy-with-retry/`) uses **5 total attempts** for the deployment step, consistent with the retry protocol defined in the Deployment Failure Convention. The logic uses exponential backoff (30s, 60s, 120s, 180s delays between attempts) with a GitHub API reachability pre-check before each attempt.
+
 ## Card-Level Postmortems
 
 The struggles section must NOT be included when there is no friction. Do not write "Nothing notable" or any equivalent — write nothing.
@@ -556,6 +574,10 @@ Quick reference for onboarding a new game to the project:
 - **Reviewed:** 2026-08-07
 - **Scope:** CI pipeline card — final verification: `npm test` step confirmed at correct position in deploy.yml between `npm ci` and `npm run build`; all 13 test files (902 tests) pass; infrastructure regression test validates full workflow step ordering (checkout → setup-node → npm ci → npm test → npm run build → deploy-with-retry).
 - **Verified sections:** `.github/workflows/deploy.yml` (lines 24–28), `tests/infrastructure.test.js` (CI workflow ordering tests at lines 263–331), test suite (902 tests pass).
+
+- **Reviewed:** 2026-08-07
+- **Scope:** CI Pipeline Conventions — added new `## CI Pipeline Conventions` section between Deployment Failure Convention and Card-Level Postmortems, with `CI test ordering` (workflow step sequence: checkout → setup-node → npm ci → npm test → npm run build → deploy-with-retry, failing tests block deployment) and `Retry action — 5 attempts` (deploy-with-retry uses 5 attempts with exponential backoff and GitHub API pre-check, consistent with Deployment Failure Convention).
+- **Verified sections:** AGENTS.md (new section at lines 428–444), test suite (all tests pass with no regressions).
 
 ## Writing Conventions
 
