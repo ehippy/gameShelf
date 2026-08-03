@@ -177,7 +177,7 @@ function findDuples(records) {
 
         let foundValid = false
         for (const run of runs) {
-          if (run.length < 3) continue
+          if (run.length < 4) continue
           const assertionText = scopeRecords[run[0]].assertion
           const filePath = scopeRecords[run[0]].filePath
           const testNames = run.map(idx => scopeRecords[idx].testName)
