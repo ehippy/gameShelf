@@ -21,11 +21,6 @@ async function main() {
     process.exit(2)
   }
 
-  const slugs = catalog.map(entry => ({
-    slug: entry.slug,
-    title: entry.title
-  }))
-
   // --- Validate argument ---
   const slug = process.argv[2]
 
@@ -33,19 +28,21 @@ async function main() {
     console.log('Usage: node scripts/verify-game-exists.js <slug>')
     console.log('')
     console.log('Valid slugs:')
-    for (const entry of slugs) {
+    for (const entry of catalog) {
       console.log(`  - ${entry.slug} (${entry.title})`)
     }
     process.exit(2)
   }
 
-  const game = slugs.find(entry => entry.slug === slug)
+  const game = catalog.find(entry => entry.slug === slug)
 
   if (!game) {
-    console.log(`Error: "${slug}" is not a valid game slug.`)
+    console.log(`Usage: node scripts/verify-game-exists.js <slug>`)
+    console.log('')
+    console.log(`"${slug}" is not a valid game slug.`)
     console.log('')
     console.log('Valid slugs:')
-    for (const entry of slugs) {
+    for (const entry of catalog) {
       console.log(`  - ${entry.slug} (${entry.title})`)
     }
     process.exit(2)
@@ -60,11 +57,10 @@ async function main() {
 
   if (dirExists && testExists) {
     // Exit 0 — fully implemented
-    const dirInfo = walkDir(gameDir)
     console.log(`✅ Game "${game.title}" (${slug}) is fully implemented.`)
     console.log(`   src/games/${slug}/`)
-    for (const f of dirInfo) {
-      console.log(`     ${f.path} (${formatBytes(f.size)})`)
+    for (const f of walkDir(gameDir, slug)) {
+      console.log(`     ${f}`)
     }
     console.log(`   tests/games/${slug}.test.js (${formatBytes(fs.statSync(testFile).size)})`)
     process.exit(0)
@@ -73,10 +69,10 @@ async function main() {
   // Exit 1 — partially implemented
   console.log(`⚠️  Game "${game.title}" (${slug}) is partially implemented.`)
   if (!dirExists) {
-    console.log(`   Missing: ${gameDir}/`)
+    console.log(`   Missing: src/games/${slug}/`)
   }
   if (!testExists) {
-    console.log(`   Missing: ${testFile}`)
+    console.log(`   Missing: tests/games/${slug}.test.js`)
   }
   process.exit(1)
 }
@@ -85,21 +81,23 @@ function formatBytes(bytes) {
   return `${bytes} byte${bytes !== 1 ? 's' : ''}`
 }
 
-function getDirInfo(dir) {
-  let fileCount = 0
-  let totalSize = 0
+/**
+ * Recursively walk a directory and return relative paths with sizes.
+ * Returns an array of strings like "  filename.ext (123 bytes)".
+ */
+function walkDir(dir, slug) {
+  const lines = []
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const fullPath = path.join(dir, entry.name)
+    const relativePath = `src/games/${slug}/${path.relative(dir, fullPath).split(path.sep).join('/')}`
     if (entry.isDirectory()) {
-      const sub = getDirInfo(fullPath)
-      fileCount += sub.fileCount
-      totalSize += sub.totalSize
+      lines.push(`  ${entry.name}/`)
+      lines.push(...walkDir(fullPath, slug))
     } else {
-      fileCount += 1
-      totalSize += fs.statSync(fullPath).size
+      lines.push(`  ${relativePath} (${formatBytes(fs.statSync(fullPath).size)})`)
     }
   }
-  return { fileCount, totalSize }
+  return lines
 }
 
 main()
