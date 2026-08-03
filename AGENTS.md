@@ -415,4 +415,20 @@ Struggles: The gravity value was inconsistent between init() and the game loop �
 - **Scope:** Testing Conventions — added 'Silent-pass guard clauses anti-pattern' subsection to the Vitest section, documenting the trap of early `return` statements between assertions.
 - **Verified sections:** Silent-pass guard clauses anti-pattern subsection within Testing Conventions > Vitest (lines 229–278).
 
-## Last Reviewed
+## Pre-implementation Verification
+
+Before writing any code for a game implementation card, always verify the game hasn't already been implemented. With only a handful of games built out of the full catalog, it's easy for cards to arrive for work that's already done — forcing the developer to fabricate changes just to satisfy the system's requirement of "a real diff." This step prevents that entirely.
+
+1. **Look up the game's slug** from the card (the kebab-case identifier used in the catalog).
+2. **Run `node scripts/verify-game-exists.js <slug>`** to check whether the game is already implemented.
+3. **If the script reports the game exists** (exit 0), close the card immediately with a verification comment noting the game is already implemented — no code changes needed.
+4. **If the script reports files are missing** (exit 1), proceed with implementation.
+5. **If the script reports an invalid slug** (exit 2), check the card for typos or missing catalog entry before proceeding.
+
+The script checks for two things:
+- `src/games/<slug>/` directory (the game's code)
+- `tests/games/<slug>.test.js` file (the game's tests)
+
+Both must exist for the game to be considered fully implemented.
+
+## Writing Conventions
