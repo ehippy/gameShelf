@@ -42,11 +42,26 @@ function findGameLogicFiles(rootDir) {
 }
 
 /**
- * Extract the body text of the handleKeydownTransition callback.
+ * Find the opening brace line index for a callback starting at
+ * handleKeydownTransition( on `startLine` (0-indexed).  Walks forward
+ * from startLine until it finds the first `{`, then returns that
+ * line index.  Returns -1 if not found.
+ */
+function findCallbackOpeningBrace(lines, startLine) {
+  for (let j = startLine; j < lines.length; j++) {
+    if (lines[j].indexOf('{') !== -1) return j
+  }
+  return -1
+}
+
+/**
+ * Extract the body text lines of the handleKeydownTransition callback.
  *
- * Looks for `handleKeydownTransition(` and then tracks brace depth
- * from the opening `{` of the callback body to find its end.
- * Returns the body text (everything between { and the matching }).
+ * Walks from the line containing `handleKeydownTransition(` to find
+ * the opening `{`, then tracks brace depth until it reaches 0,
+ * collecting body lines along the way.
+ *
+ * Returns an array of body-line strings, or null if not found.
  */
 function extractTransitionCallbackBody(content) {
   const lines = content.split('\n')
@@ -54,59 +69,62 @@ function extractTransitionCallbackBody(content) {
   for (let i = 0; i < lines.length; i++) {
     if (!/handleKeydownTransition\s*\(/.test(lines[i])) continue
 
-    // Find the opening { of the callback body
-    for (let j = i; j < lines.length; j++) {
-      const cl = lines[j]
-      const braceIdx = cl.indexOf('{')
-      if (braceIdx === -1) continue
+    const openLine = findCallbackOpeningBrace(lines, i)
+    if (openLine === -1) continue
 
-      // Make sure this { is after handleKeydownTransition( on the same line
-      // or on a subsequent line (callback declaration)
-      let afterTransition = false
-      if (j === i) {
-        afterTransition = cl.indexOf('handleKeydownTransition') !== -1
+    // Collect body from the brace on openLine
+    let bodyLines = [lines[openLine].slice(lines[openLine].indexOf('{') + 1)]
+    let braceDepth = 1
+
+    for (let j = openLine + 1; j < lines.length; j++) {
+      for (const ch of lines[j]) {
+        if (ch === '{') braceDepth++
+        else if (ch === '}') braceDepth--
       }
-      if (!afterTransition) {
-        // This { is on a different line — it's either a nested function
-        // or the callback body. We'll handle brace tracking below.
-      }
-
-      let braceDepth = 0
-      let bodyStart = -1
-      let bodyEnd = -1
-      let bodyLines = []
-
-      for (let k = braceIdx; k < cl.length; k++) {
-        if (cl[k] === '{') braceDepth++
-        else if (cl[k] === '}') braceDepth--
-      }
-
-      if (braceDepth === 0) {
-        // Single-line: { }
-        bodyStart = braceIdx + 1
-        bodyEnd = cl.length - 1
-        bodyLines = [cl.slice(bodyStart, bodyEnd)]
+      if (braceDepth <= 0) {
+        // Closing line: take content before the final }
+        const closeIdx = lines[j].lastIndexOf('}')
+        bodyLines.push(lines[j].slice(0, closeIdx))
         return bodyLines
       }
+      bodyLines.push(lines[j])
+    }
+    // No matching } — malformed, skip this occurrence
+  }
 
-      // Multi-line: collect body lines
-      bodyLines = [cl.slice(braceIdx + 1)]
-      for (let m = j + 1; m < lines.length; m++) {
-        for (const ch of lines[m]) {
-          if (ch === '{') braceDepth++
-          else if (ch === '}') braceDepth--
-        }
-        bodyLines.push(lines[m])
-        if (braceDepth <= 0) {
-          // Last line: take content up to the closing }
-          const lastIdx = lines[m].lastIndexOf('}')
-          bodyLines[bodyLines.length - 1] = lines[m].slice(0, lastIdx)
-          return bodyLines
-        }
+  return null
+}
+
+/**
+ * Extract the body of the reset() function from the file content.
+ * Looks for `function reset()` or `export function reset()` and
+ * returns the lines inside its body (not including the function
+ * declaration line).
+ */
+function extractResetFunctionBody(content) {
+  const lines = content.split('\n')
+
+  for (let i = 0; i < lines.length; i++) {
+    if (!/\bfunction\s+reset\s*\(/.test(lines[i])) continue
+
+    // Find opening brace
+    const openLine = findCallbackOpeningBrace(lines, i)
+    if (openLine === -1) continue
+
+    let bodyLines = [lines[openLine].slice(lines[openLine].indexOf('{') + 1)]
+    let braceDepth = 1
+
+    for (let j = openLine + 1; j < lines.length; j++) {
+      for (const ch of lines[j]) {
+        if (ch === '{') braceDepth++
+        else if (ch === '}') braceDepth--
       }
-
-      // No matching } found — malformed, skip
-      break
+      if (braceDepth <= 0) {
+        const closeIdx = lines[j].lastIndexOf('}')
+        bodyLines.push(lines[j].slice(0, closeIdx))
+        return bodyLines
+      }
+      bodyLines.push(lines[j])
     }
   }
 
@@ -118,113 +136,52 @@ function extractTransitionCallbackBody(content) {
  *
  * Two kinds of violations:
  *   1. Direct: `state = createInitialState(` appears in the body
- *   2. Indirect: the body calls `reset()` and the file's `reset()`
- *      function contains `state = createInitialState(` — meaning
- *      the transition delegates to a reset() that does the wrong thing.
+ *   2. Indirect: the body calls `reset()` only, and the file's
+ *      `reset()` function contains `state = createInitialState(`
  *
  * Returns array of violation descriptions, or empty if clean.
  */
 function detectAntiPattern(content) {
   const violations = []
 
-  // Check for direct anti-pattern in transition callback body
   const callbackBody = extractTransitionCallbackBody(content)
-  if (callbackBody) {
-    const bodyText = callbackBody.join('\n')
+  if (!callbackBody) return violations
 
-    // Pattern 1: Direct state reassignment
-    const reassignLines = []
-    for (let i = 0; i < callbackBody.length; i++) {
-      if (/\bstate\s*=\s*createInitialState\s*\(/.test(callbackBody[i])) {
-        reassignLines.push(i + 1) // 1-indexed within body
-      }
+  // Pattern 1: Direct state reassignment
+  for (let i = 0; i < callbackBody.length; i++) {
+    if (/\bstate\s*=\s*createInitialState\s*\(/.test(callbackBody[i])) {
+      violations.push({
+        lineNo: i + 1, // 1-indexed within body
+        text: callbackBody[i].trim(),
+        type: 'direct',
+      })
     }
+  }
 
-    if (reassignLines.length > 0) {
-      for (const lineNo of reassignLines) {
+  // Pattern 2: Callback body is just `reset()` — check if reset() does reassignment
+  const trimmedLines = callbackBody
+    .map(l => l.trim())
+    .filter(l => l.length > 0)
+
+  const isOnlyReset =
+    trimmedLines.length === 1 &&
+    /^reset\s*\(\s*\)\s*;?\s*$/.test(trimmedLines[0])
+
+  if (isOnlyReset) {
+    const resetFuncBody = extractResetFunctionBody(content)
+    if (resetFuncBody) {
+      const resetText = resetFuncBody.join('\n')
+      if (/\bstate\s*=\s*createInitialState\s*\(/.test(resetText)) {
         violations.push({
-          lineNo: lineNo,
-          text: callbackBody[lineNo - 1].trim(),
-          type: 'direct',
+          lineNo: null,
+          text: 'calls reset() which does `state = createInitialState()`',
+          type: 'indirect',
         })
-      }
-    }
-
-    // Pattern 2: Callback calls reset() only — check if reset() does reassignment
-    const trimmedLines = callbackBody.map(l => l.trim()).filter(l => l.length > 0)
-
-    // Check if the callback body is just `reset()` (possibly with trailing semicolons/whitespace)
-    const isOnlyReset = trimmedLines.length === 1 &&
-      /^reset\s*\(\s*\)\s*;?\s*$/.test(trimmedLines[0])
-
-    if (isOnlyReset) {
-      // Check if the file's reset() function contains `state = createInitialState(`
-      const resetFuncBody = extractResetFunctionBody(content)
-      if (resetFuncBody) {
-        const resetText = resetFuncBody.join('\n')
-        if (/\bstate\s*=\s*createInitialState\s*\(/.test(resetText)) {
-          violations.push({
-            lineNo: null, // callback-level violation
-            text: 'calls reset() which does `state = createInitialState()`',
-            type: 'indirect',
-          })
-        }
       }
     }
   }
 
   return violations
-}
-
-/**
- * Extract the body of the reset() function from the file content.
- * Looks for `export function reset()` or `function reset()` and
- * returns the lines inside its body.
- */
-function extractResetFunctionBody(content) {
-  const lines = content.split('\n')
-
-  for (let i = 0; i < lines.length; i++) {
-    const cl = lines[i]
-    if (!/\bfunction\s+reset\s*\(/.test(cl)) continue
-
-    // Find the opening {
-    let braceDepth = 0
-    let bodyLines = []
-
-    for (let j = i; j < lines.length; j++) {
-      const line = lines[j]
-      for (const ch of line) {
-        if (ch === '{') braceDepth++
-        else if (ch === '}') braceDepth--
-      }
-
-      if (braceDepth > 0) {
-        // Check if { is the function body opening
-        const braceIdx = line.indexOf('{')
-        if (braceIdx !== -1) {
-          bodyLines.push(line.slice(braceIdx + 1))
-        } else {
-          bodyLines.push(line)
-        }
-        if (braceDepth <= 0) {
-          return bodyLines
-        }
-      } else {
-        // { might be at the end of this line
-        const braceIdx = line.indexOf('{')
-        if (braceIdx !== -1) {
-          bodyLines = [line.slice(braceIdx + 1)]
-        } else {
-          bodyLines = [line]
-        }
-      }
-    }
-
-    if (bodyLines.length > 0) return bodyLines
-  }
-
-  return null
 }
 
 // ---- Main ----
@@ -239,21 +196,7 @@ for (const file of gameFiles) {
   if (violations.length > 0) {
     const relPath = path.relative(repoRoot, file)
     for (const v of violations) {
-      if (v.type === 'direct') {
-        allViolations.push({
-          file: relPath,
-          lineNo: v.lineNo,
-          text: v.text,
-          type: v.type,
-        })
-      } else {
-        allViolations.push({
-          file: relPath,
-          lineNo: null,
-          text: v.text,
-          type: v.type,
-        })
-      }
+      allViolations.push({ file: relPath, ...v })
     }
   }
 }
