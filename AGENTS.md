@@ -431,4 +431,8 @@ Both must exist for the game to be considered fully implemented.
 - **Scope:** Testing Conventions — added 'Silent-pass guard clauses anti-pattern' subsection to the Vitest section, documenting the trap of early `return` statements between assertions.
 - **Verified sections:** Silent-pass guard clauses anti-pattern subsection within Testing Conventions > Vitest (lines 229–278).
 
+- **Reviewed:** 2026-08-06
+- **Scope:** Pre-implementation Verification — added 'Pre-implementation Verification' section to AGENTS.md with a checklist to check whether game code and tests already exist before starting implementation, and created `scripts/verify-game-exists.js` to validate slug and report file existence.
+- **Verified sections:** Pre-implementation Verification section (lines 400–414), scripts/verify-game-exists.js (all exit codes 0, 1, 2 verified).
+
 ## Writing Conventions
