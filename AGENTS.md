@@ -685,6 +685,10 @@ Quick reference for onboarding a new game to the project:
 - **Scope:** Non-Feature Card Acknowledgment — restored the second sentence of the closing paragraph ("Future agents reviewing closed cards will see a clear record of why no code was produced, rather than wondering whether the work was missed or the spec was incomplete.") that was truncated in the previous edit.
 - **Verified sections:** Non-Feature Card Acknowledgment section (closing paragraph at line 539, both sentences present).
 
+- **Reviewed:** 2026-08-08
+- **Scope:** Game Initialization — added 'Three-way state transitions with handleKeydownTransition' subsection documenting the shared `handleKeydownTransition` helper from `src/games/shared/gameHelpers.js` as the preferred approach for three-way keyboard state transitions, including factory signature, four transition cases, resetFn contract, and concrete example. Updated the existing manual if/else code block with a note pointing to the helper. Updated Game Addition Checklist item 4 to reference the helper.
+- **Verified sections:** AGENTS.md (new subsection at lines 141–216, manual block note at lines 115–118, checklist item 4 at line 630), Last Reviewed section (post-entry addition).
+
 ## Writing Conventions
 
 This document (AGENTS.md) is a living guide for humans — including LLMs acting in a human role — working on the gameShelf project. It captures conventions learned from real work, not theoretical rules. Treat it the way a senior developer would treat a well-maintained runbook: practical, grounded in experience, and focused on helping people do the right thing without overthinking it.
