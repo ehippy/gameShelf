@@ -1,5 +1,5 @@
 name: 'Deploy to GitHub Pages with Retry'
-description: 'Uploads artifact and deploys to GitHub Pages with up to 3 attempts on transient failure'
+description: 'Uploads artifact and deploys to GitHub Pages with up to 5 attempts on transient failure'
 
 outputs:
   page_url:
