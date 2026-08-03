@@ -30,7 +30,7 @@ const BOILERPLATE_PATTERNS = [
 ]
 
 function isBoilerplate(text) {
-  const trimmed = text.trim().toLowerCase()
+  const trimmed = text.trim().toLowerCase().replace(/[.,;:!?\u2019\u2018]+$/, '')
   if (trimmed === '') return true
   return BOILERPLATE_PATTERNS.includes(trimmed)
 }
