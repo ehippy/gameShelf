@@ -889,6 +889,8 @@ export function reset() {
 
 const transition = handleKeydownTransition(() => {
   reset()
+  ensureAudioCtx()
+  startGame(state.difficulty)
 })
 
 /**
@@ -901,15 +903,17 @@ export function handleKeydown(key) {
   const validKeys = [' ']
 
   // Space bar: transition (start/restart/whack)
-  // resetFn handles game-over reset, onTransition handles game start for both paths
-  transition(() => state, key, validKeys, () => {
+  const wasPlaying = state.isPlaying
+  transition(state, key, validKeys, () => {
     // Already playing — whack the mole under the cursor
     whackCell(state.cursorCol, state.cursorRow)
-  }, () => {
-    // On transition (game over or menu start) — ensure audio and start game
+  })
+
+  // Not playing → just started playing → start the game
+  if (!wasPlaying && state.isPlaying) {
     ensureAudioCtx()
     startGame(state.difficulty)
-  })
+  }
 
   // Arrow keys: cursor movement (always, regardless of state)
   if (key === 'ArrowUp') {
