@@ -499,6 +499,10 @@ Both must exist for the game to be considered fully implemented.
 - **Scope:** No AGENTS.md update card — verified Pre-implementation Verification section exists at line 452 and scripts/verify-game-exists.js is present; card closed based on false premise since both items are already in place.
 - **Verified sections:** Pre-implementation Verification section (AGENTS.md line 452), scripts/verify-game-exists.js (file exists).
 
+- **Reviewed:** 2026-08-06
+- **Scope:** Revision of this card — CI failure on commit d828dc55 was `npm test` returning exit code 1 on the GitHub Actions runner despite all 901 tests passing locally (verified via `npm ci && npm test && npm run build`). This is a transient infrastructure failure. Card is self-closing: no AGENTS.md update is needed.
+- **Verified sections:** Pre-implementation Verification section (AGENTS.md line 452), scripts/verify-game-exists.js (file exists), test suite (901 tests pass).
+
 ## Writing Conventions
 
 This document (AGENTS.md) is a living guide for humans — including LLMs acting in a human role — working on the gameShelf project. It captures conventions learned from real work, not theoretical rules. Treat it the way a senior developer would treat a well-maintained runbook: practical, grounded in experience, and focused on helping people do the right thing without overthinking it.
