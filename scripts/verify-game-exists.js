@@ -82,20 +82,21 @@ function formatBytes(bytes) {
 }
 
 /**
- * Recursively walk a directory and return relative paths with sizes.
- * Returns an array of strings like "  filename.ext (123 bytes)".
+ * Recursively walk a directory and return relative file paths with sizes.
+ * Paths are relative to the game directory (e.g. "gameLogic.js").
+ * Returns an array of strings like "filename.ext (123 bytes)".
  */
-function walkDir(dir, slug) {
+function walkDir(dir, slug, prefix) {
+  prefix = prefix || ''
   const lines = []
-  const base = `src/games/${slug}`
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const fullPath = path.join(dir, entry.name)
-    const relPath = path.relative(repoRoot, fullPath).split(path.sep).join('/')
+    const rel = prefix + entry.name
     if (entry.isDirectory()) {
-      lines.push(`  ${entry.name}/`)
-      lines.push(...walkDir(fullPath, slug))
+      lines.push(`  ${rel}/`)
+      lines.push(...walkDir(fullPath, slug, rel + '/'))
     } else {
-      lines.push(`  ${relPath} (${formatBytes(fs.statSync(fullPath).size)})`)
+      lines.push(`  ${rel} (${formatBytes(fs.statSync(fullPath).size)})`)
     }
   }
   return lines
