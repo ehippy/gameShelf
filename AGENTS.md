@@ -465,6 +465,31 @@ The script checks for two things:
 
 Both must exist for the game to be considered fully implemented.
 
+## Non-Feature Card Acknowledgment
+
+Not every card in the backlog represents a feature to build. Some cards are system error notifications, placeholder test requests, invalid feature proposals, or pre-existing game confirmations — things that are valid work items but produce no code changes.
+
+When you close such a card, write a brief acknowledgment note into a file under `docs/cards/` (e.g. `docs/cards/close-invalid-slug-card.md`). The note should state the card's title, the reason it's being closed without an implementation spec, and a one-line summary of any conclusion reached.
+
+**Example scenarios:**
+
+- **Invalid slug card** — a card asks to implement a game with a slug that doesn't exist in the catalog, or contains a typo in the slug. Close the card, note that the slug is invalid, and confirm whether a correct catalog entry needs to be added separately.
+- **Pre-existing game card** — a card asks to implement a game that's already done. Confirm via `verify-game-exists.js`, then note the confirmation and close the card.
+- **CI notification card** — a card documenting a transient CI failure or infrastructure flake. Note the root cause and whether a fix was applied.
+- **Placeholder test request** — a card that was only meant to flag a future test improvement. Close with a note about whether the test was already added or what the next action should be.
+
+**Template:**
+
+```
+Card: [Card title or reference]
+
+Reason: [One sentence explaining why this card doesn't require implementation work — e.g. "Invalid slug in catalog", "Game already implemented", "CI flake, not a code issue"]
+
+Conclusion: [One-line summary of what was found or decided.]
+```
+
+This keeps the backlog tidy and auditable. Future agents reviewing closed cards will see a clear record of why no code was produced, rather than wondering whether the work was missed or the spec was incomplete.
+
 ## Last Reviewed
 
 - **Reviewed:** 2026-08-04
