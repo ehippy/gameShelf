@@ -2,6 +2,9 @@
   <div>
     <h1>gameShelf</h1>
     <p class="tagline">Play classic games right in your browser</p>
+    <WhatsNew />
+    <MostPlayedCarousel :games="mostPlayedGames" />
+    <RandomGameBtn />
     <div class="games-grid">
       <GameCard
         v-for="game in filteredGames"
