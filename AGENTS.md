@@ -226,6 +226,57 @@ Each condition gets its own `expect()` call — either on separate lines within 
 
 **This trap has appeared repeatedly across `tests/components.test.js`, `tests/games/flappy-bird.test.js`, `tests/games/tetris.test.js`, `tests/games/snake.test.js`, and `tests/infrastructure.test.js`. If you see `||` between `expect()` calls, rewrite each as an independent assertion.**
 
+### Silent-pass guard clauses anti-pattern
+
+> **Never place early `return` statements between assertions inside an `it()` block.**
+
+When you write `if (!something) return` or `if (skip) return` *after* an assertion, the early return silently skips all remaining code — including subsequent assertions. The test passes because execution returns normally, but the assertions after the guard were never verified.
+
+This is especially dangerous because the trap is subtle: the guard itself may appear to make sense ("skip this if the condition isn't met"), but placing it between assertions means some verification is gated behind a conditional that can silently suppress failures.
+
+**Contrast with legitimate setup guards:** Guards at the very top of an `it()` block, before any assertions, are fine — e.g. `if (!setupComplete) return` in setup code. The anti-pattern is guards inserted *after* an assertion or around a specific assertion chain that selectively bypasses the rest of the verification.
+
+**Anti-pattern (do not use):**
+
+```js
+it('handles game over state after a critical move', () => {
+  state = gameLogic.init()
+  gameLogic.move('down')
+  gameLogic.move('left')
+
+  expect(state.isGameOver).toBe(true)
+  if (!state.isGameOver) return  // <-- silent-pass gap: any assertions after this
+                                 // are bypassed if isGameOver is true, and the
+                                 // guard never actually triggers when the
+                                 // condition is false
+
+  expect(state.score).toBe(100)
+  expect(state.grid.length).toBe(20)
+})
+```
+
+While `if (!state.isGameOver) return` after `expect(state.isGameOver).toBe(true)` doesn't bypass the guard itself (the first assertion already confirmed the condition), any subsequent assertions are skipped, and the pattern is confusing and error-prone. It creates a gap where verification silently disappears.
+
+**Correct approach:**
+
+```js
+it('handles game over state after a critical move', () => {
+  const state = gameLogic.init()
+  gameLogic.move('down')
+  gameLogic.move('left')
+
+  expect(state.isGameOver).toBe(true)
+  expect(state.score).toBe(100)
+  expect(state.grid.length).toBe(20)
+})
+```
+
+Assert first, then return early if needed — but don't put a guard between assertions. If you truly need conditional branching, split into separate `it()` blocks rather than gating assertions behind a guard.
+
+**This trap was found in the Tetris tests with 38 instances of mid-assertion guard clauses causing silent test passes.**
+
+> **Testing tip:** When reviewing test files, scan for `return` statements inside `it()` blocks that appear after any assertion — if the return path could bypass subsequent assertions, the test has a silent-pass gap.
+
 ### Verifying Assertion Values Against Implementation
 
 Test assertions are only as good as the values they compare against — a passing test with incorrect expected values proves nothing. This came up in the Whack-a-Mole keyboard input cycle, where tests contained incorrect hardcoded expected values (e.g. wrong `cursorRow` values after state transitions) while the implementation was correct, causing multiple review/fix rounds before the mismatch was noticed.
@@ -359,6 +410,10 @@ Struggles: The gravity value was inconsistent between init() and the game loop �
 - **Reviewed:** 2026-08-04
 - **Scope:** Route param naming convention — added 'Route param naming' subsection under 'Catalog & Routing Conventions' documenting that Vue Router route parameters must use `:slug`, not `:id`, for identifying games.
 - **Verified sections:** Last Reviewed section (post-entry addition).
+
+- **Reviewed:** 2026-08-05
+- **Scope:** Testing Conventions — added 'Silent-pass guard clauses anti-pattern' subsection to the Vitest section, documenting the trap of early `return` statements between assertions.
+- **Verified sections:** Silent-pass guard clauses anti-pattern subsection within Testing Conventions > Vitest (lines 229–278).
 
 ## Writing Conventions
 
