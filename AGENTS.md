@@ -593,6 +593,10 @@ Quick reference for onboarding a new game to the project:
 - **Scope:** CI Pipeline Conventions — added new `## CI Pipeline Conventions` section between Deployment Failure Convention and Card-Level Postmortems, with `CI test ordering` (workflow step sequence: checkout → setup-node → npm ci → npm test → npm run build → deploy-with-retry, failing tests block deployment) and `Retry action — 5 attempts` (deploy-with-retry uses 5 attempts with exponential backoff and GitHub API pre-check, consistent with Deployment Failure Convention).
 - **Verified sections:** AGENTS.md (new section at lines 428–444), test suite (all tests pass with no regressions).
 
+- **Reviewed:** 2026-08-07
+- **Scope:** Non-Feature Card Acknowledgment — added 'No AGENTS.md update needed cards' subsection under `## Non-Feature Card Acknowledgment`, documenting the rarity principle, verification-vs-implementation distinction, recursive loop warning, and specific closing note requirements.
+- **Verified sections:** Non-Feature Card Acknowledgment section (new subsection at lines 523–537), Last Reviewed section (post-entry addition).
+
 ## Writing Conventions
 
 This document (AGENTS.md) is a living guide for humans — including LLMs acting in a human role — working on the gameShelf project. It captures conventions learned from real work, not theoretical rules. Treat it the way a senior developer would treat a well-maintained runbook: practical, grounded in experience, and focused on helping people do the right thing without overthinking it.
