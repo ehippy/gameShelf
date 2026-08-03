@@ -679,6 +679,10 @@ When you uncover an unrelated issue during implementation, note it for a separat
 ## Last Reviewed
 
 - **Reviewed:** 2026-08-08
+- **Scope:** Scope Discipline — added new `## Scope Discipline` section between Game Addition Checklist and Last Reviewed, documenting the convention to submit immediately when card specs are satisfied without adding unrequested changes. Covers the anti-pattern, the rule, handling unrelated issues, and consequences of violation.
+- **Verified sections:** Last Reviewed section (post-entry addition), Scope Discipline section (lines 669–677).
+
+- **Reviewed:** 2026-08-08
 - **Scope:** Game Initialization — added 'Exception: single keypress transitions state and performs an action (Flappy Bird)' subsection under 'Three-way state transitions with handleKeydownTransition' documenting the `wasPlaying` capture pattern as an exception to the shared helper, where a single keypress must both transition state and perform an immediate action.
 - **Verified sections:** Last Reviewed section (post-entry addition), Game Initialization section (new subsection at lines 186–209).
 
