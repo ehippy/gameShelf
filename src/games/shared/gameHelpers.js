@@ -8,45 +8,43 @@
 /**
  * Create a three-way handleKeydown state-transition function.
  *
- * @param {function(): object} getInitialResetFn — A function that creates and
- *   returns a fresh game state object (like createInitialState), performing any
- *   game-specific setup (e.g. spawn food, fill bag, create piece). The returned
- *   object replaces the game's state.
+ * @param {() => void} resetFn — Game-specific reset callback. Called when
+ *   the game is over and a valid key is pressed. The callback must:
+ *   (a) reset state to initial conditions,
+ *   (b) NOT set state.isPlaying — the helper handles that.
  *
- * @returns {(state, key, validKeys, actionFn, onTransition) => void}
+ * @returns {(getState, key, validKeys, actionFn, onTransition) => void}
  *   A state-transition function. Each game's handleKeydown calls this
  *   for state transitions, then performs its game-specific action.
  *
  *   Parameters:
- *     - state: a getter function () => stateObject (so the helper always reads
- *       the current value even after resetFn reassigns the module-level state).
- *       Also used as an object to read from (backward compat — the getter is
- *       called internally, so games still pass the module-level state var).
+ *     - getState: a getter function () => stateObject. The helper calls this
+ *       to read the current state, and re-calls it after resetFn to get the
+ *       new state object so it can set isPlaying = true.
  *     - key: the key that was pressed
  *     - validKeys: array of key strings that trigger state transitions
  *     - actionFn(key): callback for the "already playing" game-specific action
  *     - onTransition(): optional callback invoked when a transition occurs
- *       (case 1 or case 2, i.e. game over reset or game start from not-playing)
+ *       (case 1 or case 2)
  *
  *   Behavior (three-way logic):
- *     1. if state.isGameOver && validKeys.includes(key) → call getInitialResetFn(),
- *        then state.isPlaying = true, then onTransition()
+ *     1. if state.isGameOver && validKeys.includes(key) → resetFn(),
+ *        then newState.isPlaying = true, then onTransition()
  *     2. if !state.isPlaying && validKeys.includes(key) → state.isPlaying = true,
  *        then onTransition()
  *     3. if state.isPlaying && !state.isGameOver → actionFn(key)
  *     4. key not in validKeys and no transition → no-op (do nothing)
  */
-export function handleKeydownTransition(getInitialResetFn) {
-  return function transition(stateOrGetter, key, validKeys, actionFn, onTransition) {
-    // Handle state being either a raw object or a getter function
-    const getState = typeof stateOrGetter === 'function' ? stateOrGetter : () => stateOrGetter
+export function handleKeydownTransition(resetFn) {
+  return function transition(getState, key, validKeys, actionFn, onTransition) {
     const s = getState()
 
     if (!s) return
 
     // Case 1: Game over → reset and start playing
     if (s.isGameOver && validKeys.includes(key)) {
-      const newState = getInitialResetFn()
+      resetFn()
+      const newState = getState()
       newState.isPlaying = true
       if (onTransition) onTransition()
       return
