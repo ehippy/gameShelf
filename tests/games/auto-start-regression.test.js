@@ -248,6 +248,58 @@ describe('Auto-start regression: all games', () => {
     expect(flappyModule.state.bird.velocity).toBe(0)
   })
 
+  // --- No-op checks: non-valid key while already playing ---
+
+  it('Snake handleKeydown ignores non-valid key while already playing', () => {
+    snakeModule.init()
+    snakeModule.handleKeydown('ArrowRight')
+    expect(snakeModule.state.isPlaying).toBe(true)
+    const oldDirection = snakeModule.state.direction
+    snakeModule.handleKeydown('Enter')
+    expect(snakeModule.state.isPlaying).toBe(true)
+    expect(snakeModule.state.direction).toBe(oldDirection)
+  })
+
+  it('Tetris handleKeydown ignores non-valid key while already playing', () => {
+    tetrisModule.init()
+    tetrisModule.handleKeydown('ArrowLeft')
+    expect(tetrisModule.state.isPlaying).toBe(true)
+    tetrisModule.handleKeydown('Enter')
+    expect(tetrisModule.state.isPlaying).toBe(true)
+  })
+
+  it('Breakout handleKeydown ignores non-valid key while already playing', () => {
+    breakoutModule.init()
+    breakoutModule.handleKeydown('ArrowRight')
+    expect(breakoutModule.state.isPlaying).toBe(true)
+    const oldX = breakoutModule.state.paddle.x
+    breakoutModule.handleKeydown('Enter')
+    expect(breakoutModule.state.isPlaying).toBe(true)
+    expect(breakoutModule.state.paddle.x).toBe(oldX)
+  })
+
+  it('Flappy Bird handleKeydown ignores non-valid key while already playing', () => {
+    flappyModule.init()
+    flappyModule.handleKeydown(' ')
+    expect(flappyModule.state.isPlaying).toBe(true)
+    const oldVelocity = flappyModule.state.bird.velocity
+    flappyModule.handleKeydown('ArrowDown')
+    expect(flappyModule.state.isPlaying).toBe(true)
+    expect(flappyModule.state.bird.velocity).toBe(oldVelocity)
+  })
+
+  it('Whack-a-Mole handleKeydown ignores non-valid key while already playing', () => {
+    whackModule.init()
+    whackModule.handleKeydown(' ')
+    expect(whackModule.state.isPlaying).toBe(true)
+    const oldCol = whackModule.state.cursorCol
+    const oldRow = whackModule.state.cursorRow
+    whackModule.handleKeydown('Enter')
+    expect(whackModule.state.isPlaying).toBe(true)
+    expect(whackModule.state.cursorCol).toBe(oldCol)
+    expect(whackModule.state.cursorRow).toBe(oldRow)
+  })
+
   // --- Comprehensive: all games together ---
 
   it('all games refuse to auto-start on init', () => {
