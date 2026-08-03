@@ -596,8 +596,8 @@ Quick reference for onboarding a new game to the project:
 - **Verified sections:** AGENTS.md (new section at lines 428–444), test suite (all tests pass with no regressions).
 
 - **Reviewed:** 2026-08-07
-- **Scope:** Non-Feature Card Acknowledgment — added 'No AGENTS.md update needed cards' subsection under `## Non-Feature Card Acknowledgment`, documenting the rarity principle, verification-vs-implementation distinction, recursive loop warning, and specific closing note requirements.
-- **Verified sections:** Non-Feature Card Acknowledgment section (new subsection at lines 523–537), Last Reviewed section (post-entry addition).
+- **Scope:** Non-Feature Card Acknowledgment — added 'No AGENTS.md update needed cards' subsection under `## Non-Feature Card Acknowledgment`, documenting the rarity principle, verification-vs-implementation distinction, recursive loop warning, and specific closing note requirements. Restored the section's closing paragraph ("This keeps the backlog tidy and auditable...") which was accidentally deleted when the subsection was inserted.
+- **Verified sections:** Non-Feature Card Acknowledgment section (new subsection at lines 523–539, closing paragraph restored at line 539), Last Reviewed section (post-entry addition).
 
 ## Writing Conventions
 
