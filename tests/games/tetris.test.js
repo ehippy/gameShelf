@@ -581,19 +581,29 @@ describe('tetris', () => {
       tetrisModule.init()
       tetrisModule.state.isPlaying = true
       tetrisModule.state.level = 1
-      // Fill rows 16, 17, 18, 19 completely. Also fill row 15, cols 0-5 with a color.
-      // Place an I piece at col 6, row 14. Its shape row 1 [1,1,1,1] fills cols 6-9 of row 15.
-      // Then rows 15, 16, 17, 18 are all full → clearLines detects 4 lines.
+      // Fill rows 15, 16, 17, 18 completely (leaving 19 empty).
+      // Place an I piece (horizontal: [1,1,1,1] at shape row 1) at col 0, row 14.
+      // Its shape fills row 15 cols 0-3. But row 15 is already filled.
+      // Instead, fill rows 16, 17, 18, 19 and put the piece to complete row 15.
+      for (let c = 0; c < 10; c++) {
+        tetrisModule.state.board[15][c] = '#ff0000'
+        tetrisModule.state.board[16][c] = '#ff0000'
+        tetrisModule.state.board[17][c] = '#ff0000'
+        tetrisModule.state.board[18][c] = '#ff0000'
+      }
+      // Place I-piece at col 0, row 13. Shape row 1 fills row 14 cols 0-3.
+      // Then update() drops it: row 13→14→15. At row 14 it hits filled row 15 → locks.
+      // lockPiece places blocks at row 14. That makes row 14 full → only 1 line, not 4.
+      // Better approach: use rows 16-19 as the filled rows, piece fills row 15.
       for (let c = 0; c < 10; c++) {
         tetrisModule.state.board[16][c] = '#ff0000'
         tetrisModule.state.board[17][c] = '#ff0000'
         tetrisModule.state.board[18][c] = '#ff0000'
         tetrisModule.state.board[19][c] = '#ff0000'
       }
-      for (let c = 0; c < 6; c++) {
-        tetrisModule.state.board[15][c] = '#ff0000'
-      }
-      // Use an I-piece (horizontal shape: [1,1,1,1] at row index 1) placed so it fills row 15 cols 6-9
+      // Row 15 has cols 0-5 filled, cols 6-9 empty. I-piece at col 6, row 14,
+      // drops to row 15 (col 6, shape[1] = [1,1,1,1] fills cols 6-9 of row 15).
+      // Now rows 15, 16, 17, 18 are all full = 4 lines.
       tetrisModule.state.currentPiece = {
         type: 'I',
         shape: [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
@@ -605,6 +615,8 @@ describe('tetris', () => {
       const scoreBefore = tetrisModule.state.score
       tetrisModule.update()
       tetrisModule.update()
+      // Should have cleared exactly 4 lines (rows 15, 16, 17, 18)
+      expect(tetrisModule.state.lines).toBe(4)
       expect(tetrisModule.state.score - scoreBefore).toBe(800)
     })
 
