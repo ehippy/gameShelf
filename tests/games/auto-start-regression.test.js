@@ -23,15 +23,17 @@ import { join, dirname } from 'node:path'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = join(__dirname, '..', '..')
 
-describe('Auto-start regression: all three games', () => {
+describe('Auto-start regression: all games', () => {
   let snakeModule = null
   let tetrisModule = null
   let breakoutModule = null
+  let flappyModule = null
 
   beforeEach(async () => {
     snakeModule = await import(join(root, 'src', 'games', 'snake', 'gameLogic.js'))
     tetrisModule = await import(join(root, 'src', 'games', 'tetris', 'gameLogic.js'))
     breakoutModule = await import(join(root, 'src', 'games', 'breakout', 'gameLogic.js'))
+    flappyModule = await import(join(root, 'src', 'games', 'flappy-bird', 'gameLogic.js'))
   })
 
   // --- init() auto-start checks ---
