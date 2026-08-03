@@ -83,6 +83,23 @@ function formatBytes(bytes) {
   return `${bytes} byte${bytes !== 1 ? 's' : ''}`
 }
 
+function getDirInfo(dir) {
+  let fileCount = 0
+  let totalSize = 0
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const fullPath = path.join(dir, entry.name)
+    if (entry.isDirectory()) {
+      const sub = getDirInfo(fullPath)
+      fileCount += sub.fileCount
+      totalSize += sub.totalSize
+    } else {
+      fileCount += 1
+      totalSize += fs.statSync(fullPath).size
+    }
+  }
+  return { fileCount, totalSize }
+}
+
 function getDirSize(dir) {
   let total = 0
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
