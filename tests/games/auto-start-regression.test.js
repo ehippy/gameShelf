@@ -320,5 +320,29 @@ describe('Auto-start regression: all games', () => {
     expect(breakoutModule.state.isGameOver).toBe(false)
     expect(breakoutModule.state.score).toBe(0)
   })
+
+  it('Flappy Bird init → game over → reset → play cycle works end-to-end', () => {
+    flappyModule.init()
+    expect(flappyModule.state.isPlaying).toBe(false)
+    expect(flappyModule.state.isGameOver).toBe(false)
+    expect(flappyModule.state.score).toBe(0)
+
+    // Start playing
+    flappyModule.handleKeydown(' ')
+    expect(flappyModule.state.isPlaying).toBe(true)
+    expect(flappyModule.state.bird.velocity).toBe(-2.5)
+
+    // Simulate game over
+    flappyModule.state.isGameOver = true
+    flappyModule.state.score = 55
+
+    // Reset via keypress (spacebar)
+    flappyModule.handleKeydown(' ')
+    expect(flappyModule.state.isPlaying).toBe(true)
+    expect(flappyModule.state.isGameOver).toBe(false)
+    expect(flappyModule.state.score).toBe(0)
+    expect(flappyModule.state.bird.velocity).toBe(-2.5)
+    expect(flappyModule.state.bird.row).toBe(3)
+  })
 })
 
