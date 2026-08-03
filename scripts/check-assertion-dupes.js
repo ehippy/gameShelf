@@ -2,7 +2,7 @@
 /**
  * Pre-commit hook helper: detects copy-pasted test assertions with identical
  * expected values.  Scans test files for sequences where
- * two or more consecutive it() blocks within the same describe block
+ * five or more consecutive unique it() blocks within the same describe block
  * share the exact same expect(...).toBe(X) line.
  *
  * This is a blocking pre-commit guard that detects copy-pasted test
