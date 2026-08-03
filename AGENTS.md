@@ -42,7 +42,7 @@ The project provides the following helpers in `src/stores/scoreStore.js`:
 
 **Consequences of skipping validation:**
 
-- **Runtime 404s** — passing an invalid slug to a dynamic import (e.g. `import(\`../games/${slug}/App.vue\`)`) resolves against a non-existent module path, producing a bundle error or 404 at runtime.
+- **Runtime 404s** — passing an invalid slug to a dynamic import (e.g. `import(\`../games/${slug}/gameLogic.js\`)`) resolves against a non-existent module path, producing a bundle error or 404 at runtime.
 - **Security issues (localStorage key injection)** — using a malformed or user-supplied slug as a storage key (e.g. `` `gamescore_${injected_key}` ``) can corrupt existing entries, allow cross-game data pollution, or even inject arbitrary keys into localStorage.
 
 ### Route param naming
@@ -441,7 +441,7 @@ The full workflow order is: checkout → setup-node → npm ci → npm test → 
 
 ### Retry action — 5 attempts
 
-The `deploy-with-retry` composite action (`./.github/actions/deploy-with-retry/`) uses **5 total attempts** for the deployment step, consistent with the retry protocol defined in the Deployment Failure Convention. The logic uses exponential backoff (30s, 60s, 120s, 180s delays between attempts) with a GitHub API reachability pre-check before each attempt.
+The `deploy-with-retry` composite action (`./.github/actions/deploy-with-retry/`) uses **5 total attempts** for the deployment step, consistent with the retry protocol defined in the Deployment Failure Convention. The logic uses exponential backoff (30s, 60s, 120s, 180s delays between attempts) with a GitHub API pre-check before each attempt.
 
 ## Card-Level Postmortems
 
@@ -449,7 +449,7 @@ The struggles section must NOT be included when there is no friction. Do not wri
 
 Card-level postmortems should only include friction/struggles details **when friction actually occurred** — during development, review, or deployment.
 
-When a card completed cleanly, do not pad the postmortem with boilerplate substitutes like "Nothing notable", "None", "N/A", "No friction", "Clean card", "No struggles", or any variation of these. If there is nothing to report, the postmortem is simply the summary line — no struggle subsection at all, not even an empty one.
+When a card completed cleanly, do not pad the postmortem with boilerplate substitutes like "Nothing notable", "None", "N/A", "No friction", "Clean card", "No struggles", or any variation of these. If there is nothing to report, the postmortem is simply the summary line — no struggles section at all, not even an empty one.
 
 **❌ Bad:**
 ```
