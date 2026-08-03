@@ -435,6 +435,10 @@ Both must exist for the game to be considered fully implemented.
 - **Scope:** Pre-implementation Verification — added 'Pre-implementation Verification' section to AGENTS.md with a checklist to check whether game code and tests already exist before starting implementation, and created `scripts/verify-game-exists.js` to validate slug and report file existence.
 - **Verified sections:** Pre-implementation Verification section (lines 400–414), scripts/verify-game-exists.js (all exit codes 0, 1, 2 verified).
 
+- **Reviewed:** 2026-08-06
+- **Scope:** Writing Conventions — restored the three body paragraphs under `## Writing Conventions` that were accidentally deleted when inserting the Pre-implementation Verification section.
+- **Verified sections:** Writing Conventions section (lines 438–446).
+
 ## Writing Conventions
 
 This document (AGENTS.md) is a living guide for humans — including LLMs acting in a human role — working on the gameShelf project. It captures conventions learned from real work, not theoretical rules. Treat it the way a senior developer would treat a well-maintained runbook: practical, grounded in experience, and focused on helping people do the right thing without overthinking it.
