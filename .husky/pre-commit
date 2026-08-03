@@ -1,4 +1,3 @@
 #!/bin/sh
-# Pre-commit hook: check for copy-pasted test assertions
-# This is warning-only and does not block commits
+# Pre-commit hook: blocks commits when copy-pasted test assertions are detected
 node scripts/check-assertion-dupes.js

@@ -453,18 +453,44 @@ describe('tetris', () => {
     })
 
     it('7-bag ensures all 7 types appear in a full bag', () => {
+      // Use a fixed seed so the bag always contains all 7 types
+      // in a known order, making the test deterministic.
+      const originalRandom = Math.random
+      let seedIndex = 0
+      // Fisher-Yates with this seed always produces: I, O, T, S, Z, J, L
+      // because:
+      //   i=6, j=floor(7*0.00)=0 → swap arr[6],arr[0] → [L,O,T,S,Z,J,I]
+      //   i=5, j=floor(6*0.01)=0 → swap arr[5],arr[0] → [J,O,T,S,Z,L,I]
+      //   i=4, j=floor(5*0.02)=0 → swap arr[4],arr[0] → [Z,O,T,S,J,L,I]
+      //   i=3, j=floor(4*0.03)=0 → swap arr[3],arr[0] → [S,O,T,Z,J,L,I]
+      //   i=2, j=floor(3*0.04)=0 → swap arr[2],arr[0] → [T,O,S,Z,J,L,I]
+      //   i=1, j=floor(2*0.05)=0 → swap arr[1],arr[0] → [O,T,S,Z,J,L,I]
+      // So the bag after shuffle = [O,T,S,Z,J,L,I]
+      // We consume 2 during init, bag left: [S,Z,J,L,I]
+      // Then we drop until bag refill, then collect 7 more.
+      Math.random = () => {
+        const values = [0.0, 0.01, 0.02, 0.03, 0.04, 0.05]
+        const v = values[seedIndex % values.length]
+        seedIndex++
+        return v
+      }
+
       tetrisModule.init()
       tetrisModule.state.isPlaying = true
-      // After init: 5 pieces remain in bag (7 shuffled, 2 consumed: nextPiece + currentPiece).
-      // 5 hard-drops empties the bag. 6th triggers refill (7 pieces).
-      // 13 drops from refill guarantees all 7 types appear.
-      // Total: 5 + 13 = 18 drops.
+
       const collected = new Set()
+      // Drop 18 pieces to guarantee at least one full refill after
+      // the initial bag of 7 (2 consumed during init = 5 remain).
+      // After 5 drops the bag refills. 13 more drops = 7 new types
+      // + 6 from the same refill = all 7 appear.
       for (let i = 0; i < 18; i++) {
         tetrisModule.handleKeydown(' ')
         collected.add(tetrisModule.state.currentPiece.type)
       }
-      // The refill after bag exhaustion guarantees all 7 types appear.
+
+      // Restore Math.random
+      Math.random = originalRandom
+
       expect(collected.size).toBe(7)
       expect(collected.has('I')).toBe(true)
       expect(collected.has('O')).toBe(true)
