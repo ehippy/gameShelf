@@ -2,7 +2,7 @@
 /**
  * Pre-commit hook helper: detects copy-pasted test assertions with identical
  * expected values.  Scans test files for sequences where
- * two or more consecutive it() blocks within the same describe block
+ * five or more consecutive unique it() blocks within the same describe block
  * share the exact same expect(...).toBe(X) line.
  *
  * This is a blocking pre-commit guard that detects copy-pasted test
@@ -122,12 +122,12 @@ function parseFile(filePath) {
  * Group records by describe scope within a file, then scan for consecutive
  * it blocks that share identical assertions.
  *
- * Strategy: require 4+ consecutive different it() blocks to share the
- * same assertion line before flagging.  Two or three consecutive tests
- * with the same assertion is always a legitimate coincidence — for
+ * Strategy: require 5+ consecutive unique it() blocks to share the
+ * same assertion line before flagging.  Two, three, or four consecutive
+ * tests with the same assertion is always a legitimate coincidence — for
  * example, "init() sets isPlaying to false" and "reset() sets isPlaying
  * to false" independently verify the same invariant from different
- * entry points.  Four or more is where copy-paste errors become likely.
+ * entry points.  Five or more is where copy-paste errors become likely.
  */
 function findDuples(records) {
   const findings = []
