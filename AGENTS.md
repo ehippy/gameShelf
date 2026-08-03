@@ -45,6 +45,27 @@ The project provides the following helpers in `src/stores/scoreStore.js`:
 - **Runtime 404s** — passing an invalid slug to a dynamic import (e.g. `import(\`../games/${slug}/App.vue\`)`) resolves against a non-existent module path, producing a bundle error or 404 at runtime.
 - **Security issues (localStorage key injection)** — using a malformed or user-supplied slug as a storage key (e.g. `` `gamescore_${injected_key}` ``) can corrupt existing entries, allow cross-game data pollution, or even inject arbitrary keys into localStorage.
 
+### Route param naming
+
+Route parameter names in Vue Router must use `:slug`, never `:id`, when identifying a game in the catalog. This keeps the route param aligned with the catalog field naming convention (`slug`, not `id`) and avoids confusion between the game's catalog identifier and any numeric IDs that might exist elsewhere in the system.
+
+**Route definition** in `src/router/index.js`:
+
+```js
+// Correct — uses :slug
+{ path: '/game/:slug', component: () => import('../views/GamePage.vue') }
+```
+
+When accessing the slug in components like `GamePage.vue`, always read it from `route.params.slug`:
+
+```js
+// Correct — reads from route.params.slug
+const slug = route.params.slug
+const game = gameStore.getGameBySlug(slug)
+```
+
+**Guidance for new routes:** When adding new routes that identify a game or any other catalog entity, use `:slug` as the parameter name. This consistency makes the code easier to read and keeps the domain vocabulary uniform across the routing layer.
+
 ### Vite Dynamic Import Convention
 
 Never use string-concatenated dynamic imports for loading game modules. The pattern `import(\`../games/${slug}/gameLogic.js\`)` fails on the live site because Vite cannot statically analyze the import path during build time — the glob is not expanded to included modules, so the target module is never bundled.
