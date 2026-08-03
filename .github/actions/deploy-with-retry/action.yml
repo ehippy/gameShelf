@@ -1,5 +1,5 @@
 name: 'Deploy to GitHub Pages with Retry'
-description: 'Uploads artifact and deploys to GitHub Pages with up to 3 attempts on transient failure'
+description: 'Uploads artifact and deploys to GitHub Pages with up to 5 attempts on transient failure'
 
 outputs:
   page_url:
@@ -32,12 +32,32 @@ runs:
       with:
         attempt: 3
 
+    # ── Attempt 4 (only if attempt 3 failed) ──────────────────
+    - name: Deploy (attempt 4)
+      id: deploy_4
+      uses: ./.github/actions/deploy-with-retry/_attempt
+      if: steps.deploy_3.outcome == 'failure'
+      with:
+        attempt: 4
+
+    # ── Attempt 5 (only if attempt 4 failed) ──────────────────
+    - name: Deploy (attempt 5)
+      id: deploy_5
+      uses: ./.github/actions/deploy-with-retry/_attempt
+      if: steps.deploy_4.outcome == 'failure'
+      with:
+        attempt: 5
+
     # ── Set the page_url output from whichever attempt succeeded ──
     - name: Set page URL output
       id: set_output
       shell: bash
       run: |
-        if [ -n "${{ steps.deploy_3.outputs.page_url }}" ]; then
+        if [ -n "${{ steps.deploy_5.outputs.page_url }}" ]; then
+          echo "page_url=${{ steps.deploy_5.outputs.page_url }}" >> $GITHUB_OUTPUT
+        elif [ -n "${{ steps.deploy_4.outputs.page_url }}" ]; then
+          echo "page_url=${{ steps.deploy_4.outputs.page_url }}" >> $GITHUB_OUTPUT
+        elif [ -n "${{ steps.deploy_3.outputs.page_url }}" ]; then
           echo "page_url=${{ steps.deploy_3.outputs.page_url }}" >> $GITHUB_OUTPUT
         elif [ -n "${{ steps.deploy_2.outputs.page_url }}" ]; then
           echo "page_url=${{ steps.deploy_2.outputs.page_url }}" >> $GITHUB_OUTPUT
@@ -50,8 +70,8 @@ runs:
     # ── Fail if all attempts exhausted ─────────────────────────
     - name: All retry attempts failed
       shell: bash
-      if: steps.deploy_1.outcome == 'failure' && steps.deploy_2.outcome == 'failure' && steps.deploy_3.outcome == 'failure'
+      if: steps.deploy_1.outcome == 'failure' && steps.deploy_2.outcome == 'failure' && steps.deploy_3.outcome == 'failure' && steps.deploy_4.outcome == 'failure' && steps.deploy_5.outcome == 'failure'
       run: |
-        echo "ERROR: Deployment failed after all 3 retry attempts."
+        echo "ERROR: Deployment failed after all 5 retry attempts."
         echo "The last failure needs manual investigation."
         exit 1
