@@ -56,6 +56,12 @@ describe('Auto-start regression: all games', () => {
     expect(breakoutModule.state.isGameOver).toBe(false)
   })
 
+  it('Flappy Bird init() does not auto-start: isPlaying is false', () => {
+    flappyModule.init()
+    expect(flappyModule.state.isPlaying).toBe(false)
+    expect(flappyModule.state.isGameOver).toBe(false)
+  })
+
   // --- reset() auto-start checks ---
 
   it('Snake reset() does not auto-start: isPlaying is false', () => {
