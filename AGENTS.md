@@ -285,6 +285,8 @@ The pre-commit hook (`scripts/check-assertion-dupes.js`, run via `.husky/pre-com
 
 After manual tracing through the expected behavior, ensure assertion values match reality, rather than assuming hardcoded numbers are correct.
 
+The same manual-tracing habit extends beyond functional correctness to dead code detection — after removing or refactoring a code path, trace through the full module to check that orphaned imports and unused branches get cleaned up. The Whack-a-Mole review cycle showed this gap: when the `isGameOver` branch was removed, `renderGameOver` and the `scoreStore` import lingered in the file because the reviewer only verified functional correctness rather than the complete module state.
+
 **False-positive calibration:** The pre-commit script (`scripts/check-assertion-dupes.js`) requires 5 or more unique `it()` blocks sharing the exact same assertion line before it flags a problem. Two to four consecutive tests with the same assertion is always a legitimate coincidence — each test independently verifies an invariant (for example, both `init()` and `reset()` having `isPlaying` set to `false`). Don't second-guess the tool when it actually flags 5+ blocks, and don't dismiss it as unreliable when 2–4 blocks happen to share an assertion.
 
 ## Search / Filter UI Pattern
