@@ -421,7 +421,7 @@ Both must exist for the game to be considered fully implemented.
 
 - **Reviewed:** 2026-08-04
 - **Scope:** Card-Level Postmortems section restructuring — removed tool-specific instructions, eliminated redundant subsection, reframed forbidden phrases as human writing convention.
-- **Verified sections:** Card-Level Postmortems section (lines 304–324, post-cleanup).
+- **Verified sections:** Card-Level Postmortems section (lines 380–402, post-cleanup).
 
 - **Reviewed:** 2026-08-04
 - **Scope:** Playwright E2E config and smoke test file — added `tests/e2e/smoke.spec.js` and Playwright config (`playwright.config.js`). Sandbox disk space blocked browser installation; the test file and config are structurally correct but not yet runnable.
