@@ -76,16 +76,24 @@ if (currentEntry) entries.push(currentEntry)
 // Scan each entry for boilerplate **Struggles:** lines.
 const violations = []
 
-for (const entry of entries) {
-  for (const line of entry.lines) {
+// Track global line offset (lines before Last Reviewed section).
+const linesBeforeSection = content.slice(0, lastReviewedIdx).split('\n').length
+
+for (let i = 0; i < entries.length; i++) {
+  const entry = entries[i]
+  for (let j = 0; j < entry.lines.length; j++) {
+    const line = entry.lines[j]
     const strugglesMatch = line.match(/^\- \*\*Struggles:\*\*\s*(.*)/)
     if (strugglesMatch) {
       const content_ = strugglesMatch[1]
       if (isBoilerplate(content_)) {
+        // The line number is the global position in AGENTS.md.
+        const lineNumber = linesBeforeSection + 1 + lines.indexOf(sectionText.split('\n')[0]) + i + j
         // Find the Reviewed date for this entry.
         const dateMatch = entry.lines[0].match(/\*\*Reviewed:\*\*\s*(.+)/)
         const date = dateMatch ? dateMatch[1].trim() : 'unknown'
         violations.push({
+          lineNumber,
           date,
           content: content_,
         })
@@ -97,7 +105,7 @@ for (const entry of entries) {
 if (violations.length > 0) {
   for (const v of violations) {
     process.stderr.write(
-      `[Last Reviewed] Date: ${v.date} — "${v.content}"\n`
+      `[Line ${v.lineNumber}] Date: ${v.date} — "${v.content}"\n`
     )
   }
   process.exit(1)
