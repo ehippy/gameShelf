@@ -234,6 +234,8 @@ The pre-commit hook (`scripts/check-assertion-dupes.js`, run via `.husky/pre-com
 
 After manual tracing through the expected behavior, ensure assertion values match reality, rather than assuming hardcoded numbers are correct.
 
+**False-positive calibration:** The pre-commit script (`scripts/check-assertion-dupes.js`) requires 5 or more unique `it()` blocks sharing the exact same assertion line before it flags a problem. Two to four consecutive tests with the same assertion is always a legitimate coincidence — each test independently verifies an invariant (for example, both `init()` and `reset()` having `isPlaying` set to `false`). Don't second-guess the tool when it actually flags 5+ blocks, and don't dismiss it as unreliable when 2–4 blocks happen to share an assertion.
+
 ## Search / Filter UI Pattern
 
 This section documents the established pattern for UI-driven list filtering in gameShelf. It covers state ownership, UI binding, computed filtering, and logic rules. Future agents working on the game shelf listing, search, or category filtering should follow this pattern.
