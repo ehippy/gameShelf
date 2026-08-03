@@ -85,15 +85,14 @@ function formatBytes(bytes) {
  * Recursively list files in a directory, returning their relative paths and sizes.
  * Paths are relative to src/games/<slug>/ (e.g. "gameLogic.js" or "utils/helper.js").
  */
-function listFiles(dir, prefix) {
-  prefix = prefix || ''
+function listFiles(dir) {
   const lines = []
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const fullPath = path.join(dir, entry.name)
-    const rel = prefix + entry.name
     if (entry.isDirectory()) {
-      lines.push(...listFiles(fullPath, rel + '/'))
+      lines.push(...listFiles(fullPath))
     } else {
+      const rel = path.relative(dir, fullPath)
       lines.push(`${rel} (${formatBytes(fs.statSync(fullPath).size)})`)
     }
   }
