@@ -64,6 +64,12 @@ describe('Auto-start regression: all games', () => {
     expect(flappyModule.state.isGameOver).toBe(false)
   })
 
+  it('Whack-a-Mole init() does not auto-start: isPlaying is false', () => {
+    whackModule.init()
+    expect(whackModule.state.isPlaying).toBe(false)
+    expect(whackModule.state.isGameOver).toBe(false)
+  })
+
   // --- reset() auto-start checks ---
 
   it('Snake reset() does not auto-start: isPlaying is false', () => {
