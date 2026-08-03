@@ -199,8 +199,12 @@ function findDuples(records) {
             }
           }
 
-          // After deduplication, we need at least 2 records from different tests
-          if (dedupedRun.length < 2) continue
+          // After deduplication, we need at least 3 records from different
+          // tests.  Two consecutive it() blocks sharing an assertion is
+          // always a legitimate coincidence (e.g. "init sets isPlaying=false"
+          // and "reset sets isPlaying=false" verify the same invariant).
+          // Three or more is where copy-paste errors become likely.
+          if (dedupedRun.length < 3) continue
 
           findings.push({
             filePath,
