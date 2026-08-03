@@ -34,6 +34,7 @@ describe('Auto-start regression: all games', () => {
     tetrisModule = await import(join(root, 'src', 'games', 'tetris', 'gameLogic.js'))
     breakoutModule = await import(join(root, 'src', 'games', 'breakout', 'gameLogic.js'))
     flappyModule = await import(join(root, 'src', 'games', 'flappy-bird', 'gameLogic.js'))
+    whackModule = await import(join(root, 'src', 'games', 'whack-a-mole', 'gameLogic.js'))
   })
 
   // --- init() auto-start checks ---
