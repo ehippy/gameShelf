@@ -42,112 +42,189 @@ function findGameLogicFiles(rootDir) {
 }
 
 /**
- * Detect the anti-pattern in a single gameLogic.js file.
+ * Extract the body text of the handleKeydownTransition callback.
  *
- * Algorithm:
- *   1. Find the line containing `handleKeydownTransition(`
- *   2. From that line, locate the callback (arrow function or
- *      regular function) and its body boundaries using brace-depth
- *      tracking.
- *   3. Search the callback body for `state = createInitialState(`
- *
- * Returns an array of 1-indexed line numbers where the anti-pattern
- * appears, or an empty array if the file is clean.
+ * Looks for `handleKeydownTransition(` and then tracks brace depth
+ * from the opening `{` of the callback body to find its end.
+ * Returns the body text (everything between { and the matching }).
  */
-function detectAntiPattern(content) {
-  const violations = []
+function extractTransitionCallbackBody(content) {
   const lines = content.split('\n')
 
-  let i = 0
-  while (i < lines.length) {
-    // Step 1: find handleKeydownTransition( call
-    if (!/handleKeydownTransition\s*\(/.test(lines[i])) {
-      i++
-      continue
-    }
+  for (let i = 0; i < lines.length; i++) {
+    if (!/handleKeydownTransition\s*\(/.test(lines[i])) continue
 
-    // Step 2: from this line, find the callback and track its body.
-    // The callback is the argument to handleKeydownTransition — typically
-    // () => { ... } or function() { ... }.
-    // We track brace depth from the opening { of the callback body.
-    let braceDepth = 0
-    let inCallback = false
-    let callbackStartLine = -1
-
+    // Find the opening { of the callback body
     for (let j = i; j < lines.length; j++) {
       const cl = lines[j]
+      const braceIdx = cl.indexOf('{')
+      if (braceIdx === -1) continue
 
-      // Look for the start of the callback body:
-      // arrow: () => {  or  (params) => {
-      // function: function() {  or  function(params) {
-      if (!inCallback && /\(\)\s*=>\s*\{/.test(cl)) {
-        inCallback = true
-        callbackStartLine = j
-        // Count braces on this line from the opening { onwards
-        const braceIdx = cl.indexOf('{')
-        let depth = 0
-        for (let k = braceIdx; k < cl.length; k++) {
-          if (cl[k] === '{') depth++
-          else if (cl[k] === '}') depth--
-        }
-        braceDepth = depth
-        if (depth === 0) {
-          // Single-line callback: extract body between { and }
-          const body = cl.slice(braceIdx + 1, cl.length - 1)
-          if (/\bstate\s*=\s*createInitialState\s*\(/.test(body)) {
-            violations.push(j + 1) // 1-indexed
-          }
-        }
-      } else if (!inCallback && /\bfunction\s*\(\s*\)\s*\{/.test(cl)) {
-        inCallback = true
-        callbackStartLine = j
-        const braceIdx = cl.indexOf('{')
-        let depth = 0
-        for (let k = braceIdx; k < cl.length; k++) {
-          if (cl[k] === '{') depth++
-          else if (cl[k] === '}') depth--
-        }
-        braceDepth = depth
-        if (depth === 0) {
-          const body = cl.slice(braceIdx + 1, cl.length - 1)
-          if (/\bstate\s*=\s*createInitialState\s*\(/.test(body)) {
-            violations.push(j + 1)
-          }
-        }
-      } else if (inCallback) {
-        // Track brace depth inside callback body
-        for (const ch of cl) {
+      // Make sure this { is after handleKeydownTransition( on the same line
+      // or on a subsequent line (callback declaration)
+      let afterTransition = false
+      if (j === i) {
+        afterTransition = cl.indexOf('handleKeydownTransition') !== -1
+      }
+      if (!afterTransition) {
+        // This { is on a different line — it's either a nested function
+        // or the callback body. We'll handle brace tracking below.
+      }
+
+      let braceDepth = 0
+      let bodyStart = -1
+      let bodyEnd = -1
+      let bodyLines = []
+
+      for (let k = braceIdx; k < cl.length; k++) {
+        if (cl[k] === '{') braceDepth++
+        else if (cl[k] === '}') braceDepth--
+      }
+
+      if (braceDepth === 0) {
+        // Single-line: { }
+        bodyStart = braceIdx + 1
+        bodyEnd = cl.length - 1
+        bodyLines = [cl.slice(bodyStart, bodyEnd)]
+        return bodyLines
+      }
+
+      // Multi-line: collect body lines
+      bodyLines = [cl.slice(braceIdx + 1)]
+      for (let m = j + 1; m < lines.length; m++) {
+        for (const ch of lines[m]) {
           if (ch === '{') braceDepth++
           else if (ch === '}') braceDepth--
         }
-
+        bodyLines.push(lines[m])
         if (braceDepth <= 0) {
-          // End of callback body — scan the callback for the anti-pattern
-          for (let k = callbackStartLine; k <= j; k++) {
-            if (k === callbackStartLine) {
-              // Check from the { onwards only (skip the callback declaration)
-              const braceIdx = lines[k].indexOf('{')
-              if (braceIdx !== -1) {
-                const body = lines[k].slice(braceIdx + 1)
-                if (/\bstate\s*=\s*createInitialState\s*\(/.test(body)) {
-                  violations.push(k + 1)
-                }
-              }
-            } else {
-              if (/\bstate\s*=\s*createInitialState\s*\(/.test(lines[k])) {
-                violations.push(k + 1)
-              }
-            }
-          }
-          inCallback = false
+          // Last line: take content up to the closing }
+          const lastIdx = lines[m].lastIndexOf('}')
+          bodyLines[bodyLines.length - 1] = lines[m].slice(0, lastIdx)
+          return bodyLines
+        }
+      }
+
+      // No matching } found — malformed, skip
+      break
+    }
+  }
+
+  return null
+}
+
+/**
+ * Check if the callback body contains the anti-pattern.
+ *
+ * Two kinds of violations:
+ *   1. Direct: `state = createInitialState(` appears in the body
+ *   2. Indirect: the body calls `reset()` and the file's `reset()`
+ *      function contains `state = createInitialState(` — meaning
+ *      the transition delegates to a reset() that does the wrong thing.
+ *
+ * Returns array of violation descriptions, or empty if clean.
+ */
+function detectAntiPattern(content) {
+  const violations = []
+
+  // Check for direct anti-pattern in transition callback body
+  const callbackBody = extractTransitionCallbackBody(content)
+  if (callbackBody) {
+    const bodyText = callbackBody.join('\n')
+
+    // Pattern 1: Direct state reassignment
+    const reassignLines = []
+    for (let i = 0; i < callbackBody.length; i++) {
+      if (/\bstate\s*=\s*createInitialState\s*\(/.test(callbackBody[i])) {
+        reassignLines.push(i + 1) // 1-indexed within body
+      }
+    }
+
+    if (reassignLines.length > 0) {
+      for (const lineNo of reassignLines) {
+        violations.push({
+          lineNo: lineNo,
+          text: callbackBody[lineNo - 1].trim(),
+          type: 'direct',
+        })
+      }
+    }
+
+    // Pattern 2: Callback calls reset() only — check if reset() does reassignment
+    const trimmedLines = callbackBody.map(l => l.trim()).filter(l => l.length > 0)
+
+    // Check if the callback body is just `reset()` (possibly with trailing semicolons/whitespace)
+    const isOnlyReset = trimmedLines.length === 1 &&
+      /^reset\s*\(\s*\)\s*;?\s*$/.test(trimmedLines[0])
+
+    if (isOnlyReset) {
+      // Check if the file's reset() function contains `state = createInitialState(`
+      const resetFuncBody = extractResetFunctionBody(content)
+      if (resetFuncBody) {
+        const resetText = resetFuncBody.join('\n')
+        if (/\bstate\s*=\s*createInitialState\s*\(/.test(resetText)) {
+          violations.push({
+            lineNo: null, // callback-level violation
+            text: 'calls reset() which does `state = createInitialState()`',
+            type: 'indirect',
+          })
+        }
+      }
+    }
+  }
+
+  return violations
+}
+
+/**
+ * Extract the body of the reset() function from the file content.
+ * Looks for `export function reset()` or `function reset()` and
+ * returns the lines inside its body.
+ */
+function extractResetFunctionBody(content) {
+  const lines = content.split('\n')
+
+  for (let i = 0; i < lines.length; i++) {
+    const cl = lines[i]
+    if (!/\bfunction\s+reset\s*\(/.test(cl)) continue
+
+    // Find the opening {
+    let braceDepth = 0
+    let bodyLines = []
+
+    for (let j = i; j < lines.length; j++) {
+      const line = lines[j]
+      for (const ch of line) {
+        if (ch === '{') braceDepth++
+        else if (ch === '}') braceDepth--
+      }
+
+      if (braceDepth > 0) {
+        // Check if { is the function body opening
+        const braceIdx = line.indexOf('{')
+        if (braceIdx !== -1) {
+          bodyLines.push(line.slice(braceIdx + 1))
+        } else {
+          bodyLines.push(line)
+        }
+        if (braceDepth <= 0) {
+          return bodyLines
+        }
+      } else {
+        // { might be at the end of this line
+        const braceIdx = line.indexOf('{')
+        if (braceIdx !== -1) {
+          bodyLines = [line.slice(braceIdx + 1)]
+        } else {
+          bodyLines = [line]
         }
       }
     }
 
-    i++
+    if (bodyLines.length > 0) return bodyLines
   }
 
-  return violations
+  return null
 }
 
 // ---- Main ----
@@ -159,10 +236,25 @@ for (const file of gameFiles) {
   const content = fs.readFileSync(file, 'utf-8')
   const violations = detectAntiPattern(content)
 
-  for (const lineNo of violations) {
+  if (violations.length > 0) {
     const relPath = path.relative(repoRoot, file)
-    const lineText = content.split('\n')[lineNo - 1].trim()
-    allViolations.push({ file: relPath, lineNo, lineText })
+    for (const v of violations) {
+      if (v.type === 'direct') {
+        allViolations.push({
+          file: relPath,
+          lineNo: v.lineNo,
+          text: v.text,
+          type: v.type,
+        })
+      } else {
+        allViolations.push({
+          file: relPath,
+          lineNo: null,
+          text: v.text,
+          type: v.type,
+        })
+      }
+    }
   }
 }
 
@@ -173,7 +265,8 @@ if (allViolations.length > 0) {
   for (const v of allViolations) {
     console.error(
       `\nFile: ${v.file}\n` +
-        `Line ${v.lineNo}: ${v.lineText}\n` +
+        (v.lineNo !== null ? `Line ${v.lineNo}: ${v.text}\n` : '') +
+        `Reason: ${v.text}\n` +
         '\n' +
         'The resetFn must use Object.assign(state, createInitialState()) ' +
         'instead of reassigning the state variable.\n' +
