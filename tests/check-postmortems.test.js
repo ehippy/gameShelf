@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { execFileSync } from 'node:child_process'
-import { writeFileSync, unlinkSync, readFileSync } from 'node:fs'
+import { writeFileSync, readFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -8,8 +8,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = join(__dirname, '..')
 const scriptPath = join(root, 'scripts', 'check-postmortems.js')
 
-// We test by temporarily modifying a copy of AGENTS.md, running the script
-// against it, and then restoring the original.
 const agentsPath = join(root, 'AGENTS.md')
 
 describe('scripts/check-postmortems.js', () => {
@@ -34,32 +32,19 @@ describe('scripts/check-postmortems.js', () => {
   })
 
   it('exits 1 when a Struggles line contains boilerplate "Nothing notable"', () => {
-    const content = originalContent.replace(
-      '- **Reviewed:** 2026-08-07\n',
-      '- **Reviewed:** 2026-08-07\n'
-    )
-    // We need to inject a violation. Find a good spot near the end of Last Reviewed.
     const injection =
       '\n- **Reviewed:** 2026-08-07\n' +
       '- **Scope:** Test violation\n' +
       '- **Verified sections:** Test section.\n' +
       '- **Struggles:** Nothing notable.\n'
 
-    // Inject before the closing blank line before Writing Conventions
-    const idx = content.lastIndexOf('- **Verified sections:')
-    if (idx === -1) {
-      expect(true).toBe(false) // shouldn't happen
-      return
-    }
-    const newContent = content.slice(0, idx) + content.slice(content.indexOf('- **Verified sections:') + content.slice(idx).indexOf('\n\n## Writing Conventions'))
-    // Simpler: just append a violation before the final section
-    const splitIdx = content.indexOf('\n## Writing Conventions')
-    const testContent = content.slice(0, splitIdx) + injection + content.slice(splitIdx)
+    const splitIdx = originalContent.indexOf('\n## Writing Conventions')
+    const testContent = originalContent.slice(0, splitIdx) + injection + originalContent.slice(splitIdx)
     writeFileSync(agentsPath, testContent)
 
     try {
       execFileSync('node', [scriptPath], { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] })
-      expect(true).toBe(false) // should not reach here
+      expect(true).toBe(false)
     } catch (err) {
       expect(err.status).toBe(1)
       expect(err.stderr.toString()).toContain('[Line')
@@ -75,8 +60,8 @@ describe('scripts/check-postmortems.js', () => {
       '- **Verified sections:** Test section.\n' +
       '- **Struggles:** None.\n'
 
-    const splitIdx = content.indexOf('\n## Writing Conventions')
-    const testContent = content.slice(0, splitIdx) + injection + content.slice(splitIdx)
+    const splitIdx = originalContent.indexOf('\n## Writing Conventions')
+    const testContent = originalContent.slice(0, splitIdx) + injection + originalContent.slice(splitIdx)
     writeFileSync(agentsPath, testContent)
 
     try {
@@ -95,8 +80,8 @@ describe('scripts/check-postmortems.js', () => {
       '- **Verified sections:** Test section.\n' +
       '- **Struggles:** N/A\n'
 
-    const splitIdx = content.indexOf('\n## Writing Conventions')
-    const testContent = content.slice(0, splitIdx) + injection + content.slice(splitIdx)
+    const splitIdx = originalContent.indexOf('\n## Writing Conventions')
+    const testContent = originalContent.slice(0, splitIdx) + injection + originalContent.slice(splitIdx)
     writeFileSync(agentsPath, testContent)
 
     try {
@@ -115,8 +100,8 @@ describe('scripts/check-postmortems.js', () => {
       '- **Verified sections:** Test section.\n' +
       '- **Struggles:** No friction.\n'
 
-    const splitIdx = content.indexOf('\n## Writing Conventions')
-    const testContent = content.slice(0, splitIdx) + injection + content.slice(splitIdx)
+    const splitIdx = originalContent.indexOf('\n## Writing Conventions')
+    const testContent = originalContent.slice(0, splitIdx) + injection + originalContent.slice(splitIdx)
     writeFileSync(agentsPath, testContent)
 
     try {
@@ -135,8 +120,8 @@ describe('scripts/check-postmortems.js', () => {
       '- **Verified sections:** Test section.\n' +
       '- **Struggles:** Clean card.\n'
 
-    const splitIdx = content.indexOf('\n## Writing Conventions')
-    const testContent = content.slice(0, splitIdx) + injection + content.slice(splitIdx)
+    const splitIdx = originalContent.indexOf('\n## Writing Conventions')
+    const testContent = originalContent.slice(0, splitIdx) + injection + originalContent.slice(splitIdx)
     writeFileSync(agentsPath, testContent)
 
     try {
@@ -155,8 +140,8 @@ describe('scripts/check-postmortems.js', () => {
       '- **Verified sections:** Test section.\n' +
       '- **Struggles:** No struggles.\n'
 
-    const splitIdx = content.indexOf('\n## Writing Conventions')
-    const testContent = content.slice(0, splitIdx) + injection + content.slice(splitIdx)
+    const splitIdx = originalContent.indexOf('\n## Writing Conventions')
+    const testContent = originalContent.slice(0, splitIdx) + injection + originalContent.slice(splitIdx)
     writeFileSync(agentsPath, testContent)
 
     try {
@@ -175,8 +160,8 @@ describe('scripts/check-postmortems.js', () => {
       '- **Verified sections:** Test section.\n' +
       '- **Struggles:**   \n'
 
-    const splitIdx = content.indexOf('\n## Writing Conventions')
-    const testContent = content.slice(0, splitIdx) + injection + content.slice(splitIdx)
+    const splitIdx = originalContent.indexOf('\n## Writing Conventions')
+    const testContent = originalContent.slice(0, splitIdx) + injection + originalContent.slice(splitIdx)
     writeFileSync(agentsPath, testContent)
 
     try {
@@ -194,8 +179,8 @@ describe('scripts/check-postmortems.js', () => {
       '- **Verified sections:** Test section.\n' +
       '- **Struggles:** The gravity value was inconsistent between init() and the game loop.\n'
 
-    const splitIdx = content.indexOf('\n## Writing Conventions')
-    const testContent = content.slice(0, splitIdx) + injection + content.slice(splitIdx)
+    const splitIdx = originalContent.indexOf('\n## Writing Conventions')
+    const testContent = originalContent.slice(0, splitIdx) + injection + originalContent.slice(splitIdx)
     writeFileSync(agentsPath, testContent)
 
     const output = execFileSync('node', [scriptPath], { encoding: 'utf-8' })
@@ -203,10 +188,8 @@ describe('scripts/check-postmortems.js', () => {
   })
 
   it('ignores Card-Level Postmortems section (example code blocks)', () => {
-    // Verify the script only scans Last Reviewed, not Card-Level Postmortems.
-    // The Card-Level Postmortems section contains examples with "Struggles: Nothing notable."
-    // If the script scanned that section, it would flag those examples.
-    // Since we know AGENTS.md currently passes, the script must ignore that section.
+    // The Card-Level Postmortems section contains "Struggles: Nothing notable." in examples.
+    // Since the current AGENTS.md passes, the script must only scan Last Reviewed.
     const output = execFileSync('node', [scriptPath], { encoding: 'utf-8' })
     expect(output).toBe('')
   })
@@ -227,7 +210,6 @@ describe('scripts/check-postmortems.js', () => {
       expect(true).toBe(false)
     } catch (err) {
       const stderr = err.stderr.toString()
-      // Must contain line number in brackets, date, and content in quotes
       expect(/\[Line \d+\]/.test(stderr)).toBe(true)
       expect(/Date: 2026-09-08/.test(stderr)).toBe(true)
       expect(/"Nothing notable"/.test(stderr)).toBe(true)
