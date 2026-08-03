@@ -8,6 +8,7 @@
 // ─── Imports ──────────────────────────────────────────────────────────────────
 
 import { renderGameOver, shouldSkipUpdate } from '../shared/renderHelpers.js'
+import { handleKeydownTransition } from '../shared/gameHelpers.js'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -237,6 +238,11 @@ export function reset() {
   return state
 }
 
+const transition = handleKeydownTransition(() => {
+  Object.assign(state, createInitialState())
+  spawnFood()
+})
+
 /**
  * Handle keyboard input. Exported for GamePage to wire up.
  *
@@ -251,20 +257,14 @@ export function reset() {
 export function handleKeydown(key) {
   if (!state) return
 
-  // Valid game keys that should start the game / trigger game-over reset
   const validKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']
 
-  if (state.isGameOver && validKeys.includes(key)) {
-    // Game over: reset and start playing
-    state = createInitialState()
-    spawnFood()
-    state.isPlaying = true
-  } else if (!state.isPlaying && validKeys.includes(key)) {
-    // Not playing yet with a valid key: start playing
-    state.isPlaying = true
-  }
+  // State transition
+  transition(state, key, validKeys, () => {
+    // Already playing — direction change handled below
+  })
 
-  // Normal direction change (also executed after game-over reset)
+  // Game-specific action (always runs for arrow keys, after transition handles state)
   switch (key) {
     case 'ArrowUp':
       if (state.direction !== 'down') state.direction = 'up'

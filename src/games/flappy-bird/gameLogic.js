@@ -8,6 +8,7 @@
 // ─── Imports ──────────────────────────────────────────────────────────────────
 
 import { renderGameOver, shouldSkipUpdate } from '../shared/renderHelpers.js'
+import { handleKeydownTransition } from '../shared/gameHelpers.js'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -311,32 +312,35 @@ export function reset() {
   return state
 }
 
+const transition = handleKeydownTransition(() => {
+  Object.assign(state, createInitialState())
+  state.lastPipeDrop = state.framesPlayed
+  state.bird.velocity = FLAP_STRENGTH
+})
+
 /**
  * Handle keyboard input. Exported for GamePage to wire up.
  */
 export function handleKeydown(key) {
   if (!state) return
 
-  if (key === 'ArrowUp' || key === ' ') {
-    if (state.isGameOver) {
-      // Restart: reset state and start playing
-      state = createInitialState()
-      state.lastPipeDrop = state.framesPlayed
-      state.isPlaying = true
-      state.bird.velocity = FLAP_STRENGTH
-    } else if (!state.isPlaying) {
-      // Start game on first input
-      state.isPlaying = true
-      state.bird.velocity = FLAP_STRENGTH
-    } else {
-      // Already playing — flap as normal
-      state.bird.velocity = FLAP_STRENGTH
-    }
+  const validKeys = ['ArrowUp', ' ']
+
+  // For ArrowUp/Space: transition + flapping
+  const wasPlaying = state.isPlaying
+  transition(state, key, validKeys, () => {
+    // Already playing — flap
+    state.bird.velocity = FLAP_STRENGTH
+  })
+
+  // Not playing → just started playing → also flap
+  if (!wasPlaying && state.isPlaying) {
+    state.bird.velocity = FLAP_STRENGTH
   }
 
+  // ArrowDown: accelerate fall (not in validKeys, handled separately)
   if (key === 'ArrowDown') {
     if (state.isPlaying && !state.isGameOver) {
-      // Accelerate fall speed
       state.bird.velocity += 0.5
     }
   }
