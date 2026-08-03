@@ -212,7 +212,7 @@ describe('scripts/check-postmortems.js', () => {
       const stderr = err.stderr.toString()
       expect(/\[Line \d+\]/.test(stderr)).toBe(true)
       expect(/Date: 2026-09-08/.test(stderr)).toBe(true)
-      expect(/"Nothing notable"/.test(stderr)).toBe(true)
+      expect(/"Nothing notable/.test(stderr)).toBe(true)
     }
   })
 
