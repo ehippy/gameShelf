@@ -273,6 +273,10 @@ export function reset() {
   return state
 }
 
+const transition = handleKeydownTransition(() => {
+  state = createInitialState()
+})
+
 /**
  * Handle keyboard input. Exported for GamePage to wire up.
  *
@@ -289,16 +293,12 @@ export function handleKeydown(key) {
 
   const validKeys = ['ArrowLeft', 'ArrowRight']
 
-  if (state.isGameOver && validKeys.includes(key)) {
-    // Game over: reset and start playing
-    state = createInitialState()
-    state.isPlaying = true
-  } else if (!state.isPlaying && validKeys.includes(key)) {
-    // Not playing: start playing
-    state.isPlaying = true
-  }
+  // State transition
+  transition(state, key, validKeys, () => {
+    // Already playing — action handled below
+  })
 
-  // Normal paddle movement (also executed after game-over reset)
+  // Game-specific action
   if (key === 'ArrowLeft') {
     state.paddle.x -= PADDLE_SPEED
     if (state.paddle.x < 0) {
