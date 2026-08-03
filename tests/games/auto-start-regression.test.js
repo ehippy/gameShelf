@@ -207,6 +207,17 @@ describe('Auto-start regression: all games', () => {
     expect(flappyModule.state.bird.row).toBe(3)
   })
 
+  it('Whack-a-Mole handleKeydown resets and starts when game over (three-way)', () => {
+    whackModule.init()
+    whackModule.state.isGameOver = true
+    whackModule.state.score = 99
+    expect(whackModule.state.isPlaying).toBe(false)
+    whackModule.handleKeydown(' ')
+    expect(whackModule.state.isPlaying).toBe(true)
+    expect(whackModule.state.isGameOver).toBe(false)
+    expect(whackModule.state.score).toBe(0)
+  })
+
   // --- No-op checks for non-arrow keys ---
 
   it('Snake handleKeydown ignores non-arrow keys without starting', () => {
