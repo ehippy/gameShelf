@@ -54,19 +54,27 @@ const sectionText = nextHeadingMatch
   ? afterSection.slice(0, nextHeadingMatch.index)
   : afterSection
 
+// Count lines before this section to get 1-indexed line number.
+const linesBeforeSection = content.slice(0, lastReviewedIdx).split('\n').length
+
 // Split section into lines.
-const lines = sectionText.split('\n')
+const sectionLines = sectionText.split('\n')
 
 // Parse entries: each starts with a line containing `- **Reviewed:**`.
-// Collect lines belonging to each entry, stopping at the next entry start
-// or end of section.
+// Track entries with their line-number ranges and associated date.
 const entries = []
 let currentEntry = null
 
-for (const line of lines) {
+for (let sectionIdx = 0; sectionIdx < sectionLines.length; sectionIdx++) {
+  const line = sectionLines[sectionIdx]
   if (/^- \*\*Reviewed:\*\*/.test(line)) {
     if (currentEntry) entries.push(currentEntry)
-    currentEntry = { lines: [line] }
+    const dateMatch = line.match(/\*\*Reviewed:\*\*\s*(.+)/)
+    currentEntry = {
+      date: dateMatch ? dateMatch[1].trim() : 'unknown',
+      sectionStart: sectionIdx,
+      lines: [line],
+    }
   } else if (currentEntry) {
     currentEntry.lines.push(line)
   }
@@ -76,25 +84,17 @@ if (currentEntry) entries.push(currentEntry)
 // Scan each entry for boilerplate **Struggles:** lines.
 const violations = []
 
-// Track global line offset (lines before Last Reviewed section).
-const linesBeforeSection = content.slice(0, lastReviewedIdx).split('\n').length
-
-for (let i = 0; i < entries.length; i++) {
-  const entry = entries[i]
-  for (let j = 0; j < entry.lines.length; j++) {
-    const line = entry.lines[j]
+for (const entry of entries) {
+  for (let i = 0; i < entry.lines.length; i++) {
+    const line = entry.lines[i]
     const strugglesMatch = line.match(/^\- \*\*Struggles:\*\*\s*(.*)/)
     if (strugglesMatch) {
       const content_ = strugglesMatch[1]
       if (isBoilerplate(content_)) {
-        // The line number is the global position in AGENTS.md.
-        const lineNumber = linesBeforeSection + 1 + lines.indexOf(sectionText.split('\n')[0]) + i + j
-        // Find the Reviewed date for this entry.
-        const dateMatch = entry.lines[0].match(/\*\*Reviewed:\*\*\s*(.+)/)
-        const date = dateMatch ? dateMatch[1].trim() : 'unknown'
+        const lineNumber = linesBeforeSection + 1 + entry.sectionStart + i
         violations.push({
           lineNumber,
-          date,
+          date: entry.date,
           content: content_,
         })
       }
