@@ -646,20 +646,22 @@ describe('.github/actions/deploy-with-retry/action.yml', () => {
     expect(actionYml).toContain("steps.deploy_2.outcome == 'failure'")
   })
 
-  it('fails the job if all 3 attempts exhausted', () => {
+  it('fails the job if all 5 attempts exhausted', () => {
     expect(actionYml).toContain('exit 1')
-    expect(actionYml).toMatch(/all.*3.*attempt/i)
-    expect(actionYml).toContain("steps.deploy_3.outcome == 'failure'")
+    expect(actionYml).toMatch(/all.*5.*attempt/i)
+    expect(actionYml).toContain("steps.deploy_5.outcome == 'failure'")
   })
 
-  it('forwards page_url from steps.deploy_3', () => {
-    expect(actionYml).toContain('steps.deploy_3.outputs.page_url')
+  it('forwards page_url from steps.deploy_5', () => {
+    expect(actionYml).toContain('steps.deploy_5.outputs.page_url')
   })
 
-  it('has unique step IDs deploy_1, deploy_2, deploy_3', () => {
+  it('has unique step IDs deploy_1 through deploy_5', () => {
     expect(actionYml).toContain('id: deploy_1')
     expect(actionYml).toContain('id: deploy_2')
     expect(actionYml).toContain('id: deploy_3')
+    expect(actionYml).toContain('id: deploy_4')
+    expect(actionYml).toContain('id: deploy_5')
   })
 
   it('has step logging with attempt numbers', () => {
