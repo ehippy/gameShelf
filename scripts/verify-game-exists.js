@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import fs, { readFileSync } from 'node:fs'
+import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
