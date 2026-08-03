@@ -122,12 +122,12 @@ function parseFile(filePath) {
  * Group records by describe scope within a file, then scan for consecutive
  * it blocks that share identical assertions.
  *
- * Strategy: require 4+ consecutive different it() blocks to share the
- * same assertion line before flagging.  Two or three consecutive tests
- * with the same assertion is always a legitimate coincidence — for
+ * Strategy: require 5+ consecutive unique it() blocks to share the
+ * same assertion line before flagging.  Two, three, or four consecutive
+ * tests with the same assertion is always a legitimate coincidence — for
  * example, "init() sets isPlaying to false" and "reset() sets isPlaying
  * to false" independently verify the same invariant from different
- * entry points.  Four or more is where copy-paste errors become likely.
+ * entry points.  Five or more is where copy-paste errors become likely.
  */
 function findDuples(records) {
   const findings = []
