@@ -283,7 +283,7 @@ describe('Auto-start regression: all games', () => {
     flappyModule.handleKeydown(' ')
     expect(flappyModule.state.isPlaying).toBe(true)
     const oldVelocity = flappyModule.state.bird.velocity
-    flappyModule.handleKeydown('ArrowDown')
+    flappyModule.handleKeydown('Enter')
     expect(flappyModule.state.isPlaying).toBe(true)
     expect(flappyModule.state.bird.velocity).toBe(oldVelocity)
   })
