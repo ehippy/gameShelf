@@ -581,17 +581,15 @@ describe('tetris', () => {
       tetrisModule.init()
       tetrisModule.state.isPlaying = true
       tetrisModule.state.level = 1
-      // Fill rows 16, 17, 18, 19 completely. The I-piece at top will drop
-      // and lock at row 14 (blocked by filled rows). lockPiece places piece
-      // at rows 14-15, then clearLines finds rows 16-19 all full → 4 lines.
+      // Fill rows 16, 17, 18, 19 completely.
       for (let c = 0; c < 10; c++) {
         tetrisModule.state.board[16][c] = '#ff0000'
         tetrisModule.state.board[17][c] = '#ff0000'
         tetrisModule.state.board[18][c] = '#ff0000'
         tetrisModule.state.board[19][c] = '#ff0000'
       }
-      // Place a standard I-piece at the top. Its shape[1] row fills 4 cells horizontally.
-      // We need cols 0-3 for the I piece so it doesn't go out of bounds.
+      // Place I-piece at row 13. It drops to 14, then to 15 where shape[1] hits board[16] (filled).
+      // lockPiece at row 15 places blocks, then clearLines finds rows 16-19 all full = 4 lines.
       tetrisModule.state.currentPiece = {
         type: 'I',
         shape: [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
@@ -601,8 +599,7 @@ describe('tetris', () => {
       }
       tetrisModule.state.lastDropTime = performance.now() - 2000
       const scoreBefore = tetrisModule.state.score
-      // update() drops piece to row 14 (blocked by filled rows 16-19 at shape level)
-      // lockPiece places piece blocks, then clearLines finds 4 full rows (16-19)
+      // update 1: row 13→14. update 2: row 14→15 (hits collision at shape row 1 → board[16] filled), locks.
       tetrisModule.update()
       tetrisModule.update()
       expect(tetrisModule.state.lines).toBe(4)
