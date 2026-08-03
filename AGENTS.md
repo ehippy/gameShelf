@@ -655,7 +655,7 @@ Follow the same principle when writing the acknowledgment note to `docs/cards/<n
 
 This keeps the backlog tidy and auditable. Future agents reviewing closed cards will see a clear record of why no code was produced, rather than wondering whether the work was missed or the spec was incomplete.
 
-## Backlog Ttriage & Scope Discipline
+## Backlog Triage & Scope Discipline
 
 Before creating a card to update AGENTS.md or document a process improvement, check whether it addresses real friction observed during implementation, review, or deployment. The project practice is clear: no meta-documentation cards unless they prevent a real bug from recurring. Conventions should be codified only after they've been tested in the field and proven useful — not before. Several cards for boilerplate prevention guidelines, scope discipline text, and similar process conventions flowed through the full PM → Developer → Tester → Reviewer → Deployer pipeline only to be closed as out-of-scope, wasting agent turns that could have gone to actual work. This shouldn't happen.
 
