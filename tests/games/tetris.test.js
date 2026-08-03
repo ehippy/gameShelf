@@ -455,11 +455,12 @@ describe('tetris', () => {
     it('7-bag ensures all 7 types appear in a full bag', () => {
       tetrisModule.init()
       tetrisModule.state.isPlaying = true
-      // After init: 5 pieces remain in bag. After 5 hard-drops, bag empties.
-      // Drop 6 refills (7 pieces), drop 7 uses 1 (6 remain).
-      // After 12 drops: 5 from initial bag + 7 from one full refill = covers all 7 types.
+      // After init: 5 pieces remain in bag (7 shuffled, 2 consumed: nextPiece + currentPiece).
+      // 5 hard-drops empties the bag. 6th triggers refill (7 pieces).
+      // 13 drops from refill guarantees all 7 types appear.
+      // Total: 5 + 13 = 18 drops.
       const collected = new Set()
-      for (let i = 0; i < 12; i++) {
+      for (let i = 0; i < 18; i++) {
         tetrisModule.handleKeydown(' ')
         collected.add(tetrisModule.state.currentPiece.type)
       }
