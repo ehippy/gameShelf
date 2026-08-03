@@ -889,8 +889,6 @@ export function reset() {
 
 const transition = handleKeydownTransition(() => {
   reset()
-  ensureAudioCtx()
-  startGame(state.difficulty)
 })
 
 /**
@@ -903,14 +901,13 @@ export function handleKeydown(key) {
   const validKeys = [' ']
 
   // Space bar: transition (start/restart/whack)
-  const wasPlaying = state.isPlaying
   transition(state, key, validKeys, () => {
     // Already playing — whack the mole under the cursor
     whackCell(state.cursorCol, state.cursorRow)
   })
 
-  // Not playing → just started playing → start the game
-  if (!wasPlaying && state.isPlaying) {
+  // Start the game when transitioning from non-playing state
+  if (!state.isPlaying && !state.isGameOver) {
     ensureAudioCtx()
     startGame(state.difficulty)
   }
