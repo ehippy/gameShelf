@@ -354,7 +354,7 @@ User types/selects
 
 ### Transient failures
 
-Watch for **HTTP 408 request timeout** and **network errors** that can occur during push or deploy steps (e.g. `actions/upload-pages-artifact`, `actions/deploy-pages`, or `git push` operations). These are infrastructure-level flakiness — not a reflection of the code quality.
+Watch for **transient deployment failures** like timeouts, network errors, and infrastructure hiccups that can occur during push or deploy steps (e.g. `actions/upload-pages-artifact`, `actions/deploy-pages`, or `git push` operations). These are infrastructure-level flakiness — not a reflection of the code quality.
 
 ### Retry protocol
 
