@@ -60,11 +60,13 @@ async function main() {
 
   if (dirExists && testExists) {
     // Exit 0 — fully implemented
-    const dirResult = getDirInfo(gameDir)
-    const testSize = fs.statSync(testFile).size
+    const dirInfo = walkDir(gameDir)
     console.log(`✅ Game "${game.title}" (${slug}) is fully implemented.`)
-    console.log(`   Files: ${dirResult.fileCount} in src/games/${slug}/, ${dirResult.totalSize} total`)
-    console.log(`   Tests: 1 file (${formatBytes(testSize)})`)
+    console.log(`   src/games/${slug}/`)
+    for (const f of dirInfo) {
+      console.log(`     ${f.path} (${formatBytes(f.size)})`)
+    }
+    console.log(`   tests/games/${slug}.test.js (${formatBytes(fs.statSync(testFile).size)})`)
     process.exit(0)
   }
 
