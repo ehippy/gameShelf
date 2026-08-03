@@ -87,14 +87,15 @@ function formatBytes(bytes) {
  */
 function walkDir(dir, slug) {
   const lines = []
+  const base = `src/games/${slug}`
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const fullPath = path.join(dir, entry.name)
-    const relativePath = `src/games/${slug}/${path.relative(dir, fullPath).split(path.sep).join('/')}`
+    const relPath = path.relative(repoRoot, fullPath).split(path.sep).join('/')
     if (entry.isDirectory()) {
       lines.push(`  ${entry.name}/`)
       lines.push(...walkDir(fullPath, slug))
     } else {
-      lines.push(`  ${relativePath} (${formatBytes(fs.statSync(fullPath).size)})`)
+      lines.push(`  ${relPath} (${formatBytes(fs.statSync(fullPath).size)})`)
     }
   }
   return lines
