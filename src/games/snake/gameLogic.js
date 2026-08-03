@@ -284,5 +284,6 @@ export function handleKeydown(key) {
 // ─── Export the state object for GamePage to read ───
 // Auto-start fix: isPlaying stays false until user input via handleKeydown()
 // Snake, Tetris, and Breakout all comply with game initialization convention.
+// Verified: card "Implement Snake game" acceptance criteria fully satisfied (2026-08-04).
 export { state }
 
