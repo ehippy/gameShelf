@@ -205,6 +205,14 @@ describe('Auto-start regression: all games', () => {
     expect(breakoutModule.state.isPlaying).toBe(false)
   })
 
+  it('Flappy Bird handleKeydown ignores ArrowDown when not playing without starting', () => {
+    flappyModule.init()
+    expect(flappyModule.state.isPlaying).toBe(false)
+    flappyModule.handleKeydown('ArrowDown')
+    expect(flappyModule.state.isPlaying).toBe(false)
+    expect(flappyModule.state.bird.velocity).toBe(0)
+  })
+
   // --- Comprehensive: all three games together ---
 
   it('all three games refuse to auto-start on init', () => {
