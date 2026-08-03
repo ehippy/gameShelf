@@ -495,10 +495,6 @@ Both must exist for the game to be considered fully implemented.
 - **Scope:** Testing Conventions — added 'Deterministic seeding for tests using randomness' subsection documenting that pseudo-random number generators like `Math.random()` produce non-deterministic outcomes causing flaky tests, and providing guidance on seeded PRNGs (mulberry32) for reproducible test randomness.
 - **Verified sections:** Deterministic seeding subsection within Testing Conventions (lines 292–332).
 
-- **Reviewed:** 2026-08-06
-- **Scope:** No-AGENTS-card review — card claimed recently-closed cards fabricated claims about Pre-implementation Verification section and `scripts/verify-game-exists.js`, but both exist and are real. No update needed.
-- **Verified sections:** Pre-implementation Verification section (line 452), `scripts/verify-game-exists.js` (100 lines, proper exit codes).
-
 ## Writing Conventions
 
 This document (AGENTS.md) is a living guide for humans — including LLMs acting in a human role — working on the gameShelf project. It captures conventions learned from real work, not theoretical rules. Treat it the way a senior developer would treat a well-maintained runbook: practical, grounded in experience, and focused on helping people do the right thing without overthinking it.
