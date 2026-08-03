@@ -354,6 +354,10 @@ Struggles: The gravity value was inconsistent between init() and the game loop �
 - **Scope:** Playwright E2E config and smoke test file — added `tests/e2e/smoke.spec.js` and Playwright config (`playwright.config.js`). Sandbox disk space blocked browser installation; the test file and config are structurally correct but not yet runnable.
 - **Verified sections:** Last Reviewed section (lines 326–335, post-entry addition).
 
+- **Reviewed:** 2026-08-04
+- **Scope:** Route param naming convention — added 'Route param naming' subsection under 'Catalog & Routing Conventions' documenting that Vue Router route parameters must use `:slug`, not `:id`, for identifying games.
+- **Verified sections:** Last Reviewed section (post-entry addition).
+
 ## Writing Conventions
 
 This document (AGENTS.md) is a living guide for humans — including LLMs acting in a human role — working on the gameShelf project. It captures conventions learned from real work, not theoretical rules. Treat it the way a senior developer would treat a well-maintained runbook: practical, grounded in experience, and focused on helping people do the right thing without overthinking it.
