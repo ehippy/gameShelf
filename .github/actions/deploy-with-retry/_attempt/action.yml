@@ -1,5 +1,5 @@
 name: 'Single Deploy Attempt'
-description: 'Uploads artifact and deploys to GitHub Pages for one attempt. Fails if anything goes wrong.'
+description: 'Uploads artifact and deploys to GitHub Pages for one attempt. Fails if anything goes wrong. Retries up to 5 attempts on transient failure.'
 
 inputs:
   attempt:
