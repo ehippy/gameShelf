@@ -170,6 +170,19 @@ describe('Auto-start regression: all games', () => {
     expect(breakoutModule.state.paddle.x).toBe(115)
   })
 
+  it('Flappy Bird handleKeydown resets and starts when game over (three-way)', () => {
+    flappyModule.init()
+    flappyModule.state.isGameOver = true
+    flappyModule.state.score = 99
+    expect(flappyModule.state.isPlaying).toBe(false)
+    flappyModule.handleKeydown('ArrowUp')
+    expect(flappyModule.state.isPlaying).toBe(true)
+    expect(flappyModule.state.isGameOver).toBe(false)
+    expect(flappyModule.state.score).toBe(0)
+    expect(flappyModule.state.bird.velocity).toBe(-2.5)
+    expect(flappyModule.state.bird.row).toBe(3)
+  })
+
   // --- No-op checks for non-arrow keys ---
 
   it('Snake handleKeydown ignores non-arrow keys without starting', () => {
