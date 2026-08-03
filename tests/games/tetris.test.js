@@ -345,12 +345,16 @@ describe('tetris', () => {
 
     // ─── Hard drop tests ───
 
-    it('hard drop moves piece to lowest valid position', () => {
+    it('hard drop moves piece to lowest valid position (score increases from drops)', () => {
       tetrisModule.init()
       tetrisModule.state.isPlaying = true
-      const pieceRow = tetrisModule.state.currentPiece.row
+      tetrisModule.state.currentPiece.row = 0
+      const scoreBefore = tetrisModule.state.score
       tetrisModule.handleKeydown(' ')
-      expect(tetrisModule.state.currentPiece.row).toBeGreaterThan(pieceRow)
+      // After hardDrop, lockPiece → spawnPiece replaces the piece,
+      // so we verify the drop happened by checking score increased.
+      // Hard drop adds dropped * 2; piece should have dropped ~18 rows.
+      expect(tetrisModule.state.score - scoreBefore).toBeGreaterThanOrEqual(2)
     })
 
     it('hard drop spawns new piece near top after landing', () => {
