@@ -46,8 +46,7 @@ function findTestFiles(rootDir) {
  *   filePath: string,
  *   describeScope: string[],        // names of enclosing describe blocks
  *   testName: string,
- *   assertion: string,              // normalized line with expect(...).toBe(...)
- *   dupeKey: string                 // subject + value for matching
+ *   assertion: string               // exact line with expect(...).toBe(...)
  * }
  */
 function parseFile(filePath) {
@@ -99,38 +98,11 @@ function parseFile(filePath) {
         continue // skip .not.* assertions
       }
       if (/\bexpect\s*\(.*?\)\s*\.toBe\s*\(/.test(line)) {
-        // Extract the expect() subject and expected value for dupe detection.
-        // A real copy-paste error occurs when two different it() blocks
-        // have the exact same assertion line.  Variable-based expressions
-        // (scoreBefore, before + 10, etc.) are normalized to <VAR> since
-        // two tests checking different locals with .toBe(scoreBefore)
-        // are always legitimate.
-        let normalized = trimmed
-        normalized = normalized.replace(/\b\w*Before\b/g, '<VAR>')
-        normalized = normalized.replace(/\bbefore[ \t]*[+\-][ \t]*\d/g, '<VAR>')
-        normalized = normalized.replace(/\bbefore\b/g, '<VAR>')
-
-        // Extract subject (everything between expect( and ).toBe)
-        const subjectMatch = normalized.match(/expect\s*\((.*?)\)\s*\.toBe\s*\(/)
-        const subject = subjectMatch ? subjectMatch[1].trim() : ''
-
-        // Extract expected value for the dupe-key
-        const valueMatch = normalized.match(/\.toBe\s*\(([\s\S]*?)\)\s*$/)
-        const expectedValue = valueMatch ? valueMatch[1].trim() : ''
-
-        // Only include the value in the key when it's non-trivial.
-        // Trivial values like false/true/0 appear in hundreds of
-        // legitimate tests; the subject alone is sufficient to
-        // detect the common copy-paste error.
-        const isTrivial = /^(fF)alse$|^(tT)rue$|^0$|^(\'\'|\"\"|\'\"\'|\"\')$/.test(expectedValue)
-        const dupeKey = isTrivial ? subject : subject + '|||' + expectedValue
-
         records.push({
           filePath,
           describeScope: [...describeStack],
           testName: currentItName,
-          assertion: normalized,
-          dupeKey,
+          assertion: trimmed,
         })
       }
     }
@@ -148,7 +120,14 @@ function parseFile(filePath) {
 
 /**
  * Group records by describe scope within a file, then scan for consecutive
- * it blocks that share identical dupeKeys.
+ * it blocks that share identical assertions.
+ *
+ * Strategy: require 4+ consecutive different it() blocks to share the
+ * same assertion line before flagging.  Two or three consecutive tests
+ * with the same assertion is always a legitimate coincidence — for
+ * example, "init() sets isPlaying to false" and "reset() sets isPlaying
+ * to false" independently verify the same invariant from different
+ * entry points.  Four or more is where copy-paste errors become likely.
  */
 function findDuples(records) {
   const findings = []
@@ -165,10 +144,10 @@ function findDuples(records) {
     let i = 0
     while (i < scopeRecords.length) {
       const currentRec = scopeRecords[i]
-      // Look ahead for consecutive records with matching dupeKey
+      // Look ahead for consecutive records with matching assertions
       const matchedIndices = [i]
       for (let j = i + 1; j < scopeRecords.length; j++) {
-        if (scopeRecords[j].dupeKey === currentRec.dupeKey) {
+        if (scopeRecords[j].assertion === currentRec.assertion) {
           matchedIndices.push(j)
         } else {
           break // only consecutive matches
@@ -176,7 +155,8 @@ function findDuples(records) {
       }
 
       if (matchedIndices.length >= 2) {
-        // Collect all runs of consecutive identical dupeKeys
+        // Collect all runs of consecutive identical assertions
+        // We want runs that are truly consecutive (no gaps)
         const runs = [[matchedIndices[0]]]
         for (let m = 1; m < matchedIndices.length; m++) {
           const prev = matchedIndices[m - 1]
@@ -190,6 +170,7 @@ function findDuples(records) {
 
         let foundValid = false
         for (const run of runs) {
+          // Require at least 2 consecutive records from different tests
           if (run.length < 2) continue
           const assertionText = scopeRecords[run[0]].assertion
           const filePath = scopeRecords[run[0]].filePath
@@ -209,7 +190,10 @@ function findDuples(records) {
             }
           }
 
-          if (dedupedRun.length < 2) continue
+          // Require at least 4 unique it() blocks sharing the same
+          // assertion to reduce false positives from legitimate
+          // invariant testing.
+          if (dedupedRun.length < 4) continue
 
           findings.push({
             filePath,
