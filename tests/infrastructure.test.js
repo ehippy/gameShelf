@@ -282,6 +282,29 @@ describe('.github/workflows/deploy.yml', () => {
     expect(testIndex).toBeLessThan(buildIndex)
   })
 
+  it('preserves the deployment workflow structure: checkout → setup-node → npm ci → npm test → npm run build → deploy-with-retry', () => {
+    const lines = deployYml.split('\n')
+    const stepNames = lines
+      .map((line, i) => ({ text: line.trim(), index: i }))
+      .filter(item => /(?:run|uses):/.test(item.text))
+      .map(item => ({ name: item.text, index: item.index }))
+
+    // Extract step descriptions
+    const stepDescriptions = stepNames.map(s => {
+      const lower = s.name.toLowerCase()
+      if (lower.includes('actions/checkout')) return 'checkout'
+      if (lower.includes('setup-node')) return 'setup-node'
+      if (/run:\s*npm\s+ci\b/.test(s.name)) return 'npm ci'
+      if (/run:\s*npm\s+test\b/.test(s.name)) return 'npm test'
+      if (/run:\s*npm\s+run\s+build\b/.test(s.name)) return 'npm run build'
+      if (/uses:\s*.*deploy-with-retry/.test(s.name)) return 'deploy-with-retry'
+      return null
+    }).filter(Boolean)
+
+    const expected = ['checkout', 'setup-node', 'npm ci', 'npm test', 'npm run build', 'deploy-with-retry']
+    expect(stepDescriptions).toEqual(expected)
+  })
+
   it('uploads ./dist/', () => {
     expect(deployYml).toContain('./dist/')
   })
