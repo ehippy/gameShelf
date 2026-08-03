@@ -57,7 +57,7 @@ async function main() {
     // Exit 0 — fully implemented
     console.log(`✅ Game "${game.title}" (${slug}) is fully implemented.`)
     console.log(`   src/games/${slug}/`)
-    for (const f of listFiles(gameDir, slug)) {
+    for (const f of listFiles(gameDir)) {
       console.log(`   ${f}`)
     }
     console.log(`   tests/games/${slug}.test.js (${formatBytes(fs.statSync(testFile).size)})`)
