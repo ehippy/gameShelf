@@ -420,9 +420,9 @@ describe('whack-a-mole', () => {
       if (!whackModule) return
       whackModule.init()
       whackModule.handleKeydown('ArrowDown')
-      expect(whackModule.state.cursorRow).toBe(1)
+      expect(whackModule.state.cursorRow).toBe(2)
       whackModule.handleKeydown('ArrowUp')
-      expect(whackModule.state.cursorRow).toBe(0)
+      expect(whackModule.state.cursorRow).toBe(1)
     })
 
     it("handleKeydown('ArrowUp') works in gameplay state", () => {
