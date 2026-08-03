@@ -215,6 +215,16 @@ export function handleKeydown(key) {
 
 The `transition` function handles the three-way state machine, and the switch below is purely game-specific action logic. This pattern is used by breakout, snake, and several other games.
 
+### DRY temptation trap in game logic
+
+When you notice the same three-way handleKeydown state transition pattern repeated across multiple game files — game after game, every gameLogic.js doing roughly the same thing with different game-specific details — the natural instinct is to apply DRY and extract that shared logic into a helper. The temptation is real, and it's the right instinct in most contexts. In game logic, it's not.
+
+The shared helper extraction showed that the abstraction introduced its own bugs: signature deviation from the expected spec (the helper's API drifted from what the gameLogic.js interface contract requires), redundant state assignment (the helper assigning `isPlaying` in a place where it shouldn't), and missing no-op tests (the test surface grew to cover the helper's API surface instead of each game's actual behavior). These are problems the original duplicated code in each individual gameLogic.js file never had. Every line of duplicated code lived in its own game's context, where you could trace it directly, test it directly, and reason about it directly.
+
+Simple duplicated code is easier to reason about and test than a shared helper with its own API surface. A helper abstracts away the control flow — you can no longer see the three-way state transitions in context, you have to mentally trace through two files to understand a single game's keyboard handling — and the helper itself becomes a source of bugs with its own growing test surface. The duplication is cheap: a few lines of nearly identical if/else logic in each game is far easier to audit and understand than a helper function that silently changes behavior depending on what arguments you pass it.
+
+When you see the same pattern across three game files, resist the urge. Write the three-way logic directly in each gameLogic.js, following the documented pattern. A little duplication in a well-understood control flow is a small price to pay for clarity.
+
 **Consequence of violation:** If `isPlaying` is `true` from initialization, the game starts running immediately on page load with no user control, making the game unplayable (the user has no agency to control when the game starts).
 
 > **Testing tip:** When writing unit tests for game logic, always verify that `state.isPlaying` is `false` immediately after calling `init()` or `reset()`. Asserting `expect(state.isPlaying).toBe(false)` after initialization is a quick regression check against accidental auto-start.
@@ -688,6 +698,10 @@ Quick reference for onboarding a new game to the project:
 - **Reviewed:** 2026-08-08
 - **Scope:** Game Initialization — added 'Three-way state transitions with handleKeydownTransition' subsection documenting the shared `handleKeydownTransition` helper from `src/games/shared/gameHelpers.js` as the preferred approach for three-way keyboard state transitions, including factory signature, four transition cases, resetFn contract, and concrete example. Updated the existing manual if/else code block with a note pointing to the helper. Updated Game Addition Checklist item 4 to reference the helper.
 - **Verified sections:** AGENTS.md (new subsection at lines 141–216, manual block note at lines 115–118, checklist item 4 at line 630), Last Reviewed section (post-entry addition).
+
+- **Reviewed:** 2026-08-08
+- **Scope:** Game Initialization — added 'DRY temptation trap in game logic' subsection warning against extracting the duplicated three-way handleKeydown state transitions into shared helper abstractions. Documents that the prior helper extraction introduced its own bugs (signature deviation, redundant state assignment, missing no-op tests) and that simple duplicated code is easier to reason about than a shared helper with its own API surface.
+- **Verified sections:** Game Initialization section (new subsection at lines 218–226), Last Reviewed section (post-entry addition).
 
 ## Writing Conventions
 
