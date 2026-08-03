@@ -440,33 +440,30 @@ describe('tetris', () => {
     it('bag refills when empty during gameplay', () => {
       tetrisModule.init()
       tetrisModule.state.isPlaying = true
-      // Manually drain the bag and force a refill
-      tetrisModule.state.bag = []
-      const typeBefore = tetrisModule.state.currentPiece.type
-      // Trigger a spawn to force bag refill
-      tetrisModule.state.board[19][4] = '#ff0000' // lock current piece
-      tetrisModule.update() // should lock piece and spawn new one
-      // After spawn, bag should be refilled (non-empty)
-      expect(tetrisModule.state.bag.length).toBeGreaterThan(0)
+      // After init: bag has 3 remaining pieces (2 consumed during init/spawn).
+      // Each hard-drop consumes 1 via spawnPiece.
+      // After 3 hard-drops: bag empty. 4th drop refills.
+      tetrisModule.handleKeydown(' ')
+      tetrisModule.handleKeydown(' ')
+      tetrisModule.handleKeydown(' ')
+      expect(tetrisModule.state.bag.length).toBe(0)
+      // 4th hard-drop should trigger refill
+      tetrisModule.handleKeydown(' ')
+      expect(tetrisModule.state.bag.length).toBe(7)
     })
 
     it('7-bag ensures all 7 types appear in a full bag', () => {
       tetrisModule.init()
       tetrisModule.state.isPlaying = true
-      // Collect pieces until bag refills at least once
+      // Collect all piece types across multiple spawns.
+      // After init: bag has 3 pieces left. Each hard-drop spawns 1 piece and consumes 1 from bag.
+      // After 3 drops: bag empty. 4th drop refills with 7 new pieces.
+      // So after 7 drops total, we should have seen pieces from at least one full refill.
       const collected = new Set()
-      collected.add(tetrisModule.state.currentPiece.type)
-      let iterations = 0
-      while (collected.size < 7 && iterations < 50) {
-        // Hard-drop and spawn new pieces
-        tetrisModule.state.board[19][4] = '#ff0000'
-        tetrisModule.update()
-        if (tetrisModule.state.currentPiece) {
-          collected.add(tetrisModule.state.currentPiece.type)
-        }
-        iterations++
+      for (let i = 0; i < 7; i++) {
+        tetrisModule.handleKeydown(' ')
+        collected.add(tetrisModule.state.currentPiece.type)
       }
-      // All 7 types should appear
       expect(collected.size).toBe(7)
       expect(collected.has('I')).toBe(true)
       expect(collected.has('O')).toBe(true)
