@@ -110,6 +110,10 @@ describe('Directory structure', () => {
     expect(existsSync(join(root, 'src', 'games', 'flappy-bird', 'gameLogic.js'))).toBe(true)
   })
 
+  it('src/games/whack-a-mole/gameLogic.js exists', () => {
+    expect(existsSync(join(root, 'src', 'games', 'whack-a-mole', 'gameLogic.js'))).toBe(true)
+  })
+
   it('src/data/gamesCatalog.js exists', () => {
     expect(existsSync(join(root, 'src', 'data', 'gamesCatalog.js'))).toBe(true)
   })

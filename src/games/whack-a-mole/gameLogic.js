@@ -5,15 +5,6 @@
  * Exports: state (readable by GamePage)
  */
 
-// ─── Imports ──────────────────────────────────────────────────────────────────
-
-import { renderGameOver } from '../shared/renderHelpers.js'
-import { useScoreStore } from '../../stores/scoreStore.js'
-
-// ─── Store Instance ───────────────────────────────────────────────────────────
-
-const scoreStore = useScoreStore()
-
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const COLS = 4
@@ -516,39 +507,6 @@ export function render(canvas) {
     renderMenu(ctx)
   } else if (state.isPlaying) {
     renderGameplay(ctx)
-  } else if (state.isGameOver) {
-    renderGameplay(ctx)
-    const scores = scoreStore.getScores('whack-a-mole')
-    const highScore = scores.length > 0 ? Math.max(...scores.map(s => s.score)) : 0
-    renderGameOver(ctx, state, CANVAS_W, CANVAS_H, {
-      overlayColor: 'rgba(0, 0, 0, 0.7)',
-      titleY: CANVAS_H / 2 - 80,
-      scoreText: `Score: ${state.score}`,
-      scoreColor: '#ffffff',
-      scoreFont: '16px sans-serif',
-      scoreY: CANVAS_H / 2 - 40,
-      showRestartPrompt: false,
-      lines: [
-        {
-          text: `High Score: ${highScore}`,
-          color: '#ffd700',
-          font: 'bold 16px sans-serif',
-          y: CANVAS_H / 2 - 15
-        },
-        {
-          text: `Highest Combo: x${state.highestCombo}`,
-          color: '#ffffff',
-          font: '14px sans-serif',
-          y: CANVAS_H / 2 + 15
-        },
-        {
-          text: 'Press Space or B to restart',
-          color: '#cccccc',
-          font: '12px sans-serif',
-          y: CANVAS_H / 2 + 50
-        }
-      ]
-    })
   }
 }
 

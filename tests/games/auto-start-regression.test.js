@@ -28,12 +28,14 @@ describe('Auto-start regression: all games', () => {
   let tetrisModule = null
   let breakoutModule = null
   let flappyModule = null
+  let whackModule = null
 
   beforeEach(async () => {
     snakeModule = await import(join(root, 'src', 'games', 'snake', 'gameLogic.js'))
     tetrisModule = await import(join(root, 'src', 'games', 'tetris', 'gameLogic.js'))
     breakoutModule = await import(join(root, 'src', 'games', 'breakout', 'gameLogic.js'))
     flappyModule = await import(join(root, 'src', 'games', 'flappy-bird', 'gameLogic.js'))
+    whackModule = await import(join(root, 'src', 'games', 'whack-a-mole', 'gameLogic.js'))
   })
 
   // --- init() auto-start checks ---
@@ -60,6 +62,12 @@ describe('Auto-start regression: all games', () => {
     flappyModule.init()
     expect(flappyModule.state.isPlaying).toBe(false)
     expect(flappyModule.state.isGameOver).toBe(false)
+  })
+
+  it('Whack-a-Mole init() does not auto-start: isPlaying is false', () => {
+    whackModule.init()
+    expect(whackModule.state.isPlaying).toBe(false)
+    expect(whackModule.state.isGameOver).toBe(false)
   })
 
   // --- reset() auto-start checks ---
@@ -100,6 +108,15 @@ describe('Auto-start regression: all games', () => {
     expect(flappyModule.state.isGameOver).toBe(false)
   })
 
+  it('Whack-a-Mole reset() does not auto-start: isPlaying is false', () => {
+    whackModule.init()
+    whackModule.state.score = 42
+    whackModule.state.isPlaying = true
+    whackModule.reset()
+    expect(whackModule.state.isPlaying).toBe(false)
+    expect(whackModule.state.isGameOver).toBe(false)
+  })
+
   // --- handleKeydown three-way logic checks ---
 
   it('Snake handleKeydown starts game when isPlaying is false (three-way)', () => {
@@ -131,6 +148,13 @@ describe('Auto-start regression: all games', () => {
     flappyModule.handleKeydown(' ')
     expect(flappyModule.state.isPlaying).toBe(true)
     expect(flappyModule.state.bird.velocity).toBe(-2.5)
+  })
+
+  it('Whack-a-Mole handleKeydown starts game when isPlaying is false (three-way)', () => {
+    whackModule.init()
+    expect(whackModule.state.isPlaying).toBe(false)
+    whackModule.handleKeydown(' ')
+    expect(whackModule.state.isPlaying).toBe(true)
   })
 
   // --- Game-over reset checks ---
@@ -183,6 +207,17 @@ describe('Auto-start regression: all games', () => {
     expect(flappyModule.state.bird.row).toBe(3)
   })
 
+  it('Whack-a-Mole handleKeydown resets and starts when game over (three-way)', () => {
+    whackModule.init()
+    whackModule.state.isGameOver = true
+    whackModule.state.score = 99
+    expect(whackModule.state.isPlaying).toBe(false)
+    whackModule.handleKeydown(' ')
+    expect(whackModule.state.isPlaying).toBe(true)
+    expect(whackModule.state.isGameOver).toBe(false)
+    expect(whackModule.state.score).toBe(0)
+  })
+
   // --- No-op checks for non-arrow keys ---
 
   it('Snake handleKeydown ignores non-arrow keys without starting', () => {
@@ -220,10 +255,12 @@ describe('Auto-start regression: all games', () => {
     tetrisModule.init()
     breakoutModule.init()
     flappyModule.init()
+    whackModule.init()
     expect(snakeModule.state.isPlaying).toBe(false)
     expect(tetrisModule.state.isPlaying).toBe(false)
     expect(breakoutModule.state.isPlaying).toBe(false)
     expect(flappyModule.state.isPlaying).toBe(false)
+    expect(whackModule.state.isPlaying).toBe(false)
   })
 
   it('all games: handleKeydown starts all of them', () => {
@@ -242,6 +279,10 @@ describe('Auto-start regression: all games', () => {
     flappyModule.init()
     flappyModule.handleKeydown(' ')
     expect(flappyModule.state.isPlaying).toBe(true)
+
+    whackModule.init()
+    whackModule.handleKeydown(' ')
+    expect(whackModule.state.isPlaying).toBe(true)
   })
 
   // Cross-game card verification: all games comply with init convention

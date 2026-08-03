@@ -420,9 +420,9 @@ describe('whack-a-mole', () => {
       if (!whackModule) return
       whackModule.init()
       whackModule.handleKeydown('ArrowDown')
-      expect(whackModule.state.cursorRow).toBe(1)
+      expect(whackModule.state.cursorRow).toBe(2)
       whackModule.handleKeydown('ArrowUp')
-      expect(whackModule.state.cursorRow).toBe(0)
+      expect(whackModule.state.cursorRow).toBe(1)
     })
 
     it("handleKeydown('ArrowUp') works in gameplay state", () => {
@@ -458,10 +458,10 @@ describe('whack-a-mole', () => {
       whackModule.handleKeydown('ArrowRight')
       whackModule.handleKeydown('ArrowRight')
       whackModule.handleKeydown('ArrowDown')
-      expect(whackModule.state.cursorCol).toBe(2)
-      expect(whackModule.state.cursorRow).toBe(1)
+      expect(whackModule.state.cursorCol).toBe(3)
+      expect(whackModule.state.cursorRow).toBe(2)
       // Place a mole at cursor position
-      whackModule.state.activeMoles = [{ col: 2, row: 1, isBomb: false, phase: 50 }]
+      whackModule.state.activeMoles = [{ col: 3, row: 2, isBomb: false, phase: 50 }]
       whackModule.state.score = 0
       // Whack via space
       whackModule.handleKeydown(' ')
