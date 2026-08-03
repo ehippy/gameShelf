@@ -764,3 +764,35 @@ describe('build test', () => {
     expect(existsSync(join(root, 'dist', 'index.html'))).toBe(true)
   })
 })
+
+// --- Pre-commit hook comment and behavior ---
+
+describe('Pre-commit hook', () => {
+  const hookPath = join(root, '.husky', 'pre-commit')
+  const scriptPath = join(root, 'scripts', 'check-assertion-dupes.js')
+
+  it('pre-commit comment accurately describes blocking behavior', () => {
+    const hookContent = readFileSync(hookPath, 'utf-8')
+    // Must NOT contain the old misleading "warning-only" language
+    expect(hookContent).not.toContain('warning-only')
+    // Must NOT contain "does not block"
+    expect(hookContent).not.toContain('does not block')
+    // Must mention blocking or preventing commits
+    expect(hookContent).toMatch(/block|prevent/i)
+  })
+
+  it('script calls process.exit(1) when dupes are found', () => {
+    const scriptContent = readFileSync(scriptPath, 'utf-8')
+    // The script must exit non-zero when dupes are detected
+    expect(scriptContent).toContain('process.exit(deduped.length > 0 ? 1 : 0)')
+  })
+
+  it('script exits 0 when run against the current clean codebase', () => {
+    const output = execFileSync('node', [scriptPath], {
+      cwd: root,
+      timeout: 30000,
+      encoding: 'utf-8'
+    })
+    expect(output).toBeFalsy()
+  })
+})
