@@ -889,8 +889,6 @@ export function reset() {
 
 const transition = handleKeydownTransition(() => {
   reset()
-  ensureAudioCtx()
-  startGame(state.difficulty)
 })
 
 /**
