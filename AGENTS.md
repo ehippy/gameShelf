@@ -111,6 +111,11 @@ The convention has three rules:
  *   - Not playing + not game over → start the game
  *   - Game over → reset state and start playing
  *   - Already playing → perform normal action
+ *
+ * Note: New games should use `handleKeydownTransition` from
+ * `src/games/shared/gameHelpers.js` (see below) instead of writing
+ * this manual `if/else` block. This example documents the three-way
+ * logic rules (1–3); the helper encapsulates the same pattern.
  */
 export function handleKeydown(key) {
   if (!state) return
@@ -132,6 +137,83 @@ export function handleKeydown(key) {
   }
 }
 ```
+
+### Three-way state transitions with handleKeydownTransition
+
+**Preferred approach:** Use the shared `handleKeydownTransition` factory from `src/games/shared/gameHelpers.js` to create a three-way state-transition handler. Five games already use it (`breakout`, `flappy-bird`, `snake`, `tetris`, `whack-a-mole`). It removes boilerplate from `handleKeydown()` and guarantees consistent behavior.
+
+**Create the factory** at the module level with a `resetFn` for game-specific reset logic:
+
+```js
+import { handleKeydownTransition } from '../shared/gameHelpers.js'
+
+// Create the transition handler once at module scope.
+// resetFn resets state to initial conditions but MUST NOT set
+// isPlaying — the helper handles that automatically.
+const transition = handleKeydownTransition(() => {
+  // Game-specific reset logic here.
+  // Example (snake): Object.assign(state, createInitialState())
+  //                 spawnFood()
+})
+```
+
+**Call it from `handleKeydown()`** with `state`, `validKeys`, and an `actionFn`:
+
+```js
+export function handleKeydown(key) {
+  if (!state) return
+
+  const validKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']
+
+  // State transition (the helper handles all three cases)
+  transition(state, key, validKeys, () => {
+    // Already playing — do the game-specific action
+    // ... game-specific action ...
+  })
+
+  // Game-specific action (runs after transition for valid keys)
+  // ... direction change / movement logic ...
+}
+```
+
+**Four transition cases** the helper covers:
+
+1. **Game over + valid key** → calls `resetFn()`, re-reads state via the game's state getter (if resetFn reassigns the module-level state variable), then sets `state.isPlaying = true`.
+2. **Not playing + valid key** → sets `state.isPlaying = true` (starts the game).
+3. **Already playing + valid key** → calls `actionFn(key)` for the game-specific action (e.g. direction change).
+4. **Key not in validKeys** → no-op; the helper skips the transition and `handleKeydown` proceeds to any game-specific action logic below the transition call.
+
+**ResetFn contract:** The `resetFn` callback **must NOT set `state.isPlaying = true`** — the helper handles that automatically. Its job is to restore game-specific state (score, grid, pieces, etc.) back to initial conditions. The game's own `reset()` function must also preserve `isPlaying: false` to comply with the no-auto-start rule.
+
+**Concrete example (snake-style):**
+
+```js
+import { handleKeydownTransition } from '../shared/gameHelpers.js'
+
+const transition = handleKeydownTransition(() => {
+  Object.assign(state, createInitialState())
+  spawnFood()
+})
+
+export function handleKeydown(key) {
+  if (!state) return
+
+  const validKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']
+
+  transition(state, key, validKeys, () => {
+    // Already playing — direction handled below
+  })
+
+  switch (key) {
+    case 'ArrowUp':    if (state.direction !== 'down') state.direction = 'up'    ; break
+    case 'ArrowDown':  if (state.direction !== 'up')   state.direction = 'down'  ; break
+    case 'ArrowLeft':  if (state.direction !== 'right') state.direction = 'left' ; break
+    case 'ArrowRight': if (state.direction !== 'left')  state.direction = 'right'; break
+  }
+}
+```
+
+The `transition` function handles the three-way state machine, and the switch below is purely game-specific action logic. This pattern is used by breakout, snake, and several other games.
 
 **Consequence of violation:** If `isPlaying` is `true` from initialization, the game starts running immediately on page load with no user control, making the game unplayable (the user has no agency to control when the game starts).
 
