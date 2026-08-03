@@ -213,18 +213,20 @@ describe('Auto-start regression: all games', () => {
     expect(flappyModule.state.bird.velocity).toBe(0)
   })
 
-  // --- Comprehensive: all three games together ---
+  // --- Comprehensive: all games together ---
 
-  it('all three games refuse to auto-start on init', () => {
+  it('all games refuse to auto-start on init', () => {
     snakeModule.init()
     tetrisModule.init()
     breakoutModule.init()
+    flappyModule.init()
     expect(snakeModule.state.isPlaying).toBe(false)
     expect(tetrisModule.state.isPlaying).toBe(false)
     expect(breakoutModule.state.isPlaying).toBe(false)
+    expect(flappyModule.state.isPlaying).toBe(false)
   })
 
-  it('all three games: handleKeydown starts all of them', () => {
+  it('all games: handleKeydown starts all of them', () => {
     snakeModule.init()
     snakeModule.handleKeydown('ArrowRight')
     expect(snakeModule.state.isPlaying).toBe(true)
@@ -236,6 +238,10 @@ describe('Auto-start regression: all games', () => {
     breakoutModule.init()
     breakoutModule.handleKeydown('ArrowRight')
     expect(breakoutModule.state.isPlaying).toBe(true)
+
+    flappyModule.init()
+    flappyModule.handleKeydown(' ')
+    expect(flappyModule.state.isPlaying).toBe(true)
   })
 
   // Cross-game card verification: snake + tetris + breakout all comply with init convention
