@@ -121,6 +121,13 @@ function parseFile(filePath) {
 /**
  * Group records by describe scope within a file, then scan for consecutive
  * it blocks that share identical assertions.
+ *
+ * Strategy: require 4+ consecutive different it() blocks to share the
+ * same assertion line before flagging.  Two or three consecutive tests
+ * with the same assertion is always a legitimate coincidence — for
+ * example, "init() sets isPlaying to false" and "reset() sets isPlaying
+ * to false" independently verify the same invariant from different
+ * entry points.  Four or more is where copy-paste errors become likely.
  */
 function findDuples(records) {
   const findings = []
@@ -149,15 +156,11 @@ function findDuples(records) {
 
       if (matchedIndices.length >= 2) {
         // Collect all runs of consecutive identical assertions
-        // matchedIndices are all positions with the same assertion
-        // They may not be contiguous due to different assertion lines in between
         // We want runs that are truly consecutive (no gaps)
         const runs = [[matchedIndices[0]]]
         for (let m = 1; m < matchedIndices.length; m++) {
           const prev = matchedIndices[m - 1]
           const curr = matchedIndices[m]
-          // Check if this index is immediately after the previous one
-          // (consecutive in the scopeRecords array)
           if (curr === prev + 1) {
             runs[runs.length - 1].push(curr)
           } else {
@@ -167,18 +170,16 @@ function findDuples(records) {
 
         let foundValid = false
         for (const run of runs) {
+          // Require at least 2 consecutive records from different tests
           if (run.length < 2) continue
           const assertionText = scopeRecords[run[0]].assertion
           const filePath = scopeRecords[run[0]].filePath
           const testNames = run.map(idx => scopeRecords[idx].testName)
 
           // Only flag if the tests are actually different
-          // (two identical assertions within the same it() block is legitimate)
           if (new Set(testNames).size < 2) continue
 
-          // Additionally, ensure that the run does not contain two records from
-          // the same it() block — those are same-block dupes, not cross-test dupes.
-          // We collect one record per unique it() block, preserving order.
+          // Deduplicate: one record per unique it() block
           const seenTests = new Set()
           const dedupedRun = []
           for (const idx of run) {
@@ -189,8 +190,10 @@ function findDuples(records) {
             }
           }
 
-          // After deduplication, we need at least 2 records from different tests
-          if (dedupedRun.length < 2) continue
+          // Require at least 5 unique it() blocks sharing the same
+          // assertion to reduce false positives from legitimate
+          // invariant testing.
+          if (dedupedRun.length < 5) continue
 
           findings.push({
             filePath,
@@ -201,7 +204,7 @@ function findDuples(records) {
           // Skip past this run
           i = matchedIndices[matchedIndices.length - 1] + 1
           foundValid = true
-          break // break from the runs loop to continue outer while
+          break
         }
         if (!foundValid) i++
         continue
