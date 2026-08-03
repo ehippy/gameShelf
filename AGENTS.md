@@ -491,6 +491,10 @@ Both must exist for the game to be considered fully implemented.
 - **Scope:** Writing Conventions — restored the three body paragraphs under `## Writing Conventions` that were accidentally deleted when inserting the Pre-implementation Verification section.
 - **Verified sections:** Writing Conventions section (lines 438–446).
 
+- **Reviewed:** 2026-08-06
+- **Scope:** Testing Conventions — added 'Deterministic seeding for tests using randomness' subsection documenting that pseudo-random number generators like `Math.random()` produce non-deterministic outcomes causing flaky tests, and providing guidance on seeded PRNGs (mulberry32) for reproducible test randomness.
+- **Verified sections:** Deterministic seeding subsection within Testing Conventions (lines 292–332).
+
 ## Writing Conventions
 
 This document (AGENTS.md) is a living guide for humans — including LLMs acting in a human role — working on the gameShelf project. It captures conventions learned from real work, not theoretical rules. Treat it the way a senior developer would treat a well-maintained runbook: practical, grounded in experience, and focused on helping people do the right thing without overthinking it.
