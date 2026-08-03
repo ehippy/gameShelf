@@ -563,21 +563,39 @@ describe('AGENTS.md — Deployment Failure Convention', () => {
     expect(agentsMd).toContain('Deployment Failure Convention')
   })
 
-  it('mentions HTTP 408 as a transient failure', () => {
-    expect(agentsMd).toContain('408')
+  it('describes transient failures broadly (not HTTP 408 specific)', () => {
+    expect(agentsMd).not.toContain('HTTP 408')
+    expect(agentsMd).toContain('transient deployment failures')
+    expect(agentsMd).toContain('infrastructure hiccups')
   })
 
   it('mentions network errors as a transient failure', () => {
     expect(agentsMd).toContain('network error')
   })
 
-  it('specifies up to 2 additional retries (3 total attempts)', () => {
-    expect(agentsMd).toContain('2 additional')
-    expect(agentsMd).toContain('3 total')
+  it('specifies up to 4 additional retries (5 total attempts)', () => {
+    expect(agentsMd).toContain('4 additional')
+    expect(agentsMd).toContain('5 total')
   })
 
-  it('specifies approximately 30 seconds between retries', () => {
-    expect(agentsMd).toContain('30 seconds')
+  it('specifies exponential backoff delays', () => {
+    expect(agentsMd).toContain('30-second delay')
+    expect(agentsMd).toContain('60-second delay')
+    expect(agentsMd).toContain('120-second delay')
+    expect(agentsMd).toContain('180-second delay')
+  })
+
+  it('includes GitHub API reachability pre-check', () => {
+    expect(agentsMd).toContain('GitHub API reachability')
+    expect(agentsMd).toContain('200 or 403')
+  })
+
+  it('logs attempts as Attempt 1/5 through Attempt 5/5', () => {
+    expect(agentsMd).toContain('Attempt 1/5')
+    expect(agentsMd).toContain('Attempt 2/5')
+    expect(agentsMd).toContain('Attempt 3/5')
+    expect(agentsMd).toContain('Attempt 4/5')
+    expect(agentsMd).toContain('Attempt 5/5')
   })
 
   it('specifies escalation to PM with "approved but blocked by infrastructure"', () => {
@@ -597,6 +615,11 @@ describe('AGENTS.md — Deployment Failure Convention', () => {
   it('mentions setting card status to reflect approved/blocked', () => {
     expect(agentsMd.toLowerCase()).toContain('card status')
     expect(agentsMd.toLowerCase()).toMatch(/approv.*block/i)
+  })
+
+  it('escalates after all 5 attempts fail', () => {
+    const section = agentsMd.slice(agentsMd.indexOf('Deployment Failure Convention'))
+    expect(section).toMatch(/all.*5.*attempt/i)
   })
 })
 
