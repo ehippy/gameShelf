@@ -190,10 +190,10 @@ function findDuples(records) {
             }
           }
 
-          // Require at least 4 unique it() blocks sharing the same
+          // Require at least 5 unique it() blocks sharing the same
           // assertion to reduce false positives from legitimate
           // invariant testing.
-          if (dedupedRun.length < 4) continue
+          if (dedupedRun.length < 5) continue
 
           findings.push({
             filePath,
