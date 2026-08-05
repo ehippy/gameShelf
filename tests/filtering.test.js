@@ -147,13 +147,17 @@ describe('filtering behavior', () => {
 // --- Integration tests: mounted HomeView reacts to Pinia store changes ---
 
 describe('HomeView integration', () => {
-  it('mounts HomeView and renders all 5 game cards when store is empty', async () => {
+  it('mounts HomeView and renders game cards across grid and WhatsNew when store is empty', async () => {
     const pinia = createPinia()
     const wrapper = mount(HomeView, {
       global: { plugins: [pinia] }
     })
+    // Main grid shows non-newest games (2 out of 5)
     const gameCards = wrapper.find('.games-grid').findAllComponents({ name: 'GameCard' })
-    expect(gameCards.length).toBe(5)
+    expect(gameCards.length).toBe(2)
+    // WhatsNew shows the newest 3 games
+    const whatsNewCards = wrapper.findComponent({ name: 'WhatsNew' }).findAllComponents({ name: 'GameCard' })
+    expect(whatsNewCards.length).toBe(3)
   })
 
   it('HomeView filters games when searchQuery is set on store', async () => {

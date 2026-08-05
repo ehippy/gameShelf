@@ -2,12 +2,12 @@
   <div>
     <h1>gameShelf</h1>
     <p class="tagline">Play classic games right in your browser</p>
-    <WhatsNew />
+    <WhatsNew v-if="!hasActiveFilter" />
     <MostPlayedCarousel :games="mostPlayedGames" />
     <RandomGameBtn />
     <div class="games-grid">
       <GameCard
-        v-for="game in filteredGames"
+        v-for="game in displayGames"
         :key="game.slug"
         :slug="game.slug"
         :title="game.title"
@@ -31,6 +31,10 @@ import RandomGameBtn from '../components/RandomGameBtn.vue'
 const gameStore = useGameStore()
 const scoreStore = useScoreStore()
 
+const hasActiveFilter = computed(() => {
+  return gameStore.searchQuery !== '' || gameStore.selectedCategory !== ''
+})
+
 const filteredGames = computed(() => {
   let results = gameStore.catalog
   if (gameStore.searchQuery) {
@@ -46,6 +50,20 @@ const filteredGames = computed(() => {
     results = results.filter(g => g.category.toLowerCase() === cat)
   }
   return results
+})
+
+const newestGameSlugs = computed(() => {
+  const newest = gameStore.newestGames
+  return new Set(newest.map(g => g.slug))
+})
+
+const displayGames = computed(() => {
+  // When filter is active, show all filtered games
+  if (hasActiveFilter.value) {
+    return filteredGames.value
+  }
+  // When no filter, exclude newest games from main grid (they're in WhatsNew)
+  return filteredGames.value.filter(g => !newestGameSlugs.value.has(g.slug))
 })
 
 const mostPlayedGames = computed(() => {
