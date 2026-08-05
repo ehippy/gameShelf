@@ -1,8 +1,11 @@
 FROM node:22-alpine
 # Install browser dependencies for Playwright E2E testing
+# chromium and nss are required system libraries for Chromium to run
 RUN apk add --no-cache bash chromium nss
 WORKDIR /workspace
 COPY package.json package-lock.json ./
 RUN npm install
+# Install Playwright browsers inside the container
+RUN npx playwright install chromium
 COPY . .
 ENV PATH="/workspace/node_modules/.bin:${PATH}"
