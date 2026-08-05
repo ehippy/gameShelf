@@ -124,8 +124,10 @@ describe('HomeView', () => {
     expect(homeViewSrc).toContain("import { useScoreStore } from '../stores/scoreStore.js'")
   })
 
-  it('renders <WhatsNew /> in template', () => {
-    expect(homeViewSrc).toContain('<WhatsNew />')
+  it('renders <WhatsNew /> conditionally based on filter state', () => {
+    // WhatsNew is now conditionally rendered with v-if="!hasActiveFilter"
+    expect(homeViewSrc).toContain('v-if="!hasActiveFilter"')
+    expect(homeViewSrc).toContain('<WhatsNew')
   })
 
   it('renders <MostPlayedCarousel /> in template', () => {
