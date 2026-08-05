@@ -697,6 +697,9 @@ When you uncover an unrelated issue during implementation, note it for a separat
 - **Note:** Auto-start regression fixes verified in Snake, Tetris, and Breakout unit tests.
 
 ## Writing Conventions
+
+This document (AGENTS.md) is a living guide for humans — including LLMs acting in a human role — working on the gameShelf project. It captures conventions learned from real work, not theoretical rules. Treat it the way a senior developer would treat a well-maintained runbook: practical, grounded in experience, and focused on helping people do the right thing without overthinking it.
+
 **Write human-readable conventions, not tool instructions.** Avoid language that reads like a spec for a parser or a directive to an AI agent. Phrases like "strip the entire line", "the system should remove", or block-quoted commands telling a tool what to do belong in engineering documentation, not in project conventions written for people. Frame everything as guidance a human would follow — "When you see X, do Y" rather than "The linter will remove X."
 
 **Avoid redundant intermediate subsections.** Don't split content into multiple sub-headers that say the same thing in slightly different words. The Card-Level Postmortems cleanup is the canonical example: the original section had separate "### No-friction cards" and "### When friction *did* occur" subsections, both covering the same postmortem structure. Consolidate into a single, clear section with examples. Each subsection should cover genuinely distinct content — if two headers are just rephrasing the same rule, merge them.
