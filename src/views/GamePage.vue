@@ -72,7 +72,7 @@ onMounted(async () => {
     return
   }
   // Dynamically import the game module via glob map
-  const modulePath = `./src/games/${slug}/gameLogic.js`
+  const modulePath = `../games/${slug}/gameLogic.js`
   const importedModule = gameModules[modulePath]
   if (!importedModule) {
     router.replace('/404')
