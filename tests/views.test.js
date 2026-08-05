@@ -303,15 +303,14 @@ describe('GamePage', () => {
     expect(guardFound).toBe(true)
   })
 
-  it('glob pattern resolves to src/games relative to project root', () => {
-    // The glob pattern is './src/games/*/gameLogic.js' — Vite resolves
-    // glob patterns relative to the project root. Vite docs explicitly
-    // state: "Glob patterns are resolved relative to the project root."
-    // The pattern must start with './' or '/' to be valid.
+  it('glob pattern resolves to src/games relative to views directory', () => {
+    // The glob pattern is '../games/*/gameLogic.js' — Vite resolves
+    // glob patterns relative to the current file's location.
+    // From src/views/GamePage.vue, this correctly resolves to src/games/*/gameLogic.js
     const globMatch = gamePageSrc.match(/import\.meta\.glob\('([^']+)'/)
     expect(globMatch).not.toBeNull()
     const pattern = globMatch[1]
-    expect(pattern).toContain('./src/games/')
+    expect(pattern).toContain('../games/')
     expect(pattern).toContain('gameLogic.js')
   })
 
