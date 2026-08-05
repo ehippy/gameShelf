@@ -315,7 +315,6 @@ export function reset() {
 const transition = handleKeydownTransition(() => {
   Object.assign(state, createInitialState())
   state.lastPipeDrop = state.framesPlayed
-  state.bird.velocity = FLAP_STRENGTH
 })
 
 /**
