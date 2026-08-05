@@ -697,6 +697,7 @@ When you uncover an unrelated issue during implementation, note it for a separat
 - **Verified sections:** Short-circuit assertions (||) anti-pattern (lines 183-206), game initialization conventions (lines 71-117).
 - **Excluded:** None.
 - **Note:** Auto-start regression fixes verified in Snake, Tetris, and Breakout unit tests. Card revision confirmed spec compliance.
+- **Verified sections:** Game Initialization section (lines 71-226), including three-way state transitions with handleKeydownTransition helper pattern.
 
 ## Writing Conventions
 
