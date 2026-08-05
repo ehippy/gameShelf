@@ -33,8 +33,9 @@ describe('AppHeader', () => {
     expect(appHeaderSrc).toContain('Home')
   })
 
-  it('has Games nav link', () => {
-    expect(appHeaderSrc).toContain('Games')
+  it('has Home nav link (not Games)', () => {
+    expect(appHeaderSrc).toContain('Home')
+    expect(appHeaderSrc).not.toContain('<router-link to="/">Games</router-link>')
   })
 
   it('has High Scores nav link', () => {
