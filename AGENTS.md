@@ -691,6 +691,10 @@ When you uncover an unrelated issue during implementation, note it for a separat
 ## Last Reviewed
 
 - **Reviewed:** 2026-08-08
+- **Scope:** Card-Level Postmortems examples verification — confirmed the section uses correct format: clean cards omit struggles section entirely, friction-only cards include genuine details. Pre-commit hook `scripts/check-postmortems.js` passes with exit code 0.
+- **Verified sections:** Card-Level Postmortems section (lines 563–605), Last Reviewed section (all entries verified clean).
+
+- **Reviewed:** 2026-08-08
 - **Scope:** Scope Discipline — added new `## Scope Discipline` section between Game Addition Checklist and Last Reviewed, documenting the convention to submit immediately when card specs are satisfied without adding unrequested changes. Covers the anti-pattern, the rule, handling unrelated issues, and consequences of violation.
 - **Verified sections:** Last Reviewed section (post-entry addition), Scope Discipline section (lines 669–677).
 
