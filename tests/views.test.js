@@ -92,8 +92,8 @@ describe('HomeView', () => {
     expect(homeViewSrc).toContain('games-grid')
   })
 
-  it('uses filteredGames computed for v-for, not direct gameStore.catalog', () => {
-    expect(homeViewSrc).toContain('v-for="game in filteredGames"')
+  it('uses displayGames computed for v-for, not direct gameStore.catalog', () => {
+    expect(homeViewSrc).toContain('v-for="game in displayGames"')
     expect(homeViewSrc).not.toContain('v-for="game in gameStore.catalog"')
   })
 
