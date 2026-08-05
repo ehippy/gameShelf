@@ -1,5 +1,6 @@
 FROM node:22-alpine
-RUN apk add --no-cache bash
+# Install browser dependencies for Playwright E2E testing
+RUN apk add --no-cache bash chromium nss
 WORKDIR /workspace
 COPY package.json package-lock.json ./
 RUN npm install
