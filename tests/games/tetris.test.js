@@ -778,12 +778,12 @@ describe('tetris', () => {
 
     // ─── Export checks ───
 
-    it('exports CANVAS_WIDTH = 300', () => {
-      expect(tetrisModule.CANVAS_WIDTH).toBe(300)
+    it('exports CANVAS_WIDTH = 250', () => {
+      expect(tetrisModule.CANVAS_WIDTH).toBe(250)
     })
 
-    it('exports CANVAS_HEIGHT = 400', () => {
-      expect(tetrisModule.CANVAS_HEIGHT).toBe(400)
+    it('exports CANVAS_HEIGHT = 500', () => {
+      expect(tetrisModule.CANVAS_HEIGHT).toBe(500)
     })
 
     it('init is a function', () => {
