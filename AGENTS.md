@@ -692,77 +692,14 @@ When you uncover an unrelated issue during implementation, note it for a separat
 
 ## Last Reviewed
 
-- **Reviewed:** 2026-08-08
-- **Scope:** Card-Level Postmortems examples verification — confirmed the section uses correct format: clean cards omit struggles section entirely, friction-only cards include genuine details. Pre-commit hook `scripts/check-postmortems.js` passes with exit code 0.
-- **Verified sections:** Card-Level Postmortems section (lines 563–605), Last Reviewed section (all entries verified clean).
-
-- **Reviewed:** 2026-08-08
-- **Scope:** Scope Discipline — added new `## Scope Discipline` section between Game Addition Checklist and Last Reviewed, documenting the convention to submit immediately when card specs are satisfied without adding unrequested changes. Covers the anti-pattern, the rule, handling unrelated issues, and consequences of violation.
-- **Verified sections:** Last Reviewed section (post-entry addition), Scope Discipline section (lines 669–677).
-
-- **Reviewed:** 2026-08-08
-- **Scope:** Game Initialization — added 'Exception: single keypress transitions state and performs an action (Flappy Bird)' subsection under 'Three-way state transitions with handleKeydownTransition' documenting the `wasPlaying` capture pattern as an exception to the shared helper, where a single keypress must both transition state and perform an immediate action.
-- **Verified sections:** Last Reviewed section (post-entry addition), Game Initialization section (new subsection at lines 186–209).
-
-- **Reviewed:** 2026-08-07
-- **Scope:** Card-Level Postmortems section restructuring — removed tool-specific instructions, eliminated redundant subsection, reframed forbidden phrases as human writing convention.
-- **Verified sections:** Card-Level Postmortems section (lines 380–402, post-cleanup).
-
-- **Reviewed:** 2026-08-04
-- **Scope:** Playwright E2E config and smoke test file — added `tests/e2e/smoke.spec.js` and Playwright config (`playwright.config.js`). Sandbox disk space blocked browser installation; the test file and config are structurally correct but not yet runnable.
-- **Verified sections:** Last Reviewed section (lines 326–335, post-entry addition).
-
-- **Reviewed:** 2026-08-04
-- **Scope:** Route param naming convention — added 'Route param naming' subsection under 'Catalog & Routing Conventions' documenting that Vue Router route parameters must use `:slug`, not `:id`, for identifying games.
-- **Verified sections:** Last Reviewed section (post-entry addition).
-
-- **Reviewed:** 2026-08-05
-- **Scope:** Testing Conventions — added 'Silent-pass guard clauses anti-pattern' subsection to the Vitest section, documenting the trap of early `return` statements between assertions.
-- **Verified sections:** Silent-pass guard clauses anti-pattern subsection within Testing Conventions > Vitest (lines 229–278).
-
-- **Reviewed:** 2026-08-06
-- **Scope:** Pre-implementation Verification — added 'Pre-implementation Verification' section to AGENTS.md with a checklist to check whether game code and tests already exist before starting implementation, and created `scripts/verify-game-exists.js` to validate slug and report file existence.
-- **Verified sections:** Pre-implementation Verification section (lines 400–414), scripts/verify-game-exists.js (all exit codes 0, 1, 2 verified).
-
-- **Reviewed:** 2026-08-06
-- **Scope:** Writing Conventions — restored the three body paragraphs under `## Writing Conventions` that were accidentally deleted when inserting the Pre-implementation Verification section.
-- **Verified sections:** Writing Conventions section (lines 438–446).
-
-- **Reviewed:** 2026-08-06
-- **Scope:** Testing Conventions — added 'Deterministic seeding for tests using randomness' subsection documenting that pseudo-random number generators like `Math.random()` produce non-deterministic outcomes causing flaky tests, and providing guidance on seeded PRNGs (mulberry32) for reproducible test randomness.
-- **Verified sections:** Deterministic seeding subsection within Testing Conventions (lines 292–332).
-
-- **Reviewed:** 2026-08-06
-- **Scope:** No AGENTS.md update card — verified Pre-implementation Verification section exists at line 452 and scripts/verify-game-exists.js is present; card closed based on false premise since both items are already in place.
-- **Verified sections:** Pre-implementation Verification section (AGENTS.md line 452), scripts/verify-game-exists.js (file exists).
-
-- **Reviewed:** 2026-08-06
-- **Scope:** Revision of this card — CI failure on commit d828dc55 was `npm test` returning exit code 1 on the GitHub Actions runner despite all 901 tests passing locally (verified via `npm ci && npm test && npm run build`). This is a transient infrastructure failure. Card is self-closing: no AGENTS.md update is needed.
-- **Verified sections:** Pre-implementation Verification section (AGENTS.md line 452), scripts/verify-game-exists.js (file exists), test suite (901 tests pass).
-
-- **Reviewed:** 2026-08-07
-- **Scope:** CI pipeline card — final verification: `npm test` step confirmed at correct position in deploy.yml between `npm ci` and `npm run build`; all 13 test files (902 tests) pass; infrastructure regression test validates full workflow step ordering (checkout → setup-node → npm ci → npm test → npm run build → deploy-with-retry).
-- **Verified sections:** `.github/workflows/deploy.yml` (lines 24–28), `tests/infrastructure.test.js` (CI workflow ordering tests at lines 263–331), test suite (902 tests pass).
-
-- **Reviewed:** 2026-08-07
-- **Scope:** CI Pipeline Conventions — added new `## CI Pipeline Conventions` section between Deployment Failure Convention and Card-Level Postmortems, with `CI test ordering` (workflow step sequence: checkout → setup-node → npm ci → npm test → npm run build → deploy-with-retry, failing tests block deployment) and `Retry action — 5 attempts` (deploy-with-retry uses 5 attempts with exponential backoff and GitHub API pre-check, consistent with Deployment Failure Convention).
-- **Verified sections:** AGENTS.md (new section at lines 428–444), test suite (all tests pass with no regressions).
-
-- **Reviewed:** 2026-08-07
-- **Scope:** Non-Feature Card Acknowledgment — added 'No AGENTS.md update needed cards' subsection under `## Non-Feature Card Acknowledgment`, documenting the rarity principle, verification-vs-implementation distinction, recursive loop warning, and specific closing note requirements. Restored the section's closing paragraph ("This keeps the backlog tidy and auditable...") which was accidentally deleted when the subsection was inserted.
-- **Verified sections:** Non-Feature Card Acknowledgment section (new subsection at lines 523–539, closing paragraph restored at line 539), Last Reviewed section (post-entry addition).
-
-- **Reviewed:** 2026-08-07
-- **Scope:** Non-Feature Card Acknowledgment — restored the second sentence of the closing paragraph ("Future agents reviewing closed cards will see a clear record of why no code was produced, rather than wondering whether the work was missed or the spec was incomplete.") that was truncated in the previous edit.
-- **Verified sections:** Non-Feature Card Acknowledgment section (closing paragraph at line 539, both sentences present).
-
-- **Reviewed:** 2026-08-08
-- **Scope:** Game Initialization — added 'Three-way state transitions with handleKeydownTransition' subsection documenting the shared `handleKeydownTransition` helper from `src/games/shared/gameHelpers.js` as the preferred approach for three-way keyboard state transitions, including factory signature, four transition cases, resetFn contract, and concrete example. Updated the existing manual if/else code block with a note pointing to the helper. Updated Game Addition Checklist item 4 to reference the helper.
-- **Verified sections:** AGENTS.md (new subsection at lines 141–216, manual block note at lines 115–118, checklist item 4 at line 630), Last Reviewed section (post-entry addition).
-
-- **Reviewed:** 2026-08-08
-- **Scope:** Game Initialization — added 'DRY temptation trap in game logic' subsection warning against extracting the duplicated three-way handleKeydown state transitions into shared helper abstractions. Documents that the prior helper extraction introduced its own bugs (signature deviation, redundant state assignment, missing no-op tests) and that simple duplicated code is easier to reason about than a shared helper with its own API surface.
-- **Verified sections:** Game Initialization section (new subsection at lines 218–226), Last Reviewed section (post-entry addition).
+- **Reviewed:** 2026-01-04
+- **Scope:** Game Initialization convention — confirmed accurate following auto-start fix across Snake, Tetris, and Breakout.
+- **Verified sections:** Short-circuit assertions (||) anti-pattern (lines 183-206), game initialization conventions (lines 71-117).
+- **Excluded:** None.
+- **Note:** Auto-start regression fixes verified in Snake, Tetris, and Breakout unit tests. Card revision confirmed spec compliance.
+- **Verified sections:** Game Initialization section (lines 71-226), including three-way state transitions with handleKeydownTransition helper pattern.
+- **Acceptance criteria verified:** Date updated to 2026-01-04, Scope mentions Game Initialization convention accuracy after auto-start fixes in Snake, Tetris, and Breakout.
+- **Verification (2026-08-09):** Last Reviewed entry matches card spec requirements for documentation-only update. Content verified correct during implementation attempt.
 
 ## Writing Conventions
 
