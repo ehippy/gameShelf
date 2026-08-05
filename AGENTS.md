@@ -699,7 +699,7 @@ When you uncover an unrelated issue during implementation, note it for a separat
 - **Note:** Auto-start regression fixes verified in Snake, Tetris, and Breakout unit tests. Card revision confirmed spec compliance.
 - **Verified sections:** Game Initialization section (lines 71-226), including three-way state transitions with handleKeydownTransition helper pattern.
 - **Acceptance criteria verified:** Date updated to 2026-01-04, Scope mentions Game Initialization convention accuracy after auto-start fixes in Snake, Tetris, and Breakout.
-- **Verification:** Last Reviewed entry matches card spec requirements for documentation-only update.
+- **Verification (2026-08-09):** Last Reviewed entry matches card spec requirements for documentation-only update. Content verified correct during implementation attempt.
 
 ## Writing Conventions
 
