@@ -87,6 +87,8 @@ if (!importedModule) {
 gameLogic = await importedModule()
 ```
 
+**Path consistency requirement:** The glob pattern and runtime lookup key must use matching paths from the perspective of the importing file. If the glob is defined relative to the current file (e.g., `'./src/games/*/gameLogic.js'` from `src/views/`), the runtime key must use the same relative path structure (e.g., `'./src/games/${slug}/gameLogic.js'`). Mismatched paths cause lookup failures even when the glob itself is correct, because Vite's map keys are derived from the glob pattern's relative path.
+
 **Consequences of violation:** Runtime 404s and broken game loading on the live site because Vite's build-time glob analysis cannot resolve string-concatenated paths — the module is never included in the bundle.
 
 ### Game Initialization

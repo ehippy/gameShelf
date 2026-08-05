@@ -62,8 +62,8 @@ describe('HomeView', () => {
     expect(homeViewSrc).toContain(':category="game.category"')
   })
 
-  it('iterates over filteredGames with v-for', () => {
-    expect(homeViewSrc).toContain('v-for="game in filteredGames"')
+  it('iterates over displayGames with v-for', () => {
+    expect(homeViewSrc).toContain('v-for="game in displayGames"')
   })
 
   it('uses game.slug as key', () => {
@@ -83,7 +83,7 @@ describe('HomeView', () => {
   })
 
   it('has a GameCard loop using v-for', () => {
-    const gameCardLoopMatch = homeViewSrc.match(/<GameCard[\s\S]*?v-for="game in filteredGames"[\s\S]*?\/>/)
+    const gameCardLoopMatch = homeViewSrc.match(/<GameCard[\s\S]*?v-for="game in displayGames"[\s\S]*?\/>/)
     expect(gameCardLoopMatch).not.toBeNull()
   })
 
@@ -92,8 +92,8 @@ describe('HomeView', () => {
     expect(homeViewSrc).toContain('games-grid')
   })
 
-  it('uses filteredGames computed for v-for, not direct gameStore.catalog', () => {
-    expect(homeViewSrc).toContain('v-for="game in filteredGames"')
+  it('uses displayGames computed for v-for, not direct gameStore.catalog', () => {
+    expect(homeViewSrc).toContain('v-for="game in displayGames"')
     expect(homeViewSrc).not.toContain('v-for="game in gameStore.catalog"')
   })
 
@@ -124,8 +124,10 @@ describe('HomeView', () => {
     expect(homeViewSrc).toContain("import { useScoreStore } from '../stores/scoreStore.js'")
   })
 
-  it('renders <WhatsNew /> in template', () => {
-    expect(homeViewSrc).toContain('<WhatsNew />')
+  it('renders <WhatsNew /> conditionally based on filter state', () => {
+    // WhatsNew is now conditionally rendered with v-if="!hasActiveFilter"
+    expect(homeViewSrc).toContain('v-if="!hasActiveFilter"')
+    expect(homeViewSrc).toContain('<WhatsNew')
   })
 
   it('renders <MostPlayedCarousel /> in template', () => {

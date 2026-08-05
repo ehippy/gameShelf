@@ -313,9 +313,10 @@ export function reset() {
 }
 
 const transition = handleKeydownTransition(() => {
+  // ResetFn: only resets state and lastPipeDrop. MUST NOT set bird.velocity.
+  // Velocity is set by handleKeydown after the transition completes.
   Object.assign(state, createInitialState())
   state.lastPipeDrop = state.framesPlayed
-  state.bird.velocity = FLAP_STRENGTH
 })
 
 /**
