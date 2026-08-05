@@ -425,8 +425,9 @@ describe('Auto-start regression: all games', () => {
     expect(flappyModule.state.isPlaying).toBe(true)
     expect(flappyModule.state.bird.velocity).toBe(-2.5)
 
-    // Simulate game over
+    // Simulate game over (properly set both isGameOver and isPlaying)
     flappyModule.state.isGameOver = true
+    flappyModule.state.isPlaying = false
     flappyModule.state.score = 55
 
     // Reset via keypress (spacebar)
