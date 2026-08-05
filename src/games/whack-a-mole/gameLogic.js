@@ -5,14 +5,7 @@
  * Exports: state (readable by GamePage)
  */
 
-// ─── Imports ──────────────────────────────────────────────────────────────────
-
-import { renderGameOver } from '../shared/renderHelpers.js'
-import { useScoreStore } from '../../stores/scoreStore.js'
-
-// ─── Store Instance ───────────────────────────────────────────────────────────
-
-const scoreStore = useScoreStore()
+import { handleKeydownTransition } from '../shared/gameHelpers.js'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -516,39 +509,6 @@ export function render(canvas) {
     renderMenu(ctx)
   } else if (state.isPlaying) {
     renderGameplay(ctx)
-  } else if (state.isGameOver) {
-    renderGameplay(ctx)
-    const scores = scoreStore.getScores('whack-a-mole')
-    const highScore = scores.length > 0 ? Math.max(...scores.map(s => s.score)) : 0
-    renderGameOver(ctx, state, CANVAS_W, CANVAS_H, {
-      overlayColor: 'rgba(0, 0, 0, 0.7)',
-      titleY: CANVAS_H / 2 - 80,
-      scoreText: `Score: ${state.score}`,
-      scoreColor: '#ffffff',
-      scoreFont: '16px sans-serif',
-      scoreY: CANVAS_H / 2 - 40,
-      showRestartPrompt: false,
-      lines: [
-        {
-          text: `High Score: ${highScore}`,
-          color: '#ffd700',
-          font: 'bold 16px sans-serif',
-          y: CANVAS_H / 2 - 15
-        },
-        {
-          text: `Highest Combo: x${state.highestCombo}`,
-          color: '#ffffff',
-          font: '14px sans-serif',
-          y: CANVAS_H / 2 + 15
-        },
-        {
-          text: 'Press Space or B to restart',
-          color: '#cccccc',
-          font: '12px sans-serif',
-          y: CANVAS_H / 2 + 50
-        }
-      ]
-    })
   }
 }
 
@@ -923,9 +883,13 @@ export function reset() {
     window.removeEventListener('gamepadconnected', state._gamepadConnectedListener)
   }
 
-  state = createInitialState(true)
+  Object.assign(state, createInitialState(true))
   return state
 }
+
+const transition = handleKeydownTransition(() => {
+  reset()
+})
 
 /**
  * Handle keyboard input. Exported for GamePage to wire up.
@@ -934,7 +898,21 @@ export function reset() {
 export function handleKeydown(key) {
   if (!state) return
 
-  // Arrow key navigation (works in all states)
+  const validKeys = [' ']
+
+  // Space bar: transition (start/restart/whack)
+  transition(state, key, validKeys, () => {
+    // Already playing — whack the mole under the cursor
+    whackCell(state.cursorCol, state.cursorRow)
+  })
+
+  // Start the game when transitioning from non-playing state
+  if (!state.isPlaying && !state.isGameOver) {
+    ensureAudioCtx()
+    startGame(state.difficulty)
+  }
+
+  // Arrow keys: cursor movement (always, regardless of state)
   if (key === 'ArrowUp') {
     state.cursorRow = Math.max(0, state.cursorRow - 1)
   } else if (key === 'ArrowDown') {
@@ -943,18 +921,6 @@ export function handleKeydown(key) {
     state.cursorCol = Math.max(0, state.cursorCol - 1)
   } else if (key === 'ArrowRight') {
     state.cursorCol = Math.min(COLS - 1, state.cursorCol + 1)
-  } else if (key === ' ') {
-    if (state.isGameOver) {
-      reset()
-      startGame(state.difficulty)
-    } else if (!state.isPlaying) {
-      // Menu - start the game
-      ensureAudioCtx()
-      startGame(state.difficulty)
-    } else {
-      // Gameplay - whack the mole under the cursor
-      whackCell(state.cursorCol, state.cursorRow)
-    }
   }
 }
 

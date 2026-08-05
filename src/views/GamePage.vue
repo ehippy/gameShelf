@@ -42,7 +42,7 @@ const router = useRouter()
 const gameStore = useGameStore()
 const scoreStore = useScoreStore()
 
-const game = computed(() => gameStore.getGameBySlug(route.params.id))
+const game = computed(() => gameStore.getGameBySlug(route.params.slug))
 
 const gameCanvas = ref(null)
 const canvasWrapper = ref(null)
@@ -59,7 +59,7 @@ let lastSnapshotScore = null
 let resizeObserver = null
 
 onMounted(async () => {
-  const slug = route.params.id
+  const slug = route.params.slug
   const game = gameStore.getGameBySlug(slug)
   if (!game) {
     router.replace('/404')

@@ -5,3 +5,4 @@ WORKDIR /workspace
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund --production=false
 COPY . .
+ENV PATH="/workspace/node_modules/.bin:${PATH}"

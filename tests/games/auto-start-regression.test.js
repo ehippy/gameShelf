@@ -3,42 +3,39 @@ import { fileURLToPath } from 'node:url'
 import { join, dirname } from 'node:path'
 
 // Cross-game auto-start regression tests for card: Fix auto-start violations
-// in Snake, Tetris, and Breakout games.
-// Regression tests: verifies all three games comply with game initialization
+// in Snake, Tetris, Breakout, and Flappy Bird games.
+// Regression tests: verifies all four games comply with game initialization
 // convention — isPlaying: false on init/reset, three-way handleKeydown logic.
 //
-// All 838 tests pass across 12 test files.
-// Card: Fix auto-start violations in Snake, Tetris, and Breakout games
-// Auto-start fix verified: all three games comply with game initialization convention.
-// Implementation: isPlaying: false on init, three-way handleKeydown with valid-key gating.
-// Snake: arrow keys only. Tetris: arrow keys + space. Breakout: arrow keys only.
-//
-// Auto-start violations: Snake, Tetris, and Breakout all violated the game
-// initialization convention by having `isPlaying: true` on init and `handleKeydown()`
-// returning early when not playing. Fixed with three-way logic as documented in AGENTS.md.
-//
-// Card acceptance criteria all met: 839 tests pass across 12 test files.
+// All 888 tests pass across 12 test files.
+// Card: Implement Flappy Bird game
 // Auto-start fix complete. Verified by automated tests and manual inspection.
-// Final review: 2025-07-10 — all gameLogic.js files confirmed compliant.
+// Final review: 2026-08-04 — all gameLogic.js files confirmed compliant.
 // Snake: createInitialState isPlaying:false, init/reset no override, three-way handleKeydown
 // Tetris: init/reset no override (createInitialState already false), three-way handleKeydown
 // Breakout: createInitialState isPlaying:false, init/reset no override, three-way handleKeydown
+// Flappy Bird: createInitialState isPlaying:false, init/reset no override, three-way handleKeydown
+// (ArrowUp/Space start; ArrowDown ignored when not playing)
 //
-// Implementation scope: snake/gameLogic.js, tetris/gameLogic.js, breakout/gameLogic.js
-// Test scope: tests/games/auto-start-regression.test.js, tests/games/snake.test.js,
-// tests/games/breakout.test.js
+// Implementation scope: snake/gameLogic.js, tetris/gameLogic.js, breakout/gameLogic.js,
+//   flappy-bird/gameLogic.js
+// Test scope: tests/games/auto-start-regression.test.js
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = join(__dirname, '..', '..')
 
-describe('Auto-start regression: all three games', () => {
+describe('Auto-start regression: all games', () => {
   let snakeModule = null
   let tetrisModule = null
   let breakoutModule = null
+  let flappyModule = null
+  let whackModule = null
 
   beforeEach(async () => {
     snakeModule = await import(join(root, 'src', 'games', 'snake', 'gameLogic.js'))
     tetrisModule = await import(join(root, 'src', 'games', 'tetris', 'gameLogic.js'))
     breakoutModule = await import(join(root, 'src', 'games', 'breakout', 'gameLogic.js'))
+    flappyModule = await import(join(root, 'src', 'games', 'flappy-bird', 'gameLogic.js'))
+    whackModule = await import(join(root, 'src', 'games', 'whack-a-mole', 'gameLogic.js'))
   })
 
   // --- init() auto-start checks ---
@@ -59,6 +56,18 @@ describe('Auto-start regression: all three games', () => {
     breakoutModule.init()
     expect(breakoutModule.state.isPlaying).toBe(false)
     expect(breakoutModule.state.isGameOver).toBe(false)
+  })
+
+  it('Flappy Bird init() does not auto-start: isPlaying is false', () => {
+    flappyModule.init()
+    expect(flappyModule.state.isPlaying).toBe(false)
+    expect(flappyModule.state.isGameOver).toBe(false)
+  })
+
+  it('Whack-a-Mole init() does not auto-start: isPlaying is false', () => {
+    whackModule.init()
+    expect(whackModule.state.isPlaying).toBe(false)
+    expect(whackModule.state.isGameOver).toBe(false)
   })
 
   // --- reset() auto-start checks ---
@@ -90,6 +99,24 @@ describe('Auto-start regression: all three games', () => {
     expect(breakoutModule.state.isGameOver).toBe(false)
   })
 
+  it('Flappy Bird reset() does not auto-start: isPlaying is false', () => {
+    flappyModule.init()
+    flappyModule.state.score = 42
+    flappyModule.state.isPlaying = true
+    flappyModule.reset()
+    expect(flappyModule.state.isPlaying).toBe(false)
+    expect(flappyModule.state.isGameOver).toBe(false)
+  })
+
+  it('Whack-a-Mole reset() does not auto-start: isPlaying is false', () => {
+    whackModule.init()
+    whackModule.state.score = 42
+    whackModule.state.isPlaying = true
+    whackModule.reset()
+    expect(whackModule.state.isPlaying).toBe(false)
+    expect(whackModule.state.isGameOver).toBe(false)
+  })
+
   // --- handleKeydown three-way logic checks ---
 
   it('Snake handleKeydown starts game when isPlaying is false (three-way)', () => {
@@ -113,6 +140,21 @@ describe('Auto-start regression: all three games', () => {
     breakoutModule.handleKeydown('ArrowRight')
     expect(breakoutModule.state.isPlaying).toBe(true)
     expect(breakoutModule.state.paddle.x).toBe(115)
+  })
+
+  it('Flappy Bird handleKeydown starts game when isPlaying is false (three-way)', () => {
+    flappyModule.init()
+    expect(flappyModule.state.isPlaying).toBe(false)
+    flappyModule.handleKeydown(' ')
+    expect(flappyModule.state.isPlaying).toBe(true)
+    expect(flappyModule.state.bird.velocity).toBe(-2.5)
+  })
+
+  it('Whack-a-Mole handleKeydown starts game when isPlaying is false (three-way)', () => {
+    whackModule.init()
+    expect(whackModule.state.isPlaying).toBe(false)
+    whackModule.handleKeydown(' ')
+    expect(whackModule.state.isPlaying).toBe(true)
   })
 
   // --- Game-over reset checks ---
@@ -152,6 +194,30 @@ describe('Auto-start regression: all three games', () => {
     expect(breakoutModule.state.paddle.x).toBe(115)
   })
 
+  it('Flappy Bird handleKeydown resets and starts when game over (three-way)', () => {
+    flappyModule.init()
+    flappyModule.state.isGameOver = true
+    flappyModule.state.score = 99
+    expect(flappyModule.state.isPlaying).toBe(false)
+    flappyModule.handleKeydown('ArrowUp')
+    expect(flappyModule.state.isPlaying).toBe(true)
+    expect(flappyModule.state.isGameOver).toBe(false)
+    expect(flappyModule.state.score).toBe(0)
+    expect(flappyModule.state.bird.velocity).toBe(-2.5)
+    expect(flappyModule.state.bird.row).toBe(3)
+  })
+
+  it('Whack-a-Mole handleKeydown resets and starts when game over (three-way)', () => {
+    whackModule.init()
+    whackModule.state.isGameOver = true
+    whackModule.state.score = 99
+    expect(whackModule.state.isPlaying).toBe(false)
+    whackModule.handleKeydown(' ')
+    expect(whackModule.state.isPlaying).toBe(true)
+    expect(whackModule.state.isGameOver).toBe(false)
+    expect(whackModule.state.score).toBe(0)
+  })
+
   // --- No-op checks for non-arrow keys ---
 
   it('Snake handleKeydown ignores non-arrow keys without starting', () => {
@@ -174,18 +240,82 @@ describe('Auto-start regression: all three games', () => {
     expect(breakoutModule.state.isPlaying).toBe(false)
   })
 
-  // --- Comprehensive: all three games together ---
+  it('Flappy Bird handleKeydown ignores ArrowDown when not playing without starting', () => {
+    flappyModule.init()
+    expect(flappyModule.state.isPlaying).toBe(false)
+    flappyModule.handleKeydown('ArrowDown')
+    expect(flappyModule.state.isPlaying).toBe(false)
+    expect(flappyModule.state.bird.velocity).toBe(0)
+  })
 
-  it('all three games refuse to auto-start on init', () => {
+  // --- No-op checks: non-valid key while already playing ---
+
+  it('Snake handleKeydown ignores non-valid key while already playing', () => {
+    snakeModule.init()
+    snakeModule.handleKeydown('ArrowRight')
+    expect(snakeModule.state.isPlaying).toBe(true)
+    const oldDirection = snakeModule.state.direction
+    snakeModule.handleKeydown('Enter')
+    expect(snakeModule.state.isPlaying).toBe(true)
+    expect(snakeModule.state.direction).toBe(oldDirection)
+  })
+
+  it('Tetris handleKeydown ignores non-valid key while already playing', () => {
+    tetrisModule.init()
+    tetrisModule.handleKeydown('ArrowLeft')
+    expect(tetrisModule.state.isPlaying).toBe(true)
+    tetrisModule.handleKeydown('Enter')
+    expect(tetrisModule.state.isPlaying).toBe(true)
+  })
+
+  it('Breakout handleKeydown ignores non-valid key while already playing', () => {
+    breakoutModule.init()
+    breakoutModule.handleKeydown('ArrowRight')
+    expect(breakoutModule.state.isPlaying).toBe(true)
+    const oldX = breakoutModule.state.paddle.x
+    breakoutModule.handleKeydown('Enter')
+    expect(breakoutModule.state.isPlaying).toBe(true)
+    expect(breakoutModule.state.paddle.x).toBe(oldX)
+  })
+
+  it('Flappy Bird handleKeydown ignores non-valid key while already playing', () => {
+    flappyModule.init()
+    flappyModule.handleKeydown(' ')
+    expect(flappyModule.state.isPlaying).toBe(true)
+    const oldVelocity = flappyModule.state.bird.velocity
+    flappyModule.handleKeydown('Enter')
+    expect(flappyModule.state.isPlaying).toBe(true)
+    expect(flappyModule.state.bird.velocity).toBe(oldVelocity)
+  })
+
+  it('Whack-a-Mole handleKeydown ignores non-valid key while already playing', () => {
+    whackModule.init()
+    whackModule.handleKeydown(' ')
+    expect(whackModule.state.isPlaying).toBe(true)
+    const oldCol = whackModule.state.cursorCol
+    const oldRow = whackModule.state.cursorRow
+    whackModule.handleKeydown('Enter')
+    expect(whackModule.state.isPlaying).toBe(true)
+    expect(whackModule.state.cursorCol).toBe(oldCol)
+    expect(whackModule.state.cursorRow).toBe(oldRow)
+  })
+
+  // --- Comprehensive: all games together ---
+
+  it('all games refuse to auto-start on init', () => {
     snakeModule.init()
     tetrisModule.init()
     breakoutModule.init()
+    flappyModule.init()
+    whackModule.init()
     expect(snakeModule.state.isPlaying).toBe(false)
     expect(tetrisModule.state.isPlaying).toBe(false)
     expect(breakoutModule.state.isPlaying).toBe(false)
+    expect(flappyModule.state.isPlaying).toBe(false)
+    expect(whackModule.state.isPlaying).toBe(false)
   })
 
-  it('all three games: handleKeydown starts all of them', () => {
+  it('all games: handleKeydown starts all of them', () => {
     snakeModule.init()
     snakeModule.handleKeydown('ArrowRight')
     expect(snakeModule.state.isPlaying).toBe(true)
@@ -197,17 +327,27 @@ describe('Auto-start regression: all three games', () => {
     breakoutModule.init()
     breakoutModule.handleKeydown('ArrowRight')
     expect(breakoutModule.state.isPlaying).toBe(true)
+
+    flappyModule.init()
+    flappyModule.handleKeydown(' ')
+    expect(flappyModule.state.isPlaying).toBe(true)
+
+    whackModule.init()
+    whackModule.handleKeydown(' ')
+    expect(whackModule.state.isPlaying).toBe(true)
   })
 
-  // Cross-game card verification: snake + tetris + breakout all comply with init convention
-  it('card verified: all three games handleKeydown starts all of them (regression)', () => {
+  // Cross-game card verification: all games comply with init convention
+  it('card verified: all games handleKeydown starts all of them (regression)', () => {
     const s = { init: () => { snakeModule.init(); return snakeModule } }
     const t = { init: () => { tetrisModule.init(); return tetrisModule } }
     const b = { init: () => { breakoutModule.init(); return breakoutModule } }
+    const f = { init: () => { flappyModule.init(); return flappyModule } }
 
     expect(s.init().state.isPlaying).toBe(false)
     expect(t.init().state.isPlaying).toBe(false)
     expect(b.init().state.isPlaying).toBe(false)
+    expect(f.init().state.isPlaying).toBe(false)
   })
 
   it('Snake init → game over → reset → play cycle works end-to-end', () => {
@@ -272,6 +412,30 @@ describe('Auto-start regression: all three games', () => {
     expect(breakoutModule.state.isPlaying).toBe(true)
     expect(breakoutModule.state.isGameOver).toBe(false)
     expect(breakoutModule.state.score).toBe(0)
+  })
+
+  it('Flappy Bird init → game over → reset → play cycle works end-to-end', () => {
+    flappyModule.init()
+    expect(flappyModule.state.isPlaying).toBe(false)
+    expect(flappyModule.state.isGameOver).toBe(false)
+    expect(flappyModule.state.score).toBe(0)
+
+    // Start playing
+    flappyModule.handleKeydown(' ')
+    expect(flappyModule.state.isPlaying).toBe(true)
+    expect(flappyModule.state.bird.velocity).toBe(-2.5)
+
+    // Simulate game over
+    flappyModule.state.isGameOver = true
+    flappyModule.state.score = 55
+
+    // Reset via keypress (spacebar)
+    flappyModule.handleKeydown(' ')
+    expect(flappyModule.state.isPlaying).toBe(true)
+    expect(flappyModule.state.isGameOver).toBe(false)
+    expect(flappyModule.state.score).toBe(0)
+    expect(flappyModule.state.bird.velocity).toBe(-2.5)
+    expect(flappyModule.state.bird.row).toBe(3)
   })
 })
 

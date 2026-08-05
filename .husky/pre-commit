@@ -1,0 +1,7 @@
+#!/bin/sh
+# Pre-commit hook: blocks commits when copy-pasted test assertions are detected
+node scripts/check-assertion-dupes.js
+# Pre-commit hook: blocks commits when boilerplate struggles lines are added
+node scripts/check-postmortems.js
+# Pre-commit hook: blocks commits when state reassignment found in handleKeydownTransition resetFn
+node scripts/check-reset-pattern.js
