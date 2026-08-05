@@ -303,15 +303,14 @@ describe('GamePage', () => {
     expect(guardFound).toBe(true)
   })
 
-  it('glob pattern resolves to src/games relative to project root', () => {
-    // The glob pattern is './src/games/*/gameLogic.js' — Vite resolves
-    // glob patterns relative to the project root. Vite docs explicitly
-    // state: "Glob patterns are resolved relative to the project root."
-    // The pattern must start with './' or '/' to be valid.
+  it('glob pattern resolves to src/games relative to views directory', () => {
+    // The glob pattern is '../games/*/gameLogic.js' — Vite resolves
+    // glob patterns relative to the current file's location.
+    // From src/views/GamePage.vue, this correctly resolves to src/games/*/gameLogic.js
     const globMatch = gamePageSrc.match(/import\.meta\.glob\('([^']+)'/)
     expect(globMatch).not.toBeNull()
     const pattern = globMatch[1]
-    expect(pattern).toContain('./src/games/')
+    expect(pattern).toContain('../games/')
     expect(pattern).toContain('gameLogic.js')
   })
 
@@ -324,16 +323,16 @@ describe('GamePage', () => {
 
   it('modulePath lookup key matches glob key format', () => {
     // The modulePath used for lookup must match the glob's key format.
-    // The glob pattern is './src/games/*/gameLogic.js' — resolved relative to
-    // the project root, as Vite expects. The lookup key must use the same path.
+    // The glob pattern is '../games/*/gameLogic.js' — resolved relative to
+    // the current file's location (src/views/GamePage.vue).
     const globMatch = gamePageSrc.match(/import\.meta\.glob\('([^']+)'/)
     expect(globMatch).not.toBeNull()
     const globPattern = globMatch[1]
-    const modulePathMatch = gamePageSrc.match(/`(\.\/src\/games\/\$\{slug\}\/gameLogic\.js)`/)
+    const modulePathMatch = gamePageSrc.match(/`(\.\.\/games\/\$\{slug\}\/gameLogic\.js)`/)
     expect(modulePathMatch).not.toBeNull()
     const modulePath = modulePathMatch[1]
-    // The modulePath key must start with './src/games/'
-    expect(modulePath).toMatch(/^\.\/src\/games\//)
+    // The modulePath key must start with '../games/'
+    expect(modulePath).toMatch(/^\.\.\/games\//)
   })
 
   it('has game canvas', () => {

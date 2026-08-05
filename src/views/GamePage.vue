@@ -51,7 +51,7 @@ let state = null
 const canvasWidth = ref(250)
 const canvasHeight = ref(200)
 
-const gameModules = import.meta.glob('./src/games/*/gameLogic.js', { eager: false })
+const gameModules = import.meta.glob('../games/*/gameLogic.js', { eager: false })
 
 let gameLogic = null
 let animFrameId = null
@@ -72,7 +72,7 @@ onMounted(async () => {
     return
   }
   // Dynamically import the game module via glob map
-  const modulePath = `./src/games/${slug}/gameLogic.js`
+  const modulePath = `../games/${slug}/gameLogic.js`
   const importedModule = gameModules[modulePath]
   if (!importedModule) {
     router.replace('/404')
