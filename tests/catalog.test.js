@@ -131,7 +131,7 @@ describe('thumbnail check', () => {
   it('flappy-bird thumbnail uses green color scheme', () => {
     const flappyThumbMatch = catalog.match(/slug: 'flappy-bird'[\s\S]*?thumbnail: 'data:image\/svg\+xml,([^']+)'/)
     expect(flappyThumbMatch).not.toBeNull()
-    expect(flappyThumbMatch[1]).toContain('%2327ae60')
+    expect(flappyThumbMatch[1]).toContain('%2322c55e')
   })
 
   it('flappy-bird is in Arcade category', () => {
