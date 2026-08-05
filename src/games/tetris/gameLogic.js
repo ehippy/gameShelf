@@ -17,8 +17,8 @@ import { handleKeydownTransition } from '../shared/gameHelpers.js'
 
 const COLS = 10
 const ROWS = 20
-export const CANVAS_WIDTH = 300
-export const CANVAS_HEIGHT = 400
+export const CANVAS_WIDTH = 250
+export const CANVAS_HEIGHT = 500
 
 const TETROMINOES = {
   I: {
