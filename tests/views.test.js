@@ -323,16 +323,16 @@ describe('GamePage', () => {
 
   it('modulePath lookup key matches glob key format', () => {
     // The modulePath used for lookup must match the glob's key format.
-    // The glob pattern is './src/games/*/gameLogic.js' — resolved relative to
-    // the project root, as Vite expects. The lookup key must use the same path.
+    // The glob pattern is '../games/*/gameLogic.js' — resolved relative to
+    // the current file's location (src/views/GamePage.vue).
     const globMatch = gamePageSrc.match(/import\.meta\.glob\('([^']+)'/)
     expect(globMatch).not.toBeNull()
     const globPattern = globMatch[1]
-    const modulePathMatch = gamePageSrc.match(/`(\.\/src\/games\/\$\{slug\}\/gameLogic\.js)`/)
+    const modulePathMatch = gamePageSrc.match(/`(\.\.\/games\/\$\{slug\}\/gameLogic\.js)`/)
     expect(modulePathMatch).not.toBeNull()
     const modulePath = modulePathMatch[1]
-    // The modulePath key must start with './src/games/'
-    expect(modulePath).toMatch(/^\.\/src\/games\//)
+    // The modulePath key must start with '../games/'
+    expect(modulePath).toMatch(/^\.\.\/games\//)
   })
 
   it('has game canvas', () => {
