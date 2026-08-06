@@ -110,6 +110,27 @@ function checkSelfCollision(newHead) {
 export function init() {
   state = createInitialState()
   spawnFood()
+  
+  // Gamepad detection
+  function onGamepadConnected(e) {
+    if (state) state.gamepadConnected = true
+  }
+  if (typeof window !== 'undefined') {
+    window.addEventListener('gamepadconnected', onGamepadConnected)
+  }
+  state._gamepadConnectedListener = onGamepadConnected
+  
+  // Check if gamepad is already connected
+  try {
+    const gamepads = navigator.getGamepads()
+    for (let i = 0; i < gamepads.length; i++) {
+      if (gamepads[i]) {
+        if (state) state.gamepadConnected = true
+        break
+      }
+    }
+  } catch (_) {}
+  
   return state
 }
 
