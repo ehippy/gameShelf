@@ -97,7 +97,8 @@ function createInitialState() {
     bag: [],
     dropInterval: 1000,   // ms between automatic drops at level 1
     lastDropTime: 0,
-    animFrameId: null
+    animFrameId: null,
+    gamepadConnected: false
   }
 }
 
