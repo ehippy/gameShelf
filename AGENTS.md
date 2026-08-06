@@ -421,8 +421,9 @@ export function handleGamepad(gamepad) {
   const aButton = gamepad.buttons[0]
   const bButton = gamepad.buttons[1]
   
-  // A button - flap action (works in all states)
-  if (aButton && aButton.pressed && !gamepadState.aButtonPressed) {
+  // A button - flap action (same as Space/ArrowUp keyboard)
+  // Works in all states: starts game from non-playing, restarts from game over, flaps while playing
+  if (aButton && !gamepadState.aButtonPressed) {
     handleKeydown(' ')
     gamepadState.aButtonPressed = true
   } else if (!aButton) {
@@ -430,7 +431,7 @@ export function handleGamepad(gamepad) {
   }
   
   // B button - start/restart (when not playing or game over)
-  if (bButton && bButton.pressed && !gamepadState.bButtonPressed) {
+  if (bButton && !gamepadState.bButtonPressed) {
     handleKeydown(' ')
     gamepadState.bButtonPressed = true
   } else if (!bButton) {
