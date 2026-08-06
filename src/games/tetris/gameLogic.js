@@ -430,6 +430,17 @@ export function reset() {
   state.nextPiece = createPiece(getNextPieceType())
   spawnPiece()
   state.lastDropTime = performance.now()
+  
+  // Reset gamepad state for clean transitions
+  Object.assign(gamepadState, {
+    dpadUpPressed: false,
+    dpadDownPressed: false,
+    dpadLeftPressed: false,
+    dpadRightPressed: false,
+    aButtonPressed: false,
+    bButtonPressed: false
+  })
+  
   return state
 }
 
