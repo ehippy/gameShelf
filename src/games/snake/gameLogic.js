@@ -59,7 +59,8 @@ function createInitialState() {
     direction: 'right',
     snake: snake,
     food: null, // will be set by spawnFood
-    framesPlayed: 0
+    framesPlayed: 0,
+    gamepadConnected: false
   }
 }
 
