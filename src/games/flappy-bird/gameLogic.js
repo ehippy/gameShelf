@@ -36,6 +36,16 @@ const PIPE_CAP_COLOR = '#25a05a'
 
 let state = null
 
+// Gamepad state tracking to prevent repeated triggering
+let gamepadState = {
+  dpadUpPressed: false,
+  dpadDownPressed: false,
+  dpadLeftPressed: false,
+  dpadRightPressed: false,
+  aButtonPressed: false,
+  bButtonPressed: false
+}
+
 function createInitialState() {
   return {
     score: 0,
