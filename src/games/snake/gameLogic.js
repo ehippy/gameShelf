@@ -34,6 +34,16 @@ const SCORE_TEXT_COLOR = '#ffffff'
 
 let state = null
 
+// Gamepad state tracking to prevent repeated triggering
+let gamepadState = {
+  dpadUpPressed: false,
+  dpadDownPressed: false,
+  dpadLeftPressed: false,
+  dpadRightPressed: false,
+  aButtonPressed: false,
+  bButtonPressed: false
+}
+
 function createInitialState() {
   // Snake starts with 3 segments on the left side, head at (2,5), body at (1,5), tail at (0,5)
   const snake = [
