@@ -74,6 +74,16 @@ const LINE_SCORES = [0, 100, 300, 500, 800]
 
 let state = null
 
+// Gamepad state tracking to prevent repeated triggering
+let gamepadState = {
+  dpadUpPressed: false,
+  dpadDownPressed: false,
+  dpadLeftPressed: false,
+  dpadRightPressed: false,
+  aButtonPressed: false,
+  bButtonPressed: false
+}
+
 function createInitialState() {
   return {
     board: createBoard(),
