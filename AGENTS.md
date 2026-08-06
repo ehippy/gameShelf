@@ -379,7 +379,7 @@ export function handleGamepad(gamepad) {
   // ... similar for dpadDown, dpadLeft, dpadRight ...
   
   // A button - start/restart (when not playing)
-  if (aButton && !gamepadState.aButtonPressed) {
+  if (aButton && aButton.pressed && !gamepadState.aButtonPressed) {
     handleKeydown(' ')
     gamepadState.aButtonPressed = true
   } else if (!aButton) {
@@ -387,7 +387,7 @@ export function handleGamepad(gamepad) {
   }
   
   // B button - restart (when not playing or game over)
-  if (bButton && !gamepadState.bButtonPressed) {
+  if (bButton && bButton.pressed && !gamepadState.bButtonPressed) {
     handleKeydown(' ')
     gamepadState.bButtonPressed = true
   } else if (!bButton) {
