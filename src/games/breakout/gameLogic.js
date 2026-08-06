@@ -43,6 +43,16 @@ const BRICK_COLORS = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12']
 
 let state = null
 
+// Gamepad state tracking to prevent repeated triggering
+let gamepadState = {
+  dpadUpPressed: false,
+  dpadDownPressed: false,
+  dpadLeftPressed: false,
+  dpadRightPressed: false,
+  aButtonPressed: false,
+  bButtonPressed: false
+}
+
 function createInitialState() {
   return {
     score: 0,
