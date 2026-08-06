@@ -338,6 +338,8 @@ onGamepad()
 
 The loop runs at ~60fps, checking for connected gamepads and forwarding input to the game's `handleGamepad()` function. Games handle the actual input mapping and state transitions.
 
+**Note:** The `gamepadConnected` state is set within each game's `init()` function via event listener for `gamepadconnected` events and polling `navigator.getGamepads()` at initialization time. The GamePage loop only calls `handleGamepad()`; it does not update the `gamepadConnected` state.
+
 ### Example: Snake gamepad implementation
 
 ```js
