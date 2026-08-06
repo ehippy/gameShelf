@@ -75,7 +75,8 @@ function createInitialState() {
     },
     bricks: buildBricks(),
     framesPlayed: 0,
-    won: false // ensures reset() clears stale win state (card: Breakout won flag persistence)
+    won: false, // ensures reset() clears stale win state (card: Breakout won flag persistence)
+    gamepadConnected: false
   }
 }
 
