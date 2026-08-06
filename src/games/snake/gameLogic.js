@@ -409,3 +409,6 @@ export function handleKeydown(key) {
 // Verified: card "Implement Snake game" acceptance criteria fully satisfied (2026-08-04).
 export { state }
 
+// Export gamepadState for GamePage to access if needed
+export { gamepadState }
+
