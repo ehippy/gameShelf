@@ -442,6 +442,57 @@ export function handleGamepad(gamepad) {
 }
 ```
 
+### Example: Breakout gamepad implementation
+
+Breakout uses only the D-pad Left/Right buttons (buttons 14 and 15) for paddle movement. It doesn't use Up/Down directions.
+
+```js
+export function handleGamepad(gamepad) {
+  if (!gamepad) return
+  
+  // Mark as connected
+  if (state && state.gamepadConnected !== true) {
+    state.gamepadConnected = true
+  }
+  
+  const dpadLeft = gamepad.buttons[14]
+  const dpadRight = gamepad.buttons[15]
+  const aButton = gamepad.buttons[0]
+  const bButton = gamepad.buttons[1]
+  
+  // D-pad movement (only Left/Right - no Up/Down)
+  if (dpadLeft && !gamepadState.dpadLeftPressed) {
+    handleKeydown('ArrowLeft')
+    gamepadState.dpadLeftPressed = true
+  } else if (!dpadLeft) {
+    gamepadState.dpadLeftPressed = false
+  }
+  
+  if (dpadRight && !gamepadState.dpadRightPressed) {
+    handleKeydown('ArrowRight')
+    gamepadState.dpadRightPressed = true
+  } else if (!dpadRight) {
+    gamepadState.dpadRightPressed = false
+  }
+  
+  // A button - start/restart (when not playing)
+  if (aButton && !gamepadState.aButtonPressed) {
+    handleKeydown(' ')
+    gamepadState.aButtonPressed = true
+  } else if (!aButton) {
+    gamepadState.aButtonPressed = false
+  }
+  
+  // B button - restart (when not playing or game over)
+  if (bButton && !gamepadState.bButtonPressed) {
+    handleKeydown(' ')
+    gamepadState.bButtonPressed = true
+  } else if (!bButton) {
+    gamepadState.bButtonPressed = false
+  }
+}
+```
+
 ### Alternative pattern: Whack-a-Mole
 
 Whack-a-Mole uses a slightly different pattern where `gamepadState` is embedded in the reactive state object rather than as a module-level variable. It also doesn't export `resetGamepadState()` - instead, gamepad state is reset inline in the `reset()` function.
