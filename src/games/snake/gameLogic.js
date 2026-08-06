@@ -286,6 +286,85 @@ const transition = handleKeydownTransition(() => {
 })
 
 /**
+ * Process gamepad input and trigger corresponding actions.
+ * @param {Gamepad} gamepad - The gamepad object from navigator.getGamepads()
+ */
+export function handleGamepad(gamepad) {
+  if (!gamepad) return
+  
+  // Mark as connected
+  if (state && state.gamepadConnected !== true) {
+    state.gamepadConnected = true
+  }
+  
+  const dpadUp = gamepad.buttons[12]
+  const dpadDown = gamepad.buttons[13]
+  const dpadLeft = gamepad.buttons[14]
+  const dpadRight = gamepad.buttons[15]
+  const aButton = gamepad.buttons[0]
+  const bButton = gamepad.buttons[1]
+  
+  // D-pad movement (only on press, not hold)
+  if (dpadUp && !gamepadState.dpadUpPressed) {
+    handleKeydown('ArrowUp')
+    gamepadState.dpadUpPressed = true
+  } else if (!dpadUp) {
+    gamepadState.dpadUpPressed = false
+  }
+  
+  if (dpadDown && !gamepadState.dpadDownPressed) {
+    handleKeydown('ArrowDown')
+    gamepadState.dpadDownPressed = true
+  } else if (!dpadDown) {
+    gamepadState.dpadDownPressed = false
+  }
+  
+  if (dpadLeft && !gamepadState.dpadLeftPressed) {
+    handleKeydown('ArrowLeft')
+    gamepadState.dpadLeftPressed = true
+  } else if (!dpadLeft) {
+    gamepadState.dpadLeftPressed = false
+  }
+  
+  if (dpadRight && !gamepadState.dpadRightPressed) {
+    handleKeydown('ArrowRight')
+    gamepadState.dpadRightPressed = true
+  } else if (!dpadRight) {
+    gamepadState.dpadRightPressed = false
+  }
+  
+  // A button - start/restart (when not playing)
+  if (aButton && aButton.pressed && !gamepadState.aButtonPressed) {
+    handleKeydown(' ')
+    gamepadState.aButtonPressed = true
+  } else if (!aButton) {
+    gamepadState.aButtonPressed = false
+  }
+  
+  // B button - restart (when not playing or game over)
+  if (bButton && bButton.pressed && !gamepadState.bButtonPressed) {
+    handleKeydown(' ')
+    gamepadState.bButtonPressed = true
+  } else if (!bButton) {
+    gamepadState.bButtonPressed = false
+  }
+}
+
+/**
+ * Reset gamepad state for clean transitions.
+ */
+export function resetGamepadState() {
+  Object.assign(gamepadState, {
+    dpadUpPressed: false,
+    dpadDownPressed: false,
+    dpadLeftPressed: false,
+    dpadRightPressed: false,
+    aButtonPressed: false,
+    bButtonPressed: false
+  })
+}
+
+/**
  * Handle keyboard input. Exported for GamePage to wire up.
  *
  * Three-way logic:
