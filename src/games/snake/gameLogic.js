@@ -34,6 +34,16 @@ const SCORE_TEXT_COLOR = '#ffffff'
 
 let state = null
 
+// Gamepad state tracking to prevent repeated triggering
+let gamepadState = {
+  dpadUpPressed: false,
+  dpadDownPressed: false,
+  dpadLeftPressed: false,
+  dpadRightPressed: false,
+  aButtonPressed: false,
+  bButtonPressed: false
+}
+
 function createInitialState() {
   // Snake starts with 3 segments on the left side, head at (2,5), body at (1,5), tail at (0,5)
   const snake = [
@@ -49,7 +59,8 @@ function createInitialState() {
     direction: 'right',
     snake: snake,
     food: null, // will be set by spawnFood
-    framesPlayed: 0
+    framesPlayed: 0,
+    gamepadConnected: false
   }
 }
 
@@ -100,6 +111,27 @@ function checkSelfCollision(newHead) {
 export function init() {
   state = createInitialState()
   spawnFood()
+  
+  // Gamepad detection
+  function onGamepadConnected(e) {
+    if (state) state.gamepadConnected = true
+  }
+  if (typeof window !== 'undefined') {
+    window.addEventListener('gamepadconnected', onGamepadConnected)
+  }
+  state._gamepadConnectedListener = onGamepadConnected
+  
+  // Check if gamepad is already connected
+  try {
+    const gamepads = navigator.getGamepads()
+    for (let i = 0; i < gamepads.length; i++) {
+      if (gamepads[i]) {
+        if (state) state.gamepadConnected = true
+        break
+      }
+    }
+  } catch (_) {}
+  
   return state
 }
 
@@ -235,6 +267,17 @@ export function render(canvas) {
 export function reset() {
   state = createInitialState()
   spawnFood()
+  
+  // Reset gamepad state for clean transitions
+  Object.assign(gamepadState, {
+    dpadUpPressed: false,
+    dpadDownPressed: false,
+    dpadLeftPressed: false,
+    dpadRightPressed: false,
+    aButtonPressed: false,
+    bButtonPressed: false
+  })
+  
   return state
 }
 
@@ -242,6 +285,85 @@ const transition = handleKeydownTransition(() => {
   Object.assign(state, createInitialState())
   spawnFood()
 })
+
+/**
+ * Process gamepad input and trigger corresponding actions.
+ * @param {Gamepad} gamepad - The gamepad object from navigator.getGamepads()
+ */
+export function handleGamepad(gamepad) {
+  if (!gamepad) return
+  
+  // Mark as connected
+  if (state && state.gamepadConnected !== true) {
+    state.gamepadConnected = true
+  }
+  
+  const dpadUp = gamepad.buttons[12]
+  const dpadDown = gamepad.buttons[13]
+  const dpadLeft = gamepad.buttons[14]
+  const dpadRight = gamepad.buttons[15]
+  const aButton = gamepad.buttons[0]
+  const bButton = gamepad.buttons[1]
+  
+  // D-pad movement (only on press, not hold)
+  if (dpadUp && !gamepadState.dpadUpPressed) {
+    handleKeydown('ArrowUp')
+    gamepadState.dpadUpPressed = true
+  } else if (!dpadUp) {
+    gamepadState.dpadUpPressed = false
+  }
+  
+  if (dpadDown && !gamepadState.dpadDownPressed) {
+    handleKeydown('ArrowDown')
+    gamepadState.dpadDownPressed = true
+  } else if (!dpadDown) {
+    gamepadState.dpadDownPressed = false
+  }
+  
+  if (dpadLeft && !gamepadState.dpadLeftPressed) {
+    handleKeydown('ArrowLeft')
+    gamepadState.dpadLeftPressed = true
+  } else if (!dpadLeft) {
+    gamepadState.dpadLeftPressed = false
+  }
+  
+  if (dpadRight && !gamepadState.dpadRightPressed) {
+    handleKeydown('ArrowRight')
+    gamepadState.dpadRightPressed = true
+  } else if (!dpadRight) {
+    gamepadState.dpadRightPressed = false
+  }
+  
+  // A button - start/restart (when not playing)
+  if (aButton && aButton.pressed && !gamepadState.aButtonPressed) {
+    handleKeydown(' ')
+    gamepadState.aButtonPressed = true
+  } else if (!aButton) {
+    gamepadState.aButtonPressed = false
+  }
+  
+  // B button - restart (when not playing or game over)
+  if (bButton && bButton.pressed && !gamepadState.bButtonPressed) {
+    handleKeydown(' ')
+    gamepadState.bButtonPressed = true
+  } else if (!bButton) {
+    gamepadState.bButtonPressed = false
+  }
+}
+
+/**
+ * Reset gamepad state for clean transitions.
+ */
+export function resetGamepadState() {
+  Object.assign(gamepadState, {
+    dpadUpPressed: false,
+    dpadDownPressed: false,
+    dpadLeftPressed: false,
+    dpadRightPressed: false,
+    aButtonPressed: false,
+    bButtonPressed: false
+  })
+}
 
 /**
  * Handle keyboard input. Exported for GamePage to wire up.
@@ -286,4 +408,7 @@ export function handleKeydown(key) {
 // Snake, Tetris, and Breakout all comply with game initialization convention.
 // Verified: card "Implement Snake game" acceptance criteria fully satisfied (2026-08-04).
 export { state }
+
+// Export gamepadState for GamePage to access if needed
+export { gamepadState }
 

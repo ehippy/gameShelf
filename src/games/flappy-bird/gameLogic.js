@@ -36,6 +36,16 @@ const PIPE_CAP_COLOR = '#25a05a'
 
 let state = null
 
+// Gamepad state tracking to prevent repeated triggering
+let gamepadState = {
+  dpadUpPressed: false,
+  dpadDownPressed: false,
+  dpadLeftPressed: false,
+  dpadRightPressed: false,
+  aButtonPressed: false,
+  bButtonPressed: false
+}
+
 function createInitialState() {
   return {
     score: 0,
@@ -51,7 +61,8 @@ function createInitialState() {
     pipeDropInterval: PIPE_SPAWN_INTERVAL,
     lastPipeDrop: 0,
     framesPlayed: 0,
-    animFrameId: null
+    animFrameId: null,
+    gamepadConnected: false
   }
 }
 
@@ -135,6 +146,27 @@ function triggerGameOver() {
 export function init() {
   state = createInitialState()
   state.lastPipeDrop = state.framesPlayed
+  
+  // Gamepad detection
+  function onGamepadConnected(e) {
+    if (state) state.gamepadConnected = true
+  }
+  if (typeof window !== 'undefined') {
+    window.addEventListener('gamepadconnected', onGamepadConnected)
+  }
+  state._gamepadConnectedListener = onGamepadConnected
+  
+  // Check if gamepad is already connected
+  try {
+    const gamepads = navigator.getGamepads()
+    for (let i = 0; i < gamepads.length; i++) {
+      if (gamepads[i]) {
+        if (state) state.gamepadConnected = true
+        break
+      }
+    }
+  } catch (_) {}
+  
   return state
 }
 
@@ -309,6 +341,17 @@ function drawBird(ctx, bird) {
 export function reset() {
   state = createInitialState()
   state.lastPipeDrop = state.framesPlayed
+  
+  // Reset gamepad state for clean transitions
+  Object.assign(gamepadState, {
+    dpadUpPressed: false,
+    dpadDownPressed: false,
+    dpadLeftPressed: false,
+    dpadRightPressed: false,
+    aButtonPressed: false,
+    bButtonPressed: false
+  })
+  
   return state
 }
 
@@ -318,6 +361,52 @@ const transition = handleKeydownTransition(() => {
   Object.assign(state, createInitialState())
   state.lastPipeDrop = state.framesPlayed
 })
+
+/**
+ * Process gamepad input and trigger corresponding actions.
+ * @param {Gamepad} gamepad - The gamepad object from navigator.getGamepads()
+ */
+export function handleGamepad(gamepad) {
+  if (!gamepad) return
+  
+  // Mark as connected
+  if (state && state.gamepadConnected !== true) {
+    state.gamepadConnected = true
+  }
+  
+  const aButton = gamepad.buttons[0]
+  const bButton = gamepad.buttons[1]
+  
+  // A button - flap action (works in all states)
+  if (aButton && aButton.pressed && !gamepadState.aButtonPressed) {
+    handleKeydown(' ')
+    gamepadState.aButtonPressed = true
+  } else if (!aButton) {
+    gamepadState.aButtonPressed = false
+  }
+  
+  // B button - start/restart (when not playing or game over)
+  if (bButton && bButton.pressed && !gamepadState.bButtonPressed) {
+    handleKeydown(' ')
+    gamepadState.bButtonPressed = true
+  } else if (!bButton) {
+    gamepadState.bButtonPressed = false
+  }
+}
+
+/**
+ * Reset gamepad state for clean transitions.
+ */
+export function resetGamepadState() {
+  Object.assign(gamepadState, {
+    dpadUpPressed: false,
+    dpadDownPressed: false,
+    dpadLeftPressed: false,
+    dpadRightPressed: false,
+    aButtonPressed: false,
+    bButtonPressed: false
+  })
+}
 
 /**
  * Handle keyboard input. Exported for GamePage to wire up.
@@ -349,3 +438,6 @@ export function handleKeydown(key) {
 
 // Export the state object for GamePage to read
 export { state }
+
+// Export gamepadState for GamePage to access if needed
+export { gamepadState }
