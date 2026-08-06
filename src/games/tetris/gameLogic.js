@@ -609,3 +609,6 @@ function rotate() {
 
 // ─── Export the state object for GamePage to read ───
 export { state }
+
+// Export gamepadState for GamePage to access if needed
+export { gamepadState }
