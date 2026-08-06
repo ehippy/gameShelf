@@ -341,6 +341,17 @@ function drawBird(ctx, bird) {
 export function reset() {
   state = createInitialState()
   state.lastPipeDrop = state.framesPlayed
+  
+  // Reset gamepad state for clean transitions
+  Object.assign(gamepadState, {
+    dpadUpPressed: false,
+    dpadDownPressed: false,
+    dpadLeftPressed: false,
+    dpadRightPressed: false,
+    aButtonPressed: false,
+    bButtonPressed: false
+  })
+  
   return state
 }
 
