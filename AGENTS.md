@@ -440,6 +440,20 @@ export function handleGamepad(gamepad) {
 }
 ```
 
+### Alternative pattern: Whack-a-Mole
+
+Whack-a-Mole uses a slightly different pattern where `gamepadState` is embedded in the reactive state object rather than as a module-level variable. It also doesn't export `resetGamepadState()` - instead, gamepad state is reset inline in the `reset()` function.
+
+```js
+// State structure (line 162):
+gamepadState: { col: 1, row: 1, buttonAPressed: false, buttonBPressed: false }
+
+// In reset():
+Object.assign(state, createInitialState())
+
+// Gamepad processing happens inside update() via processGamepad()
+```
+
 ## Testing Conventions
 
 This project uses **two separate test frameworks** that coexist in the same codebase: **Vitest** for unit/component tests and **Playwright** for E2E browser tests.
