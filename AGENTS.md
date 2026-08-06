@@ -256,6 +256,257 @@ When you see the same pattern across three game files, resist the urge. Write th
 
 > **Testing tip:** When writing unit tests for game logic, always verify that `state.isPlaying` is `false` immediately after calling `init()` or `reset()`. Asserting `expect(state.isPlaying).toBe(false)` after initialization is a quick regression check against accidental auto-start.
 
+## Gamepad Input Convention
+
+This section documents the established pattern for gamepad support across all 5 implemented games (Snake, Tetris, Breakout, Flappy Bird, Whack-a-Mole). Future games should follow this convention to ensure consistent input handling across all supported platforms.
+
+### Required exports
+
+Every `gameLogic.js` must export two functions for gamepad support:
+
+- **`handleGamepad(gamepad)`** — Process gamepad input and trigger corresponding actions. Takes a Gamepad object from `navigator.getGamepads()` as its argument.
+- **`resetGamepadState()`** — Reset button press tracking state to prevent repeated triggering on hold. Called during game reset to ensure clean transitions.
+
+These exports are called by `GamePage.vue`'s requestAnimationFrame loop (see Integration section below).
+
+### State tracking
+
+Each game maintains two pieces of state for gamepad support:
+
+- **`gamepadConnected`** — A boolean in the main state object that gets set to `true` when a gamepad is detected. Set in `init()` via `navigator.getGamepads()` check and `gamepadconnected` event listener.
+
+- **`gamepadState`** — A separate object to track button press states (e.g., `dpadUpPressed`, `aButtonPressed`) to prevent repeated triggering on hold. This is a module-level variable (not part of the reactive state) that tracks which buttons were pressed in the previous frame.
+
+The pattern for button press detection is:
+```js
+if (button && !gamepadState.buttonNamePressed) {
+  // Button was just pressed — trigger action
+  handleKeydown(' ')
+  gamepadState.buttonNamePressed = true
+} else if (!button) {
+  // Button released — reset tracking
+  gamepadState.buttonNamePressed = false
+}
+```
+
+This ensures each button press triggers exactly one action, even if the player holds the button down.
+
+### Input mapping patterns
+
+The games follow a consistent button mapping:
+
+- **D-pad (buttons 12-15)**:
+  - `buttons[12]` → Up direction
+  - `buttons[13]` → Down direction
+  - `buttons[14]` → Left direction
+  - `buttons[15]` → Right direction
+
+- **A button (buttons[0])**:
+  - For games with start/restart logic: Triggers start when not playing, restart when game over
+  - For Flappy Bird: Triggers flap action in all states
+  - For Whack-a-Mole: Selects difficulty in menu, whacks mole in gameplay
+
+- **B button (buttons[1])**:
+  - For most games: Restart action when not playing or game over
+  - For Whack-a-Mole: Start/restart in all non-gameplay states
+
+Note that some games use only A/B buttons for their specific actions. For example, Flappy Bird uses only A and B buttons (no D-pad), mapping them both to the flap action.
+
+### Integration in GamePage.vue
+
+The `GamePage.vue` component uses a `requestAnimationFrame` loop to poll `navigator.getGamepads()` and call the game's `handleGamepad()` function on each frame:
+
+```js
+// Gamepad input loop
+const onGamepad = () => {
+  if (!gameLogic || !state) return
+  
+  try {
+    const gamepads = navigator.getGamepads()
+    for (let i = 0; i < gamepads.length; i++) {
+      if (gamepads[i]) {
+        gameLogic.handleGamepad(gamepads[i])
+        break // Use first connected gamepad
+      }
+    }
+  } catch (_) {}
+  
+  animFrameId = requestAnimationFrame(onGamepad)
+}
+onGamepad()
+```
+
+The loop runs at ~60fps, checking for connected gamepads and forwarding input to the game's `handleGamepad()` function. Games handle the actual input mapping and state transitions.
+
+**Note:** The `gamepadConnected` state is set within each game's `init()` function via event listener for `gamepadconnected` events and polling `navigator.getGamepads()` at initialization time. The GamePage loop only calls `handleGamepad()`; it does not update the `gamepadConnected` state.
+
+### Example: Snake gamepad implementation
+
+```js
+// Gamepad state tracking to prevent repeated triggering
+let gamepadState = {
+  dpadUpPressed: false,
+  dpadDownPressed: false,
+  dpadLeftPressed: false,
+  dpadRightPressed: false,
+  aButtonPressed: false,
+  bButtonPressed: false
+}
+
+export function handleGamepad(gamepad) {
+  if (!gamepad) return
+  
+  // Mark as connected
+  if (state && state.gamepadConnected !== true) {
+    state.gamepadConnected = true
+  }
+  
+  const dpadUp = gamepad.buttons[12]
+  const dpadDown = gamepad.buttons[13]
+  const dpadLeft = gamepad.buttons[14]
+  const dpadRight = gamepad.buttons[15]
+  const aButton = gamepad.buttons[0]
+  const bButton = gamepad.buttons[1]
+  
+  // D-pad movement (only on press, not hold)
+  if (dpadUp && !gamepadState.dpadUpPressed) {
+    handleKeydown('ArrowUp')
+    gamepadState.dpadUpPressed = true
+  } else if (!dpadUp) {
+    gamepadState.dpadUpPressed = false
+  }
+  
+  // ... similar for dpadDown, dpadLeft, dpadRight ...
+  
+  // A button - start/restart (when not playing)
+  if (aButton && aButton.pressed && !gamepadState.aButtonPressed) {
+    handleKeydown(' ')
+    gamepadState.aButtonPressed = true
+  } else if (!aButton) {
+    gamepadState.aButtonPressed = false
+  }
+  
+  // B button - restart (when not playing or game over)
+  if (bButton && bButton.pressed && !gamepadState.bButtonPressed) {
+    handleKeydown(' ')
+    gamepadState.bButtonPressed = true
+  } else if (!bButton) {
+    gamepadState.bButtonPressed = false
+  }
+}
+
+export function resetGamepadState() {
+  Object.assign(gamepadState, {
+    dpadUpPressed: false,
+    dpadDownPressed: false,
+    dpadLeftPressed: false,
+    dpadRightPressed: false,
+    aButtonPressed: false,
+    bButtonPressed: false
+  })
+}
+```
+
+### Example: Flappy Bird gamepad implementation
+
+Flappy Bird uses only A and B buttons (no D-pad) for its specific actions:
+
+```js
+export function handleGamepad(gamepad) {
+  if (!gamepad) return
+  
+  // Mark as connected
+  if (state && state.gamepadConnected !== true) {
+    state.gamepadConnected = true
+  }
+  
+  const aButton = gamepad.buttons[0]
+  const bButton = gamepad.buttons[1]
+  
+  // A button - flap action (same as Space/ArrowUp keyboard)
+  // Works in all states: starts game from non-playing, restarts from game over, flaps while playing
+  if (aButton && aButton.pressed && !gamepadState.aButtonPressed) {
+    handleKeydown(' ')
+    gamepadState.aButtonPressed = true
+  } else if (!aButton) {
+    gamepadState.aButtonPressed = false
+  }
+  
+  // B button - start/restart (when not playing or game over)
+  if (bButton && bButton.pressed && !gamepadState.bButtonPressed) {
+    handleKeydown(' ')
+    gamepadState.bButtonPressed = true
+  } else if (!bButton) {
+    gamepadState.bButtonPressed = false
+  }
+}
+```
+
+### Example: Breakout gamepad implementation
+
+Breakout uses only the D-pad Left/Right buttons (buttons 14 and 15) for paddle movement. It doesn't use Up/Down directions.
+
+```js
+export function handleGamepad(gamepad) {
+  if (!gamepad) return
+  
+  // Mark as connected
+  if (state && state.gamepadConnected !== true) {
+    state.gamepadConnected = true
+  }
+  
+  const dpadLeft = gamepad.buttons[14]
+  const dpadRight = gamepad.buttons[15]
+  const aButton = gamepad.buttons[0]
+  const bButton = gamepad.buttons[1]
+  
+  // D-pad movement (only Left/Right - no Up/Down)
+  if (dpadLeft && !gamepadState.dpadLeftPressed) {
+    handleKeydown('ArrowLeft')
+    gamepadState.dpadLeftPressed = true
+  } else if (!dpadLeft) {
+    gamepadState.dpadLeftPressed = false
+  }
+  
+  if (dpadRight && !gamepadState.dpadRightPressed) {
+    handleKeydown('ArrowRight')
+    gamepadState.dpadRightPressed = true
+  } else if (!dpadRight) {
+    gamepadState.dpadRightPressed = false
+  }
+  
+  // A button - start/restart (when not playing)
+  if (aButton && aButton.pressed && !gamepadState.aButtonPressed) {
+    handleKeydown(' ')
+    gamepadState.aButtonPressed = true
+  } else if (!aButton) {
+    gamepadState.aButtonPressed = false
+  }
+  
+  // B button - restart (when not playing or game over)
+  if (bButton && bButton.pressed && !gamepadState.bButtonPressed) {
+    handleKeydown(' ')
+    gamepadState.bButtonPressed = true
+  } else if (!bButton) {
+    gamepadState.bButtonPressed = false
+  }
+}
+```
+
+### Alternative pattern: Whack-a-Mole
+
+Whack-a-Mole uses a slightly different pattern where `gamepadState` is embedded in the reactive state object rather than as a module-level variable. It also doesn't export `resetGamepadState()` - instead, gamepad state is reset inline in the `reset()` function.
+
+```js
+// State structure (line 162):
+gamepadState: { col: 1, row: 1, buttonAPressed: false, buttonBPressed: false }
+
+// In reset():
+Object.assign(state, createInitialState())
+
+// Gamepad processing happens inside update() via processGamepad()
+```
+
 ## Testing Conventions
 
 This project uses **two separate test frameworks** that coexist in the same codebase: **Vitest** for unit/component tests and **Playwright** for E2E browser tests.
