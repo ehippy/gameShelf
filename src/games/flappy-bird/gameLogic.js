@@ -61,7 +61,8 @@ function createInitialState() {
     pipeDropInterval: PIPE_SPAWN_INTERVAL,
     lastPipeDrop: 0,
     framesPlayed: 0,
-    animFrameId: null
+    animFrameId: null,
+    gamepadConnected: false
   }
 }
 
