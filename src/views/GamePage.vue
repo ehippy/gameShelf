@@ -109,6 +109,24 @@ onMounted(async () => {
   }
   window.addEventListener('keydown', onKeyDown)
 
+  // Gamepad input loop
+  const onGamepad = () => {
+    if (!gameLogic || !state) return
+    
+    try {
+      const gamepads = navigator.getGamepads()
+      for (let i = 0; i < gamepads.length; i++) {
+        if (gamepads[i]) {
+          gameLogic.handleGamepad(gamepads[i])
+          break // Use first connected gamepad
+        }
+      }
+    } catch (_) {}
+    
+    animFrameId = requestAnimationFrame(onGamepad)
+  }
+  onGamepad()
+
   // Game loop
   const gameLoop = () => {
     if (gameLogic) {
