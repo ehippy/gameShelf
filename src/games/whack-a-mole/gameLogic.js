@@ -145,6 +145,16 @@ function playGameOver() {
 
 let state = null
 
+// Gamepad state tracking to prevent repeated triggering
+let gamepadState = {
+  dpadUpPressed: false,
+  dpadDownPressed: false,
+  dpadLeftPressed: false,
+  dpadRightPressed: false,
+  aButtonPressed: false,
+  bButtonPressed: false
+}
+
 function createInitialState(preserveDifficulty) {
   const initial = {
     score: 0,
