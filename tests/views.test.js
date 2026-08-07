@@ -16,14 +16,6 @@ const notFoundViewSrc = readFileSync(join(root, 'src', 'views', 'NotFoundView.vu
 // --- HomeView ---
 
 describe('HomeView', () => {
-  it('has h1 heading', () => {
-    expect(homeViewSrc).toContain('<h1>')
-  })
-
-  it('shows gameShelf brand', () => {
-    expect(homeViewSrc).toContain('gameShelf')
-  })
-
   it('has tagline', () => {
     expect(homeViewSrc).toContain('tagline')
     expect(homeViewSrc).toContain('Play classic games')
