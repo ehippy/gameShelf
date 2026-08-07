@@ -144,7 +144,7 @@ test.describe('Tetris E2E Tests', () => {
       if (!tetrisModule) return
       
       // Get the reactive state from Vue
-      const vueState = tetrisModule.vueState
+      const vueState = window.__tetrisReactiveState
       
       // Fill rows 16, 17, 18, 19 completely
       for (let r = 16; r < 20; r++) {
