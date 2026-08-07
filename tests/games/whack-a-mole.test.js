@@ -108,6 +108,16 @@ describe('whack-a-mole', () => {
       expect(typeof whackModule.handleKeydown).toBe('function')
     })
 
+    it('handleGamepad is a function', () => {
+      if (!whackModule) return
+      expect(typeof whackModule.handleGamepad).toBe('function')
+    })
+
+    it('resetGamepadState is a function', () => {
+      if (!whackModule) return
+      expect(typeof whackModule.resetGamepadState).toBe('function')
+    })
+
     it('exports state', () => {
       if (!whackModule) return
       expect(whackModule.state).toBeDefined()
