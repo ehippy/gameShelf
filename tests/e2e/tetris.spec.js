@@ -471,7 +471,8 @@ test.describe('Tetris E2E Tests', () => {
         }
       }
       
-      // Directly set game over state on the reactive object
+      // Reset score before setting game over to avoid accumulated points
+      reactiveState.score = 0
       reactiveState.isGameOver = true
     })
     
