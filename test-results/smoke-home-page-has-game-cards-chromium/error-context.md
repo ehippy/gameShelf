@@ -14,18 +14,15 @@
 ```
 Error: expect(locator).not.toBeEmpty() failed
 
-Locator: locator('.game-card')
+Locator: locator('.games-grid .game-card')
 Expected: not empty
-Error: strict mode violation: locator('.game-card') resolved to 5 elements:
-    1) <div class="game-card" data-v-f02f60b5="" data-v-801a5095="">…</div> aka getByText('Whack-a-MoleWhack moles as')
-    2) <div class="game-card" data-v-f02f60b5="" data-v-801a5095="">…</div> aka getByText('Flappy BirdGuide the bird')
-    3) <div class="game-card" data-v-f02f60b5="" data-v-801a5095="">…</div> aka getByText('BreakoutClassic brick-')
-    4) <div class="game-card" data-v-f02f60b5="">…</div> aka getByText('SnakeClassic snake')
-    5) <div class="game-card" data-v-f02f60b5="">…</div> aka getByText('TetrisClassic block-stacking')
+Error: strict mode violation: locator('.games-grid .game-card') resolved to 2 elements:
+    1) <div class="game-card" data-v-f02f60b5="">…</div> aka getByText('SnakeClassic snake')
+    2) <div class="game-card" data-v-f02f60b5="">…</div> aka getByText('TetrisClassic block-stacking')
 
 Call log:
   - Expect "not toBeEmpty" with timeout 5000ms
-  - waiting for locator('.game-card')
+  - waiting for locator('.games-grid .game-card')
 
 ```
 
@@ -108,14 +105,16 @@ Call log:
   8  | 
   9  | test('home page has game cards', async ({ page }) => {
   10 |   await page.goto('/')
-  11 |   const cards = page.locator('.game-card')
-> 12 |   await expect(cards).not.toBeEmpty()
+  11 |   // Use data attributes to target only the main grid cards (not WhatsNew)
+  12 |   const cards = page.locator('.games-grid .game-card')
+> 13 |   await expect(cards).not.toBeEmpty()
      |                           ^ Error: expect(locator).not.toBeEmpty() failed
-  13 | })
-  14 | 
-  15 | test('navigation links are present', async ({ page }) => {
-  16 |   await page.goto('/')
-  17 |   await expect(page.getByRole('link', { name: 'About' })).toBeVisible()
-  18 | })
-  19 | 
+  14 | })
+  15 | 
+  16 | test('navigation links are present', async ({ page }) => {
+  17 |   await page.goto('/')
+  18 |   // Use CSS selector to target only the header nav (not footer)
+  19 |   await expect(page.locator('.app-header nav a', { hasText: 'About' })).toBeVisible()
+  20 | })
+  21 | 
 ```
