@@ -461,7 +461,8 @@ test.describe('Tetris E2E Tests', () => {
     // Force game over by filling the top rows and directly setting isGameOver
     await page.evaluate(() => {
       const tetrisModule = window.__tetrisModule
-      if (!tetrisModule) return
+      const reactiveState = window.__tetrisReactiveState
+      if (!tetrisModule || !reactiveState) return
       
       // Fill the top rows (0-1) with blocks
       for (let r = 0; r < 2; r++) {
@@ -470,8 +471,8 @@ test.describe('Tetris E2E Tests', () => {
         }
       }
       
-      // Directly set game over state
-      tetrisModule.state.isGameOver = true
+      // Directly set game over state on the reactive object
+      reactiveState.isGameOver = true
     })
     
     await wait(300)
