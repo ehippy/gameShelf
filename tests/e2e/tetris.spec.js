@@ -559,11 +559,11 @@ test.describe('Tetris E2E Tests', () => {
     expect(parseInt(scoreAfter)).toBe(0)
     
     // isPlaying should be true
-    const isPlaying = await page.evaluate(() => {
+    const isPlayingAfter = await page.evaluate(() => {
       const tetrisModule = window.__tetrisModule
       return tetrisModule?.state?.isPlaying ?? false
     })
-    expect(isPlaying).toBe(true)
+    expect(isPlayingAfter).toBe(true)
   })
 
   test('game over allows restart with ArrowLeft', async ({ page }) => {
@@ -573,8 +573,8 @@ test.describe('Tetris E2E Tests', () => {
     await page.waitForSelector('.info-value')
     await wait(500)
     
-    const isPlaying = await page.evaluate(() => window.__tetrisModule?.state?.isPlaying)
-    expect(isPlaying).toBe(false)
+    const initialIsPlaying = await page.evaluate(() => window.__tetrisModule?.state?.isPlaying)
+    expect(initialIsPlaying).toBe(false)
     
     await page.keyboard.press('Space')
     await wait(200)
