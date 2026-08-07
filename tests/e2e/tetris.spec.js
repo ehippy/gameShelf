@@ -19,14 +19,17 @@ test.describe('Tetris E2E Tests', () => {
     
     // Press Space to start the game
     await page.keyboard.press('Space')
-    await wait(500)  // Wait for game to process
+    await wait(1000)  // Wait for game to process
     
-    // Verify isPlaying state
+    // Check if isPlaying changed
     const isPlaying = await page.evaluate(() => {
       const tetrisModule = window.__tetrisModule
       return tetrisModule?.state?.isPlaying ?? false
     })
     expect(isPlaying).toBe(true)
+    
+    // Wait a bit more for the game loop to process
+    await wait(500)
     
     // Verify piece moved (soft drop bonus or hard drop bonus)
     const rowAfter = await page.evaluate(() => {
