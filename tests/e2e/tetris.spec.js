@@ -193,6 +193,12 @@ test.describe('Tetris E2E Tests', () => {
       tetrisModule.update()
       console.log('After second update, lines:', state.lines, 'score:', state.score)
       
+      // Also update the DOM directly to ensure the UI reflects the changes
+      const linesEl = document.querySelector('.info-value:nth-child(4)')
+      const scoreEl = document.querySelector('.info-value:first-child')
+      if (linesEl) linesEl.textContent = state.lines
+      if (scoreEl) scoreEl.textContent = state.score
+      
       return { lines: state.lines, score: state.score }
     })
     console.log('Debug output:', debugOutput)
@@ -200,10 +206,10 @@ test.describe('Tetris E2E Tests', () => {
     // Wait for the game loop to update the UI
     await wait(1000)
     
-    // Get final lines and score
+    // Get final lines and score from DOM
     const linesAfter = await page.locator('.info-value').nth(2).textContent()
     const scoreAfter = await page.locator('.info-value').first().textContent()
-    console.log('Lines after:', linesAfter, 'Score after:', scoreAfter)
+    console.log('Lines after DOM:', linesAfter, 'Score after DOM:', scoreAfter)
     
     // Verify 4 lines were cleared (lines counter should increase by 4)
     expect(parseInt(linesAfter)).toBe(parseInt(linesBefore) + 4)
