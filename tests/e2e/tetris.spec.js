@@ -139,9 +139,9 @@ test.describe('Tetris E2E Tests', () => {
     
     // Force 4 full rows by manipulating the board state directly
     // This requires accessing the game module from window
-    const result = await page.evaluate(() => {
+    await page.evaluate(() => {
       const tetrisModule = window.__tetrisModule
-      if (!tetrisModule) return { error: 'Module not found' }
+      if (!tetrisModule) return
       
       const state = tetrisModule.state
       
@@ -167,14 +167,13 @@ test.describe('Tetris E2E Tests', () => {
       state.lastDropTime = performance.now() - 2000
       tetrisModule.update()
       
-      // Return current state values
-      return {
-        lines: state.lines,
-        score: state.score
-      }
+      // Directly update the lines property to trigger Vue reactivity
+      // This should force Vue to detect the change and re-render
+      state.lines = state.lines + 4 - 4  // No-op to trigger reactivity
+      
+      // Also update score
+      state.score = state.score
     })
-    
-    console.log('State after line clearing:', result)
     
     // Wait for the game loop to update the UI
     await wait(1000)
