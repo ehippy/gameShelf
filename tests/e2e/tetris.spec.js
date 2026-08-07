@@ -137,6 +137,9 @@ test.describe('Tetris E2E Tests', () => {
     const linesBefore = await page.locator('.info-value').nth(2).textContent()
     const scoreBefore = await page.locator('.info-value').first().textContent()
     
+    // Wait for reactive state to be available
+    await page.waitForFunction(() => window.__tetrisReactiveState !== undefined)
+    
     // Force 4 full rows by manipulating the board state directly
     // This requires accessing the game module from window
     await page.evaluate(() => {
