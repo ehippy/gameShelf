@@ -510,21 +510,18 @@ test.describe('Tetris E2E Tests', () => {
       const tetrisModule = window.__tetrisModule
       if (!tetrisModule) return
       
-      // Fill board to force game over
-      for (let r = 10; r < 20; r++) {
+      // Fill the top rows (0-1) with blocks so new pieces can't spawn
+      for (let r = 0; r < 2; r++) {
         for (let c = 0; c < 10; c++) {
           tetrisModule.state.board[r][c] = '#ff0000'
         }
       }
       
-      tetrisModule.state.currentPiece = {
-        type: 'O',
-        shape: [[1, 1], [1, 1]],
-        color: '#f0f000',
-        row: 0,
-        col: 4
-      }
+      // Clear current piece so the next update will try to spawn a new piece
+      tetrisModule.state.currentPiece = null
       tetrisModule.state.lastDropTime = performance.now() - 2000
+      
+      // Call update which will trigger lockPiece -> spawnPiece -> game over check
       tetrisModule.update()
     })
     
