@@ -893,6 +893,7 @@ export function reset() {
   }
 
   Object.assign(state, createInitialState(true))
+  resetGamepadState()
   return state
 }
 
