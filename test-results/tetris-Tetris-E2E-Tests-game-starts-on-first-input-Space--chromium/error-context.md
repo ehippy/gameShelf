@@ -80,110 +80,120 @@ Received:   0
   19  |     
   20  |     // Press Space to start the game
   21  |     await page.keyboard.press('Space')
-  22  |     await wait(100)
+  22  |     await wait(500)  // Wait for game to process
   23  |     
-  24  |     // Verify isPlaying changed (score should increase from soft drop bonus)
-  25  |     const scoreAfter = await page.locator('.info-value').first().textContent()
-> 26  |     expect(parseInt(scoreAfter)).toBeGreaterThan(parseInt(scoreBefore))
-      |                                  ^ Error: expect(received).toBeGreaterThan(expected)
-  27  |   })
-  28  | 
-  29  |   test('game starts on first input (ArrowDown)', async ({ page }) => {
-  30  |     const scoreBefore = await page.locator('.info-value').first().textContent()
-  31  |     
-  32  |     // Press ArrowDown to start the game
-  33  |     await page.keyboard.press('ArrowDown')
-  34  |     await wait(100)
-  35  |     
-  36  |     const scoreAfter = await page.locator('.info-value').first().textContent()
-  37  |     expect(parseInt(scoreAfter)).toBeGreaterThan(parseInt(scoreBefore))
-  38  |   })
-  39  | 
-  40  |   // ─── Test 2: Keyboard controls work ─────────────────────────────────────────
-  41  | 
-  42  |   test('keyboard controls work - ArrowLeft moves piece left', async ({ page }) => {
-  43  |     // Start the game first
-  44  |     await page.keyboard.press('Space')
-  45  |     await wait(200)
+  24  |     // Verify isPlaying state
+  25  |     const isPlaying = await page.evaluate(() => {
+  26  |       const tetrisModule = window.__tetrisModule
+  27  |       return tetrisModule?.state?.isPlaying ?? false
+  28  |     })
+  29  |     expect(isPlaying).toBe(true)
+  30  |     
+  31  |     // Verify piece moved (soft drop bonus or hard drop bonus)
+  32  |     const rowAfter = await page.evaluate(() => {
+  33  |       const tetrisModule = window.__tetrisModule
+  34  |       return tetrisModule?.state?.currentPiece?.row ?? null
+  35  |     })
+> 36  |     expect(rowAfter).toBeGreaterThan(0)
+      |                      ^ Error: expect(received).toBeGreaterThan(expected)
+  37  |   })
+  38  | 
+  39  |   test('game starts on first input (ArrowDown)', async ({ page }) => {
+  40  |     // Get initial state from the page
+  41  |     const scoreBefore = await page.locator('.info-value').first().textContent()
+  42  |     
+  43  |     // Press ArrowDown to start the game
+  44  |     await page.keyboard.press('ArrowDown')
+  45  |     await wait(500)  // Wait for game to process
   46  |     
-  47  |     // Get initial column position by checking canvas state
-  48  |     const colBefore = await page.evaluate(() => {
+  47  |     // Verify isPlaying state
+  48  |     const isPlaying = await page.evaluate(() => {
   49  |       const tetrisModule = window.__tetrisModule
-  50  |       return tetrisModule?.state?.currentPiece?.col ?? null
+  50  |       return tetrisModule?.state?.isPlaying ?? false
   51  |     })
-  52  |     
-  53  |     // Press ArrowLeft
-  54  |     await page.keyboard.press('ArrowLeft')
-  55  |     await wait(100)
-  56  |     
-  57  |     const colAfter = await page.evaluate(() => {
-  58  |       const tetrisModule = window.__tetrisModule
-  59  |       return tetrisModule?.state?.currentPiece?.col ?? null
-  60  |     })
-  61  |     
-  62  |     expect(colAfter).toBeLessThan(colBefore)
-  63  |   })
-  64  | 
-  65  |   test('keyboard controls work - ArrowRight moves piece right', async ({ page }) => {
+  52  |     expect(isPlaying).toBe(true)
+  53  |     
+  54  |     // Verify piece moved (soft drop bonus)
+  55  |     const rowAfter = await page.evaluate(() => {
+  56  |       const tetrisModule = window.__tetrisModule
+  57  |       return tetrisModule?.state?.currentPiece?.row ?? null
+  58  |     })
+  59  |     expect(rowAfter).toBeGreaterThan(0)
+  60  |   })
+  61  | 
+  62  |   // ─── Test 2: Keyboard controls work ─────────────────────────────────────────
+  63  | 
+  64  |   test('keyboard controls work - ArrowLeft moves piece left', async ({ page }) => {
+  65  |     // Start the game first
   66  |     await page.keyboard.press('Space')
   67  |     await wait(200)
   68  |     
-  69  |     const colBefore = await page.evaluate(() => {
-  70  |       const tetrisModule = window.__tetrisModule
-  71  |       return tetrisModule?.state?.currentPiece?.col ?? null
-  72  |     })
-  73  |     
-  74  |     await page.keyboard.press('ArrowRight')
-  75  |     await wait(100)
-  76  |     
-  77  |     const colAfter = await page.evaluate(() => {
-  78  |       const tetrisModule = window.__tetrisModule
-  79  |       return tetrisModule?.state?.currentPiece?.col ?? null
-  80  |     })
-  81  |     
-  82  |     expect(colAfter).toBeGreaterThan(colBefore)
-  83  |   })
-  84  | 
-  85  |   test('keyboard controls work - ArrowDown moves piece down', async ({ page }) => {
-  86  |     await page.keyboard.press('Space')
-  87  |     await wait(200)
-  88  |     
-  89  |     const rowBefore = await page.evaluate(() => {
-  90  |       const tetrisModule = window.__tetrisModule
-  91  |       return tetrisModule?.state?.currentPiece?.row ?? null
-  92  |     })
-  93  |     
-  94  |     await page.keyboard.press('ArrowDown')
-  95  |     await wait(100)
-  96  |     
-  97  |     const rowAfter = await page.evaluate(() => {
-  98  |       const tetrisModule = window.__tetrisModule
-  99  |       return tetrisModule?.state?.currentPiece?.row ?? null
-  100 |     })
-  101 |     
-  102 |     expect(rowAfter).toBeGreaterThan(rowBefore)
-  103 |   })
-  104 | 
-  105 |   // ─── Test 3: Lines clear when full rows form ────────────────────────────────
+  69  |     // Get initial column position by checking canvas state
+  70  |     const colBefore = await page.evaluate(() => {
+  71  |       const tetrisModule = window.__tetrisModule
+  72  |       return tetrisModule?.state?.currentPiece?.col ?? null
+  73  |     })
+  74  |     
+  75  |     // Press ArrowLeft
+  76  |     await page.keyboard.press('ArrowLeft')
+  77  |     await wait(100)
+  78  |     
+  79  |     const colAfter = await page.evaluate(() => {
+  80  |       const tetrisModule = window.__tetrisModule
+  81  |       return tetrisModule?.state?.currentPiece?.col ?? null
+  82  |     })
+  83  |     
+  84  |     expect(colAfter).toBeLessThan(colBefore)
+  85  |   })
+  86  | 
+  87  |   test('keyboard controls work - ArrowRight moves piece right', async ({ page }) => {
+  88  |     await page.keyboard.press('Space')
+  89  |     await wait(200)
+  90  |     
+  91  |     const colBefore = await page.evaluate(() => {
+  92  |       const tetrisModule = window.__tetrisModule
+  93  |       return tetrisModule?.state?.currentPiece?.col ?? null
+  94  |     })
+  95  |     
+  96  |     await page.keyboard.press('ArrowRight')
+  97  |     await wait(100)
+  98  |     
+  99  |     const colAfter = await page.evaluate(() => {
+  100 |       const tetrisModule = window.__tetrisModule
+  101 |       return tetrisModule?.state?.currentPiece?.col ?? null
+  102 |     })
+  103 |     
+  104 |     expect(colAfter).toBeGreaterThan(colBefore)
+  105 |   })
   106 | 
-  107 |   test('lines clear when full rows form (4 lines)', async ({ page }) => {
+  107 |   test('keyboard controls work - ArrowDown moves piece down', async ({ page }) => {
   108 |     await page.keyboard.press('Space')
   109 |     await wait(200)
   110 |     
-  111 |     // Get initial lines and score
-  112 |     const linesBefore = await page.locator('.info-value').nth(2).textContent()
-  113 |     const scoreBefore = await page.locator('.info-value').first().textContent()
-  114 |     
-  115 |     // Force 4 full rows by manipulating the board state directly
-  116 |     // This requires accessing the game module from window
-  117 |     await page.evaluate(() => {
-  118 |       const tetrisModule = window.__tetrisModule
-  119 |       if (!tetrisModule) return
-  120 |       
-  121 |       // Fill rows 16, 17, 18, 19 completely
-  122 |       for (let r = 16; r < 20; r++) {
-  123 |         for (let c = 0; c < 10; c++) {
-  124 |           tetrisModule.state.board[r][c] = '#ff0000'
-  125 |         }
-  126 |       }
+  111 |     const rowBefore = await page.evaluate(() => {
+  112 |       const tetrisModule = window.__tetrisModule
+  113 |       return tetrisModule?.state?.currentPiece?.row ?? null
+  114 |     })
+  115 |     
+  116 |     await page.keyboard.press('ArrowDown')
+  117 |     await wait(100)
+  118 |     
+  119 |     const rowAfter = await page.evaluate(() => {
+  120 |       const tetrisModule = window.__tetrisModule
+  121 |       return tetrisModule?.state?.currentPiece?.row ?? null
+  122 |     })
+  123 |     
+  124 |     expect(rowAfter).toBeGreaterThan(rowBefore)
+  125 |   })
+  126 | 
+  127 |   // ─── Test 3: Lines clear when full rows form ────────────────────────────────
+  128 | 
+  129 |   test('lines clear when full rows form (4 lines)', async ({ page }) => {
+  130 |     await page.keyboard.press('Space')
+  131 |     await wait(200)
+  132 |     
+  133 |     // Get initial lines and score
+  134 |     const linesBefore = await page.locator('.info-value').nth(2).textContent()
+  135 |     const scoreBefore = await page.locator('.info-value').first().textContent()
+  136 |     
 ```
