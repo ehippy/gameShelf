@@ -145,6 +145,16 @@ function playGameOver() {
 
 let state = null
 
+// Gamepad state tracking to prevent repeated triggering
+let gamepadState = {
+  dpadUpPressed: false,
+  dpadDownPressed: false,
+  dpadLeftPressed: false,
+  dpadRightPressed: false,
+  aButtonPressed: false,
+  bButtonPressed: false
+}
+
 function createInitialState(preserveDifficulty) {
   const initial = {
     score: 0,
@@ -159,7 +169,6 @@ function createInitialState(preserveDifficulty) {
     lastMoleSpawn: 0,
     framesPlayed: 0,
     gamepadConnected: false,
-    gamepadState: { col: 1, row: 1, buttonAPressed: false, buttonBPressed: false },
     cursorCol: 1,
     cursorRow: 1,
     startedAt: null,
@@ -421,36 +430,36 @@ function processGamepad() {
       }
     }
 
-    if (dpadUp && !state.gamepadState.dpadUpPressed) {
+    if (dpadUp.pressed && !gamepadState.dpadUpPressed) {
       moveCursor(0, -1)
-      state.gamepadState.dpadUpPressed = true
-    } else if (!dpadUp) {
-      state.gamepadState.dpadUpPressed = false
+      gamepadState.dpadUpPressed = true
+    } else if (!dpadUp.pressed) {
+      gamepadState.dpadUpPressed = false
     }
 
-    if (dpadDown && !state.gamepadState.dpadDownPressed) {
+    if (dpadDown.pressed && !gamepadState.dpadDownPressed) {
       moveCursor(0, 1)
-      state.gamepadState.dpadDownPressed = true
-    } else if (!dpadDown) {
-      state.gamepadState.dpadDownPressed = false
+      gamepadState.dpadDownPressed = true
+    } else if (!dpadDown.pressed) {
+      gamepadState.dpadDownPressed = false
     }
 
-    if (dpadLeft && !state.gamepadState.dpadLeftPressed) {
+    if (dpadLeft.pressed && !gamepadState.dpadLeftPressed) {
       moveCursor(-1, 0)
-      state.gamepadState.dpadLeftPressed = true
-    } else if (!dpadLeft) {
-      state.gamepadState.dpadLeftPressed = false
+      gamepadState.dpadLeftPressed = true
+    } else if (!dpadLeft.pressed) {
+      gamepadState.dpadLeftPressed = false
     }
 
-    if (dpadRight && !state.gamepadState.dpadRightPressed) {
+    if (dpadRight.pressed && !gamepadState.dpadRightPressed) {
       moveCursor(1, 0)
-      state.gamepadState.dpadRightPressed = true
-    } else if (!dpadRight) {
-      state.gamepadState.dpadRightPressed = false
+      gamepadState.dpadRightPressed = true
+    } else if (!dpadRight.pressed) {
+      gamepadState.dpadRightPressed = false
     }
 
     // A button - whack (in gameplay) or select difficulty (in menu)
-    if (aButton && aButton.pressed) {
+    if (aButton && aButton.pressed && !gamepadState.aButtonPressed) {
       if (state.isPlaying) {
         whackCell(state.cursorCol, state.cursorRow)
       } else if (state.isGameOver) {
@@ -459,22 +468,22 @@ function processGamepad() {
         // Menu: select current difficulty
         startGame(state.difficulty)
       }
-      state.gamepadState.buttonAPressed = true
+      gamepadState.aButtonPressed = true
     } else {
-      state.gamepadState.buttonAPressed = false
+      gamepadState.aButtonPressed = false
     }
 
     // B button - start/restart
-    if (bButton && bButton.pressed) {
+    if (bButton && bButton.pressed && !gamepadState.bButtonPressed) {
       if (state.isGameOver) {
         reset()
         startGame(state.difficulty)
       } else if (!state.isPlaying && !state.isGameOver) {
         startGame(state.difficulty)
       }
-      state.gamepadState.buttonBPressed = true
+      gamepadState.bButtonPressed = true
     } else {
-      state.gamepadState.buttonBPressed = false
+      gamepadState.bButtonPressed = false
     }
   } catch (_) {}
 }
@@ -884,6 +893,7 @@ export function reset() {
   }
 
   Object.assign(state, createInitialState(true))
+  resetGamepadState()
   return state
 }
 
@@ -928,3 +938,103 @@ export function handleKeydown(key) {
 export { state }
 
 export { CANVAS_W as CANVAS_WIDTH, CANVAS_H as CANVAS_HEIGHT }
+
+/**
+ * Process gamepad input and trigger corresponding actions.
+ * @param {Gamepad} gamepad - The gamepad object from navigator.getGamepads()
+ */
+export function handleGamepad(gamepad) {
+  if (!gamepad) return
+
+  // Mark as connected
+  if (state && state.gamepadConnected !== true) {
+    state.gamepadConnected = true
+  }
+
+  const dpadUp = gamepad.buttons[12]
+  const dpadDown = gamepad.buttons[13]
+  const dpadLeft = gamepad.buttons[14]
+  const dpadRight = gamepad.buttons[15]
+  const aButton = gamepad.buttons[0]
+  const bButton = gamepad.buttons[1]
+
+  // D-pad movement (only on press, not hold)
+  const moveCursor = (dc, dr) => {
+    const newCol = state.cursorCol + dc
+    const newRow = state.cursorRow + dr
+    if (newCol >= 0 && newCol < COLS && newRow >= 0 && newRow < ROWS) {
+      state.cursorCol = newCol
+      state.cursorRow = newRow
+    }
+  }
+
+  if (dpadUp.pressed && !gamepadState.dpadUpPressed) {
+    moveCursor(0, -1)
+    gamepadState.dpadUpPressed = true
+  } else if (!dpadUp.pressed) {
+    gamepadState.dpadUpPressed = false
+  }
+
+  if (dpadDown.pressed && !gamepadState.dpadDownPressed) {
+    moveCursor(0, 1)
+    gamepadState.dpadDownPressed = true
+  } else if (!dpadDown.pressed) {
+    gamepadState.dpadDownPressed = false
+  }
+
+  if (dpadLeft.pressed && !gamepadState.dpadLeftPressed) {
+    moveCursor(-1, 0)
+    gamepadState.dpadLeftPressed = true
+  } else if (!dpadLeft.pressed) {
+    gamepadState.dpadLeftPressed = false
+  }
+
+  if (dpadRight.pressed && !gamepadState.dpadRightPressed) {
+    moveCursor(1, 0)
+    gamepadState.dpadRightPressed = true
+  } else if (!dpadRight.pressed) {
+    gamepadState.dpadRightPressed = false
+  }
+
+  // A button - whack (in gameplay) or select difficulty (in menu)
+  if (aButton && aButton.pressed && !gamepadState.aButtonPressed) {
+    if (state.isPlaying) {
+      whackCell(state.cursorCol, state.cursorRow)
+    } else if (state.isGameOver) {
+      // Do nothing, wait for B button
+    } else {
+      // Menu: select current difficulty
+      startGame(state.difficulty)
+    }
+    gamepadState.aButtonPressed = true
+  } else {
+    gamepadState.aButtonPressed = false
+  }
+
+  // B button - start/restart
+  if (bButton && bButton.pressed && !gamepadState.bButtonPressed) {
+    if (state.isGameOver) {
+      reset()
+      startGame(state.difficulty)
+    } else if (!state.isPlaying && !state.isGameOver) {
+      startGame(state.difficulty)
+    }
+    gamepadState.bButtonPressed = true
+  } else {
+    gamepadState.bButtonPressed = false
+  }
+}
+
+/**
+ * Reset gamepad state for clean transitions.
+ */
+export function resetGamepadState() {
+  Object.assign(gamepadState, {
+    dpadUpPressed: false,
+    dpadDownPressed: false,
+    dpadLeftPressed: false,
+    dpadRightPressed: false,
+    aButtonPressed: false,
+    bButtonPressed: false
+  })
+}
