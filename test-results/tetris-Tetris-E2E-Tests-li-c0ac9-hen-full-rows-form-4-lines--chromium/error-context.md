@@ -15,7 +15,7 @@
 Error: expect(received).toBe(expected) // Object.is equality
 
 Expected: 4
-Received: 8
+Received: 0
 ```
 
 # Page snapshot
@@ -43,13 +43,13 @@ Received: 8
     - generic [ref=f1e15]:
       - generic [ref=f1e16]:
         - generic [ref=f1e17]: Score
-        - generic [ref=f1e18]: "836"
+        - generic [ref=f1e18]: "0"
       - generic [ref=f1e19]:
         - generic [ref=f1e20]: Level
         - generic [ref=f1e21]: "1"
       - generic [ref=f1e22]:
         - generic [ref=f1e23]: Lines
-        - generic [ref=f1e24]: "8"
+        - generic [ref=f1e24]: "0"
   - contentinfo [ref=f1e27]:
     - paragraph [ref=f1e28]: © 2025 gameShelf — All games built in browser — no downloads required
     - link "About" [ref=f1e29] [cursor=pointer]:
@@ -59,6 +59,7 @@ Received: 8
 # Test source
 
 ```ts
+  107 |     expect(colAfter).toBeGreaterThan(colBefore)
   108 |   })
   109 | 
   110 |   test('keyboard controls work - ArrowDown moves piece down', async ({ page }) => {
@@ -144,121 +145,120 @@ Received: 8
   190 |       state.lastDropTime = performance.now() - 2000
   191 |       tetrisModule.update()
   192 |       
-  193 |       // Force Vue reactivity by updating lines
-  194 |       const oldLines = state.lines
-  195 |       state.lines = oldLines + 4
-  196 |       console.log('After adding 4, lines:', state.lines)
-  197 |     })
-  198 |     
-  199 |     // Wait for the game loop to update the UI
-  200 |     await wait(1000)
-  201 |     
-  202 |     // Get final lines and score
-  203 |     const linesAfter = await page.locator('.info-value').nth(2).textContent()
-  204 |     const scoreAfter = await page.locator('.info-value').first().textContent()
-  205 |     console.log('Lines after:', linesAfter, 'Score after:', scoreAfter)
-  206 |     
-  207 |     // Verify 4 lines were cleared (lines counter should increase by 4)
-> 208 |     expect(parseInt(linesAfter)).toBe(parseInt(linesBefore) + 4)
+  193 |       // The game logic will automatically clear lines and increment score
+  194 |       // No need to manually update lines/score here
+  195 |       console.log('After update, lines:', state.lines)
+  196 |     })
+  197 |     
+  198 |     // Wait for the game loop to update the UI
+  199 |     await wait(1000)
+  200 |     
+  201 |     // Get final lines and score
+  202 |     const linesAfter = await page.locator('.info-value').nth(2).textContent()
+  203 |     const scoreAfter = await page.locator('.info-value').first().textContent()
+  204 |     console.log('Lines after:', linesAfter, 'Score after:', scoreAfter)
+  205 |     
+  206 |     // Verify 4 lines were cleared (lines counter should increase by 4)
+> 207 |     expect(parseInt(linesAfter)).toBe(parseInt(linesBefore) + 4)
       |                                  ^ Error: expect(received).toBe(expected) // Object.is equality
-  209 |     
-  210 |     // Verify score increased by 800 (at level 1)
-  211 |     expect(parseInt(scoreAfter)).toBe(parseInt(scoreBefore) + 800)
-  212 |   })
-  213 | 
-  214 |   // ─── Test 4: Score increases by exact values (100/300/500/800) ──────────────
-  215 | 
-  216 |   test('score increases by 100 when 1 line cleared', async ({ page }) => {
-  217 |     await page.keyboard.press('Space')
-  218 |     await wait(200)
-  219 |     
-  220 |     // Set level to 1 explicitly
-  221 |     await page.evaluate(() => {
-  222 |       const tetrisModule = window.__tetrisModule
-  223 |       if (tetrisModule) {
-  224 |         tetrisModule.state.level = 1
-  225 |       }
-  226 |     })
-  227 |     
-  228 |     const scoreBefore = await page.locator('.info-value').first().textContent()
-  229 |     
-  230 |     // Fill one row completely
-  231 |     await page.evaluate(() => {
-  232 |       const tetrisModule = window.__tetrisModule
-  233 |       if (!tetrisModule) return
-  234 |       
-  235 |       for (let c = 0; c < 10; c++) {
-  236 |         tetrisModule.state.board[19][c] = '#ff0000'
-  237 |       }
-  238 |       
-  239 |       tetrisModule.state.currentPiece.row = 17
-  240 |       tetrisModule.state.currentPiece.col = 0
-  241 |       tetrisModule.state.lastDropTime = performance.now() - 2000
-  242 |     })
-  243 |     
-  244 |     await wait(500)
-  245 |     
-  246 |     const scoreAfter = await page.locator('.info-value').first().textContent()
-  247 |     expect(parseInt(scoreAfter)).toBe(parseInt(scoreBefore) + 100)
-  248 |   })
-  249 | 
-  250 |   test('score increases by 300 when 2 lines cleared', async ({ page }) => {
-  251 |     await page.keyboard.press('Space')
-  252 |     await wait(200)
-  253 |     
-  254 |     await page.evaluate(() => {
-  255 |       const tetrisModule = window.__tetrisModule
-  256 |       if (tetrisModule) {
-  257 |         tetrisModule.state.level = 1
-  258 |       }
-  259 |     })
-  260 |     
-  261 |     const scoreBefore = await page.locator('.info-value').first().textContent()
-  262 |     
-  263 |     await page.evaluate(() => {
-  264 |       const tetrisModule = window.__tetrisModule
-  265 |       if (!tetrisModule) return
-  266 |       
-  267 |       for (let r of [18, 19]) {
-  268 |         for (let c = 0; c < 10; c++) {
-  269 |           tetrisModule.state.board[r][c] = '#ff0000'
-  270 |         }
-  271 |       }
-  272 |       
-  273 |       tetrisModule.state.currentPiece.row = 16
-  274 |       tetrisModule.state.currentPiece.col = 0
-  275 |       tetrisModule.state.lastDropTime = performance.now() - 2000
-  276 |     })
-  277 |     
-  278 |     await wait(500)
-  279 |     
-  280 |     const scoreAfter = await page.locator('.info-value').first().textContent()
-  281 |     expect(parseInt(scoreAfter)).toBe(parseInt(scoreBefore) + 300)
-  282 |   })
-  283 | 
-  284 |   test('score increases by 500 when 3 lines cleared', async ({ page }) => {
-  285 |     await page.keyboard.press('Space')
-  286 |     await wait(200)
-  287 |     
-  288 |     await page.evaluate(() => {
-  289 |       const tetrisModule = window.__tetrisModule
-  290 |       if (tetrisModule) {
-  291 |         tetrisModule.state.level = 1
-  292 |       }
-  293 |     })
-  294 |     
-  295 |     const scoreBefore = await page.locator('.info-value').first().textContent()
-  296 |     
-  297 |     await page.evaluate(() => {
-  298 |       const tetrisModule = window.__tetrisModule
-  299 |       if (!tetrisModule) return
-  300 |       
-  301 |       for (let r of [17, 18, 19]) {
-  302 |         for (let c = 0; c < 10; c++) {
-  303 |           tetrisModule.state.board[r][c] = '#ff0000'
-  304 |         }
-  305 |       }
-  306 |       
-  307 |       tetrisModule.state.currentPiece.row = 15
-  308 |       tetrisModule.state.currentPiece.col = 0
+  208 |     
+  209 |     // Verify score increased by 800 (at level 1)
+  210 |     expect(parseInt(scoreAfter)).toBe(parseInt(scoreBefore) + 800)
+  211 |   })
+  212 | 
+  213 |   // ─── Test 4: Score increases by exact values (100/300/500/800) ──────────────
+  214 | 
+  215 |   test('score increases by 100 when 1 line cleared', async ({ page }) => {
+  216 |     await page.keyboard.press('Space')
+  217 |     await wait(200)
+  218 |     
+  219 |     // Set level to 1 explicitly
+  220 |     await page.evaluate(() => {
+  221 |       const tetrisModule = window.__tetrisModule
+  222 |       if (tetrisModule) {
+  223 |         tetrisModule.state.level = 1
+  224 |       }
+  225 |     })
+  226 |     
+  227 |     const scoreBefore = await page.locator('.info-value').first().textContent()
+  228 |     
+  229 |     // Fill one row completely
+  230 |     await page.evaluate(() => {
+  231 |       const tetrisModule = window.__tetrisModule
+  232 |       if (!tetrisModule) return
+  233 |       
+  234 |       for (let c = 0; c < 10; c++) {
+  235 |         tetrisModule.state.board[19][c] = '#ff0000'
+  236 |       }
+  237 |       
+  238 |       tetrisModule.state.currentPiece.row = 17
+  239 |       tetrisModule.state.currentPiece.col = 0
+  240 |       tetrisModule.state.lastDropTime = performance.now() - 2000
+  241 |     })
+  242 |     
+  243 |     await wait(500)
+  244 |     
+  245 |     const scoreAfter = await page.locator('.info-value').first().textContent()
+  246 |     expect(parseInt(scoreAfter)).toBe(parseInt(scoreBefore) + 100)
+  247 |   })
+  248 | 
+  249 |   test('score increases by 300 when 2 lines cleared', async ({ page }) => {
+  250 |     await page.keyboard.press('Space')
+  251 |     await wait(200)
+  252 |     
+  253 |     await page.evaluate(() => {
+  254 |       const tetrisModule = window.__tetrisModule
+  255 |       if (tetrisModule) {
+  256 |         tetrisModule.state.level = 1
+  257 |       }
+  258 |     })
+  259 |     
+  260 |     const scoreBefore = await page.locator('.info-value').first().textContent()
+  261 |     
+  262 |     await page.evaluate(() => {
+  263 |       const tetrisModule = window.__tetrisModule
+  264 |       if (!tetrisModule) return
+  265 |       
+  266 |       for (let r of [18, 19]) {
+  267 |         for (let c = 0; c < 10; c++) {
+  268 |           tetrisModule.state.board[r][c] = '#ff0000'
+  269 |         }
+  270 |       }
+  271 |       
+  272 |       tetrisModule.state.currentPiece.row = 16
+  273 |       tetrisModule.state.currentPiece.col = 0
+  274 |       tetrisModule.state.lastDropTime = performance.now() - 2000
+  275 |     })
+  276 |     
+  277 |     await wait(500)
+  278 |     
+  279 |     const scoreAfter = await page.locator('.info-value').first().textContent()
+  280 |     expect(parseInt(scoreAfter)).toBe(parseInt(scoreBefore) + 300)
+  281 |   })
+  282 | 
+  283 |   test('score increases by 500 when 3 lines cleared', async ({ page }) => {
+  284 |     await page.keyboard.press('Space')
+  285 |     await wait(200)
+  286 |     
+  287 |     await page.evaluate(() => {
+  288 |       const tetrisModule = window.__tetrisModule
+  289 |       if (tetrisModule) {
+  290 |         tetrisModule.state.level = 1
+  291 |       }
+  292 |     })
+  293 |     
+  294 |     const scoreBefore = await page.locator('.info-value').first().textContent()
+  295 |     
+  296 |     await page.evaluate(() => {
+  297 |       const tetrisModule = window.__tetrisModule
+  298 |       if (!tetrisModule) return
+  299 |       
+  300 |       for (let r of [17, 18, 19]) {
+  301 |         for (let c = 0; c < 10; c++) {
+  302 |           tetrisModule.state.board[r][c] = '#ff0000'
+  303 |         }
+  304 |       }
+  305 |       
+  306 |       tetrisModule.state.currentPiece.row = 15
+  307 |       tetrisModule.state.currentPiece.col = 0
 ```
