@@ -190,10 +190,9 @@ test.describe('Tetris E2E Tests', () => {
       state.lastDropTime = performance.now() - 2000
       tetrisModule.update()
       
-      // Force Vue reactivity by updating lines
-      const oldLines = state.lines
-      state.lines = oldLines + 4
-      console.log('After adding 4, lines:', state.lines)
+      // The game logic will automatically clear lines and increment score
+      // No need to manually update lines/score here
+      console.log('After update, lines:', state.lines)
     })
     
     // Wait for the game loop to update the UI
