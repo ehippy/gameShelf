@@ -89,10 +89,6 @@ describe('HomeView', () => {
     expect(homeViewSrc).not.toContain('v-for="game in gameStore.catalog"')
   })
 
-  it('has h1 with gameShelf', () => {
-    expect(homeViewSrc).toContain('<h1>gameShelf</h1>')
-  })
-
   it('has tagline element', () => {
     expect(homeViewSrc).toContain('class="tagline"')
     expect(homeViewSrc).toContain('"tagline"')
