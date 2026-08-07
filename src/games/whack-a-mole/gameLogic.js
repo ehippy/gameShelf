@@ -430,36 +430,36 @@ function processGamepad() {
       }
     }
 
-    if (dpadUp && !state.gamepadState.dpadUpPressed) {
+    if (dpadUp && !gamepadState.dpadUpPressed) {
       moveCursor(0, -1)
-      state.gamepadState.dpadUpPressed = true
+      gamepadState.dpadUpPressed = true
     } else if (!dpadUp) {
-      state.gamepadState.dpadUpPressed = false
+      gamepadState.dpadUpPressed = false
     }
 
-    if (dpadDown && !state.gamepadState.dpadDownPressed) {
+    if (dpadDown && !gamepadState.dpadDownPressed) {
       moveCursor(0, 1)
-      state.gamepadState.dpadDownPressed = true
+      gamepadState.dpadDownPressed = true
     } else if (!dpadDown) {
-      state.gamepadState.dpadDownPressed = false
+      gamepadState.dpadDownPressed = false
     }
 
-    if (dpadLeft && !state.gamepadState.dpadLeftPressed) {
+    if (dpadLeft && !gamepadState.dpadLeftPressed) {
       moveCursor(-1, 0)
-      state.gamepadState.dpadLeftPressed = true
+      gamepadState.dpadLeftPressed = true
     } else if (!dpadLeft) {
-      state.gamepadState.dpadLeftPressed = false
+      gamepadState.dpadLeftPressed = false
     }
 
-    if (dpadRight && !state.gamepadState.dpadRightPressed) {
+    if (dpadRight && !gamepadState.dpadRightPressed) {
       moveCursor(1, 0)
-      state.gamepadState.dpadRightPressed = true
+      gamepadState.dpadRightPressed = true
     } else if (!dpadRight) {
-      state.gamepadState.dpadRightPressed = false
+      gamepadState.dpadRightPressed = false
     }
 
     // A button - whack (in gameplay) or select difficulty (in menu)
-    if (aButton && aButton.pressed) {
+    if (aButton && aButton.pressed && !gamepadState.aButtonPressed) {
       if (state.isPlaying) {
         whackCell(state.cursorCol, state.cursorRow)
       } else if (state.isGameOver) {
@@ -468,22 +468,22 @@ function processGamepad() {
         // Menu: select current difficulty
         startGame(state.difficulty)
       }
-      state.gamepadState.buttonAPressed = true
+      gamepadState.aButtonPressed = true
     } else {
-      state.gamepadState.buttonAPressed = false
+      gamepadState.aButtonPressed = false
     }
 
     // B button - start/restart
-    if (bButton && bButton.pressed) {
+    if (bButton && bButton.pressed && !gamepadState.bButtonPressed) {
       if (state.isGameOver) {
         reset()
         startGame(state.difficulty)
       } else if (!state.isPlaying && !state.isGameOver) {
         startGame(state.difficulty)
       }
-      state.gamepadState.buttonBPressed = true
+      gamepadState.bButtonPressed = true
     } else {
-      state.gamepadState.buttonBPressed = false
+      gamepadState.bButtonPressed = false
     }
   } catch (_) {}
 }
