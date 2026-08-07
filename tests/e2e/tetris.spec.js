@@ -444,6 +444,15 @@ test.describe('Tetris E2E Tests', () => {
   // ─── Test 5: Game over triggers and allows restart ──────────────────────────
 
   test('game over triggers when board is full', async ({ page }) => {
+    await page.goto('/game/tetris')
+    
+    // Wait for the game component to be mounted
+    await page.waitForSelector('.info-value')
+    await wait(500)
+    
+    const isPlaying = await page.evaluate(() => window.__tetrisModule?.state?.isPlaying)
+    expect(isPlaying).toBe(false)
+    
     await page.keyboard.press('Space')
     await wait(200)
     
@@ -489,6 +498,15 @@ test.describe('Tetris E2E Tests', () => {
 
   test('game over allows restart with Space', async ({ page }) => {
     // First, get the game to a game over state
+    await page.goto('/game/tetris')
+    
+    // Wait for the game component to be mounted
+    await page.waitForSelector('.info-value')
+    await wait(500)
+    
+    const isPlaying = await page.evaluate(() => window.__tetrisModule?.state?.isPlaying)
+    expect(isPlaying).toBe(false)
+    
     await page.keyboard.press('Space')
     await wait(200)
     
