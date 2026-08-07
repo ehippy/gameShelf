@@ -52,12 +52,6 @@ Call log:
 # Test source
 
 ```ts
-  391 |     // Wait for the game component to be mounted
-  392 |     await page.waitForSelector('.info-value')
-  393 |     await wait(500)
-  394 |     
-  395 |     const isPlaying = await page.evaluate(() => window.__tetrisModule?.state?.isPlaying)
-  396 |     expect(isPlaying).toBe(false)
   397 |     
   398 |     await page.keyboard.press('Space')
   399 |     await wait(200)
@@ -144,114 +138,120 @@ Call log:
   480 |       }
   481 |       tetrisModule.state.lastDropTime = performance.now() - 2000
   482 |       
-  483 |       // Force game over by making isValidPosition return false
-  484 |       tetrisModule.update()
-  485 |     })
-  486 |     
-  487 |     await wait(300)
-  488 |     
-  489 |     // Check if game over overlay is visible
-  490 |     const gameOverOverlay = page.locator('.game-over-overlay')
-> 491 |     await expect(gameOverOverlay).toBeVisible()
-      |                                   ^ Error: expect(locator).toBeVisible() failed
+  483 |       // Force game over by calling spawnPiece which will check isValidPosition
+  484 |       // Since the piece is at row 0 and there are blocks in the board, spawnPiece should fail
+  485 |       // But we need to clear the nextPiece first so spawnPiece creates a new piece
+  486 |       tetrisModule.state.nextPiece = null
+  487 |       tetrisModule.state.bag = []
+  488 |       
+  489 |       // Call update which will trigger lockPiece -> spawnPiece -> game over check
+  490 |       tetrisModule.update()
+  491 |     })
   492 |     
-  493 |     // Verify isGameOver state
-  494 |     const isGameOver = await page.evaluate(() => {
-  495 |       const tetrisModule = window.__tetrisModule
-  496 |       return tetrisModule?.state?.isGameOver ?? false
-  497 |     })
-  498 |     expect(isGameOver).toBe(true)
-  499 |   })
-  500 | 
-  501 |   test('game over allows restart with Space', async ({ page }) => {
-  502 |     // First, get the game to a game over state
-  503 |     await page.goto('/game/tetris')
-  504 |     
-  505 |     // Wait for the game component to be mounted
-  506 |     await page.waitForSelector('.info-value')
-  507 |     await wait(500)
-  508 |     
-  509 |     const isPlaying = await page.evaluate(() => window.__tetrisModule?.state?.isPlaying)
-  510 |     expect(isPlaying).toBe(false)
-  511 |     
-  512 |     await page.keyboard.press('Space')
-  513 |     await wait(200)
+  493 |     await wait(300)
+  494 |     
+  495 |     // Check if game over overlay is visible
+  496 |     const gameOverOverlay = page.locator('.game-over-overlay')
+> 497 |     await expect(gameOverOverlay).toBeVisible()
+      |                                   ^ Error: expect(locator).toBeVisible() failed
+  498 |     
+  499 |     // Verify isGameOver state
+  500 |     const isGameOver = await page.evaluate(() => {
+  501 |       const tetrisModule = window.__tetrisModule
+  502 |       return tetrisModule?.state?.isGameOver ?? false
+  503 |     })
+  504 |     expect(isGameOver).toBe(true)
+  505 |   })
+  506 | 
+  507 |   test('game over allows restart with Space', async ({ page }) => {
+  508 |     // First, get the game to a game over state
+  509 |     await page.goto('/game/tetris')
+  510 |     
+  511 |     // Wait for the game component to be mounted
+  512 |     await page.waitForSelector('.info-value')
+  513 |     await wait(500)
   514 |     
-  515 |     await page.evaluate(() => {
-  516 |       const tetrisModule = window.__tetrisModule
-  517 |       if (!tetrisModule) return
-  518 |       
-  519 |       // Fill board to force game over
-  520 |       for (let r = 10; r < 20; r++) {
-  521 |         for (let c = 0; c < 10; c++) {
-  522 |           tetrisModule.state.board[r][c] = '#ff0000'
-  523 |         }
-  524 |       }
-  525 |       
-  526 |       tetrisModule.state.currentPiece = {
-  527 |         type: 'O',
-  528 |         shape: [[1, 1], [1, 1]],
-  529 |         color: '#f0f000',
-  530 |         row: 0,
-  531 |         col: 4
-  532 |       }
-  533 |       tetrisModule.state.lastDropTime = performance.now() - 2000
-  534 |       tetrisModule.update()
-  535 |     })
-  536 |     
-  537 |     await wait(300)
-  538 |     
-  539 |     // Verify game over state
-  540 |     const isGameOverBefore = await page.evaluate(() => {
-  541 |       const tetrisModule = window.__tetrisModule
-  542 |       return tetrisModule?.state?.isGameOver ?? false
-  543 |     })
-  544 |     expect(isGameOverBefore).toBe(true)
-  545 |     
-  546 |     const scoreBefore = await page.locator('.info-value').first().textContent()
-  547 |     
-  548 |     // Press Space to restart
-  549 |     await page.keyboard.press('Space')
-  550 |     await wait(200)
+  515 |     const isPlaying = await page.evaluate(() => window.__tetrisModule?.state?.isPlaying)
+  516 |     expect(isPlaying).toBe(false)
+  517 |     
+  518 |     await page.keyboard.press('Space')
+  519 |     await wait(200)
+  520 |     
+  521 |     await page.evaluate(() => {
+  522 |       const tetrisModule = window.__tetrisModule
+  523 |       if (!tetrisModule) return
+  524 |       
+  525 |       // Fill board to force game over
+  526 |       for (let r = 10; r < 20; r++) {
+  527 |         for (let c = 0; c < 10; c++) {
+  528 |           tetrisModule.state.board[r][c] = '#ff0000'
+  529 |         }
+  530 |       }
+  531 |       
+  532 |       tetrisModule.state.currentPiece = {
+  533 |         type: 'O',
+  534 |         shape: [[1, 1], [1, 1]],
+  535 |         color: '#f0f000',
+  536 |         row: 0,
+  537 |         col: 4
+  538 |       }
+  539 |       tetrisModule.state.lastDropTime = performance.now() - 2000
+  540 |       tetrisModule.update()
+  541 |     })
+  542 |     
+  543 |     await wait(300)
+  544 |     
+  545 |     // Verify game over state
+  546 |     const isGameOverBefore = await page.evaluate(() => {
+  547 |       const tetrisModule = window.__tetrisModule
+  548 |       return tetrisModule?.state?.isGameOver ?? false
+  549 |     })
+  550 |     expect(isGameOverBefore).toBe(true)
   551 |     
-  552 |     // Verify game restarted
-  553 |     const isGameOverAfter = await page.evaluate(() => {
-  554 |       const tetrisModule = window.__tetrisModule
-  555 |       return tetrisModule?.state?.isGameOver ?? false
-  556 |     })
-  557 |     expect(isGameOverAfter).toBe(false)
-  558 |     
-  559 |     // Score should be reset to 0
-  560 |     const scoreAfter = await page.locator('.info-value').first().textContent()
-  561 |     expect(parseInt(scoreAfter)).toBe(0)
-  562 |     
-  563 |     // isPlaying should be true
-  564 |     const isPlayingAfter = await page.evaluate(() => {
-  565 |       const tetrisModule = window.__tetrisModule
-  566 |       return tetrisModule?.state?.isPlaying ?? false
-  567 |     })
-  568 |     expect(isPlayingAfter).toBe(true)
-  569 |   })
-  570 | 
-  571 |   test('game over allows restart with ArrowLeft', async ({ page }) => {
-  572 |     await page.goto('/game/tetris')
-  573 |     
-  574 |     // Wait for the game component to be mounted
-  575 |     await page.waitForSelector('.info-value')
-  576 |     await wait(500)
-  577 |     
-  578 |     const initialIsPlaying = await page.evaluate(() => window.__tetrisModule?.state?.isPlaying)
-  579 |     expect(initialIsPlaying).toBe(false)
-  580 |     
-  581 |     await page.keyboard.press('Space')
-  582 |     await wait(200)
+  552 |     const scoreBefore = await page.locator('.info-value').first().textContent()
+  553 |     
+  554 |     // Press Space to restart
+  555 |     await page.keyboard.press('Space')
+  556 |     await wait(200)
+  557 |     
+  558 |     // Verify game restarted
+  559 |     const isGameOverAfter = await page.evaluate(() => {
+  560 |       const tetrisModule = window.__tetrisModule
+  561 |       return tetrisModule?.state?.isGameOver ?? false
+  562 |     })
+  563 |     expect(isGameOverAfter).toBe(false)
+  564 |     
+  565 |     // Score should be reset to 0
+  566 |     const scoreAfter = await page.locator('.info-value').first().textContent()
+  567 |     expect(parseInt(scoreAfter)).toBe(0)
+  568 |     
+  569 |     // isPlaying should be true
+  570 |     const isPlayingAfter = await page.evaluate(() => {
+  571 |       const tetrisModule = window.__tetrisModule
+  572 |       return tetrisModule?.state?.isPlaying ?? false
+  573 |     })
+  574 |     expect(isPlayingAfter).toBe(true)
+  575 |   })
+  576 | 
+  577 |   test('game over allows restart with ArrowLeft', async ({ page }) => {
+  578 |     await page.goto('/game/tetris')
+  579 |     
+  580 |     // Wait for the game component to be mounted
+  581 |     await page.waitForSelector('.info-value')
+  582 |     await wait(500)
   583 |     
-  584 |     await page.evaluate(() => {
-  585 |       const tetrisModule = window.__tetrisModule
-  586 |       if (!tetrisModule) return
-  587 |       
-  588 |       for (let r = 10; r < 20; r++) {
-  589 |         for (let c = 0; c < 10; c++) {
-  590 |           tetrisModule.state.board[r][c] = '#ff0000'
-  591 |         }
+  584 |     const initialIsPlaying = await page.evaluate(() => window.__tetrisModule?.state?.isPlaying)
+  585 |     expect(initialIsPlaying).toBe(false)
+  586 |     
+  587 |     await page.keyboard.press('Space')
+  588 |     await wait(200)
+  589 |     
+  590 |     await page.evaluate(() => {
+  591 |       const tetrisModule = window.__tetrisModule
+  592 |       if (!tetrisModule) return
+  593 |       
+  594 |       for (let r = 10; r < 20; r++) {
+  595 |         for (let c = 0; c < 10; c++) {
+  596 |           tetrisModule.state.board[r][c] = '#ff0000'
+  597 |         }
 ```
