@@ -567,6 +567,15 @@ test.describe('Tetris E2E Tests', () => {
   })
 
   test('game over allows restart with ArrowLeft', async ({ page }) => {
+    await page.goto('/game/tetris')
+    
+    // Wait for the game component to be mounted
+    await page.waitForSelector('.info-value')
+    await wait(500)
+    
+    const isPlaying = await page.evaluate(() => window.__tetrisModule?.state?.isPlaying)
+    expect(isPlaying).toBe(false)
+    
     await page.keyboard.press('Space')
     await wait(200)
     
