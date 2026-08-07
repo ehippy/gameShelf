@@ -137,13 +137,17 @@ test.describe('Tetris E2E Tests', () => {
     const linesBefore = await page.locator('.info-value').nth(2).textContent()
     const scoreBefore = await page.locator('.info-value').first().textContent()
     
+    // Wait for reactive state to be available
+    await page.waitForFunction(() => window.__tetrisReactiveState !== undefined)
+    
     // Force 4 full rows by manipulating the board state directly
     // This requires accessing the game module from window
     await page.evaluate(() => {
       const tetrisModule = window.__tetrisModule
       if (!tetrisModule) return
       
-      const state = tetrisModule.state
+      // Use the reactive state from Vue
+      const state = window.__tetrisReactiveState
       
       // Fill rows 16, 17, 18, 19 completely
       for (let r = 16; r < 20; r++) {
@@ -167,8 +171,7 @@ test.describe('Tetris E2E Tests', () => {
       state.lastDropTime = performance.now() - 2000
       tetrisModule.update()
       
-      // Force Vue reactivity by creating a new object reference
-      // This should trigger Vue to detect the change and re-render
+      // Force Vue reactivity by updating lines
       const oldLines = state.lines
       state.lines = oldLines + 4
     })
