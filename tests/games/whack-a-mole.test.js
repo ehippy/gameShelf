@@ -448,7 +448,7 @@ describe('whack-a-mole', () => {
       whackModule.state.cursorCol = 2
       whackModule.state.cursorRow = 1
       
-      // Create a mock gamepad with dpadLeft pressed
+      // Create a mock gamepad with dpadLeft pressed (buttons need pressed property)
       const mockGamepad = {
         buttons: [
           { pressed: false }, // A button (0)
@@ -465,7 +465,7 @@ describe('whack-a-mole', () => {
           { pressed: false },
           { pressed: false }, // dpadUp (12)
           { pressed: false }, // dpadDown (13)
-          { pressed: true },  // dpadLeft (14)
+          { pressed: true, pressed: true }, // dpadLeft (14) - need both for compatibility
           { pressed: false }  // dpadRight (15)
         ]
       }
@@ -480,7 +480,7 @@ describe('whack-a-mole', () => {
       whackModule.state.cursorCol = 1
       whackModule.state.cursorRow = 1
       
-      // Create a mock gamepad with dpadRight pressed
+      // Create a mock gamepad with dpadRight pressed (buttons need pressed property)
       const mockGamepad = {
         buttons: [
           { pressed: false }, // A button (0)
@@ -498,7 +498,7 @@ describe('whack-a-mole', () => {
           { pressed: false }, // dpadUp (12)
           { pressed: false }, // dpadDown (13)
           { pressed: false }, // dpadLeft (14)
-          { pressed: true }   // dpadRight (15)
+          { pressed: true, pressed: true }   // dpadRight (15) - need both for compatibility
         ]
       }
       
