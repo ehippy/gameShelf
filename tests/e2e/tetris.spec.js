@@ -147,6 +147,7 @@ test.describe('Tetris E2E Tests', () => {
     // Get initial lines and score
     const linesBefore = await page.locator('.info-value').nth(2).textContent()
     const scoreBefore = await page.locator('.info-value').first().textContent()
+    console.log('Lines before:', linesBefore, 'Score before:', scoreBefore)
     
     // Check if reactive state is available
     const hasReactiveState = await page.evaluate(() => {
@@ -165,7 +166,7 @@ test.describe('Tetris E2E Tests', () => {
       
       // Use the reactive state from Vue
       const state = window.__tetrisReactiveState || tetrisModule.state
-      console.log('Using state:', state)
+      console.log('Initial lines:', state.lines)
       
       // Fill rows 16, 17, 18, 19 completely
       for (let r = 16; r < 20; r++) {
@@ -192,17 +193,21 @@ test.describe('Tetris E2E Tests', () => {
       // Force Vue reactivity by updating lines
       const oldLines = state.lines
       state.lines = oldLines + 4
+      console.log('After adding 4, lines:', state.lines)
     })
     
     // Wait for the game loop to update the UI
     await wait(1000)
     
-    // Verify 4 lines were cleared (lines counter should increase by 4)
+    // Get final lines and score
     const linesAfter = await page.locator('.info-value').nth(2).textContent()
+    const scoreAfter = await page.locator('.info-value').first().textContent()
+    console.log('Lines after:', linesAfter, 'Score after:', scoreAfter)
+    
+    // Verify 4 lines were cleared (lines counter should increase by 4)
     expect(parseInt(linesAfter)).toBe(parseInt(linesBefore) + 4)
     
     // Verify score increased by 800 (at level 1)
-    const scoreAfter = await page.locator('.info-value').first().textContent()
     expect(parseInt(scoreAfter)).toBe(parseInt(scoreBefore) + 800)
   })
 
