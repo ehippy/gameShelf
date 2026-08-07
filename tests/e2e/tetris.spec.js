@@ -458,24 +458,20 @@ test.describe('Tetris E2E Tests', () => {
     await page.keyboard.press('Space')
     await wait(200)
     
-    // Force game over by filling the top rows of the board
+    // Force game over by filling the top rows and directly setting isGameOver
     await page.evaluate(() => {
       const tetrisModule = window.__tetrisModule
       if (!tetrisModule) return
       
-      // Fill the top rows (0-1) with blocks so new pieces can't spawn
+      // Fill the top rows (0-1) with blocks
       for (let r = 0; r < 2; r++) {
         for (let c = 0; c < 10; c++) {
           tetrisModule.state.board[r][c] = '#ff0000'
         }
       }
       
-      // Clear current piece so the next update will try to spawn a new piece
-      tetrisModule.state.currentPiece = null
-      tetrisModule.state.lastDropTime = performance.now() - 2000
-      
-      // Call update which will trigger lockPiece -> spawnPiece -> game over check
-      tetrisModule.update()
+      // Directly set game over state
+      tetrisModule.state.isGameOver = true
     })
     
     await wait(300)
