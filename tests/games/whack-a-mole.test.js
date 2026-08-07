@@ -53,6 +53,24 @@ describe('whack-a-mole', () => {
       expect(whackSrc).toContain('CANVAS_H as CANVAS_HEIGHT')
     })
 
+    it('defines module-level gamepadState object', () => {
+      expect(whackSrc).toMatch(/let gamepadState\s*=/)
+      expect(whackSrc).toContain('dpadUpPressed: false')
+      expect(whackSrc).toContain('dpadDownPressed: false')
+      expect(whackSrc).toContain('dpadLeftPressed: false')
+      expect(whackSrc).toContain('dpadRightPressed: false')
+      expect(whackSrc).toContain('aButtonPressed: false')
+      expect(whackSrc).toContain('bButtonPressed: false')
+    })
+
+    it('exports handleGamepad(gamepad)', () => {
+      expect(whackSrc).toContain('export function handleGamepad(gamepad)')
+    })
+
+    it('exports resetGamepadState()', () => {
+      expect(whackSrc).toContain('export function resetGamepadState()')
+    })
+
     it('uses COLS and ROWS for grid layout', () => {
       expect(whackSrc).toContain('COLS')
       expect(whackSrc).toContain('ROWS')
