@@ -6,105 +6,59 @@
 
 # Test info
 
-- Name: tetris.spec.js >> Tetris E2E Tests >> game over triggers when board is full
-- Location: tests/e2e/tetris.spec.js:448:3
+- Name: tetris.spec.js >> Tetris E2E Tests >> game over allows restart with Space
+- Location: tests/e2e/tetris.spec.js:501:3
 
 # Error details
 
 ```
-Error: expect(locator).toBeVisible() failed
+Error: expect(received).toBe(expected) // Object.is equality
 
-Locator: locator('.game-over-overlay')
-Expected: visible
-Timeout: 5000ms
-Error: element(s) not found
-
-Call log:
-  - Expect "toBeVisible" with timeout 5000ms
-  - waiting for locator('.game-over-overlay')
-
+Expected: true
+Received: false
 ```
 
+# Page snapshot
+
 ```yaml
-- banner:
-  - heading "gameShelf" [level=1]
-  - textbox "Search games..."
-  - combobox:
-    - option "All Categories" [selected]
-    - option "Arcade"
-    - option "Puzzle"
-    - option "Action"
-  - navigation:
-    - link "Home":
-      - /url: /
-    - link "High Scores":
-      - /url: /highscores
-    - link "About":
+- generic [ref=f1e2]:
+  - banner [ref=f1e3]:
+    - heading "gameShelf" [level=1] [ref=f1e4]
+    - generic [ref=f1e5]:
+      - textbox "Search games..." [ref=f1e6]
+      - combobox [ref=f1e7] [cursor=pointer]:
+        - option "All Categories" [selected]
+        - option "Arcade"
+        - option "Puzzle"
+        - option "Action"
+    - navigation [ref=f1e8]:
+      - link "Home" [ref=f1e9] [cursor=pointer]:
+        - /url: /
+      - link "High Scores" [ref=f1e10] [cursor=pointer]:
+        - /url: /highscores
+      - link "About" [ref=f1e11] [cursor=pointer]:
+        - /url: /about
+  - generic [ref=f1e12]:
+    - heading "Tetris" [level=1] [ref=f1e13]
+    - generic [ref=f1e15]:
+      - generic [ref=f1e16]:
+        - generic [ref=f1e17]: Score
+        - generic [ref=f1e18]: "0"
+      - generic [ref=f1e19]:
+        - generic [ref=f1e20]: Level
+        - generic [ref=f1e21]: "1"
+      - generic [ref=f1e22]:
+        - generic [ref=f1e23]: Lines
+        - generic [ref=f1e24]: "0"
+  - contentinfo [ref=f1e27]:
+    - paragraph [ref=f1e28]: © 2025 gameShelf — All games built in browser — no downloads required
+    - link "About" [ref=f1e29] [cursor=pointer]:
       - /url: /about
-- heading "Tetris" [level=1]
-- text: Score 0 Level 1 Lines 0
-- contentinfo:
-  - paragraph: © 2025 gameShelf — All games built in browser — no downloads required
-  - link "About":
-    - /url: /about
 ```
 
 # Test source
 
 ```ts
-  391 |     // Wait for the game component to be mounted
-  392 |     await page.waitForSelector('.info-value')
-  393 |     await wait(500)
-  394 |     
-  395 |     const isPlaying = await page.evaluate(() => window.__tetrisModule?.state?.isPlaying)
-  396 |     expect(isPlaying).toBe(false)
-  397 |     
-  398 |     await page.keyboard.press('Space')
-  399 |     await wait(200)
-  400 |     
-  401 |     await page.evaluate(() => {
-  402 |       const tetrisModule = window.__tetrisModule
-  403 |       if (tetrisModule) {
-  404 |         tetrisModule.state.level = 1
-  405 |       }
-  406 |     })
-  407 |     
-  408 |     const scoreBefore = await page.locator('.info-value').first().textContent()
-  409 |     
-  410 |     await page.evaluate(() => {
-  411 |       const tetrisModule = window.__tetrisModule
-  412 |       if (!tetrisModule) return
-  413 |       
-  414 |       for (let c = 0; c < 10; c++) {
-  415 |         tetrisModule.state.board[16][c] = '#ff0000'
-  416 |         tetrisModule.state.board[17][c] = '#ff0000'
-  417 |         tetrisModule.state.board[18][c] = '#ff0000'
-  418 |         tetrisModule.state.board[19][c] = '#ff0000'
-  419 |       }
-  420 |       
-  421 |       tetrisModule.state.currentPiece = {
-  422 |         type: 'I',
-  423 |         shape: [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
-  424 |         color: '#00f0f0',
-  425 |         row: 13,
-  426 |         col: 0
-  427 |       }
-  428 |       tetrisModule.state.lastDropTime = performance.now() - 2000
-  429 |       
-  430 |       // Force update to process the piece drop and line clearing
-  431 |       tetrisModule.update()
-  432 |       tetrisModule.state.lastDropTime = performance.now() - 2000
-  433 |       tetrisModule.update()
-  434 |       
-  435 |       // Update DOM directly
-  436 |       const allInfoValues = document.querySelectorAll('.info-value')
-  437 |       if (allInfoValues[0]) allInfoValues[0].textContent = tetrisModule.state.score
-  438 |     })
-  439 |     
-  440 |     await wait(500)
-  441 |     
-  442 |     const scoreAfter = await page.locator('.info-value').first().textContent()
-  443 |     expect(parseInt(scoreAfter)).toBeGreaterThanOrEqual(parseInt(scoreBefore) + 800)
   444 |   })
   445 | 
   446 |   // ─── Test 5: Game over triggers and allows restart ──────────────────────────
@@ -152,8 +106,7 @@ Call log:
   488 |     
   489 |     // Check if game over overlay is visible
   490 |     const gameOverOverlay = page.locator('.game-over-overlay')
-> 491 |     await expect(gameOverOverlay).toBeVisible()
-      |                                   ^ Error: expect(locator).toBeVisible() failed
+  491 |     await expect(gameOverOverlay).toBeVisible()
   492 |     
   493 |     // Verify isGameOver state
   494 |     const isGameOver = await page.evaluate(() => {
@@ -206,7 +159,8 @@ Call log:
   541 |       const tetrisModule = window.__tetrisModule
   542 |       return tetrisModule?.state?.isGameOver ?? false
   543 |     })
-  544 |     expect(isGameOverBefore).toBe(true)
+> 544 |     expect(isGameOverBefore).toBe(true)
+      |                              ^ Error: expect(received).toBe(expected) // Object.is equality
   545 |     
   546 |     const scoreBefore = await page.locator('.info-value').first().textContent()
   547 |     
@@ -254,4 +208,34 @@ Call log:
   589 |         for (let c = 0; c < 10; c++) {
   590 |           tetrisModule.state.board[r][c] = '#ff0000'
   591 |         }
+  592 |       }
+  593 |       
+  594 |       tetrisModule.state.currentPiece = {
+  595 |         type: 'O',
+  596 |         shape: [[1, 1], [1, 1]],
+  597 |         color: '#f0f000',
+  598 |         row: 0,
+  599 |         col: 4
+  600 |       }
+  601 |       tetrisModule.state.lastDropTime = performance.now() - 2000
+  602 |       tetrisModule.update()
+  603 |     })
+  604 |     
+  605 |     await wait(300)
+  606 |     
+  607 |     // Press ArrowLeft to restart (three-way logic handles this)
+  608 |     await page.keyboard.press('ArrowLeft')
+  609 |     await wait(200)
+  610 |     
+  611 |     const isGameOver = await page.evaluate(() => {
+  612 |       const tetrisModule = window.__tetrisModule
+  613 |       return tetrisModule?.state?.isGameOver ?? false
+  614 |     })
+  615 |     expect(isGameOver).toBe(false)
+  616 |     
+  617 |     const score = await page.locator('.info-value').first().textContent()
+  618 |     expect(parseInt(score)).toBe(0)
+  619 |   })
+  620 | })
+  621 | 
 ```
