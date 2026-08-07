@@ -15,5 +15,6 @@ test('home page has game cards', async ({ page }) => {
 
 test('navigation links are present', async ({ page }) => {
   await page.goto('/')
-  await expect(page.getByRole('link', { name: 'About' })).toBeVisible()
+  // Use CSS selector to target only the header nav (not footer)
+  await expect(page.locator('.app-header nav a', { hasText: 'About' })).toBeVisible()
 })
