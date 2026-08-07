@@ -82,15 +82,15 @@ onMounted(async () => {
   canvasWidth.value = gameLogic.CANVAS_WIDTH ?? 250
   canvasHeight.value = gameLogic.CANVAS_HEIGHT ?? 200
 
-  // Expose game module to window for E2E tests
-  window.__tetrisModule = gameLogic
+  // Expose game module to window for E2E tests using dynamic key based on slug
+  window[`__${slug}Module`] = gameLogic
 
   // Start the game
   gameLogic.init()
   state = reactive(gameLogic.state)
   
-  // Also expose the reactive state for E2E tests
-  window.__tetrisReactiveState = state
+  // Also expose the reactive state for E2E tests using dynamic key based on slug
+  window[`__${slug}ReactiveState`] = state
 
   const canvas = gameCanvas.value
   if (!canvas) return
