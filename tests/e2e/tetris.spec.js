@@ -161,9 +161,15 @@ test.describe('Tetris E2E Tests', () => {
       tetrisModule.state.lastDropTime = performance.now() - 2000
       
       // Force update to process the piece drop and line clearing
+      // The piece should drop from row 13 to 15 (hitting collision at shape row 1 → board[16])
       tetrisModule.update()
+      // After first update: piece at row 14, lastDropTime reset
       tetrisModule.state.lastDropTime = performance.now() - 2000
       tetrisModule.update()
+      // After second update: piece at row 15, then locks and clears 4 lines
+      
+      // Force a render to update the UI
+      tetrisModule.render(document.querySelector('canvas'))
     })
     
     // Wait for the game loop to update the UI
