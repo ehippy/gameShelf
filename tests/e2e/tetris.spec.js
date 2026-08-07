@@ -139,9 +139,9 @@ test.describe('Tetris E2E Tests', () => {
     
     // Force 4 full rows by manipulating the board state directly
     // This requires accessing the game module from window
-    const result = await page.evaluate(() => {
+    await page.evaluate(() => {
       const tetrisModule = window.__tetrisModule
-      if (!tetrisModule) return { error: 'Module not found' }
+      if (!tetrisModule) return
       
       // Fill rows 16, 17, 18, 19 completely
       for (let r = 16; r < 20; r++) {
@@ -165,18 +165,15 @@ test.describe('Tetris E2E Tests', () => {
       tetrisModule.state.lastDropTime = performance.now() - 2000
       tetrisModule.update()
       
-      // Return current state values
-      return {
-        lines: tetrisModule.state.lines,
-        score: tetrisModule.state.score,
-        currentPieceRow: tetrisModule.state.currentPiece?.row
+      // Force a re-render by calling render with the canvas
+      const canvas = document.querySelector('canvas')
+      if (canvas) {
+        tetrisModule.render(canvas)
       }
     })
     
-    console.log('State after line clearing:', result)
-    
     // Wait for the game loop to update the UI
-    await wait(800)
+    await wait(1000)
     
     // Verify 4 lines were cleared (lines counter should increase by 4)
     const linesAfter = await page.locator('.info-value').nth(2).textContent()
