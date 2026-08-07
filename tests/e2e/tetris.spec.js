@@ -480,7 +480,13 @@ test.describe('Tetris E2E Tests', () => {
       }
       tetrisModule.state.lastDropTime = performance.now() - 2000
       
-      // Force game over by making isValidPosition return false
+      // Force game over by calling spawnPiece which will check isValidPosition
+      // Since the piece is at row 0 and there are blocks in the board, spawnPiece should fail
+      // But we need to clear the nextPiece first so spawnPiece creates a new piece
+      tetrisModule.state.nextPiece = null
+      tetrisModule.state.bag = []
+      
+      // Call update which will trigger lockPiece -> spawnPiece -> game over check
       tetrisModule.update()
     })
     
