@@ -130,6 +130,17 @@ test.describe('Tetris E2E Tests', () => {
   // ─── Test 3: Lines clear when full rows form ────────────────────────────────
 
   test('lines clear when full rows form (4 lines)', async ({ page }) => {
+    await page.goto('/game/tetris')
+    
+    // Wait for the game component to be mounted
+    await page.waitForSelector('.info-value')
+    await wait(500)
+    
+    // Verify initial state before starting
+    const isPlaying = await page.evaluate(() => window.__tetrisModule?.state?.isPlaying)
+    expect(isPlaying).toBe(false)
+    
+    // Start the game with Space
     await page.keyboard.press('Space')
     await wait(200)
     
@@ -148,6 +159,7 @@ test.describe('Tetris E2E Tests', () => {
       
       // Use the reactive state from Vue
       const state = window.__tetrisReactiveState
+      console.log('Using reactive state:', state)
       
       // Fill rows 16, 17, 18, 19 completely
       for (let r = 16; r < 20; r++) {
