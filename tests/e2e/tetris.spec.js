@@ -187,12 +187,11 @@ test.describe('Tetris E2E Tests', () => {
       
       // Force update to process the piece drop and line clearing
       tetrisModule.update()
+      console.log('After first update, lines:', state.lines, 'score:', state.score)
+      
       state.lastDropTime = performance.now() - 2000
       tetrisModule.update()
-      
-      // The game logic will automatically clear lines and increment score
-      // No need to manually update lines/score here
-      console.log('After update, lines:', state.lines)
+      console.log('After second update, lines:', state.lines, 'score:', state.score)
     })
     
     // Wait for the game loop to update the UI
