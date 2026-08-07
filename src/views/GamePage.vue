@@ -82,6 +82,9 @@ onMounted(async () => {
   canvasWidth.value = gameLogic.CANVAS_WIDTH ?? 250
   canvasHeight.value = gameLogic.CANVAS_HEIGHT ?? 200
 
+  // Expose game module to window for E2E tests
+  window.__tetrisModule = gameLogic
+
   const canvas = gameCanvas.value
   if (!canvas) return
 
