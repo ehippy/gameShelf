@@ -968,31 +968,31 @@ export function handleGamepad(gamepad) {
     }
   }
 
-  if (dpadUp && !gamepadState.dpadUpPressed) {
+  if (dpadUp.pressed && !gamepadState.dpadUpPressed) {
     moveCursor(0, -1)
     gamepadState.dpadUpPressed = true
-  } else if (!dpadUp) {
+  } else if (!dpadUp.pressed) {
     gamepadState.dpadUpPressed = false
   }
 
-  if (dpadDown && !gamepadState.dpadDownPressed) {
+  if (dpadDown.pressed && !gamepadState.dpadDownPressed) {
     moveCursor(0, 1)
     gamepadState.dpadDownPressed = true
-  } else if (!dpadDown) {
+  } else if (!dpadDown.pressed) {
     gamepadState.dpadDownPressed = false
   }
 
-  if (dpadLeft && !gamepadState.dpadLeftPressed) {
+  if (dpadLeft.pressed && !gamepadState.dpadLeftPressed) {
     moveCursor(-1, 0)
     gamepadState.dpadLeftPressed = true
-  } else if (!dpadLeft) {
+  } else if (!dpadLeft.pressed) {
     gamepadState.dpadLeftPressed = false
   }
 
-  if (dpadRight && !gamepadState.dpadRightPressed) {
+  if (dpadRight.pressed && !gamepadState.dpadRightPressed) {
     moveCursor(1, 0)
     gamepadState.dpadRightPressed = true
-  } else if (!dpadRight) {
+  } else if (!dpadRight.pressed) {
     gamepadState.dpadRightPressed = false
   }
 
