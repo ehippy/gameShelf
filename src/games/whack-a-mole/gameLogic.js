@@ -169,7 +169,6 @@ function createInitialState(preserveDifficulty) {
     lastMoleSpawn: 0,
     framesPlayed: 0,
     gamepadConnected: false,
-    gamepadState: { col: 1, row: 1, buttonAPressed: false, buttonBPressed: false },
     cursorCol: 1,
     cursorRow: 1,
     startedAt: null,
