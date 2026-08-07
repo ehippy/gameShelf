@@ -194,10 +194,14 @@ test.describe('Tetris E2E Tests', () => {
       console.log('After second update, lines:', state.lines, 'score:', state.score)
       
       // Also update the DOM directly to ensure the UI reflects the changes
-      const linesEl = document.querySelector('.info-value:nth-child(4)')
-      const scoreEl = document.querySelector('.info-value:first-child')
-      if (linesEl) linesEl.textContent = state.lines
-      if (scoreEl) scoreEl.textContent = state.score
+      const allInfoValues = document.querySelectorAll('.info-value')
+      console.log('Found', allInfoValues.length, 'info-value elements')
+      for (let i = 0; i < allInfoValues.length; i++) {
+        console.log('Element', i, ':', allInfoValues[i].textContent)
+      }
+      
+      if (allInfoValues[2]) allInfoValues[2].textContent = state.lines
+      if (allInfoValues[0]) allInfoValues[0].textContent = state.score
       
       return { lines: state.lines, score: state.score }
     })
