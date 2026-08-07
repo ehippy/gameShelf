@@ -137,39 +137,39 @@ test.describe('Tetris E2E Tests', () => {
     const linesBefore = await page.locator('.info-value').nth(2).textContent()
     const scoreBefore = await page.locator('.info-value').first().textContent()
     
-    // Wait for reactive state to be available
-    await page.waitForFunction(() => window.__tetrisReactiveState !== undefined)
-    
     // Force 4 full rows by manipulating the board state directly
     // This requires accessing the game module from window
     await page.evaluate(() => {
       const tetrisModule = window.__tetrisModule
       if (!tetrisModule) return
       
-      // Get the reactive state from Vue
-      const vueState = window.__tetrisReactiveState
+      const state = tetrisModule.state
       
       // Fill rows 16, 17, 18, 19 completely
       for (let r = 16; r < 20; r++) {
         for (let c = 0; c < 10; c++) {
-          vueState.board[r][c] = '#ff0000'
+          state.board[r][c] = '#ff0000'
         }
       }
       
       // Place I-piece at row 13 so it drops and completes the 4th row
-      vueState.currentPiece = {
+      state.currentPiece = {
         type: 'I',
         shape: [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
         color: '#00f0f0',
         row: 13,
         col: 0
       }
-      vueState.lastDropTime = performance.now() - 2000
+      state.lastDropTime = performance.now() - 2000
       
       // Force update to process the piece drop and line clearing
       tetrisModule.update()
-      vueState.lastDropTime = performance.now() - 2000
+      state.lastDropTime = performance.now() - 2000
       tetrisModule.update()
+      
+      // Force Vue to re-render by directly modifying a reactive property
+      // This should trigger Vue's reactivity system
+      state.lines = state.lines
     })
     
     // Wait for the game loop to update the UI
