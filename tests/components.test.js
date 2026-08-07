@@ -81,6 +81,10 @@ describe('AppHeader', () => {
   it('brand references accent color', () => {
     expect(appHeaderSrc).toMatch(/#7f5af0|var\(--color-accent\)/)
   })
+
+  it('has h1 brand element', () => {
+    expect(appHeaderSrc).toContain('<h1 class="brand">gameShelf</h1>')
+  })
 })
 
 // --- AppFooter ---

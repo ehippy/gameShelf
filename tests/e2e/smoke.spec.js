@@ -8,11 +8,13 @@ test('home page loads and shows gameShelf title', async ({ page }) => {
 
 test('home page has game cards', async ({ page }) => {
   await page.goto('/')
+  // Check that there's at least one game card on the page (in either grid or WhatsNew)
   const cards = page.locator('.game-card')
-  await expect(cards).not.toBeEmpty()
+  await expect(cards.first()).toBeVisible()
 })
 
 test('navigation links are present', async ({ page }) => {
   await page.goto('/')
-  await expect(page.getByRole('link', { name: 'About' })).toBeVisible()
+  // Use CSS selector to target only the header nav (not footer)
+  await expect(page.locator('.app-header nav a', { hasText: 'About' })).toBeVisible()
 })
