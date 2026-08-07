@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h1>gameShelf</h1>
     <p class="tagline">Play classic games right in your browser</p>
     <WhatsNew v-if="!hasActiveFilter" />
     <MostPlayedCarousel :games="mostPlayedGames" />

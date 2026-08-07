@@ -16,14 +16,6 @@ const notFoundViewSrc = readFileSync(join(root, 'src', 'views', 'NotFoundView.vu
 // --- HomeView ---
 
 describe('HomeView', () => {
-  it('has h1 heading', () => {
-    expect(homeViewSrc).toContain('<h1>')
-  })
-
-  it('shows gameShelf brand', () => {
-    expect(homeViewSrc).toContain('gameShelf')
-  })
-
   it('has tagline', () => {
     expect(homeViewSrc).toContain('tagline')
     expect(homeViewSrc).toContain('Play classic games')
@@ -95,10 +87,6 @@ describe('HomeView', () => {
   it('uses displayGames computed for v-for, not direct gameStore.catalog', () => {
     expect(homeViewSrc).toContain('v-for="game in displayGames"')
     expect(homeViewSrc).not.toContain('v-for="game in gameStore.catalog"')
-  })
-
-  it('has h1 with gameShelf', () => {
-    expect(homeViewSrc).toContain('<h1>gameShelf</h1>')
   })
 
   it('has tagline element', () => {
