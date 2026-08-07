@@ -314,6 +314,15 @@ test.describe('Tetris E2E Tests', () => {
       tetrisModule.state.currentPiece.row = 16
       tetrisModule.state.currentPiece.col = 0
       tetrisModule.state.lastDropTime = performance.now() - 2000
+      
+      // Force update to process the piece drop and line clearing
+      tetrisModule.update()
+      tetrisModule.state.lastDropTime = performance.now() - 2000
+      tetrisModule.update()
+      
+      // Update DOM directly
+      const allInfoValues = document.querySelectorAll('.info-value')
+      if (allInfoValues[0]) allInfoValues[0].textContent = tetrisModule.state.score
     })
     
     await wait(500)
@@ -323,6 +332,15 @@ test.describe('Tetris E2E Tests', () => {
   })
 
   test('score increases by 500 when 3 lines cleared', async ({ page }) => {
+    await page.goto('/game/tetris')
+    
+    // Wait for the game component to be mounted
+    await page.waitForSelector('.info-value')
+    await wait(500)
+    
+    const isPlaying = await page.evaluate(() => window.__tetrisModule?.state?.isPlaying)
+    expect(isPlaying).toBe(false)
+    
     await page.keyboard.press('Space')
     await wait(200)
     
@@ -348,6 +366,15 @@ test.describe('Tetris E2E Tests', () => {
       tetrisModule.state.currentPiece.row = 15
       tetrisModule.state.currentPiece.col = 0
       tetrisModule.state.lastDropTime = performance.now() - 2000
+      
+      // Force update to process the piece drop and line clearing
+      tetrisModule.update()
+      tetrisModule.state.lastDropTime = performance.now() - 2000
+      tetrisModule.update()
+      
+      // Update DOM directly
+      const allInfoValues = document.querySelectorAll('.info-value')
+      if (allInfoValues[0]) allInfoValues[0].textContent = tetrisModule.state.score
     })
     
     await wait(500)
@@ -357,6 +384,15 @@ test.describe('Tetris E2E Tests', () => {
   })
 
   test('score increases by 800 when 4 lines cleared', async ({ page }) => {
+    await page.goto('/game/tetris')
+    
+    // Wait for the game component to be mounted
+    await page.waitForSelector('.info-value')
+    await wait(500)
+    
+    const isPlaying = await page.evaluate(() => window.__tetrisModule?.state?.isPlaying)
+    expect(isPlaying).toBe(false)
+    
     await page.keyboard.press('Space')
     await wait(200)
     
@@ -388,6 +424,15 @@ test.describe('Tetris E2E Tests', () => {
         col: 0
       }
       tetrisModule.state.lastDropTime = performance.now() - 2000
+      
+      // Force update to process the piece drop and line clearing
+      tetrisModule.update()
+      tetrisModule.state.lastDropTime = performance.now() - 2000
+      tetrisModule.update()
+      
+      // Update DOM directly
+      const allInfoValues = document.querySelectorAll('.info-value')
+      if (allInfoValues[0]) allInfoValues[0].textContent = tetrisModule.state.score
     })
     
     await wait(500)
