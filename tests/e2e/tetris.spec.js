@@ -19,16 +19,7 @@ test.describe('Tetris E2E Tests', () => {
     
     // Press Space to start the game
     await page.keyboard.press('Space')
-    await wait(500)  // Wait longer for game to process
-    
-    // Check if isPlaying changed by checking if piece moved
-    const rowAfter = await page.evaluate(() => {
-      const tetrisModule = window.__tetrisModule
-      return tetrisModule?.state?.currentPiece?.row ?? null
-    })
-    
-    // Piece should have dropped from row 0
-    expect(rowAfter).toBeGreaterThan(0)
+    await wait(500)  // Wait for game to process
     
     // Verify isPlaying state
     const isPlaying = await page.evaluate(() => {
@@ -36,6 +27,13 @@ test.describe('Tetris E2E Tests', () => {
       return tetrisModule?.state?.isPlaying ?? false
     })
     expect(isPlaying).toBe(true)
+    
+    // Verify piece moved (soft drop bonus or hard drop bonus)
+    const rowAfter = await page.evaluate(() => {
+      const tetrisModule = window.__tetrisModule
+      return tetrisModule?.state?.currentPiece?.row ?? null
+    })
+    expect(rowAfter).toBeGreaterThan(0)
   })
 
   test('game starts on first input (ArrowDown)', async ({ page }) => {
