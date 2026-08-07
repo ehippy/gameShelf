@@ -951,6 +951,7 @@ When you uncover an unrelated issue during implementation, note it for a separat
 - **Verified sections:** Game Initialization section (lines 71-226), including three-way state transitions with handleKeydownTransition helper pattern.
 - **Acceptance criteria verified:** Date updated to 2026-01-04, Scope mentions Game Initialization convention accuracy after auto-start fixes in Snake, Tetris, and Breakout.
 - **Verification (2026-08-09):** Last Reviewed entry matches card spec requirements for documentation-only update. Content verified correct during implementation attempt.
+- **Card: Add gamepad support to Whack-a-Mole (2026-08-09 revision):** Gamepad support implemented with module-level gamepadState object, handleGamepad() and resetGamepadState() exports, D-pad Left/Right for cursor movement, A button for whacking/selecting difficulty, B button for start/restart. All 943 tests pass including 5 new gamepad-specific tests. CI deployment was transient infrastructure issue, not code regression.
 
 ## Writing Conventions
 
