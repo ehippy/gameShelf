@@ -328,22 +328,25 @@ describe('whack-a-mole', () => {
 
     it('resetGamepadState() resets all gamepadState flags to false', () => {
       if (!whackModule) return
+      // Import the module-level gamepadState directly from the module
+      const gamepadState = whackModule.gamepadState
+      if (!gamepadState) return
+      
       // Manually set some flags to true
-      whackModule.gamepadState = {
-        dpadUpPressed: true,
-        dpadDownPressed: true,
-        dpadLeftPressed: true,
-        dpadRightPressed: true,
-        aButtonPressed: true,
-        bButtonPressed: true
-      }
+      gamepadState.dpadUpPressed = true
+      gamepadState.dpadDownPressed = true
+      gamepadState.dpadLeftPressed = true
+      gamepadState.dpadRightPressed = true
+      gamepadState.aButtonPressed = true
+      gamepadState.bButtonPressed = true
+      
       whackModule.resetGamepadState()
-      expect(whackModule.gamepadState.dpadUpPressed).toBe(false)
-      expect(whackModule.gamepadState.dpadDownPressed).toBe(false)
-      expect(whackModule.gamepadState.dpadLeftPressed).toBe(false)
-      expect(whackModule.gamepadState.dpadRightPressed).toBe(false)
-      expect(whackModule.gamepadState.aButtonPressed).toBe(false)
-      expect(whackModule.gamepadState.bButtonPressed).toBe(false)
+      expect(gamepadState.dpadUpPressed).toBe(false)
+      expect(gamepadState.dpadDownPressed).toBe(false)
+      expect(gamepadState.dpadLeftPressed).toBe(false)
+      expect(gamepadState.dpadRightPressed).toBe(false)
+      expect(gamepadState.aButtonPressed).toBe(false)
+      expect(gamepadState.bButtonPressed).toBe(false)
     })
 
     it('handleGamepad() sets state.gamepadConnected on first detection', () => {
