@@ -159,10 +159,14 @@ test.describe('Tetris E2E Tests', () => {
         col: 0
       }
       tetrisModule.state.lastDropTime = performance.now() - 2000
+      
+      // Force update to process the piece drop and line clearing
+      tetrisModule.update()
+      tetrisModule.update()
     })
     
-    // Wait for the piece to drop and lock
-    await wait(500)
+    // Wait for the UI to update
+    await wait(300)
     
     // Verify 4 lines were cleared (lines counter should increase by 4)
     const linesAfter = await page.locator('.info-value').nth(2).textContent()
