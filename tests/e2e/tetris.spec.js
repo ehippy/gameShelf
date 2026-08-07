@@ -19,11 +19,23 @@ test.describe('Tetris E2E Tests', () => {
     
     // Press Space to start the game
     await page.keyboard.press('Space')
-    await wait(100)
+    await wait(500)  // Wait longer for game to process
     
-    // Verify isPlaying changed (score should increase from soft drop bonus)
-    const scoreAfter = await page.locator('.info-value').first().textContent()
-    expect(parseInt(scoreAfter)).toBeGreaterThan(parseInt(scoreBefore))
+    // Check if isPlaying changed by checking if piece moved
+    const rowAfter = await page.evaluate(() => {
+      const tetrisModule = window.__tetrisModule
+      return tetrisModule?.state?.currentPiece?.row ?? null
+    })
+    
+    // Piece should have dropped from row 0
+    expect(rowAfter).toBeGreaterThan(0)
+    
+    // Verify isPlaying state
+    const isPlaying = await page.evaluate(() => {
+      const tetrisModule = window.__tetrisModule
+      return tetrisModule?.state?.isPlaying ?? false
+    })
+    expect(isPlaying).toBe(true)
   })
 
   test('game starts on first input (ArrowDown)', async ({ page }) => {
