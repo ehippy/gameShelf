@@ -326,6 +326,183 @@ describe('whack-a-mole', () => {
       expect(whackModule.state.isGameOver).toBe(false)
     })
 
+    it('resetGamepadState() resets all gamepadState flags to false', () => {
+      if (!whackModule) return
+      // Manually set some flags to true
+      whackModule.gamepadState = {
+        dpadUpPressed: true,
+        dpadDownPressed: true,
+        dpadLeftPressed: true,
+        dpadRightPressed: true,
+        aButtonPressed: true,
+        bButtonPressed: true
+      }
+      whackModule.resetGamepadState()
+      expect(whackModule.gamepadState.dpadUpPressed).toBe(false)
+      expect(whackModule.gamepadState.dpadDownPressed).toBe(false)
+      expect(whackModule.gamepadState.dpadLeftPressed).toBe(false)
+      expect(whackModule.gamepadState.dpadRightPressed).toBe(false)
+      expect(whackModule.gamepadState.aButtonPressed).toBe(false)
+      expect(whackModule.gamepadState.bButtonPressed).toBe(false)
+    })
+
+    it('handleGamepad() sets state.gamepadConnected on first detection', () => {
+      if (!whackModule) return
+      whackModule.init()
+      expect(whackModule.state.gamepadConnected).toBe(false)
+      
+      // Create a mock gamepad object
+      const mockGamepad = {
+        buttons: [
+          { pressed: false }, // A button (0)
+          { pressed: false }, // B button (1)
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false }, // dpadUp (12)
+          { pressed: false }, // dpadDown (13)
+          { pressed: false }, // dpadLeft (14)
+          { pressed: false }  // dpadRight (15)
+        ]
+      }
+      
+      whackModule.handleGamepad(mockGamepad)
+      expect(whackModule.state.gamepadConnected).toBe(true)
+    })
+
+    it('handleGamepad() with A button pressed in menu selects difficulty', () => {
+      if (!whackModule) return
+      whackModule.init()
+      expect(whackModule.state.isPlaying).toBe(false)
+      
+      // Create a mock gamepad with A button pressed
+      const mockGamepad = {
+        buttons: [
+          { pressed: true }, // A button (0)
+          { pressed: false }, // B button (1)
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false }, // dpadUp (12)
+          { pressed: false }, // dpadDown (13)
+          { pressed: false }, // dpadLeft (14)
+          { pressed: false }  // dpadRight (15)
+        ]
+      }
+      
+      whackModule.handleGamepad(mockGamepad)
+      expect(whackModule.state.isPlaying).toBe(true)
+    })
+
+    it('handleGamepad() with B button pressed in menu starts game', () => {
+      if (!whackModule) return
+      whackModule.init()
+      expect(whackModule.state.isPlaying).toBe(false)
+      
+      // Create a mock gamepad with B button pressed
+      const mockGamepad = {
+        buttons: [
+          { pressed: false }, // A button (0)
+          { pressed: true }, // B button (1)
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false }, // dpadUp (12)
+          { pressed: false }, // dpadDown (13)
+          { pressed: false }, // dpadLeft (14)
+          { pressed: false }  // dpadRight (15)
+        ]
+      }
+      
+      whackModule.handleGamepad(mockGamepad)
+      expect(whackModule.state.isPlaying).toBe(true)
+    })
+
+    it('handleGamepad() with D-pad Left moves cursor left', () => {
+      if (!whackModule) return
+      whackModule.init()
+      whackModule.state.cursorCol = 2
+      whackModule.state.cursorRow = 1
+      
+      // Create a mock gamepad with dpadLeft pressed
+      const mockGamepad = {
+        buttons: [
+          { pressed: false }, // A button (0)
+          { pressed: false }, // B button (1)
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false }, // dpadUp (12)
+          { pressed: false }, // dpadDown (13)
+          { pressed: true },  // dpadLeft (14)
+          { pressed: false }  // dpadRight (15)
+        ]
+      }
+      
+      whackModule.handleGamepad(mockGamepad)
+      expect(whackModule.state.cursorCol).toBe(1)
+    })
+
+    it('handleGamepad() with D-pad Right moves cursor right', () => {
+      if (!whackModule) return
+      whackModule.init()
+      whackModule.state.cursorCol = 1
+      whackModule.state.cursorRow = 1
+      
+      // Create a mock gamepad with dpadRight pressed
+      const mockGamepad = {
+        buttons: [
+          { pressed: false }, // A button (0)
+          { pressed: false }, // B button (1)
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false },
+          { pressed: false }, // dpadUp (12)
+          { pressed: false }, // dpadDown (13)
+          { pressed: false }, // dpadLeft (14)
+          { pressed: true }   // dpadRight (15)
+        ]
+      }
+      
+      whackModule.handleGamepad(mockGamepad)
+      expect(whackModule.state.cursorCol).toBe(2)
+    })
+
     it("whackCell on mole with phase >= 66 does nothing", () => {
       if (!whackModule) return
       whackModule.init('Hard')
