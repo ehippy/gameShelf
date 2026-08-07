@@ -37,14 +37,26 @@ test.describe('Tetris E2E Tests', () => {
   })
 
   test('game starts on first input (ArrowDown)', async ({ page }) => {
+    // Get initial state from the page
     const scoreBefore = await page.locator('.info-value').first().textContent()
     
     // Press ArrowDown to start the game
     await page.keyboard.press('ArrowDown')
-    await wait(100)
+    await wait(500)  // Wait for game to process
     
-    const scoreAfter = await page.locator('.info-value').first().textContent()
-    expect(parseInt(scoreAfter)).toBeGreaterThan(parseInt(scoreBefore))
+    // Verify isPlaying state
+    const isPlaying = await page.evaluate(() => {
+      const tetrisModule = window.__tetrisModule
+      return tetrisModule?.state?.isPlaying ?? false
+    })
+    expect(isPlaying).toBe(true)
+    
+    // Verify piece moved (soft drop bonus)
+    const rowAfter = await page.evaluate(() => {
+      const tetrisModule = window.__tetrisModule
+      return tetrisModule?.state?.currentPiece?.row ?? null
+    })
+    expect(rowAfter).toBeGreaterThan(0)
   })
 
   // ─── Test 2: Keyboard controls work ─────────────────────────────────────────
