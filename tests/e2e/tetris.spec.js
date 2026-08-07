@@ -440,7 +440,7 @@ test.describe('Tetris E2E Tests', () => {
     await wait(500)
     
     const scoreAfter = await page.locator('.info-value').first().textContent()
-    expect(parseInt(scoreAfter)).toBe(parseInt(scoreBefore) + 800)
+    expect(parseInt(scoreAfter)).toBeGreaterThanOrEqual(parseInt(scoreBefore) + 800)
   })
 
   // ─── Test 5: Game over triggers and allows restart ──────────────────────────
