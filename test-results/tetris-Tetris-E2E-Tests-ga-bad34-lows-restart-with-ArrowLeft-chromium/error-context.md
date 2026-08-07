@@ -6,8 +6,8 @@
 
 # Test info
 
-- Name: tetris.spec.js >> Tetris E2E Tests >> game over allows restart with Space
-- Location: tests/e2e/tetris.spec.js:495:3
+- Name: tetris.spec.js >> Tetris E2E Tests >> game over allows restart with ArrowLeft
+- Location: tests/e2e/tetris.spec.js:562:3
 
 # Error details
 
