@@ -15,7 +15,7 @@
 Error: expect(received).toBe(expected) // Object.is equality
 
 Expected: 4
-Received: 0
+Received: 8
 ```
 
 # Page snapshot
@@ -43,13 +43,13 @@ Received: 0
     - generic [ref=f1e15]:
       - generic [ref=f1e16]:
         - generic [ref=f1e17]: Score
-        - generic [ref=f1e18]: "0"
+        - generic [ref=f1e18]: "836"
       - generic [ref=f1e19]:
         - generic [ref=f1e20]: Level
         - generic [ref=f1e21]: "1"
       - generic [ref=f1e22]:
         - generic [ref=f1e23]: Lines
-        - generic [ref=f1e24]: "0"
+        - generic [ref=f1e24]: "8"
   - contentinfo [ref=f1e27]:
     - paragraph [ref=f1e28]: © 2025 gameShelf — All games built in browser — no downloads required
     - link "About" [ref=f1e29] [cursor=pointer]:
