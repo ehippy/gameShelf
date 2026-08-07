@@ -143,31 +143,30 @@ test.describe('Tetris E2E Tests', () => {
       const tetrisModule = window.__tetrisModule
       if (!tetrisModule) return
       
+      // Get the reactive state from Vue
+      const vueState = tetrisModule.vueState
+      
       // Fill rows 16, 17, 18, 19 completely
       for (let r = 16; r < 20; r++) {
         for (let c = 0; c < 10; c++) {
-          tetrisModule.state.board[r][c] = '#ff0000'
+          vueState.board[r][c] = '#ff0000'
         }
       }
       
       // Place I-piece at row 13 so it drops and completes the 4th row
-      tetrisModule.state.currentPiece = {
+      vueState.currentPiece = {
         type: 'I',
         shape: [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
         color: '#00f0f0',
         row: 13,
         col: 0
       }
-      tetrisModule.state.lastDropTime = performance.now() - 2000
+      vueState.lastDropTime = performance.now() - 2000
       
       // Force update to process the piece drop and line clearing
       tetrisModule.update()
-      tetrisModule.state.lastDropTime = performance.now() - 2000
+      vueState.lastDropTime = performance.now() - 2000
       tetrisModule.update()
-      
-      // Force Vue to re-render by triggering a state change that Vue detects
-      // This forces the reactive proxy to update
-      tetrisModule.state.score = tetrisModule.state.score
     })
     
     // Wait for the game loop to update the UI
