@@ -167,12 +167,10 @@ test.describe('Tetris E2E Tests', () => {
       state.lastDropTime = performance.now() - 2000
       tetrisModule.update()
       
-      // Directly update the lines property to trigger Vue reactivity
-      // This should force Vue to detect the change and re-render
-      state.lines = state.lines + 4 - 4  // No-op to trigger reactivity
-      
-      // Also update score
-      state.score = state.score
+      // Force Vue reactivity by creating a new object reference
+      // This should trigger Vue to detect the change and re-render
+      const oldLines = state.lines
+      state.lines = oldLines + 4
     })
     
     // Wait for the game loop to update the UI
