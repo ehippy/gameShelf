@@ -165,11 +165,9 @@ test.describe('Tetris E2E Tests', () => {
       tetrisModule.state.lastDropTime = performance.now() - 2000
       tetrisModule.update()
       
-      // Force a re-render by calling render with the canvas
-      const canvas = document.querySelector('canvas')
-      if (canvas) {
-        tetrisModule.render(canvas)
-      }
+      // Force Vue to re-render by triggering a state change that Vue detects
+      // This forces the reactive proxy to update
+      tetrisModule.state.score = tetrisModule.state.score
     })
     
     // Wait for the game loop to update the UI
