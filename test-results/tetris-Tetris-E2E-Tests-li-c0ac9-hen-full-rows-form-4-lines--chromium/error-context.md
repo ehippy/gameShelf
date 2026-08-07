@@ -12,11 +12,10 @@
 # Error details
 
 ```
-Test timeout of 30000ms exceeded.
-```
+Error: expect(received).toBe(expected) // Object.is equality
 
-```
-Error: page.waitForFunction: Test timeout of 30000ms exceeded.
+Expected: 4
+Received: 0
 ```
 
 # Page snapshot
@@ -60,45 +59,6 @@ Error: page.waitForFunction: Test timeout of 30000ms exceeded.
 # Test source
 
 ```ts
-  41  | 
-  42  |   test('game starts on first input (ArrowDown)', async ({ page }) => {
-  43  |     // Get initial state from the page
-  44  |     const scoreBefore = await page.locator('.info-value').first().textContent()
-  45  |     
-  46  |     // Press ArrowDown to start the game
-  47  |     await page.keyboard.press('ArrowDown')
-  48  |     await wait(500)  // Wait for game to process
-  49  |     
-  50  |     // Verify isPlaying state
-  51  |     const isPlaying = await page.evaluate(() => {
-  52  |       const tetrisModule = window.__tetrisModule
-  53  |       return tetrisModule?.state?.isPlaying ?? false
-  54  |     })
-  55  |     expect(isPlaying).toBe(true)
-  56  |     
-  57  |     // Verify piece moved (soft drop bonus)
-  58  |     const rowAfter = await page.evaluate(() => {
-  59  |       const tetrisModule = window.__tetrisModule
-  60  |       return tetrisModule?.state?.currentPiece?.row ?? null
-  61  |     })
-  62  |     expect(rowAfter).toBeGreaterThan(0)
-  63  |   })
-  64  | 
-  65  |   // ─── Test 2: Keyboard controls work ─────────────────────────────────────────
-  66  | 
-  67  |   test('keyboard controls work - ArrowLeft moves piece left', async ({ page }) => {
-  68  |     // Start the game first
-  69  |     await page.keyboard.press('Space')
-  70  |     await wait(200)
-  71  |     
-  72  |     // Get initial column position by checking canvas state
-  73  |     const colBefore = await page.evaluate(() => {
-  74  |       const tetrisModule = window.__tetrisModule
-  75  |       return tetrisModule?.state?.currentPiece?.col ?? null
-  76  |     })
-  77  |     
-  78  |     // Press ArrowLeft
-  79  |     await page.keyboard.press('ArrowLeft')
   80  |     await wait(100)
   81  |     
   82  |     const colAfter = await page.evaluate(() => {
@@ -159,40 +119,39 @@ Error: page.waitForFunction: Test timeout of 30000ms exceeded.
   137 |     const linesBefore = await page.locator('.info-value').nth(2).textContent()
   138 |     const scoreBefore = await page.locator('.info-value').first().textContent()
   139 |     
-  140 |     // Wait for reactive state to be available
-> 141 |     await page.waitForFunction(() => window.__tetrisReactiveState !== undefined)
-      |                ^ Error: page.waitForFunction: Test timeout of 30000ms exceeded.
-  142 |     
-  143 |     // Force 4 full rows by manipulating the board state directly
-  144 |     // This requires accessing the game module from window
-  145 |     await page.evaluate(() => {
-  146 |       const tetrisModule = window.__tetrisModule
-  147 |       if (!tetrisModule) return
-  148 |       
-  149 |       // Get the reactive state from Vue
-  150 |       const vueState = window.__tetrisReactiveState
-  151 |       
-  152 |       // Fill rows 16, 17, 18, 19 completely
-  153 |       for (let r = 16; r < 20; r++) {
-  154 |         for (let c = 0; c < 10; c++) {
-  155 |           vueState.board[r][c] = '#ff0000'
-  156 |         }
-  157 |       }
-  158 |       
-  159 |       // Place I-piece at row 13 so it drops and completes the 4th row
-  160 |       vueState.currentPiece = {
-  161 |         type: 'I',
-  162 |         shape: [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
-  163 |         color: '#00f0f0',
-  164 |         row: 13,
-  165 |         col: 0
-  166 |       }
-  167 |       vueState.lastDropTime = performance.now() - 2000
-  168 |       
-  169 |       // Force update to process the piece drop and line clearing
-  170 |       tetrisModule.update()
-  171 |       vueState.lastDropTime = performance.now() - 2000
-  172 |       tetrisModule.update()
+  140 |     // Force 4 full rows by manipulating the board state directly
+  141 |     // This requires accessing the game module from window
+  142 |     await page.evaluate(() => {
+  143 |       const tetrisModule = window.__tetrisModule
+  144 |       if (!tetrisModule) return
+  145 |       
+  146 |       const state = tetrisModule.state
+  147 |       
+  148 |       // Fill rows 16, 17, 18, 19 completely
+  149 |       for (let r = 16; r < 20; r++) {
+  150 |         for (let c = 0; c < 10; c++) {
+  151 |           state.board[r][c] = '#ff0000'
+  152 |         }
+  153 |       }
+  154 |       
+  155 |       // Place I-piece at row 13 so it drops and completes the 4th row
+  156 |       state.currentPiece = {
+  157 |         type: 'I',
+  158 |         shape: [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
+  159 |         color: '#00f0f0',
+  160 |         row: 13,
+  161 |         col: 0
+  162 |       }
+  163 |       state.lastDropTime = performance.now() - 2000
+  164 |       
+  165 |       // Force update to process the piece drop and line clearing
+  166 |       tetrisModule.update()
+  167 |       state.lastDropTime = performance.now() - 2000
+  168 |       tetrisModule.update()
+  169 |       
+  170 |       // Force Vue to re-render by directly modifying a reactive property
+  171 |       // This should trigger Vue's reactivity system
+  172 |       state.lines = state.lines
   173 |     })
   174 |     
   175 |     // Wait for the game loop to update the UI
@@ -200,7 +159,8 @@ Error: page.waitForFunction: Test timeout of 30000ms exceeded.
   177 |     
   178 |     // Verify 4 lines were cleared (lines counter should increase by 4)
   179 |     const linesAfter = await page.locator('.info-value').nth(2).textContent()
-  180 |     expect(parseInt(linesAfter)).toBe(parseInt(linesBefore) + 4)
+> 180 |     expect(parseInt(linesAfter)).toBe(parseInt(linesBefore) + 4)
+      |                                  ^ Error: expect(received).toBe(expected) // Object.is equality
   181 |     
   182 |     // Verify score increased by 800 (at level 1)
   183 |     const scoreAfter = await page.locator('.info-value').first().textContent()
@@ -262,4 +222,43 @@ Error: page.waitForFunction: Test timeout of 30000ms exceeded.
   239 |       
   240 |       for (let r of [18, 19]) {
   241 |         for (let c = 0; c < 10; c++) {
+  242 |           tetrisModule.state.board[r][c] = '#ff0000'
+  243 |         }
+  244 |       }
+  245 |       
+  246 |       tetrisModule.state.currentPiece.row = 16
+  247 |       tetrisModule.state.currentPiece.col = 0
+  248 |       tetrisModule.state.lastDropTime = performance.now() - 2000
+  249 |     })
+  250 |     
+  251 |     await wait(500)
+  252 |     
+  253 |     const scoreAfter = await page.locator('.info-value').first().textContent()
+  254 |     expect(parseInt(scoreAfter)).toBe(parseInt(scoreBefore) + 300)
+  255 |   })
+  256 | 
+  257 |   test('score increases by 500 when 3 lines cleared', async ({ page }) => {
+  258 |     await page.keyboard.press('Space')
+  259 |     await wait(200)
+  260 |     
+  261 |     await page.evaluate(() => {
+  262 |       const tetrisModule = window.__tetrisModule
+  263 |       if (tetrisModule) {
+  264 |         tetrisModule.state.level = 1
+  265 |       }
+  266 |     })
+  267 |     
+  268 |     const scoreBefore = await page.locator('.info-value').first().textContent()
+  269 |     
+  270 |     await page.evaluate(() => {
+  271 |       const tetrisModule = window.__tetrisModule
+  272 |       if (!tetrisModule) return
+  273 |       
+  274 |       for (let r of [17, 18, 19]) {
+  275 |         for (let c = 0; c < 10; c++) {
+  276 |           tetrisModule.state.board[r][c] = '#ff0000'
+  277 |         }
+  278 |       }
+  279 |       
+  280 |       tetrisModule.state.currentPiece.row = 15
 ```
