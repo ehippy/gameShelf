@@ -458,33 +458,21 @@ test.describe('Tetris E2E Tests', () => {
     await page.keyboard.press('Space')
     await wait(200)
     
-    // Force game over by filling the board
+    // Force game over by filling the top rows of the board
     await page.evaluate(() => {
       const tetrisModule = window.__tetrisModule
       if (!tetrisModule) return
       
-      // Fill most of the board with blocks
-      for (let r = 10; r < 20; r++) {
+      // Fill the top rows (0-1) with blocks so new pieces can't spawn
+      for (let r = 0; r < 2; r++) {
         for (let c = 0; c < 10; c++) {
           tetrisModule.state.board[r][c] = '#ff0000'
         }
       }
       
-      // Place piece in a position where it will cause game over
-      tetrisModule.state.currentPiece = {
-        type: 'O',
-        shape: [[1, 1], [1, 1]],
-        color: '#f0f000',
-        row: 0,
-        col: 4
-      }
+      // Clear current piece so the next update will try to spawn a new piece
+      tetrisModule.state.currentPiece = null
       tetrisModule.state.lastDropTime = performance.now() - 2000
-      
-      // Force game over by calling spawnPiece which will check isValidPosition
-      // Since the piece is at row 0 and there are blocks in the board, spawnPiece should fail
-      // But we need to clear the nextPiece first so spawnPiece creates a new piece
-      tetrisModule.state.nextPiece = null
-      tetrisModule.state.bag = []
       
       // Call update which will trigger lockPiece -> spawnPiece -> game over check
       tetrisModule.update()
