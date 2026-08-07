@@ -8,7 +8,8 @@ test('home page loads and shows gameShelf title', async ({ page }) => {
 
 test('home page has game cards', async ({ page }) => {
   await page.goto('/')
-  const cards = page.locator('.game-card')
+  // Use data attributes to target only the main grid cards (not WhatsNew)
+  const cards = page.locator('.games-grid .game-card')
   await expect(cards).not.toBeEmpty()
 })
 
