@@ -91,6 +91,9 @@ onMounted(async () => {
   // Start the game
   gameLogic.init()
   state = reactive(gameLogic.state)
+  
+  // Also expose the reactive state for E2E tests
+  window.__tetrisReactiveState = state
 
   // Score submission helper
   const submitScoreIfGameOver = () => {
