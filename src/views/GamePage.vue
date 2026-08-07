@@ -85,15 +85,15 @@ onMounted(async () => {
   // Expose game module to window for E2E tests
   window.__tetrisModule = gameLogic
 
-  const canvas = gameCanvas.value
-  if (!canvas) return
-
   // Start the game
   gameLogic.init()
   state = reactive(gameLogic.state)
   
   // Also expose the reactive state for E2E tests
   window.__tetrisReactiveState = state
+
+  const canvas = gameCanvas.value
+  if (!canvas) return
 
   // Score submission helper
   const submitScoreIfGameOver = () => {
