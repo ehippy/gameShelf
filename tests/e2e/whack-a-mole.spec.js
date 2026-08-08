@@ -75,15 +75,16 @@ test.describe('Whack-a-Mole E2E Tests - Dynamic Window Exposure', () => {
     expect(stateCheck.hasCursorCol).toBe(true)
   })
 
-  test('keyboard controls work - ArrowRight moves cursor right', async ({ page }) => {
+  test('whack-a-mole keyboard controls work - ArrowRight moves cursor right', async ({ page }) => {
     // Start the game first with Space
     await page.keyboard.press('Space')
-    await wait(200)
+    await wait(300)
     
     // Get initial cursor position
     const initialCol = await page.evaluate(() => {
       return window['__whack-a-moleReactiveState']?.cursor?.col ?? null
     })
+    expect(initialCol).not.toBeNull()
     
     // Press ArrowRight
     await page.keyboard.press('ArrowRight')
@@ -97,15 +98,16 @@ test.describe('Whack-a-Mole E2E Tests - Dynamic Window Exposure', () => {
     expect(newCol).toBeGreaterThan(initialCol)
   })
 
-  test('keyboard controls work - ArrowLeft moves cursor left', async ({ page }) => {
+  test('whack-a-mole keyboard controls work - ArrowLeft moves cursor left', async ({ page }) => {
     // Start the game first with Space
     await page.keyboard.press('Space')
-    await wait(200)
+    await wait(300)
     
     // Get initial cursor position
     const initialCol = await page.evaluate(() => {
       return window['__whack-a-moleReactiveState']?.cursor?.col ?? null
     })
+    expect(initialCol).not.toBeNull()
     
     // Press ArrowLeft (wrap around or move left)
     await page.keyboard.press('ArrowLeft')
@@ -120,32 +122,36 @@ test.describe('Whack-a-Mole E2E Tests - Dynamic Window Exposure', () => {
     expect(newCol).not.toBe(initialCol)
   })
 
-  test('difficulty selection works - A button selects difficulty in menu', async ({ page }) => {
-    // In the menu state, A button (gamepad) or clicking a difficulty button starts the game
-    // For keyboard tests, we'll verify the cursor navigation works instead
-    
-    // Get initial difficulty from reactive state
-    const initialDifficulty = await page.evaluate(() => {
-      return window['__whack-a-moleReactiveState']?.difficulty ?? null
+  test('whack-a-mole game starts with Space', async ({ page }) => {
+    // In menu state, Space should start the game
+    const initialState = await page.evaluate(() => {
+      const state = window['__whack-a-moleReactiveState']
+      return {
+        isPlaying: state.isPlaying,
+        score: state.score
+      }
     })
     
-    // In menu state, A button (when gamepad is connected) or clicking starts the game
-    // For keyboard, Space starts the game with current difficulty
+    expect(initialState.isPlaying).toBe(false)
+    
+    // Press Space to start
     await page.keyboard.press('Space')
-    await wait(200)
+    await wait(300)
     
-    const isPlaying = await page.evaluate(() => {
-      return window['__whack-a-moleReactiveState']?.isPlaying ?? false
+    const afterSpace = await page.evaluate(() => {
+      const state = window['__whack-a-moleReactiveState']
+      return {
+        isPlaying: state.isPlaying
+      }
     })
     
-    // Game should have started
-    expect(isPlaying).toBe(true)
+    expect(afterSpace.isPlaying).toBe(true)
   })
 
-  test('whacking mole works - Space whacks when cursor on mole', async ({ page }) => {
+  test('whack-a-mole whacking works - Space triggers whack', async ({ page }) => {
     // Start the game first with Space
     await page.keyboard.press('Space')
-    await wait(200)
+    await wait(300)
     
     // Get initial score
     const initialScore = await page.evaluate(() => {
