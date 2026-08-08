@@ -141,7 +141,7 @@ Received: false
   93  |     
   94  |     // Press Space (which should start the game and flap)
   95  |     await page.keyboard.press('Space')
-  96  |     await wait(300)
+  96  |     await wait(500)  // Give more time for game to process
   97  |     
   98  |     // After Space, isPlaying should be true
   99  |     const afterSpace = await page.evaluate(() => {
@@ -159,7 +159,7 @@ Received: false
   110 |   test('flappy-bird keyboard controls work - ArrowUp key is valid', async ({ page }) => {
   111 |     // Start the game first with Space
   112 |     await page.keyboard.press('Space')
-  113 |     await wait(300)
+  113 |     await wait(500)  // Give more time for game to process
   114 |     
   115 |     // Get initial bird position after game started
   116 |     const initialRow = await page.evaluate(() => {
