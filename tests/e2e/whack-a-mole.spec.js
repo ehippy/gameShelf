@@ -16,32 +16,32 @@ test.describe('Whack-a-Mole E2E Tests - Dynamic Window Exposure', () => {
   test('window.__whack-a-moleModule is available for E2E tests', async ({ page }) => {
     const moduleAvailable = await page.evaluate(() => {
       console.log('Checking window keys:', Object.keys(window).filter(k => k.startsWith('__')))
-      return window.__whack-a-moleModule !== undefined
+      return window['__whack-a-moleModule'] !== undefined
     })
     expect(moduleAvailable).toBe(true)
   })
 
   test('window.__whack-a-moleReactiveState is available for E2E tests', async ({ page }) => {
     const stateAvailable = await page.evaluate(() => {
-      return window.__whack-a-moleReactiveState !== undefined
+      return window['__whack-a-moleReactiveState'] !== undefined
     })
     expect(stateAvailable).toBe(true)
   })
 
   test('whack-a-mole module has required exports', async ({ page }) => {
     const exportsCheck = await page.evaluate(() => {
-      const window["__whack-a-moleModule"] = window.__whack-a-moleModule
-      if (!window["__whack-a-moleModule"]) return { error: 'Module not found' }
+      const whackAMoleModule = window['__whack-a-moleModule']
+      if (!whackAMoleModule) return { error: 'Module not found' }
       
       const requiredExports = ['init', 'update', 'render', 'reset', 'handleKeydown']
-      const missing = requiredExports.filter(exportName => typeof window["__whack-a-moleModule"][exportName] !== 'function')
+      const missing = requiredExports.filter(exportName => typeof whackAMoleModule[exportName] !== 'function')
       
       return {
-        hasInit: typeof window["__whack-a-moleModule"].init === 'function',
-        hasUpdate: typeof window["__whack-a-moleModule"].update === 'function',
-        hasRender: typeof window["__whack-a-moleModule"].render === 'function',
-        hasReset: typeof window["__whack-a-moleModule"].reset === 'function',
-        hasHandleKeydown: typeof window["__whack-a-moleModule"].handleKeydown === 'function',
+        hasInit: typeof whackAMoleModule.init === 'function',
+        hasUpdate: typeof whackAMoleModule.update === 'function',
+        hasRender: typeof whackAMoleModule.render === 'function',
+        hasReset: typeof whackAMoleModule.reset === 'function',
+        hasHandleKeydown: typeof whackAMoleModule.handleKeydown === 'function',
         missingExports: missing.length > 0 ? missing : null
       }
     })
@@ -56,15 +56,15 @@ test.describe('Whack-a-Mole E2E Tests - Dynamic Window Exposure', () => {
 
   test('whack-a-mole reactive state has isPlaying property', async ({ page }) => {
     const stateCheck = await page.evaluate(() => {
-      const window["__whack-a-moleReactiveState"] = window.__whack-a-moleReactiveState
-      if (!window["__whack-a-moleReactiveState"]) return { error: 'State not found' }
+      const whackAMoleState = window['__whack-a-moleReactiveState']
+      if (!whackAMoleState) return { error: 'State not found' }
       
       return {
-        hasIsPlaying: window["__whack-a-moleReactiveState"].isPlaying !== undefined,
-        isPlayingInitial: window["__whack-a-moleReactiveState"].isPlaying === false, // Should be false initially
-        hasScore: window["__whack-a-moleReactiveState"].score !== undefined,
-        hasCursorRow: window["__whack-a-moleReactiveState"].cursor.row !== undefined,
-        hasCursorCol: window["__whack-a-moleReactiveState"].cursor.col !== undefined
+        hasIsPlaying: whackAMoleState.isPlaying !== undefined,
+        isPlayingInitial: whackAMoleState.isPlaying === false, // Should be false initially
+        hasScore: whackAMoleState.score !== undefined,
+        hasCursorRow: whackAMoleState.cursor.row !== undefined,
+        hasCursorCol: whackAMoleState.cursor.col !== undefined
       }
     })
     
@@ -82,7 +82,7 @@ test.describe('Whack-a-Mole E2E Tests - Dynamic Window Exposure', () => {
     
     // Get initial cursor position
     const initialCol = await page.evaluate(() => {
-      return window.__whack-a-moleReactiveState?.cursor?.col ?? null
+      return window['__whack-a-moleReactiveState']?.cursor?.col ?? null
     })
     
     // Press ArrowRight
@@ -91,7 +91,7 @@ test.describe('Whack-a-Mole E2E Tests - Dynamic Window Exposure', () => {
     
     // Verify cursor moved right
     const newCol = await page.evaluate(() => {
-      return window.__whack-a-moleReactiveState?.cursor?.col ?? null
+      return window['__whack-a-moleReactiveState']?.cursor?.col ?? null
     })
     
     expect(newCol).toBeGreaterThan(initialCol)
@@ -104,7 +104,7 @@ test.describe('Whack-a-Mole E2E Tests - Dynamic Window Exposure', () => {
     
     // Get initial cursor position
     const initialCol = await page.evaluate(() => {
-      return window.__whack-a-moleReactiveState?.cursor?.col ?? null
+      return window['__whack-a-moleReactiveState']?.cursor?.col ?? null
     })
     
     // Press ArrowLeft (wrap around or move left)
@@ -113,7 +113,7 @@ test.describe('Whack-a-Mole E2E Tests - Dynamic Window Exposure', () => {
     
     // Verify cursor moved left (or wrapped to rightmost column)
     const newCol = await page.evaluate(() => {
-      return window.__whack-a-moleReactiveState?.cursor?.col ?? null
+      return window['__whack-a-moleReactiveState']?.cursor?.col ?? null
     })
     
     // Either moved left or wrapped around (both are valid behaviors)
@@ -126,7 +126,7 @@ test.describe('Whack-a-Mole E2E Tests - Dynamic Window Exposure', () => {
     
     // Get initial difficulty from reactive state
     const initialDifficulty = await page.evaluate(() => {
-      return window.__whack-a-moleReactiveState?.difficulty ?? null
+      return window['__whack-a-moleReactiveState']?.difficulty ?? null
     })
     
     // In menu state, A button (when gamepad is connected) or clicking starts the game
@@ -135,7 +135,7 @@ test.describe('Whack-a-Mole E2E Tests - Dynamic Window Exposure', () => {
     await wait(200)
     
     const isPlaying = await page.evaluate(() => {
-      return window.__whack-a-moleReactiveState?.isPlaying ?? false
+      return window['__whack-a-moleReactiveState']?.isPlaying ?? false
     })
     
     // Game should have started
@@ -149,7 +149,7 @@ test.describe('Whack-a-Mole E2E Tests - Dynamic Window Exposure', () => {
     
     // Get initial score
     const initialScore = await page.evaluate(() => {
-      return window.__whack-a-moleReactiveState?.score ?? 0
+      return window['__whack-a-moleReactiveState']?.score ?? 0
     })
     
     // Press Space to whack (if mole is at cursor position, score increases)
@@ -157,7 +157,7 @@ test.describe('Whack-a-Mole E2E Tests - Dynamic Window Exposure', () => {
     await wait(100)
     
     const newScore = await page.evaluate(() => {
-      return window.__whack-a-moleReactiveState?.score ?? 0
+      return window['__whack-a-moleReactiveState']?.score ?? 0
     })
     
     // Score should have increased (mole was likely at cursor position)
