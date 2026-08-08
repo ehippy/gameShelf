@@ -91,6 +91,7 @@ onMounted(async () => {
   state = reactive(gameLogic.state)
   
   // Also expose the reactive state for E2E tests using dynamic key based on slug
+  // Example: for slug 'tetris' → window.__tetrisReactiveState, for slug 'snake' → window.__snakeReactiveState
   window[`__${slug}ReactiveState`] = state
 
   const canvas = gameCanvas.value
