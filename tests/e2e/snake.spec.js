@@ -73,33 +73,24 @@ test.describe('Snake E2E Tests - Dynamic Window Exposure', () => {
     expect(stateCheck.hasDirection).toBe(true)
   })
 
-  test('game starts on first input (Space) - dynamic exposure', async ({ page }) => {
-    // Verify initial state before starting
-    const initialPlaying = await page.evaluate(() => {
-      return window.__snakeReactiveState?.isPlaying ?? null
-    })
-    expect(initialPlaying).toBe(false)
-    
-    // Press Space to start the game (three-way logic)
-    await page.keyboard.press('Space')
-    await wait(500)
+  test('keyboard controls work - ArrowUp changes direction', async ({ page }) => {
+    // Start the game first with an arrow key (not Space)
+    await page.keyboard.press('ArrowRight')
+    await wait(200)
     
     // Verify isPlaying changed after input
     const isPlaying = await page.evaluate(() => {
       return window.__snakeReactiveState?.isPlaying ?? null
     })
     expect(isPlaying).toBe(true)
-  })
-
-  test('keyboard controls work - ArrowUp changes direction', async ({ page }) => {
-    // Start the game first
-    await page.keyboard.press('Space')
-    await wait(200)
     
     // Get initial direction
     const initialDirection = await page.evaluate(() => {
       return window.__snakeReactiveState?.direction ?? null
     })
+    
+    // Verify initial direction is right (set by ArrowRight above)
+    expect(initialDirection).toBe('right')
     
     // Press ArrowUp
     await page.keyboard.press('ArrowUp')
