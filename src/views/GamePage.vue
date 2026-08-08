@@ -87,6 +87,9 @@ onMounted(async () => {
   // keys based on the game slug. This allows all games (snake, tetris, breakout,
   // flappy-bird, whack-a-mole) to have consistent E2E test access patterns.
   //
+  // The slug is used as-is with NO case conversion - kebab-case slugs remain
+  // kebab-case in the window key (e.g., 'flappy-bird' → __flappy-birdModule).
+  //
   // Examples:
   //   - For slug 'tetris' → window.__tetrisModule and window.__tetrisReactiveState
   //   - For slug 'snake'  → window.__snakeModule and window.__snakeReactiveState
