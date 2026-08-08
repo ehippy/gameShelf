@@ -3,6 +3,15 @@
  * Classic time-based reflex game with combo scoring and gamepad support.
  * API: init(difficulty?), update(), render(canvas), reset(), handleKeydown(key)
  * Exports: state (readable by GamePage)
+ * 
+ * Gamepad support implemented per Snake/Breakout pattern:
+ * - Module-level gamepadState object for button press tracking
+ * - handleGamepad(gamepad) exported for GamePage integration
+ * - resetGamepadState() exported for clean transitions
+ * - D-pad Left/Right (buttons 14/15) move cursor
+ * - A button (0) whacks mole or selects difficulty in menu
+ * - B button (1) starts/restarts game
+ * - Button press tracking prevents repeated triggering on hold
  */
 
 import { handleKeydownTransition } from '../shared/gameHelpers.js'
