@@ -83,6 +83,7 @@ onMounted(async () => {
   canvasHeight.value = gameLogic.CANVAS_HEIGHT ?? 200
 
   // Expose game module to window for E2E tests using dynamic key based on slug
+  // Example: for slug 'tetris' → window.__tetrisModule, for slug 'snake' → window.__snakeModule
   window[`__${slug}Module`] = gameLogic
 
   // Start the game
