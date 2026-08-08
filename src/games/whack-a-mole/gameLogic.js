@@ -403,9 +403,6 @@ export function update() {
       state.whackEffects.splice(i, 1)
     }
   }
-
-  // ── Gamepad ──
-  processGamepad()
 }
 
 function processGamepad() {
