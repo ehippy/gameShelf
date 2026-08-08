@@ -56,15 +56,15 @@ test.describe('Whack-a-Mole E2E Tests - Dynamic Window Exposure', () => {
 
   test('whack-a-mole reactive state has isPlaying property', async ({ page }) => {
     const stateCheck = await page.evaluate(() => {
-      const whackAMoleState = window.__whack-a-moleReactiveState
-      if (!whackAMoleState) return { error: 'State not found' }
+      const window["__whack-a-moleReactiveState"] = window.__whack-a-moleReactiveState
+      if (!window["__whack-a-moleReactiveState"]) return { error: 'State not found' }
       
       return {
-        hasIsPlaying: whackAMoleState.isPlaying !== undefined,
-        isPlayingInitial: whackAMoleState.isPlaying === false, // Should be false initially
-        hasScore: whackAMoleState.score !== undefined,
-        hasCursorRow: whackAMoleState.cursor.row !== undefined,
-        hasCursorCol: whackAMoleState.cursor.col !== undefined
+        hasIsPlaying: window["__whack-a-moleReactiveState"].isPlaying !== undefined,
+        isPlayingInitial: window["__whack-a-moleReactiveState"].isPlaying === false, // Should be false initially
+        hasScore: window["__whack-a-moleReactiveState"].score !== undefined,
+        hasCursorRow: window["__whack-a-moleReactiveState"].cursor.row !== undefined,
+        hasCursorCol: window["__whack-a-moleReactiveState"].cursor.col !== undefined
       }
     })
     
