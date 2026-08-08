@@ -63,7 +63,7 @@ test.describe('Flappy Bird E2E Tests - Dynamic Window Exposure', () => {
         hasIsPlaying: flappyBirdState.isPlaying !== undefined,
         isPlayingInitial: flappyBirdState.isPlaying === false, // Should be false initially
         hasScore: flappyBirdState.score !== undefined,
-        hasBirdY: flappyBirdState.bird.y !== undefined,
+        hasBirdRow: flappyBirdState.bird.row !== undefined,
         hasBirdVelocity: flappyBirdState.bird.velocity !== undefined
       }
     })
