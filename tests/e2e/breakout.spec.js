@@ -31,7 +31,7 @@ test.describe('Breakout E2E Tests - Dynamic Window Exposure', () => {
   test('breakout module has required exports', async ({ page }) => {
     const exportsCheck = await page.evaluate(() => {
       const breakoutModule = window.__breakoutModule
-      if (!breakoutModule) return { error: 'Module not found' })
+      if (!breakoutModule) return { error: 'Module not found' } }
       
       const requiredExports = ['init', 'update', 'render', 'reset', 'handleKeydown']
       const missing = requiredExports.filter(exportName => typeof breakoutModule[exportName] !== 'function')

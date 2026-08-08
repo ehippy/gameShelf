@@ -31,7 +31,7 @@ test.describe('Flappy Bird E2E Tests - Dynamic Window Exposure', () => {
   test('flappy-bird module has required exports', async ({ page }) => {
     const exportsCheck = await page.evaluate(() => {
       const flappyBirdModule = window.__flappy-birdModule
-      if (!flappyBirdModule) return { error: 'Module not found' })
+      if (!flappyBirdModule) return { error: 'Module not found' } }
       
       const requiredExports = ['init', 'update', 'render', 'reset', 'handleKeydown']
       const missing = requiredExports.filter(exportName => typeof flappyBirdModule[exportName] !== 'function')

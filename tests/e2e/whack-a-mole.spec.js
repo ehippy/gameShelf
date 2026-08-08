@@ -31,7 +31,7 @@ test.describe('Whack-a-Mole E2E Tests - Dynamic Window Exposure', () => {
   test('whack-a-mole module has required exports', async ({ page }) => {
     const exportsCheck = await page.evaluate(() => {
       const whackAMoleModule = window.__whack-a-moleModule
-      if (!whackAMoleModule) return { error: 'Module not found' })
+      if (!whackAMoleModule) return { error: 'Module not found' } }
       
       const requiredExports = ['init', 'update', 'render', 'reset', 'handleKeydown']
       const missing = requiredExports.filter(exportName => typeof whackAMoleModule[exportName] !== 'function')
