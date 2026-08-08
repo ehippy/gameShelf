@@ -67,7 +67,7 @@ Received:   0
   82  |     
   83  |     // Get initial cursor position
   84  |     const initialCol = await page.evaluate(() => {
-  85  |       return window['__whack-a-moleReactiveState']?.cursor?.col ?? null
+  85  |       return window['__whack-a-moleReactiveState']?.cursorCol ?? null
   86  |     })
   87  |     expect(initialCol).not.toBeNull()
   88  |     
@@ -77,7 +77,7 @@ Received:   0
   92  |     
   93  |     // Verify cursor moved right
   94  |     const newCol = await page.evaluate(() => {
-  95  |       return window['__whack-a-moleReactiveState']?.cursor?.col ?? null
+  95  |       return window['__whack-a-moleReactiveState']?.cursorCol ?? null
   96  |     })
   97  |     
   98  |     expect(newCol).toBeGreaterThan(initialCol)
@@ -90,7 +90,7 @@ Received:   0
   105 |     
   106 |     // Get initial cursor position
   107 |     const initialCol = await page.evaluate(() => {
-  108 |       return window['__whack-a-moleReactiveState']?.cursor?.col ?? null
+  108 |       return window['__whack-a-moleReactiveState']?.cursorCol ?? null
   109 |     })
   110 |     expect(initialCol).not.toBeNull()
   111 |     
@@ -100,7 +100,7 @@ Received:   0
   115 |     
   116 |     // Verify cursor moved left (or wrapped to rightmost column)
   117 |     const newCol = await page.evaluate(() => {
-  118 |       return window['__whack-a-moleReactiveState']?.cursor?.col ?? null
+  118 |       return window['__whack-a-moleReactiveState']?.cursorCol ?? null
   119 |     })
   120 |     
   121 |     // Either moved left or wrapped around (both are valid behaviors)
