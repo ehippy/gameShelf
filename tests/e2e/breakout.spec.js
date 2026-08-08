@@ -13,10 +13,10 @@ test.describe('Breakout E2E Tests - Dynamic Window Exposure', () => {
 
   // ─── Test: Verify dynamic window exposure works for Breakout ────────────────
 
-  test('window.__breakoutModule is available for E2E tests', async ({ page }) => {
+  test('window.__window["__breakoutModule"] is available for E2E tests', async ({ page }) => {
     const moduleAvailable = await page.evaluate(() => {
       console.log('Checking window keys:', Object.keys(window).filter(k => k.startsWith('__')))
-      return window.__breakoutModule !== undefined
+      return window.__window["__breakoutModule"] !== undefined
     })
     expect(moduleAvailable).toBe(true)
   })
@@ -30,18 +30,18 @@ test.describe('Breakout E2E Tests - Dynamic Window Exposure', () => {
 
   test('breakout module has required exports', async ({ page }) => {
     const exportsCheck = await page.evaluate(() => {
-      const breakoutModule = window.__breakoutModule
-      if (!breakoutModule) return { error: 'Module not found' }
+      const window["__breakoutModule"] = window.__window["__breakoutModule"]
+      if (!window["__breakoutModule"]) return { error: 'Module not found' }
       
       const requiredExports = ['init', 'update', 'render', 'reset', 'handleKeydown']
-      const missing = requiredExports.filter(exportName => typeof breakoutModule[exportName] !== 'function')
+      const missing = requiredExports.filter(exportName => typeof window["__breakoutModule"][exportName] !== 'function')
       
       return {
-        hasInit: typeof breakoutModule.init === 'function',
-        hasUpdate: typeof breakoutModule.update === 'function',
-        hasRender: typeof breakoutModule.render === 'function',
-        hasReset: typeof breakoutModule.reset === 'function',
-        hasHandleKeydown: typeof breakoutModule.handleKeydown === 'function',
+        hasInit: typeof window["__breakoutModule"].init === 'function',
+        hasUpdate: typeof window["__breakoutModule"].update === 'function',
+        hasRender: typeof window["__breakoutModule"].render === 'function',
+        hasReset: typeof window["__breakoutModule"].reset === 'function',
+        hasHandleKeydown: typeof window["__breakoutModule"].handleKeydown === 'function',
         missingExports: missing.length > 0 ? missing : null
       }
     })
