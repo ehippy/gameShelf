@@ -361,8 +361,6 @@ export function update() {
   }
 
   if (!state.isPlaying) {
-    // Menu state: process gamepad for menu
-    processGamepad()
     return
   }
 
