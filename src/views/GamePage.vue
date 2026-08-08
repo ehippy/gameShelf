@@ -82,8 +82,17 @@ onMounted(async () => {
   canvasWidth.value = gameLogic.CANVAS_WIDTH ?? 250
   canvasHeight.value = gameLogic.CANVAS_HEIGHT ?? 200
 
-  // Expose game module to window for E2E tests using dynamic key based on slug
-  // Example: for slug 'tetris' → window.__tetrisModule, for slug 'snake' → window.__snakeModule
+  // ─── E2E Test Exposure ──────────────────────────────────────────────────────
+  // Expose game module and reactive state to window for E2E tests using dynamic
+  // keys based on the game slug. This allows all games (snake, tetris, breakout,
+  // flappy-bird, whack-a-mole) to have consistent E2E test access patterns.
+  //
+  // Examples:
+  //   - For slug 'tetris' → window.__tetrisModule and window.__tetrisReactiveState
+  //   - For slug 'snake'  → window.__snakeModule and window.__snakeReactiveState
+  //   - For slug 'breakout' → window.__breakoutModule and window.__breakoutReactiveState
+  //
+  // The slug is already validated via isValidSlug() earlier in this function.
   window[`__${slug}Module`] = gameLogic
 
   // Start the game
@@ -91,7 +100,7 @@ onMounted(async () => {
   state = reactive(gameLogic.state)
   
   // Also expose the reactive state for E2E tests using dynamic key based on slug
-  // Example: for slug 'tetris' → window.__tetrisReactiveState, for slug 'snake' → window.__snakeReactiveState
+  // See the E2E Test Exposure comment block above for examples and context.
   window[`__${slug}ReactiveState`] = state
 
   const canvas = gameCanvas.value
