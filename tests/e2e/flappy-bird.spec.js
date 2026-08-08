@@ -13,10 +13,10 @@ test.describe('Flappy Bird E2E Tests - Dynamic Window Exposure', () => {
 
   // ─── Test: Verify dynamic window exposure works for Flappy Bird ─────────────
 
-  test('window.__flappy-birdModule is available for E2E tests', async ({ page }) => {
+  test('window["__flappy-birdModule"] is available for E2E tests', async ({ page }) => {
     const moduleAvailable = await page.evaluate(() => {
       console.log('Checking window keys:', Object.keys(window).filter(k => k.startsWith('__')))
-      return window.__flappy-birdModule !== undefined
+      return window["__flappy-birdModule"] !== undefined
     })
     expect(moduleAvailable).toBe(true)
   })
@@ -30,7 +30,7 @@ test.describe('Flappy Bird E2E Tests - Dynamic Window Exposure', () => {
 
   test('flappy-bird module has required exports', async ({ page }) => {
     const exportsCheck = await page.evaluate(() => {
-      const flappyBirdModule = window.__flappy-birdModule
+      const flappyBirdModule = window["__flappy-birdModule"]
       if (!flappyBirdModule) return { error: 'Module not found' }
       
       const requiredExports = ['init', 'update', 'render', 'reset', 'handleKeydown']
