@@ -6,8 +6,8 @@
 
 # Test info
 
-- Name: whack-a-mole.spec.js >> Whack-a-Mole E2E Tests - Dynamic Window Exposure >> whacking mole works - A button whacks when cursor on mole
-- Location: tests/e2e/whack-a-mole.spec.js:141:3
+- Name: whack-a-mole.spec.js >> Whack-a-Mole E2E Tests - Dynamic Window Exposure >> whacking mole works - Space whacks when cursor on mole
+- Location: tests/e2e/whack-a-mole.spec.js:145:3
 
 # Error details
 

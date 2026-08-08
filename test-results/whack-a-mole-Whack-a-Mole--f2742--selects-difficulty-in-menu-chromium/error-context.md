@@ -6,7 +6,7 @@
 
 # Test info
 
-- Name: whack-a-mole.spec.js >> Whack-a-Mole E2E Tests - Dynamic Window Exposure >> difficulty selection works - A button selects difficulty
+- Name: whack-a-mole.spec.js >> Whack-a-Mole E2E Tests - Dynamic Window Exposure >> difficulty selection works - A button selects difficulty in menu
 - Location: tests/e2e/whack-a-mole.spec.js:123:3
 
 # Error details
