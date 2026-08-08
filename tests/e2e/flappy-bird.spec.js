@@ -86,9 +86,9 @@ test.describe('Flappy Bird E2E Tests - Dynamic Window Exposure', () => {
     })
     expect(isPlaying).toBe(true)
     
-    // Get initial bird position
+    // Get initial bird position (row, not y)
     const initialY = await page.evaluate(() => {
-      return window['__flappy-birdReactiveState']?.bird?.y ?? null
+      return window['__flappy-birdReactiveState']?.bird?.row ?? null
     })
     const initialVelocity = await page.evaluate(() => {
       return window['__flappy-birdReactiveState']?.bird?.velocity ?? null
@@ -115,18 +115,18 @@ test.describe('Flappy Bird E2E Tests - Dynamic Window Exposure', () => {
     await page.keyboard.press('Space')
     await wait(200)
     
-    // Get initial bird position
+    // Get initial bird position (row, not y)
     const initialY = await page.evaluate(() => {
-      return window['__flappy-birdReactiveState']?.bird?.y ?? null
+      return window['__flappy-birdReactiveState']?.bird?.row ?? null
     })
     
     // Press ArrowUp (which also flaps)
     await page.keyboard.press('ArrowUp')
     await wait(100)
     
-    // Verify bird moved up
+    // Verify bird moved up (lower row number = higher on screen)
     const newY = await page.evaluate(() => {
-      return window['__flappy-birdReactiveState']?.bird?.y ?? null
+      return window['__flappy-birdReactiveState']?.bird?.row ?? null
     })
     
     expect(newY).toBeLessThan(initialY)
