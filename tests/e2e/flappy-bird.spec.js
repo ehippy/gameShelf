@@ -71,7 +71,7 @@ test.describe('Flappy Bird E2E Tests - Dynamic Window Exposure', () => {
     expect(stateCheck.hasIsPlaying).toBe(true)
     expect(stateCheck.isPlayingInitial).toBe(true) // Not playing initially
     expect(stateCheck.hasScore).toBe(true)
-    expect(stateCheck.hasBirdY).toBe(true)
+    expect(stateCheck.hasBirdRow).toBe(true)
     expect(stateCheck.hasBirdVelocity).toBe(true)
   })
 
