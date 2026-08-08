@@ -93,7 +93,7 @@ test.describe('Flappy Bird E2E Tests - Dynamic Window Exposure', () => {
     
     // Press Space (which should start the game and flap)
     await page.keyboard.press('Space')
-    await wait(300)
+    await wait(500)  // Give more time for game to process
     
     // After Space, isPlaying should be true
     const afterSpace = await page.evaluate(() => {
@@ -110,7 +110,7 @@ test.describe('Flappy Bird E2E Tests - Dynamic Window Exposure', () => {
   test('flappy-bird keyboard controls work - ArrowUp key is valid', async ({ page }) => {
     // Start the game first with Space
     await page.keyboard.press('Space')
-    await wait(300)
+    await wait(500)  // Give more time for game to process
     
     // Get initial bird position after game started
     const initialRow = await page.evaluate(() => {
