@@ -13,35 +13,35 @@ test.describe('Flappy Bird E2E Tests - Dynamic Window Exposure', () => {
 
   // ─── Test: Verify dynamic window exposure works for Flappy Bird ─────────────
 
-  test('window["__flappy-birdModule"] is available for E2E tests', async ({ page }) => {
+  test('window.__flappy-birdModule is available for E2E tests', async ({ page }) => {
     const moduleAvailable = await page.evaluate(() => {
       console.log('Checking window keys:', Object.keys(window).filter(k => k.startsWith('__')))
-      return window["__flappy-birdModule"] !== undefined
+      return window['__flappy-birdModule'] !== undefined
     })
     expect(moduleAvailable).toBe(true)
   })
 
-  test('window["__flappy-birdReactiveState"] is available for E2E tests', async ({ page }) => {
+  test('window.__flappy-birdReactiveState is available for E2E tests', async ({ page }) => {
     const stateAvailable = await page.evaluate(() => {
-      return window["__flappy-birdReactiveState"] !== undefined
+      return window['__flappy-birdReactiveState'] !== undefined
     })
     expect(stateAvailable).toBe(true)
   })
 
   test('flappy-bird module has required exports', async ({ page }) => {
     const exportsCheck = await page.evaluate(() => {
-      const window["__flappy-birdModule"] = window["__flappy-birdModule"]
-      if (!window["__flappy-birdModule"]) return { error: 'Module not found' }
+      const flappyBirdModule = window['__flappy-birdModule']
+      if (!flappyBirdModule) return { error: 'Module not found' }
       
       const requiredExports = ['init', 'update', 'render', 'reset', 'handleKeydown']
-      const missing = requiredExports.filter(exportName => typeof window["__flappy-birdModule"][exportName] !== 'function')
+      const missing = requiredExports.filter(exportName => typeof flappyBirdModule[exportName] !== 'function')
       
       return {
-        hasInit: typeof window["__flappy-birdModule"].init === 'function',
-        hasUpdate: typeof window["__flappy-birdModule"].update === 'function',
-        hasRender: typeof window["__flappy-birdModule"].render === 'function',
-        hasReset: typeof window["__flappy-birdModule"].reset === 'function',
-        hasHandleKeydown: typeof window["__flappy-birdModule"].handleKeydown === 'function',
+        hasInit: typeof flappyBirdModule.init === 'function',
+        hasUpdate: typeof flappyBirdModule.update === 'function',
+        hasRender: typeof flappyBirdModule.render === 'function',
+        hasReset: typeof flappyBirdModule.reset === 'function',
+        hasHandleKeydown: typeof flappyBirdModule.handleKeydown === 'function',
         missingExports: missing.length > 0 ? missing : null
       }
     })
@@ -56,7 +56,7 @@ test.describe('Flappy Bird E2E Tests - Dynamic Window Exposure', () => {
 
   test('flappy-bird reactive state has isPlaying property', async ({ page }) => {
     const stateCheck = await page.evaluate(() => {
-      const flappyBirdState = window["__flappy-birdReactiveState"]
+      const flappyBirdState = window['__flappy-birdReactiveState']
       if (!flappyBirdState) return { error: 'State not found' }
       
       return {
@@ -82,16 +82,16 @@ test.describe('Flappy Bird E2E Tests - Dynamic Window Exposure', () => {
     
     // Verify isPlaying changed after input
     const isPlaying = await page.evaluate(() => {
-      return window["__flappy-birdReactiveState"]?.isPlaying ?? null
+      return window['__flappy-birdReactiveState']?.isPlaying ?? null
     })
     expect(isPlaying).toBe(true)
     
     // Get initial bird position
     const initialY = await page.evaluate(() => {
-      return window["__flappy-birdReactiveState"]?.bird?.y ?? null
+      return window['__flappy-birdReactiveState']?.bird?.y ?? null
     })
     const initialVelocity = await page.evaluate(() => {
-      return window["__flappy-birdReactiveState"]?.bird?.velocity ?? null
+      return window['__flappy-birdReactiveState']?.bird?.velocity ?? null
     })
     
     // Wait a bit for gravity to take effect
@@ -103,7 +103,7 @@ test.describe('Flappy Bird E2E Tests - Dynamic Window Exposure', () => {
     
     // Verify bird moved up (negative velocity means moving up in canvas coords)
     const newVelocity = await page.evaluate(() => {
-      return window["__flappy-birdReactiveState"]?.bird?.velocity ?? null
+      return window['__flappy-birdReactiveState']?.bird?.velocity ?? null
     })
     
     // After flap, velocity should be negative (bird moves up)
@@ -117,7 +117,7 @@ test.describe('Flappy Bird E2E Tests - Dynamic Window Exposure', () => {
     
     // Get initial bird position
     const initialY = await page.evaluate(() => {
-      return window["__flappy-birdReactiveState"]?.bird?.y ?? null
+      return window['__flappy-birdReactiveState']?.bird?.y ?? null
     })
     
     // Press ArrowUp (which also flaps)
@@ -126,7 +126,7 @@ test.describe('Flappy Bird E2E Tests - Dynamic Window Exposure', () => {
     
     // Verify bird moved up
     const newY = await page.evaluate(() => {
-      return window["__flappy-birdReactiveState"]?.bird?.y ?? null
+      return window['__flappy-birdReactiveState']?.bird?.y ?? null
     })
     
     expect(newY).toBeLessThan(initialY)
