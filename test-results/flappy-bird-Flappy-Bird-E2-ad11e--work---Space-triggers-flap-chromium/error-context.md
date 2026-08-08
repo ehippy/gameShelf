@@ -117,7 +117,7 @@ Received: false
   63  |         hasIsPlaying: flappyBirdState.isPlaying !== undefined,
   64  |         isPlayingInitial: flappyBirdState.isPlaying === false, // Should be false initially
   65  |         hasScore: flappyBirdState.score !== undefined,
-  66  |         hasBirdY: flappyBirdState.bird.y !== undefined,
+  66  |         hasBirdRow: flappyBirdState.bird.row !== undefined,
   67  |         hasBirdVelocity: flappyBirdState.bird.velocity !== undefined
   68  |       }
   69  |     })
@@ -125,7 +125,7 @@ Received: false
   71  |     expect(stateCheck.hasIsPlaying).toBe(true)
   72  |     expect(stateCheck.isPlayingInitial).toBe(true) // Not playing initially
   73  |     expect(stateCheck.hasScore).toBe(true)
-  74  |     expect(stateCheck.hasBirdY).toBe(true)
+  74  |     expect(stateCheck.hasBirdRow).toBe(true)
   75  |     expect(stateCheck.hasBirdVelocity).toBe(true)
   76  |   })
   77  | 
@@ -141,9 +141,9 @@ Received: false
 > 87  |     expect(isPlaying).toBe(true)
       |                       ^ Error: expect(received).toBe(expected) // Object.is equality
   88  |     
-  89  |     // Get initial bird position
+  89  |     // Get initial bird position (row, not y)
   90  |     const initialY = await page.evaluate(() => {
-  91  |       return window['__flappy-birdReactiveState']?.bird?.y ?? null
+  91  |       return window['__flappy-birdReactiveState']?.bird?.row ?? null
   92  |     })
   93  |     const initialVelocity = await page.evaluate(() => {
   94  |       return window['__flappy-birdReactiveState']?.bird?.velocity ?? null
@@ -170,18 +170,18 @@ Received: false
   115 |     await page.keyboard.press('Space')
   116 |     await wait(200)
   117 |     
-  118 |     // Get initial bird position
+  118 |     // Get initial bird position (row, not y)
   119 |     const initialY = await page.evaluate(() => {
-  120 |       return window['__flappy-birdReactiveState']?.bird?.y ?? null
+  120 |       return window['__flappy-birdReactiveState']?.bird?.row ?? null
   121 |     })
   122 |     
   123 |     // Press ArrowUp (which also flaps)
   124 |     await page.keyboard.press('ArrowUp')
   125 |     await wait(100)
   126 |     
-  127 |     // Verify bird moved up
+  127 |     // Verify bird moved up (lower row number = higher on screen)
   128 |     const newY = await page.evaluate(() => {
-  129 |       return window['__flappy-birdReactiveState']?.bird?.y ?? null
+  129 |       return window['__flappy-birdReactiveState']?.bird?.row ?? null
   130 |     })
   131 |     
   132 |     expect(newY).toBeLessThan(initialY)
