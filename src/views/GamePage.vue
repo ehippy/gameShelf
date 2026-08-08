@@ -91,6 +91,8 @@ onMounted(async () => {
   //   - For slug 'tetris' → window.__tetrisModule and window.__tetrisReactiveState
   //   - For slug 'snake'  → window.__snakeModule and window.__snakeReactiveState
   //   - For slug 'breakout' → window.__breakoutModule and window.__breakoutReactiveState
+  //   - For slug 'flappy-bird' → window.__flappyBirdModule and window.__flappyBirdReactiveState
+  //   - For slug 'whack-a-mole' → window.__whackAMoleModule and window.__whackAMoleReactiveState
   //
   // The slug is already validated via isValidSlug() earlier in this function.
   window[`__${slug}Module`] = gameLogic
