@@ -30,18 +30,18 @@ test.describe('Whack-a-Mole E2E Tests - Dynamic Window Exposure', () => {
 
   test('whack-a-mole module has required exports', async ({ page }) => {
     const exportsCheck = await page.evaluate(() => {
-      const whackAMoleModule = window.__whack-a-moleModule
-      if (!whackAMoleModule) return { error: 'Module not found' }
+      const window["__whack-a-moleModule"] = window.__whack-a-moleModule
+      if (!window["__whack-a-moleModule"]) return { error: 'Module not found' }
       
       const requiredExports = ['init', 'update', 'render', 'reset', 'handleKeydown']
-      const missing = requiredExports.filter(exportName => typeof whackAMoleModule[exportName] !== 'function')
+      const missing = requiredExports.filter(exportName => typeof window["__whack-a-moleModule"][exportName] !== 'function')
       
       return {
-        hasInit: typeof whackAMoleModule.init === 'function',
-        hasUpdate: typeof whackAMoleModule.update === 'function',
-        hasRender: typeof whackAMoleModule.render === 'function',
-        hasReset: typeof whackAMoleModule.reset === 'function',
-        hasHandleKeydown: typeof whackAMoleModule.handleKeydown === 'function',
+        hasInit: typeof window["__whack-a-moleModule"].init === 'function',
+        hasUpdate: typeof window["__whack-a-moleModule"].update === 'function',
+        hasRender: typeof window["__whack-a-moleModule"].render === 'function',
+        hasReset: typeof window["__whack-a-moleModule"].reset === 'function',
+        hasHandleKeydown: typeof window["__whack-a-moleModule"].handleKeydown === 'function',
         missingExports: missing.length > 0 ? missing : null
       }
     })
