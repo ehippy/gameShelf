@@ -21,9 +21,9 @@ test.describe('Flappy Bird E2E Tests - Dynamic Window Exposure', () => {
     expect(moduleAvailable).toBe(true)
   })
 
-  test('window.__flappy-birdReactiveState is available for E2E tests', async ({ page }) => {
+  test('window["__flappy-birdReactiveState"] is available for E2E tests', async ({ page }) => {
     const stateAvailable = await page.evaluate(() => {
-      return window.__flappy-birdReactiveState !== undefined
+      return window["__flappy-birdReactiveState"] !== undefined
     })
     expect(stateAvailable).toBe(true)
   })
@@ -56,7 +56,7 @@ test.describe('Flappy Bird E2E Tests - Dynamic Window Exposure', () => {
 
   test('flappy-bird reactive state has isPlaying property', async ({ page }) => {
     const stateCheck = await page.evaluate(() => {
-      const flappyBirdState = window.__flappy-birdReactiveState
+      const flappyBirdState = window["__flappy-birdReactiveState"]
       if (!flappyBirdState) return { error: 'State not found' }
       
       return {
@@ -82,16 +82,16 @@ test.describe('Flappy Bird E2E Tests - Dynamic Window Exposure', () => {
     
     // Verify isPlaying changed after input
     const isPlaying = await page.evaluate(() => {
-      return window.__flappy-birdReactiveState?.isPlaying ?? null
+      return window["__flappy-birdReactiveState"]?.isPlaying ?? null
     })
     expect(isPlaying).toBe(true)
     
     // Get initial bird position
     const initialY = await page.evaluate(() => {
-      return window.__flappy-birdReactiveState?.bird?.y ?? null
+      return window["__flappy-birdReactiveState"]?.bird?.y ?? null
     })
     const initialVelocity = await page.evaluate(() => {
-      return window.__flappy-birdReactiveState?.bird?.velocity ?? null
+      return window["__flappy-birdReactiveState"]?.bird?.velocity ?? null
     })
     
     // Wait a bit for gravity to take effect
@@ -103,7 +103,7 @@ test.describe('Flappy Bird E2E Tests - Dynamic Window Exposure', () => {
     
     // Verify bird moved up (negative velocity means moving up in canvas coords)
     const newVelocity = await page.evaluate(() => {
-      return window.__flappy-birdReactiveState?.bird?.velocity ?? null
+      return window["__flappy-birdReactiveState"]?.bird?.velocity ?? null
     })
     
     // After flap, velocity should be negative (bird moves up)
@@ -117,7 +117,7 @@ test.describe('Flappy Bird E2E Tests - Dynamic Window Exposure', () => {
     
     // Get initial bird position
     const initialY = await page.evaluate(() => {
-      return window.__flappy-birdReactiveState?.bird?.y ?? null
+      return window["__flappy-birdReactiveState"]?.bird?.y ?? null
     })
     
     // Press ArrowUp (which also flaps)
@@ -126,7 +126,7 @@ test.describe('Flappy Bird E2E Tests - Dynamic Window Exposure', () => {
     
     // Verify bird moved up
     const newY = await page.evaluate(() => {
-      return window.__flappy-birdReactiveState?.bird?.y ?? null
+      return window["__flappy-birdReactiveState"]?.bird?.y ?? null
     })
     
     expect(newY).toBeLessThan(initialY)
