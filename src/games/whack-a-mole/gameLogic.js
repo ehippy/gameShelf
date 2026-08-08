@@ -155,7 +155,7 @@ function playGameOver() {
 let state = null
 
 // Gamepad state tracking to prevent repeated triggering
-let gamepadState = {
+export let gamepadState = {
   dpadUpPressed: false,
   dpadDownPressed: false,
   dpadLeftPressed: false,
