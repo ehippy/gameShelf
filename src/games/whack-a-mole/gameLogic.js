@@ -154,7 +154,8 @@ function playGameOver() {
 
 let state = null
 
-// Gamepad state tracking to prevent repeated triggering
+// Gamepad state tracking to prevent repeated triggering on hold.
+// Module-level (not reactive) to avoid unnecessary Vue reactivity overhead.
 export let gamepadState = {
   dpadUpPressed: false,
   dpadDownPressed: false,
