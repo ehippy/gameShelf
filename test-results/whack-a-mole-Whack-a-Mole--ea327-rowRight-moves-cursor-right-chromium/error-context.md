@@ -6,17 +6,15 @@
 
 # Test info
 
-- Name: whack-a-mole.spec.js >> Whack-a-Mole E2E Tests - Dynamic Window Exposure >> keyboard controls work - ArrowRight moves cursor right
+- Name: whack-a-mole.spec.js >> Whack-a-Mole E2E Tests - Dynamic Window Exposure >> whack-a-mole keyboard controls work - ArrowRight moves cursor right
 - Location: tests/e2e/whack-a-mole.spec.js:78:3
 
 # Error details
 
 ```
-Error: expect(received).toBeGreaterThan(expected)
+Error: expect(received).not.toBeNull()
 
-Matcher error: received value must be a number or bigint
-
-Received has value: null
+Received: null
 ```
 
 # Page snapshot
@@ -130,95 +128,101 @@ Received has value: null
   75  |     expect(stateCheck.hasCursorCol).toBe(true)
   76  |   })
   77  | 
-  78  |   test('keyboard controls work - ArrowRight moves cursor right', async ({ page }) => {
+  78  |   test('whack-a-mole keyboard controls work - ArrowRight moves cursor right', async ({ page }) => {
   79  |     // Start the game first with Space
   80  |     await page.keyboard.press('Space')
-  81  |     await wait(200)
+  81  |     await wait(300)
   82  |     
   83  |     // Get initial cursor position
   84  |     const initialCol = await page.evaluate(() => {
   85  |       return window['__whack-a-moleReactiveState']?.cursor?.col ?? null
   86  |     })
-  87  |     
-  88  |     // Press ArrowRight
-  89  |     await page.keyboard.press('ArrowRight')
-  90  |     await wait(100)
-  91  |     
-  92  |     // Verify cursor moved right
-  93  |     const newCol = await page.evaluate(() => {
-  94  |       return window['__whack-a-moleReactiveState']?.cursor?.col ?? null
-  95  |     })
-  96  |     
-> 97  |     expect(newCol).toBeGreaterThan(initialCol)
-      |                    ^ Error: expect(received).toBeGreaterThan(expected)
-  98  |   })
-  99  | 
-  100 |   test('keyboard controls work - ArrowLeft moves cursor left', async ({ page }) => {
-  101 |     // Start the game first with Space
-  102 |     await page.keyboard.press('Space')
-  103 |     await wait(200)
-  104 |     
-  105 |     // Get initial cursor position
-  106 |     const initialCol = await page.evaluate(() => {
-  107 |       return window['__whack-a-moleReactiveState']?.cursor?.col ?? null
-  108 |     })
-  109 |     
-  110 |     // Press ArrowLeft (wrap around or move left)
-  111 |     await page.keyboard.press('ArrowLeft')
-  112 |     await wait(100)
-  113 |     
-  114 |     // Verify cursor moved left (or wrapped to rightmost column)
-  115 |     const newCol = await page.evaluate(() => {
-  116 |       return window['__whack-a-moleReactiveState']?.cursor?.col ?? null
-  117 |     })
-  118 |     
-  119 |     // Either moved left or wrapped around (both are valid behaviors)
-  120 |     expect(newCol).not.toBe(initialCol)
-  121 |   })
-  122 | 
-  123 |   test('difficulty selection works - A button selects difficulty in menu', async ({ page }) => {
-  124 |     // In the menu state, A button (gamepad) or clicking a difficulty button starts the game
-  125 |     // For keyboard tests, we'll verify the cursor navigation works instead
-  126 |     
-  127 |     // Get initial difficulty from reactive state
-  128 |     const initialDifficulty = await page.evaluate(() => {
-  129 |       return window['__whack-a-moleReactiveState']?.difficulty ?? null
-  130 |     })
-  131 |     
-  132 |     // In menu state, A button (when gamepad is connected) or clicking starts the game
-  133 |     // For keyboard, Space starts the game with current difficulty
-  134 |     await page.keyboard.press('Space')
-  135 |     await wait(200)
+> 87  |     expect(initialCol).not.toBeNull()
+      |                            ^ Error: expect(received).not.toBeNull()
+  88  |     
+  89  |     // Press ArrowRight
+  90  |     await page.keyboard.press('ArrowRight')
+  91  |     await wait(100)
+  92  |     
+  93  |     // Verify cursor moved right
+  94  |     const newCol = await page.evaluate(() => {
+  95  |       return window['__whack-a-moleReactiveState']?.cursor?.col ?? null
+  96  |     })
+  97  |     
+  98  |     expect(newCol).toBeGreaterThan(initialCol)
+  99  |   })
+  100 | 
+  101 |   test('whack-a-mole keyboard controls work - ArrowLeft moves cursor left', async ({ page }) => {
+  102 |     // Start the game first with Space
+  103 |     await page.keyboard.press('Space')
+  104 |     await wait(300)
+  105 |     
+  106 |     // Get initial cursor position
+  107 |     const initialCol = await page.evaluate(() => {
+  108 |       return window['__whack-a-moleReactiveState']?.cursor?.col ?? null
+  109 |     })
+  110 |     expect(initialCol).not.toBeNull()
+  111 |     
+  112 |     // Press ArrowLeft (wrap around or move left)
+  113 |     await page.keyboard.press('ArrowLeft')
+  114 |     await wait(100)
+  115 |     
+  116 |     // Verify cursor moved left (or wrapped to rightmost column)
+  117 |     const newCol = await page.evaluate(() => {
+  118 |       return window['__whack-a-moleReactiveState']?.cursor?.col ?? null
+  119 |     })
+  120 |     
+  121 |     // Either moved left or wrapped around (both are valid behaviors)
+  122 |     expect(newCol).not.toBe(initialCol)
+  123 |   })
+  124 | 
+  125 |   test('whack-a-mole game starts with Space', async ({ page }) => {
+  126 |     // In menu state, Space should start the game
+  127 |     const initialState = await page.evaluate(() => {
+  128 |       const state = window['__whack-a-moleReactiveState']
+  129 |       return {
+  130 |         isPlaying: state.isPlaying,
+  131 |         score: state.score
+  132 |       }
+  133 |     })
+  134 |     
+  135 |     expect(initialState.isPlaying).toBe(false)
   136 |     
-  137 |     const isPlaying = await page.evaluate(() => {
-  138 |       return window['__whack-a-moleReactiveState']?.isPlaying ?? false
-  139 |     })
+  137 |     // Press Space to start
+  138 |     await page.keyboard.press('Space')
+  139 |     await wait(300)
   140 |     
-  141 |     // Game should have started
-  142 |     expect(isPlaying).toBe(true)
-  143 |   })
-  144 | 
-  145 |   test('whacking mole works - Space whacks when cursor on mole', async ({ page }) => {
-  146 |     // Start the game first with Space
-  147 |     await page.keyboard.press('Space')
-  148 |     await wait(200)
-  149 |     
-  150 |     // Get initial score
-  151 |     const initialScore = await page.evaluate(() => {
-  152 |       return window['__whack-a-moleReactiveState']?.score ?? 0
-  153 |     })
-  154 |     
-  155 |     // Press Space to whack (if mole is at cursor position, score increases)
-  156 |     await page.keyboard.press('Space')
-  157 |     await wait(100)
-  158 |     
-  159 |     const newScore = await page.evaluate(() => {
-  160 |       return window['__whack-a-moleReactiveState']?.score ?? 0
-  161 |     })
-  162 |     
-  163 |     // Score should have increased (mole was likely at cursor position)
-  164 |     expect(newScore).toBeGreaterThan(initialScore)
-  165 |   })
-  166 | })
-  167 | 
+  141 |     const afterSpace = await page.evaluate(() => {
+  142 |       const state = window['__whack-a-moleReactiveState']
+  143 |       return {
+  144 |         isPlaying: state.isPlaying
+  145 |       }
+  146 |     })
+  147 |     
+  148 |     expect(afterSpace.isPlaying).toBe(true)
+  149 |   })
+  150 | 
+  151 |   test('whack-a-mole whacking works - Space triggers whack', async ({ page }) => {
+  152 |     // Start the game first with Space
+  153 |     await page.keyboard.press('Space')
+  154 |     await wait(300)
+  155 |     
+  156 |     // Get initial score
+  157 |     const initialScore = await page.evaluate(() => {
+  158 |       return window['__whack-a-moleReactiveState']?.score ?? 0
+  159 |     })
+  160 |     
+  161 |     // Press Space to whack (if mole is at cursor position, score increases)
+  162 |     await page.keyboard.press('Space')
+  163 |     await wait(100)
+  164 |     
+  165 |     const newScore = await page.evaluate(() => {
+  166 |       return window['__whack-a-moleReactiveState']?.score ?? 0
+  167 |     })
+  168 |     
+  169 |     // Score should have increased (mole was likely at cursor position)
+  170 |     expect(newScore).toBeGreaterThan(initialScore)
+  171 |   })
+  172 | })
+  173 | 
 ```
