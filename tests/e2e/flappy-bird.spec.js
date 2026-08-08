@@ -30,18 +30,18 @@ test.describe('Flappy Bird E2E Tests - Dynamic Window Exposure', () => {
 
   test('flappy-bird module has required exports', async ({ page }) => {
     const exportsCheck = await page.evaluate(() => {
-      const flappyBirdModule = window["__flappy-birdModule"]
-      if (!flappyBirdModule) return { error: 'Module not found' }
+      const window["__flappy-birdModule"] = window["__flappy-birdModule"]
+      if (!window["__flappy-birdModule"]) return { error: 'Module not found' }
       
       const requiredExports = ['init', 'update', 'render', 'reset', 'handleKeydown']
-      const missing = requiredExports.filter(exportName => typeof flappyBirdModule[exportName] !== 'function')
+      const missing = requiredExports.filter(exportName => typeof window["__flappy-birdModule"][exportName] !== 'function')
       
       return {
-        hasInit: typeof flappyBirdModule.init === 'function',
-        hasUpdate: typeof flappyBirdModule.update === 'function',
-        hasRender: typeof flappyBirdModule.render === 'function',
-        hasReset: typeof flappyBirdModule.reset === 'function',
-        hasHandleKeydown: typeof flappyBirdModule.handleKeydown === 'function',
+        hasInit: typeof window["__flappy-birdModule"].init === 'function',
+        hasUpdate: typeof window["__flappy-birdModule"].update === 'function',
+        hasRender: typeof window["__flappy-birdModule"].render === 'function',
+        hasReset: typeof window["__flappy-birdModule"].reset === 'function',
+        hasHandleKeydown: typeof window["__flappy-birdModule"].handleKeydown === 'function',
         missingExports: missing.length > 0 ? missing : null
       }
     })
