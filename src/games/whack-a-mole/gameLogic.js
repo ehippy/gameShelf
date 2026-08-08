@@ -439,31 +439,31 @@ function processGamepad() {
       }
     }
 
-    if (dpadUp.pressed && !gamepadState.dpadUpPressed) {
+    if (dpadUp && dpadUp.pressed && !gamepadState.dpadUpPressed) {
       moveCursor(0, -1)
       gamepadState.dpadUpPressed = true
-    } else if (!dpadUp.pressed) {
+    } else if (!dpadUp || !dpadUp.pressed) {
       gamepadState.dpadUpPressed = false
     }
 
-    if (dpadDown.pressed && !gamepadState.dpadDownPressed) {
+    if (dpadDown && dpadDown.pressed && !gamepadState.dpadDownPressed) {
       moveCursor(0, 1)
       gamepadState.dpadDownPressed = true
-    } else if (!dpadDown.pressed) {
+    } else if (!dpadDown || !dpadDown.pressed) {
       gamepadState.dpadDownPressed = false
     }
 
-    if (dpadLeft.pressed && !gamepadState.dpadLeftPressed) {
+    if (dpadLeft && dpadLeft.pressed && !gamepadState.dpadLeftPressed) {
       moveCursor(-1, 0)
       gamepadState.dpadLeftPressed = true
-    } else if (!dpadLeft.pressed) {
+    } else if (!dpadLeft || !dpadLeft.pressed) {
       gamepadState.dpadLeftPressed = false
     }
 
-    if (dpadRight.pressed && !gamepadState.dpadRightPressed) {
+    if (dpadRight && dpadRight.pressed && !gamepadState.dpadRightPressed) {
       moveCursor(1, 0)
       gamepadState.dpadRightPressed = true
-    } else if (!dpadRight.pressed) {
+    } else if (!dpadRight || !dpadRight.pressed) {
       gamepadState.dpadRightPressed = false
     }
 
