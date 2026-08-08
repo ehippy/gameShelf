@@ -13,35 +13,35 @@ test.describe('Breakout E2E Tests - Dynamic Window Exposure', () => {
 
   // ─── Test: Verify dynamic window exposure works for Breakout ────────────────
 
-  test('window.__window["__breakoutModule"] is available for E2E tests', async ({ page }) => {
+  test('window.__breakoutModule is available for E2E tests', async ({ page }) => {
     const moduleAvailable = await page.evaluate(() => {
       console.log('Checking window keys:', Object.keys(window).filter(k => k.startsWith('__')))
-      return window.__window["__breakoutModule"] !== undefined
+      return window['__breakoutModule'] !== undefined
     })
     expect(moduleAvailable).toBe(true)
   })
 
   test('window.__breakoutReactiveState is available for E2E tests', async ({ page }) => {
     const stateAvailable = await page.evaluate(() => {
-      return window.__breakoutReactiveState !== undefined
+      return window['__breakoutReactiveState'] !== undefined
     })
     expect(stateAvailable).toBe(true)
   })
 
   test('breakout module has required exports', async ({ page }) => {
     const exportsCheck = await page.evaluate(() => {
-      const window["__breakoutModule"] = window.__window["__breakoutModule"]
-      if (!window["__breakoutModule"]) return { error: 'Module not found' }
+      const breakoutModule = window['__breakoutModule']
+      if (!breakoutModule) return { error: 'Module not found' }
       
       const requiredExports = ['init', 'update', 'render', 'reset', 'handleKeydown']
-      const missing = requiredExports.filter(exportName => typeof window["__breakoutModule"][exportName] !== 'function')
+      const missing = requiredExports.filter(exportName => typeof breakoutModule[exportName] !== 'function')
       
       return {
-        hasInit: typeof window["__breakoutModule"].init === 'function',
-        hasUpdate: typeof window["__breakoutModule"].update === 'function',
-        hasRender: typeof window["__breakoutModule"].render === 'function',
-        hasReset: typeof window["__breakoutModule"].reset === 'function',
-        hasHandleKeydown: typeof window["__breakoutModule"].handleKeydown === 'function',
+        hasInit: typeof breakoutModule.init === 'function',
+        hasUpdate: typeof breakoutModule.update === 'function',
+        hasRender: typeof breakoutModule.render === 'function',
+        hasReset: typeof breakoutModule.reset === 'function',
+        hasHandleKeydown: typeof breakoutModule.handleKeydown === 'function',
         missingExports: missing.length > 0 ? missing : null
       }
     })
@@ -56,15 +56,15 @@ test.describe('Breakout E2E Tests - Dynamic Window Exposure', () => {
 
   test('breakout reactive state has isPlaying property', async ({ page }) => {
     const stateCheck = await page.evaluate(() => {
-      const window["__breakoutReactiveState"] = window.__breakoutReactiveState
-      if (!window["__breakoutReactiveState"]) return { error: 'State not found' }
+      const breakoutState = window['__breakoutReactiveState']
+      if (!breakoutState) return { error: 'State not found' }
       
       return {
-        hasIsPlaying: window["__breakoutReactiveState"].isPlaying !== undefined,
-        isPlayingInitial: window["__breakoutReactiveState"].isPlaying === false, // Should be false initially
-        hasScore: window["__breakoutReactiveState"].score !== undefined,
-        hasPaddleX: window["__breakoutReactiveState"].paddle.x !== undefined,
-        hasBallX: window["__breakoutReactiveState"].ball.x !== undefined
+        hasIsPlaying: breakoutState.isPlaying !== undefined,
+        isPlayingInitial: breakoutState.isPlaying === false, // Should be false initially
+        hasScore: breakoutState.score !== undefined,
+        hasPaddleX: breakoutState.paddle.x !== undefined,
+        hasBallX: breakoutState.ball.x !== undefined
       }
     })
     
@@ -82,7 +82,7 @@ test.describe('Breakout E2E Tests - Dynamic Window Exposure', () => {
     
     // Get initial paddle position
     const initialX = await page.evaluate(() => {
-      return window.__breakoutReactiveState?.paddle?.x ?? null
+      return window['__breakoutReactiveState']?.paddle?.x ?? null
     })
     
     // Press ArrowLeft
@@ -91,7 +91,7 @@ test.describe('Breakout E2E Tests - Dynamic Window Exposure', () => {
     
     // Verify paddle moved left
     const newX = await page.evaluate(() => {
-      return window.__breakoutReactiveState?.paddle?.x ?? null
+      return window['__breakoutReactiveState']?.paddle?.x ?? null
     })
     
     expect(newX).toBeLessThan(initialX)
@@ -104,7 +104,7 @@ test.describe('Breakout E2E Tests - Dynamic Window Exposure', () => {
     
     // Get initial paddle position
     const initialX = await page.evaluate(() => {
-      return window.__breakoutReactiveState?.paddle?.x ?? null
+      return window['__breakoutReactiveState']?.paddle?.x ?? null
     })
     
     // Press ArrowRight
@@ -113,7 +113,7 @@ test.describe('Breakout E2E Tests - Dynamic Window Exposure', () => {
     
     // Verify paddle moved right
     const newX = await page.evaluate(() => {
-      return window.__breakoutReactiveState?.paddle?.x ?? null
+      return window['__breakoutReactiveState']?.paddle?.x ?? null
     })
     
     expect(newX).toBeGreaterThan(initialX)
