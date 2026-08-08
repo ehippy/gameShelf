@@ -63,8 +63,8 @@ test.describe('Whack-a-Mole E2E Tests - Dynamic Window Exposure', () => {
         hasIsPlaying: whackAMoleState.isPlaying !== undefined,
         isPlayingInitial: whackAMoleState.isPlaying === false, // Should be false initially
         hasScore: whackAMoleState.score !== undefined,
-        hasCursorRow: whackAMoleState.cursor.row !== undefined,
-        hasCursorCol: whackAMoleState.cursor.col !== undefined
+        hasCursorRow: whackAMoleState.cursorRow !== undefined,
+        hasCursorCol: whackAMoleState.cursorCol !== undefined
       }
     })
     
@@ -82,7 +82,7 @@ test.describe('Whack-a-Mole E2E Tests - Dynamic Window Exposure', () => {
     
     // Get initial cursor position
     const initialCol = await page.evaluate(() => {
-      return window['__whack-a-moleReactiveState']?.cursor?.col ?? null
+      return window['__whack-a-moleReactiveState']?.cursorCol ?? null
     })
     expect(initialCol).not.toBeNull()
     
@@ -92,7 +92,7 @@ test.describe('Whack-a-Mole E2E Tests - Dynamic Window Exposure', () => {
     
     // Verify cursor moved right
     const newCol = await page.evaluate(() => {
-      return window['__whack-a-moleReactiveState']?.cursor?.col ?? null
+      return window['__whack-a-moleReactiveState']?.cursorCol ?? null
     })
     
     expect(newCol).toBeGreaterThan(initialCol)
@@ -105,7 +105,7 @@ test.describe('Whack-a-Mole E2E Tests - Dynamic Window Exposure', () => {
     
     // Get initial cursor position
     const initialCol = await page.evaluate(() => {
-      return window['__whack-a-moleReactiveState']?.cursor?.col ?? null
+      return window['__whack-a-moleReactiveState']?.cursorCol ?? null
     })
     expect(initialCol).not.toBeNull()
     
@@ -115,7 +115,7 @@ test.describe('Whack-a-Mole E2E Tests - Dynamic Window Exposure', () => {
     
     // Verify cursor moved left (or wrapped to rightmost column)
     const newCol = await page.evaluate(() => {
-      return window['__whack-a-moleReactiveState']?.cursor?.col ?? null
+      return window['__whack-a-moleReactiveState']?.cursorCol ?? null
     })
     
     // Either moved left or wrapped around (both are valid behaviors)
