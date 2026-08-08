@@ -56,15 +56,15 @@ test.describe('Breakout E2E Tests - Dynamic Window Exposure', () => {
 
   test('breakout reactive state has isPlaying property', async ({ page }) => {
     const stateCheck = await page.evaluate(() => {
-      const breakoutState = window.__breakoutReactiveState
-      if (!breakoutState) return { error: 'State not found' }
+      const window["__breakoutReactiveState"] = window.__breakoutReactiveState
+      if (!window["__breakoutReactiveState"]) return { error: 'State not found' }
       
       return {
-        hasIsPlaying: breakoutState.isPlaying !== undefined,
-        isPlayingInitial: breakoutState.isPlaying === false, // Should be false initially
-        hasScore: breakoutState.score !== undefined,
-        hasPaddleX: breakoutState.paddle.x !== undefined,
-        hasBallX: breakoutState.ball.x !== undefined
+        hasIsPlaying: window["__breakoutReactiveState"].isPlaying !== undefined,
+        isPlayingInitial: window["__breakoutReactiveState"].isPlaying === false, // Should be false initially
+        hasScore: window["__breakoutReactiveState"].score !== undefined,
+        hasPaddleX: window["__breakoutReactiveState"].paddle.x !== undefined,
+        hasBallX: window["__breakoutReactiveState"].ball.x !== undefined
       }
     })
     
